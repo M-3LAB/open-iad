@@ -1,2 +1,7 @@
 # Anomaly-Detection-RGBD (ad-3d)
-
+##Preliminary
+> Dependency
+<!-- pytorch 1.10.1 or 1.8.1\
+scikit-image, pip install scikit-image\
+scikit-learn, pip instll scikit-learn\
+-->
