@@ -44,7 +44,9 @@ class MVTec2D(Dataset):
         pass
 
     def load_dataset_folder(self):
-        pass
+        x, y, mask = [], [], []
+        img_dir = os.path.join(self.data_path, self.class_name, self.mode)
+        gt_dir = os.path.join(self.data_path, self.class_name, self.mode)
 
 
 class MVTec3D(Dataset):
