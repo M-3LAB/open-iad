@@ -37,7 +37,7 @@ class MVTec2D(Dataset):
         assert self.class_name in mvtec_classes
 
 
-    def __getitem__(self):
+    def __getitem__(self, idx):
         pass
 
     def __len__(self):
