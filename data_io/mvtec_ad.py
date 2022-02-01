@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import Dataset
 import os
+from PIL import Image
 
 __all__ = ['MVTec2D', 'MVTec3D']
 
