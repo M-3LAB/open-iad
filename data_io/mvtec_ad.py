@@ -48,6 +48,34 @@ class MVTec2D(Dataset):
         img_dir = os.path.join(self.data_path, self.class_name, self.mode)
         gt_dir = os.path.join(self.data_path, self.class_name, self.mode)
 
+        img_types = sorted(os.listdir(img_dir))
+        for img_type in img_types:
+
+            # load images
+            img_type_dir = os.path.join(img_dir, img_type)
+            if not os.path.isdir(img_type_dir):
+                continue
+            img_fpath_list = sorted([os.path.join(img_type_dir, f)
+                                     for f in os.listdir(img_type_dir)
+                                     if f.endswith('.png')])
+            x.extend(img_fpath_list)
+
+            # load gt labels
+            if img_type == 'good':
+                y.extend([0] * len(img_fpath_list))
+                mask.extend([None] * len(img_fpath_list))
+            else:
+                y.extend([1] * len(img_fpath_list))
+                gt_type_dir = os.path.join(gt_dir, img_type)
+                img_fname_list = [os.path.splitext(os.path.basename(f))[0] for f in img_fpath_list]
+                gt_fpath_list = [os.path.join(gt_type_dir, img_fname + '_mask.png')
+                                 for img_fname in img_fname_list]
+                mask.extend(gt_fpath_list)
+
+        assert len(x) == len(y), 'number of x and y should be same'
+
+        return list(x), list(y), list(mask)
+
 
 class MVTec3D(Dataset):
     def __init__(self):
