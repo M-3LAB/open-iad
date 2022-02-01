@@ -35,7 +35,12 @@ class MVTec2D(Dataset):
         self.class_name = class_name
 
         assert self.class_name in mvtec_classes
+        # load dataset
+        self.x, self.y. self.mask = self.load_dataset_folder()
 
+        # data preprocessing 
+        self.data_transform = data_transform
+        self.mask_transformk = mask_transform
 
     def __getitem__(self, idx):
         pass
