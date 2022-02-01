@@ -39,6 +39,12 @@ class MVTec2D(Dataset):
     def __getitem__(self):
         pass
 
+    def __len__(self):
+        pass
+
+    def load_dataset_folder(self):
+        pass
+
 
 class MVTec3D(Dataset):
     def __init__(self):
