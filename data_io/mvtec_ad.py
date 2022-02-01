@@ -43,10 +43,21 @@ class MVTec2D(Dataset):
         self.mask_transformk = mask_transform
 
     def __getitem__(self, idx):
-        pass
+        x, y, mask = self.x[idx], self.y[idx], self.mask[idx]
+
+        x = Image.open(x).convert('RGB')
+        x = self.image_transforms(x)
+
+        if y == 0:
+            mask = torch.zeros([1, x.shape[1], x.shape[2]])
+        else:
+            mask = Image.open(mask)
+            mask = self.mask_transforms(mask)
+
+        return x, y, mask
 
     def __len__(self):
-        pass
+        return len(self.x)
 
     def load_dataset_folder(self):
         x, y, mask = [], [], []
