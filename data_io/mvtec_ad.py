@@ -25,11 +25,12 @@ def mvtec_classes():
     ]
 
 class MVTec2D(Dataset):
-    def __init__(self, data_path, class_name, mode='train', data_transform=None, 
-                 mask_transform=None):
+    def __init__(self, data_path, class_name, mode='centralized', phase='train', 
+                 data_transform=None, mask_transform=None):
 
         self.data_path = data_path
         self.mode = mode
+        self.phase = phase
         self.data_transform = data_transform 
         self.mask_transform = mask_transform
         self.class_name = class_name
@@ -61,8 +62,8 @@ class MVTec2D(Dataset):
 
     def load_dataset_folder(self):
         x, y, mask = [], [], []
-        img_dir = os.path.join(self.data_path, self.class_name, self.mode)
-        gt_dir = os.path.join(self.data_path, self.class_name, self.mode)
+        img_dir = os.path.join(self.data_path, self.class_name, self.phase)
+        gt_dir = os.path.join(self.data_path, self.class_name, self.phase)
 
         img_types = sorted(os.listdir(img_dir))
         for img_type in img_types:
