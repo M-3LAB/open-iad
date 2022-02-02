@@ -5,7 +5,7 @@ from PIL import Image
 
 __all__ = ['MVTec2D', 'MVTec3D']
 
-def mvtec_classes():
+def mvtec_2d_classes():
     return [
         "bottle",
         "cable",
@@ -24,6 +24,19 @@ def mvtec_classes():
         "zipper",
     ]
 
+def mvtec_3d_classes():
+    return [
+        "bagel",
+        "cable_grand",
+        "carrot",
+        "cookie",
+        "dowel",
+        "foam",
+        "peach",
+        "potato",
+        "rope",
+        "tire",
+    ]
 class MVTec2D(Dataset):
     def __init__(self, data_path, class_name, mode='centralized', phase='train', 
                  data_transform=None, mask_transform=None):
@@ -35,7 +48,7 @@ class MVTec2D(Dataset):
         self.mask_transform = mask_transform
         self.class_name = class_name
 
-        assert self.class_name in mvtec_classes
+        assert self.class_name in mvtec_2d_classes
         # load dataset
         self.x, self.y. self.mask = self.load_dataset_folder()
 
@@ -95,8 +108,9 @@ class MVTec2D(Dataset):
 
 
 class MVTec3D(Dataset):
-    def __init__(self):
-        pass
+    def __init__(self, data_path, class_name):
+        self.data_path = data_path
+        self.class_name = class_name
 
     def __getitem__(self):
         pass
