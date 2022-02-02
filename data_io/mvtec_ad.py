@@ -76,7 +76,7 @@ class MVTec2D(Dataset):
     def load_dataset_folder(self):
         x, y, mask = [], [], []
         img_dir = os.path.join(self.data_path, self.class_name, self.phase)
-        gt_dir = os.path.join(self.data_path, self.class_name, 'ground_truth')
+        gt_dir = os.path.join(self.data_path, self.class_name, 'ground_truth') 
 
         img_types = sorted(os.listdir(img_dir))
         for img_type in img_types:
@@ -90,7 +90,12 @@ class MVTec2D(Dataset):
                                      if f.endswith('.png')])
             x.extend(img_fpath_list)
 
-            # load gt labels
+            """
+            Train Directory: Only Good Cases
+            Test Directory: Bad and Good Cases 
+            Ground Truth Directory: Only Bad Case
+            Detail Can be referred from MVTec 2D dataset
+            """
             if img_type == 'good':
                 y.extend([0] * len(img_fpath_list))
                 mask.extend([None] * len(img_fpath_list))
