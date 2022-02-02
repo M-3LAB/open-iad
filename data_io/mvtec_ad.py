@@ -76,7 +76,7 @@ class MVTec2D(Dataset):
     def load_dataset_folder(self):
         x, y, mask = [], [], []
         img_dir = os.path.join(self.data_path, self.class_name, self.phase)
-        gt_dir = os.path.join(self.data_path, self.class_name, self.phase)
+        gt_dir = os.path.join(self.data_path, self.class_name, 'ground_truth')
 
         img_types = sorted(os.listdir(img_dir))
         for img_type in img_types:
