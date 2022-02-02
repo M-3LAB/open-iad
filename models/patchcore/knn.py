@@ -15,3 +15,6 @@ class KNNExtractor(nn.Module):
 
     def predict(self, x):
         pass
+
+    def evaluate(self, x):
+        pass
