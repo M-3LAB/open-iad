@@ -9,3 +9,6 @@ class KNNExtractor(nn.Module):
     
     def __call__(self, x):
         pass
+
+    def fit(self, x):
+        pass
