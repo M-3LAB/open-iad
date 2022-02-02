@@ -2,6 +2,8 @@ import os
 from PIL import Image
 import torch
 
+__all__ = ['to_batch']
+
 def to_batch(images, transforms, device):
     """
     Convert a list of numpy array images to a pytorch tensor batch with given transforms.
