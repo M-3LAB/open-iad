@@ -37,5 +37,9 @@ class ResNetExtractor(nn.Module):
         Returns:
             embedding_vectors: The embedding vectors.
         """
-        
+        with torch.no_grad():
+
+            x = self.backbone.conv1(x) 
+            x = self.backbone.bn1(x)
+            x = self.backbone.relu(x)
         pass
