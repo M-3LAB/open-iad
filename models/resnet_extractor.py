@@ -91,3 +91,14 @@ class ResNetExtractor(nn.Module):
 
             if layer_hook is not None:
                 layers = [layer_hook(layer) for layer in layers]
+
+            embedding_vectors = concatenate_layers(layers) 
+
+            if channel_indices is not None:
+                embedding_vectors = torch.index_select(embedding_vectors, 1, channel_indices)
+            
+            batch_size, length, width, height = embedding_vectors.shape
+            embedding_vectors = embedding_vectors.reshape(batch_size, length, width*height)
+            embedding_vectors = embedding_vectors.permute(0, 2, 1)
+
+            return embedding_vectors
