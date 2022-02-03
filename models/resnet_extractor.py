@@ -7,7 +7,7 @@ __all__ = ['ResNetExtractor']
 class ResNetExtractor(nn.Module):
     def __init__(self, device, backbone_name='resnet18'):
         super(ResNetExtractor).__init__()
-        assert backbone_name in ['resnet18', 'wide_resnet50']  
+        assert backbone_name in ['resnet18', 'wide_resnet50'], 'Not Implemented Yet' 
 
         self.device = device
 
@@ -15,6 +15,10 @@ class ResNetExtractor(nn.Module):
             self.backbone = models.resnet18(pretrained=True, progress=True).to(self.device)
         elif backbone_name == 'wide_resnet50':
             self.backbone = models.wide_resnet50_2(pretrained=True, progress=True).to(self.device)
+        else:
+            raise NotImplementedError('This Pretrained Model Not Implemented Error')
+        
+        self.backbone.eval()
     
     def forward(self, input):
         pass
