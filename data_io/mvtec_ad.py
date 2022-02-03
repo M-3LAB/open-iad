@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 import os
 from PIL import Image
 
-__all__ = ['MVTec2D', 'MVTec3D']
+__all__ = ['MVTec2D', 'MVTec3D', 'mvtec_2d_classes', 'mvtec_3d_classes']
 
 def mvtec_2d_classes():
     return [
