@@ -5,10 +5,14 @@ import torch.nn.functional as F
 
 __all__ = ['ResNetExtractor']
 
-def concatenate_two_layers(layer1: torch.Tensor, layer2: torch.Tensor):
+def concatenate_two_layers(layer1, layer2):
     """
     Scale the second tensor to the height and width of the first tensor and concatenate them
-
+    Args:
+        layer1: torch.Tensor
+        layer2: torch.Tensor
+    
+    Return torch.Tensor
     """
 
     device = layer1.device
