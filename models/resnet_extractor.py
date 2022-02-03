@@ -20,5 +20,22 @@ class ResNetExtractor(nn.Module):
         
         self.backbone.eval()
     
-    def forward(self, input):
+    def forward(self, x, channel_indices, layer_hook, layer_indices):
+
+        """
+        Run Inference on backbone and return the embedding vectors
+        
+        Args:
+            batch: A batch of images
+            channel_indices: A list of indices with the desired channels to include in
+                the embedding vectors.
+            layer_hook: A function that runs on each layer of the resnet before
+                concatenating them.
+            layer_indices: A list of indices with the desired layers to include in the
+                embedding vectors.
+
+        Returns:
+            embedding_vectors: The embedding vectors.
+        """
+        
         pass
