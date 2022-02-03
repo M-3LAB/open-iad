@@ -1,5 +1,6 @@
 import numpy as np
 
+__all__ = ['SamplingMethod']
 class SamplingMethod(object):
 
   def __init__(self, x, y, seed, **kwargs):
@@ -7,7 +8,7 @@ class SamplingMethod(object):
     self.y = y
     self.seed = seed
 
-  def flatten_X(self):
+  def flatten_x(self):
     shape = self.x.shape
     flat_x = self.x
     if len(shape) > 2:

@@ -2,19 +2,33 @@ import numpy as np
 from sklearn.metrics import pairwise_distances
 from sampling.base_sampling import SamplingMethod
 
+"""Returns points that minimizes the maximum distance of any point to a center.
 
-class kCenterGreedy(SamplingMethod):
+Implements the k-Center-Greedy method in
+Ozan Sener and Silvio Savarese.  A Geometric Approach to Active Learning for
+Convolutional Neural Networks. https://arxiv.org/abs/1708.00489 2017
 
-  def __init__(self, X, y, seed, metric='euclidean'):
-    self.X = X
+Distance metric defaults to l2 distance.  Features used to calculate distance
+are either raw features or if a model has transform method then uses the output
+of model.transform(X).
+
+Can be extended to a robust k centers algorithm that ignores a certain number of
+outlier datapoints.  Resulting centers are solution to multiple integer program.
+"""
+
+__all__ = ['KCenterGreedy']
+class KCenterGreedy(SamplingMethod):
+
+  def __init__(self, x, y, seed, metric='euclidean'):
+    self.x = x
     self.y = y
     self.seed = seed
-    self.flat_X = self.flatten_X()
+    self.flat_x = self.flatten_x()
     self.name = 'kcenter'
-    self.features = self.flat_X
+    self.features = self.flat_x
     self.metric = metric
     self.min_distances = None
-    self.n_obs = self.X.shape[0]
+    self.n_obs = self.x.shape[0]
     self.already_selected = []
 
   def update_distances(self, cluster_centers, only_new=True, reset_dist=False):
@@ -34,8 +48,8 @@ class kCenterGreedy(SamplingMethod):
                          if d not in self.already_selected]
     if cluster_centers:
       # Update min_distances for all examples given new cluster center.
-      x = self.features[cluster_centers]
-      dist = pairwise_distances(self.features, x, metric=self.metric)
+      feat_x = self.features[cluster_centers]
+      dist = pairwise_distances(self.features, feat_x, metric=self.metric)
 
       if self.min_distances is None:
         self.min_distances = np.min(dist, axis=1).reshape(-1,1)
@@ -61,11 +75,11 @@ class kCenterGreedy(SamplingMethod):
       # Assumes that the transform function takes in original data and not
       # flattened data.
       print('Getting transformed features...')
-      self.features = model.transform(self.X)
+      self.features = model.transform(self.x)
       print('Calculating distances...')
       self.update_distances(already_selected, only_new=False, reset_dist=True)
     except:
-      print('Using flat_X as features.')
+      print('Using flat_x as features.')
       self.update_distances(already_selected, only_new=True, reset_dist=False)
 
     new_batch = []
