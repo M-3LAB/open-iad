@@ -5,4 +5,7 @@ __all__ = ['ResNetExtractor']
 
 class ResNetExtractor(nn.Module):
     def __init__(self):
-        super().__init__()
+        super(ResNetExtractor).__init__()
+    
+    def forward(self, input):
+        pass
