@@ -38,8 +38,21 @@ class ResNetExtractor(nn.Module):
             embedding_vectors: The embedding vectors.
         """
         with torch.no_grad():
-
+            
+            # stem
             x = self.backbone.conv1(x) 
             x = self.backbone.bn1(x)
             x = self.backbone.relu(x)
-        pass
+            x = self.backbone.maxpool(x)
+
+            layer1 = self.backbone.layer1(x)
+            layer2 = self.backbone.layer2(layer1)
+            layer3 = self.backbone.layer3(layer2)
+            layer4 = self.backbone.layer4(layer3)
+            layers = [layer1, layer2, layer3, layer4]
+
+            if layer_indices is not None:
+                layers = [layers[i] for i in layer_indices]
+
+            if layer_hook is not None:
+                layers = [layer_hook(layer) for layer in layers]
