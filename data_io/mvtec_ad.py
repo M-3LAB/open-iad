@@ -74,6 +74,7 @@ class MVTec2D(Dataset):
         return len(self.x)
 
     def load_dataset_folder(self):
+        # input x, label y, [0, 1], good is 0 and bad is 1, mask is ground truth
         x, y, mask = [], [], []
         img_dir = os.path.join(self.data_path, self.class_name, self.phase)
         gt_dir = os.path.join(self.data_path, self.class_name, 'ground_truth') 
