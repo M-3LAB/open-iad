@@ -7,5 +7,5 @@ class PatchCore(torch.nn.Module):
     def __init__(self):
         super(PatchCore).__init__()
     
-    def fit(self, x):
+    def forward(self, x):
         pass
