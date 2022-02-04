@@ -5,6 +5,7 @@ __all__ = ['parse_argument']
 def parse_argument():
     parser = argparse.ArgumentParser()
     parser.add_argument('--data-path', type=str)
+    parser.add_argument('--dataset', type=str, choices=['mvtec2d', 'mvtec3d', 'mtd'])
     parser.add_argument('--all-classes', action='store_true', default=False)
     parser.add_argument('--class-name', type=str)
     parser.add_argument('--mode', type=str, choices=['centralized', 'continual', 'federated'])
