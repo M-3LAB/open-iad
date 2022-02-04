@@ -20,12 +20,22 @@ if __name__ == "__main__":
 
     if args.dataset == 'mvtec2d':
         mvtec_2d_trainset = MVTec2D(data_path=args.data_path, class_name=class_name,
-                                    phase='train')
+                                    phase='train', mode=args.mode, 
+                                    data_transform=mvtec_2d_image_transform,
+                                    mask_transform=mvtec_2d_mask_transform)
+
         mvtec_2d_testset = MVTec2D(data_path=args.data_path, class_name=class_name,
-                                   phase='test')
+                                   phase='test', mode=args.mode,
+                                   data_transform=mvtec_2d_image_transform,
+                                   mask_transform=mvtec_2d_mask_transform)
+
     elif args.dataset == 'mvtec3d':
         mvtec_3d_trainset = MVTec3D(phase='train')
         mvtec_3d_testset = MVTec3D(phase='test')
+
     elif args.dataset == 'mtd':
         mtd_trainset = MTD(phase='train') 
         mtd_testset = MTD(phase='test')
+
+    else:
+        raise NotImplementedError('This Dataset Have Not Been Implemented Yet')
