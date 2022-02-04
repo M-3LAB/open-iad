@@ -4,6 +4,7 @@ from configuration.config import parse_argument
 from data_io.augmentation import *
 from data_io.mvtec_ad import *
 from data_io.mtd import *
+from torch.utils.data import DataLoader
 
 if __name__ == "__main__":
     args = parse_argument()
@@ -28,6 +29,12 @@ if __name__ == "__main__":
                                    phase='test', mode=args.mode,
                                    data_transform=mvtec_2d_image_transform,
                                    mask_transform=mvtec_2d_mask_transform)
+        
+        train_loader = DataLoader(mvtec_2d_trainset, batch_size=args.batchsize,
+                                  shuffle=True, num_workers=args.workers) 
+
+        test_loader = DataLoader(mvtec_2d_testset, batch_size=args.batchsize,
+                                  shuffle=False, num_workers=0) 
 
     elif args.dataset == 'mvtec3d':
         mvtec_3d_trainset = MVTec3D(phase='train')
