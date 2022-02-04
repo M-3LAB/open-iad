@@ -18,4 +18,14 @@ if __name__ == "__main__":
     else:
         class_name = args.class_name
 
-    mvtec_2d_trainset = MVTec2D(data_path=args.data_path)
+    if args.dataset == 'mvtec2d':
+        mvtec_2d_trainset = MVTec2D(data_path=args.data_path, class_name=class_name,
+                                    phase='train')
+        mvtec_2d_testset = MVTec2D(data_path=args.data_path, class_name=class_name,
+                                   phase='test')
+    elif args.dataset == 'mvtec3d':
+        mvtec_3d_trainset = MVTec3D(phase='train')
+        mvtec_3d_testset = MVTec3D(phase='test')
+    elif args.dataset == 'mtd':
+        mtd_trainset = MTD(phase='train') 
+        mtd_testset = MTD(phase='test')
