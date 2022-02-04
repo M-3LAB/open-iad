@@ -12,5 +12,7 @@ def parse_argument():
     parser.add_argument('--phase', type=str, choices=['train', 'test', 'ground_truth'])
     parser.add_argument('--backbone-name', type=str, choices=['resnet18', 'wide_resnet50'])
     parser.add_argument('--model', type=str, choices=['patchcore'])
+    parser.add_argument('--batchsize', type=int)
+    parser.add_argument('--num-workers', type=int)
     args = parser.parse_args()
     return args 
