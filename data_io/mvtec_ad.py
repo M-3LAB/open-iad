@@ -112,7 +112,6 @@ class MVTec2D(Dataset):
 
         return list(x), list(y), list(mask)
 
-#already working
 class MVTec3D(Dataset):
     def __init__(self, data_path, class_name):
         self.data_path = data_path
