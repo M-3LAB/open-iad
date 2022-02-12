@@ -39,17 +39,12 @@ if __name__ == "__main__":
 
         elif args.mode == 'continual':
             mvtec_2d_trainsetlist = MVTec2DContinualList(args.data_path, class_name, args.num_tasks_continual, 'train', args.mode, mvtec_2d_image_transform, mvtec_2d_mask_transform)
-
-            # mvtec_2d_testsetlist = MVTec2DContinualList(data_path=args.data_path, class_name=class_name,
-            #                             num_continual_tasks = args.num_continual_tasks,
-            #                             phase='test', mode=args.mode, 
-            #                             data_transform=mvtec_2d_image_transform,
-            #                             mask_transform=mvtec_2d_mask_transform)
-            
+            mvtec_2d_testsetlist = MVTec2DContinualList(args.data_path, class_name, args.num_tasks_continual, 'test', args.mode, mvtec_2d_image_transform, mvtec_2d_mask_transform)
             train_loaderList = MVTec2DContinualDataloaderList(mvtec_2d_trainsetlist, args.batchsize, False, args.num_workers)
+            test_loaderList = MVTec2DContinualDataloaderList(mvtec_2d_testsetlist, args.batchsize, False, args.num_workers)
             #error appears when shuffle is True, ValueError: sampler option is mutually exclusive with shuffle
-            for i in train_loaderList:
-                print(i.__len__)
+            # for i in train_loaderList:
+            #     print(i.__len__)
 
 
     elif args.dataset == 'mvtec3d':

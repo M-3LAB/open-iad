@@ -135,7 +135,7 @@ class MVTec2D(Dataset):
         assert len(x) == len(y), 'number of x and y should be same'
         return list(x), list(y), list(mask)
 
-class MVTec2DContinual(Dataset):
+class MVTec2DContinual(Dataset):#taskId is from 0 to floor(15/num_tasks_continual)
     def __init__(self, data_path, class_name, taskId, mode='continual', phase='train', 
                  data_transform=None, mask_transform=None):
 
