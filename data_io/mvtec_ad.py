@@ -47,10 +47,9 @@ class MVTec2D(Dataset):
         self.data_transform = data_transform 
         self.mask_transform = mask_transform
         self.class_name = class_name
-
-        assert self.class_name in mvtec_2d_classes
+        assert set(self.class_name) <= set(mvtec_2d_classes())
         # load dataset
-        self.x, self.y. self.mask = self.load_dataset_folder()
+        self.x, self.y, self.mask = self.load_dataset_folder()
 
         # data preprocessing 
         self.data_transform = data_transform
@@ -76,8 +75,9 @@ class MVTec2D(Dataset):
     def load_dataset_folder(self):
         # input x, label y, [0, 1], good is 0 and bad is 1, mask is ground truth
         x, y, mask = [], [], []
-        img_dir = os.path.join(self.data_path, self.class_name, self.phase)
-        gt_dir = os.path.join(self.data_path, self.class_name, 'ground_truth') 
+        for sub_class_name in self.class_name:
+            img_dir = os.path.join(self.data_path, sub_class_name, self.phase)
+            gt_dir = os.path.join(self.data_path, sub_class_name, 'ground_truth') 
 
         img_types = sorted(os.listdir(img_dir))
         for img_type in img_types:
@@ -109,7 +109,8 @@ class MVTec2D(Dataset):
                 mask.extend(gt_fpath_list)
 
         assert len(x) == len(y), 'number of x and y should be same'
-
+        print(len(x))
+        #len(x) is 240 show that not all classes are added, need changing
         return list(x), list(y), list(mask)
 
 class MVTec3D(Dataset):

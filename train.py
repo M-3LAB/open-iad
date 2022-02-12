@@ -31,10 +31,12 @@ if __name__ == "__main__":
                                    mask_transform=mvtec_2d_mask_transform)
         
         train_loader = DataLoader(mvtec_2d_trainset, batch_size=args.batchsize,
-                                  shuffle=True, num_workers=args.workers) 
+                                  shuffle=True, num_workers=args.num_workers) 
 
         test_loader = DataLoader(mvtec_2d_testset, batch_size=args.batchsize,
                                   shuffle=False, num_workers=0) 
+        #print(type(train_loader))
+        #print(train_loader.__len__)
 
     elif args.dataset == 'mvtec3d':
         mvtec_3d_trainset = MVTec3D(phase='train')
