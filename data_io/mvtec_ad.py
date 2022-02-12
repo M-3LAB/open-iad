@@ -109,8 +109,6 @@ class MVTec2D(Dataset):
                     mask.extend(gt_fpath_list)
 
         assert len(x) == len(y), 'number of x and y should be same'
-        print(len(x))
-        #len(x) is 240 show that not all classes are added, need changing
         return list(x), list(y), list(mask)
 
 class MVTec3D(Dataset):
