@@ -20,21 +20,32 @@ if __name__ == "__main__":
         class_name = args.class_name
 
     if args.dataset == 'mvtec2d':
-        mvtec_2d_trainset = MVTec2D(data_path=args.data_path, class_name=class_name,
-                                    phase='train', mode=args.mode, 
+        if args.mode == 'centralized':
+            mvtec_2d_trainset = MVTec2D(data_path=args.data_path, class_name=class_name,
+                                        phase='train', mode=args.mode, 
+                                        data_transform=mvtec_2d_image_transform,
+                                        mask_transform=mvtec_2d_mask_transform)
+
+            mvtec_2d_testset = MVTec2D(data_path=args.data_path, class_name=class_name,
+                                    phase='test', mode=args.mode,
                                     data_transform=mvtec_2d_image_transform,
                                     mask_transform=mvtec_2d_mask_transform)
+            
+            train_loader = DataLoader(mvtec_2d_trainset, batch_size=args.batchsize,
+                                    shuffle=True, num_workers=args.num_workers) 
 
-        mvtec_2d_testset = MVTec2D(data_path=args.data_path, class_name=class_name,
-                                   phase='test', mode=args.mode,
-                                   data_transform=mvtec_2d_image_transform,
-                                   mask_transform=mvtec_2d_mask_transform)
-        
-        train_loader = DataLoader(mvtec_2d_trainset, batch_size=args.batchsize,
-                                  shuffle=True, num_workers=args.workers) 
+            test_loader = DataLoader(mvtec_2d_testset, batch_size=args.batchsize,
+                                    shuffle=False, num_workers=0) 
 
-        test_loader = DataLoader(mvtec_2d_testset, batch_size=args.batchsize,
-                                  shuffle=False, num_workers=0) 
+        elif args.mode == 'continual':
+            mvtec_2d_trainsetlist = MVTec2DContinualList(args.data_path, class_name, args.num_tasks_continual, 'train', args.mode, mvtec_2d_image_transform, mvtec_2d_mask_transform)
+            mvtec_2d_testsetlist = MVTec2DContinualList(args.data_path, class_name, args.num_tasks_continual, 'test', args.mode, mvtec_2d_image_transform, mvtec_2d_mask_transform)
+            train_loaderList = MVTec2DContinualDataloaderList(mvtec_2d_trainsetlist, args.batchsize, False, args.num_workers)
+            test_loaderList = MVTec2DContinualDataloaderList(mvtec_2d_testsetlist, args.batchsize, False, args.num_workers)
+            #error appears when shuffle is True, ValueError: sampler option is mutually exclusive with shuffle
+            # for i in train_loaderList:
+            #     print(i.__len__)
+
 
     elif args.dataset == 'mvtec3d':
         mvtec_3d_trainset = MVTec3D(phase='train')

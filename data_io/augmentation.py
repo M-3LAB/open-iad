@@ -1,4 +1,4 @@
-from torchvision import transform as T
+from torchvision import transforms as T
 
 __all__ =  ['mvtec_2d_image_transform', 'mvtec_2d_mask_transform']
 
