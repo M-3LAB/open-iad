@@ -28,7 +28,7 @@ class PatchCore(torch.nn.Module):
         self.layer_indices = [1, 2] if layer_indices is None else layer_indices 
 
         self.corest = corest
-        self.channel_indices = channel_indices
+        self.channel_indices = channel_indices.to(self.device)
         
      
 
