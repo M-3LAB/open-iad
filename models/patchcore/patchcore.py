@@ -16,7 +16,7 @@ class PatchCore(torch.nn.Module):
         Args:
             backbone: The name of the desired backbone, i.e., ['resnet18', 'wide_resnet'] 
             device: GPU
-            channel indices: A tensor with the de
+            channel indices: A tensor with the desired channel indices to extract from the backbone
         """
 
         self.device = device
