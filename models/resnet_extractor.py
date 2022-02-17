@@ -39,6 +39,7 @@ def concatenate_layers(layers):
     for layer in layers[1:]:
         expanded_layers = concatenate_two_layers(expanded_layers, layer)
     return expanded_layers
+
 class ResNetExtractor(nn.Module):
     def __init__(self, device, backbone_name='resnet18'):
         super(ResNetExtractor).__init__()
