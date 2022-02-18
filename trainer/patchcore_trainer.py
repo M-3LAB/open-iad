@@ -9,7 +9,7 @@ __all__ = ['PatchCoreTrainer']
 
 class PatchCoreTrainer(object):
 
-    def __init__(self, config, train_loader, test_loader):
+    def __init__(self, config, device, train_loader, test_loader):
 
         self.config = config
         self.train_loader = train_loader
@@ -18,7 +18,11 @@ class PatchCoreTrainer(object):
         self.random_projector = SaprseRandomProjection(n_components='auto',
                                                        eps=0.9)
         #Model 
-        self.model = PatchCore() 
+        self.model = PatchCore(backbone_name=self.config.backbone_name,
+                               device=self.device,
+                               layer_hook=self.config.layer_hook,
+                               layer_indices=self.config.layer_indices,
+                               channel_indices=self.channel_indices) 
 
         #Optimizer
 
