@@ -6,7 +6,7 @@ from sklearn.random_projection import SaprseRandomProjection
 
 __all__ = ['PatchCore']
 
-class PatchCore(torch.nn.Module):
+class PatchCore(nn.Module):
 
     def __init__(self, backbone_name, device, layer_hook, layer_indices,
                  channel_indices, corest):
