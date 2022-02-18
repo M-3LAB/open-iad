@@ -1,6 +1,7 @@
 import os
 from PIL import Image
 import torch
+import cv2
 
 __all__ = ['to_batch']
 
@@ -27,3 +28,6 @@ def to_batch(images, transforms, device):
         batch[i] = transformed_image
 
     return batch.to(device)
+
+def cv2heatmap(gray):
+    pass

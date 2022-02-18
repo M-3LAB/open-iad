@@ -26,6 +26,8 @@ class PatchCoreTrainer(object):
 
         #Optimizer
 
+        #LR Scheduler
+
         
     def train(self):
         pass
