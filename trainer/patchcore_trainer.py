@@ -5,11 +5,13 @@ __all__ = ['PatchCoreTrainer']
 
 class PatchCoreTrainer(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, config, train_loader, test_loader):
+        self.config = config
+        self.train_loader = train_loader
+        self.test_loader = test_loader
     
-    def train():
+    def train(self):
         pass
 
-    def predict():
+    def predict(self):
         pass

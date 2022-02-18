@@ -35,8 +35,6 @@ class PatchCore(nn.Module):
         self.coreset = coreset
         self.channel_indices = channel_indices.to(self.device)
         
-     
-
     def forward(self, x):
         embedding_feat = self.feat_extractor(x)
         return embedding_feat
