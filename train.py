@@ -6,6 +6,7 @@ from data_io.mvtec_ad import *
 from data_io.mtd import *
 from torch.utils.data import DataLoader
 
+
 if __name__ == "__main__":
     args = parse_argument()
 
@@ -40,12 +41,13 @@ if __name__ == "__main__":
         elif args.mode == 'continual':
             mvtec_2d_trainsetlist = MVTec2DContinualList(args.data_path, class_name, args.num_tasks_continual, 'train', args.mode, mvtec_2d_image_transform, mvtec_2d_mask_transform)
             mvtec_2d_testsetlist = MVTec2DContinualList(args.data_path, class_name, args.num_tasks_continual, 'test', args.mode, mvtec_2d_image_transform, mvtec_2d_mask_transform)
-            train_loaderList = MVTec2DContinualDataloaderList(mvtec_2d_trainsetlist, args.batchsize, False, args.num_workers)
-            test_loaderList = MVTec2DContinualDataloaderList(mvtec_2d_testsetlist, args.batchsize, False, args.num_workers)
-            #error appears when shuffle is True, ValueError: sampler option is mutually exclusive with shuffle
-            # for i in train_loaderList:
-            #     print(i.__len__)
+            train_loaderList = MVTec2DContinualDataloaderList(mvtec_2d_trainsetlist, args.batchsize, True, args.num_workers)
+            test_loaderList = MVTec2DContinualDataloaderList(mvtec_2d_testsetlist, args.batchsize, True, args.num_workers)
 
+            for train_loader in train_loaderList:
+                for batch in train_loader:
+                    print(batch)
+            pass
 
     elif args.dataset == 'mvtec3d':
         mvtec_3d_trainset = MVTec3D(phase='train')

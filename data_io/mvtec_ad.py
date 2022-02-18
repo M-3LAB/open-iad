@@ -1,8 +1,14 @@
 import torch
-from torch.utils.data import Dataset
 import os
 from PIL import Image
+import numpy as np
+from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
+import torchvision.transforms as transforms
+
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 
 __all__ = ['MVTec2D', 'MVTec3D', 'mvtec_2d_classes', 'mvtec_3d_classes', 'MVTec2DContinualList', 'MVTec2DContinualDataloaderList']
 
@@ -39,7 +45,7 @@ def mvtec_3d_classes():
         "tire",
     ]
 
-def MVTec2DContinualList(data_path, class_name, num_continual_tasks, phase, mode, data_transform, mask_transform):
+def MVTec2DContinualList(data_path, class_name, num_continual_tasks, phase, mode, data_transform=None, mask_transform=None):
     MVTecContinualList = []
     className = mvtec_2d_classes()
     for i in range(0, int(15/num_continual_tasks)):
@@ -160,15 +166,32 @@ class MVTec2DContinual(Dataset):#taskId is from 0 to floor(15/num_tasks_continua
         x = self.image_transforms(x)
 
         if y == 0:
-            mask = torch.zeros([1, x.shape[1], x.shape[2]])
+            mask = torch.zeros([x.size[0], x.size[1]])
         else:
             mask = Image.open(mask)
-            mask = self.mask_transforms(mask)
+            # mask = self.mask_transforms(mask)
+
+        x = np.array(x)
+        mask = np.array(mask)
+
+        # check results
+        plt.subplot(121)
+        plt.imshow(x) 
+        plt.title('input')
+        plt.subplot(122)
+        plt.title('mask')
+        plt.imshow(mask) 
+        plt.savefig('./legacy_code/img_{}.jpg'.format('result'))
+        plt.close()
 
         return x, y, mask, taskId
 
     def __len__(self):
         return len(self.x)
+
+    def image_transforms(self, x):
+        transform = transforms.Compose([transforms.Resize(size=1000)])
+        return transform(x)
 
     def load_dataset_folder(self, taskId):
         # input x, label y, [0, 1], good is 0 and bad is 1, mask is ground truth
