@@ -1,5 +1,7 @@
 import torch
 import torch.nn as nn
+from sklearn.random_projection import SaprseRandomProjection 
+from sklearn.neighbors import NearestNeighbors
 
 __all__ = ['PatchCoreTrainer']
 

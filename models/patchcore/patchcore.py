@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import numpy as np
 from models.resnet_extractor import ResNetExtractor 
-from sklearn.random_projection import SaprseRandomProjection 
 
 __all__ = ['PatchCore']
 
