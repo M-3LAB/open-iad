@@ -3,7 +3,7 @@ from PIL import Image
 import torch
 import cv2
 
-__all__ = ['to_batch', 'cv2heatmap']
+__all__ = ['to_batch', 'seed_everything']
 
 def to_batch(images, transforms, device):
     """
@@ -29,5 +29,6 @@ def to_batch(images, transforms, device):
 
     return batch.to(device)
 
-def cv2heatmap(gray):
+def seed_everything():
     pass
+
