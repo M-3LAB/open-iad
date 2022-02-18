@@ -3,7 +3,7 @@ from PIL import Image
 import torch
 import cv2
 
-__all__ = ['to_batch']
+__all__ = ['to_batch', 'cv2heatmap']
 
 def to_batch(images, transforms, device):
     """
