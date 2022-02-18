@@ -13,3 +13,5 @@ mvtec_2d_mask_transform = T.Compose([T.Resize(224),
                                      T.CenterCrop(224),
                                      T.ToTensor()
                                      ])
+
+#TODO: 3D has not been finished yet
