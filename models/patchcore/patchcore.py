@@ -38,4 +38,5 @@ class PatchCore(nn.Module):
      
 
     def forward(self, x):
-        pass
+        embedding_feat = self.feat_extractor(x)
+        return embedding_feat

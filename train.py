@@ -6,6 +6,7 @@ from data_io.mvtec_ad import *
 from data_io.mtd import *
 from torch.utils.data import DataLoader
 
+
 if __name__ == "__main__":
     args = parse_argument()
 
