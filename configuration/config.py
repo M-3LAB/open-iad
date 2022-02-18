@@ -16,5 +16,8 @@ def parse_argument():
     parser.add_argument('--model', type=str, choices=['patchcore'])
     parser.add_argument('--batchsize', type=int, default=8)
     parser.add_argument('--num-workers', type=int)
+    parser.add_argument('--layer-hook', default=None, help='')
+    parser.add_argument('--layer-indicies', default=[1,2], help='')
+    parser.add_argument('--lr', type=float, help='learning rate')
     args = parser.parse_args()
     return args 
