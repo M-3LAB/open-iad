@@ -23,10 +23,11 @@ class PatchCoreTrainer(object):
                                layer_hook=self.config.layer_hook,
                                layer_indices=self.config.layer_indices,
                                channel_indices=self.channel_indices) 
+        # loss function
 
-        #Optimizer
+        # optimizer
 
-        #LR Scheduler
+        # lr scheduler
 
         
     def train(self):
