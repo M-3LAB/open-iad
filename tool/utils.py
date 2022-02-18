@@ -29,5 +29,11 @@ def to_batch(images, transforms, device):
 
     return batch.to(device)
 
+def show_cam_on_image(img, anomaly_img):
+    pass
+
 def cv2heatmap(gray):
+    pass
+
+def heatmap_on_image():
     pass
