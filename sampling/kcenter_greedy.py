@@ -19,9 +19,8 @@ outlier datapoints.  Resulting centers are solution to multiple integer program.
 __all__ = ['KCenterGreedy']
 class KCenterGreedy(SamplingMethod):
 
-  def __init__(self, x, y, seed, metric='euclidean'):
+  def __init__(self, x, seed, metric='euclidean'):
     self.x = x
-    self.y = y
     self.seed = seed
     self.flat_x = self.flatten_x()
     self.name = 'kcenter'

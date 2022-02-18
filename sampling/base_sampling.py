@@ -3,9 +3,8 @@ import numpy as np
 __all__ = ['SamplingMethod']
 class SamplingMethod(object):
 
-  def __init__(self, x, y, seed, **kwargs):
+  def __init__(self, x, seed, **kwargs):
     self.x = x
-    self.y = y
     self.seed = seed
 
   def flatten_x(self):

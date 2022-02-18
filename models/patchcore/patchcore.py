@@ -2,14 +2,13 @@ import torch
 import torch.nn as nn
 import numpy as np
 from models.resnet_extractor import ResNetExtractor 
-from sklearn.random_projection import SaprseRandomProjection 
 
 __all__ = ['PatchCore']
 
 class PatchCore(nn.Module):
 
     def __init__(self, backbone_name, device, layer_hook, layer_indices,
-                 channel_indices, coreset):
+                 channel_indices):
 
         super(PatchCore).__init__()
 
@@ -32,9 +31,12 @@ class PatchCore(nn.Module):
         self.layer_hook = torch.nn.AvgPool2d(3, 1, 1) if layer_hook is None else layer_hook
         self.layer_indices = [1, 2] if layer_indices is None else layer_indices 
 
-        self.coreset = coreset
         self.channel_indices = channel_indices.to(self.device)
         
     def forward(self, x):
-        embedding_feat = self.feat_extractor(x)
+
+        embedding_feat = self.feat_extractor(x, channel_indices=self.channel_indices, 
+                                             layer_hook=self.layer_hook, 
+                                             layer_indices=self.layer_indices)
+
         return embedding_feat
