@@ -4,8 +4,7 @@ from PIL import Image
 import numpy as np
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
-import torchvision.transforms as transforms
-
+from data_io.augmentation import mvtec_2d_resize
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
@@ -89,7 +88,7 @@ class MVTec2D(Dataset):
         x, y, mask = self.x[idx], self.y[idx], self.mask[idx]
 
         x = Image.open(x).convert('RGB')
-        x = self.image_transforms(x)
+        x = mvtec_2d_resize(x)
 
         if y == 0:
             mask = torch.zeros([1, x.shape[1], x.shape[2]])
@@ -163,7 +162,7 @@ class MVTec2DContinual(Dataset):#taskId is from 0 to floor(15/num_tasks_continua
         x, y, mask, taskId = self.x[idx], self.y[idx], self.mask[idx], self.taskId[idx]
 
         x = Image.open(x).convert('RGB')
-        x = self.image_transforms(x)
+        x = mvtec_2d_resize(x)
 
         if y == 0:
             mask = torch.zeros([x.size[0], x.size[1]])
@@ -188,10 +187,6 @@ class MVTec2DContinual(Dataset):#taskId is from 0 to floor(15/num_tasks_continua
 
     def __len__(self):
         return len(self.x)
-
-    def image_transforms(self, x):
-        transform = transforms.Compose([transforms.Resize(size=1000)])
-        return transform(x)
 
     def load_dataset_folder(self, taskId):
         # input x, label y, [0, 1], good is 0 and bad is 1, mask is ground truth
