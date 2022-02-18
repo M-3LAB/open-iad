@@ -3,6 +3,7 @@ import torch.nn as nn
 from sklearn.random_projection import SaprseRandomProjection 
 from sklearn.neighbors import NearestNeighbors
 from sampling.kcenter_greedy import KCenterGreedy
+from models.patchcore.patchcore import PatchCore
 
 __all__ = ['PatchCoreTrainer']
 
@@ -16,9 +17,12 @@ class PatchCoreTrainer(object):
 
         self.random_projector = SaprseRandomProjection(n_components='auto',
                                                        eps=0.9)
+        #Model 
+        self.model = PatchCore() 
+
+        #Optimizer
+
         
-        self.selector = KCenterGreedy()
-    
     def train(self):
         pass
 
