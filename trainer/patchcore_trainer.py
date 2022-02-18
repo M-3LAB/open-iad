@@ -24,6 +24,7 @@ class PatchCoreTrainer(object):
                                layer_indices=self.config.layer_indices,
                                channel_indices=self.channel_indices) 
         # loss function
+        self.criterion = torch.nn.MSELoss(reduction='sum').to(self.device)
 
         # optimizer
 
