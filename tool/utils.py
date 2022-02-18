@@ -2,6 +2,8 @@ import os
 from PIL import Image
 import torch
 import cv2
+import random
+import numpy as np
 
 __all__ = ['to_batch', 'seed_everything']
 
@@ -29,6 +31,13 @@ def to_batch(images, transforms, device):
 
     return batch.to(device)
 
-def seed_everything():
-    pass
+def seed_everything(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    # some cudnn methods can be random even after fixing the seed
+    # unless you tell it to be deterministic
+    torch.backends.cudnn.deterministic = True
 
