@@ -9,7 +9,8 @@ import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
 
-__all__ = ['MVTec2D', 'MVTec3D', 'mvtec_2d_classes', 'mvtec_3d_classes', 'MVTec2DContinualList', 'MVTec2DContinualDataloaderList']
+__all__ = ['MVTec2D', 'MVTec3D', 'mvtec_2d_classes', 'mvtec_3d_classes', 
+           'CLData','MVTec2DContinualList', 'MVTec2DContinualDataloaderList']
 
 def mvtec_2d_classes():
     return [
@@ -65,6 +66,15 @@ def MVTec2DContinualDataloaderList(MVTecContinualList, batch_size, shuffle, num_
         MVTecContinualDataloaderList.append(train_loader)
     
     return MVTecContinualDataloaderList
+
+class CLData(object):
+
+    def __init__(self):
+        pass
+
+    def get_data(self):
+        pass
+
 
 class MVTec2D(Dataset):
     def __init__(self, data_path, class_name, mode='centralized', phase='train', 
