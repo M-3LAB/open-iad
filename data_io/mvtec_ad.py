@@ -76,23 +76,24 @@ class MVTec2D(Dataset):
         self.data_transform = data_transform 
         self.mask_transform = mask_transform
         self.class_name = class_name
-        self.task_id = task_id
         assert set(self.class_name) <= set(mvtec_2d_classes())
 
         # load dataset
         if self.mode == 'centralized': 
             self.x, self.y, self.mask = self.load_dataset_folder()
         elif self.mode == 'continual':
-            assert self.task_id is not None
-            self.x, self.y, self.mask, self.task_id = self.load_dataset_folder()
-        
+            assert task_id is not None
+            self.x, self.y, self.mask, self.task_ids = self.load_dataset_folder(task_id)
 
         # data preprocessing 
         self.data_transform = data_transform
         self.mask_transform = mask_transform
 
     def __getitem__(self, idx):
-        x, y, mask = self.x[idx], self.y[idx], self.mask[idx]
+        if self.mode == 'centralized':
+            x, y, mask = self.x[idx], self.y[idx], self.mask[idx]
+        elif self.mode == 'continual':
+            x, y, mask, task_id = self.x[idx], self.y[idx], self.mask[idx], self.task_ids
 
         x = Image.open(x).convert('RGB')
         x = mvtec_2d_resize(x)
