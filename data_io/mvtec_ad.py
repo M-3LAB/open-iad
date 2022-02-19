@@ -4,7 +4,6 @@ from PIL import Image
 import numpy as np
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
-from data_io.augmentation import mvtec_2d_resize
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
