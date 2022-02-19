@@ -44,7 +44,7 @@ def mvtec_3d_classes():
         "tire",
     ]
 
-def MVTec2DContinualList(data_path, class_name, num_continual_tasks, phase, mode, data_transform=None, mask_transform=None):
+def MVTec2DContinualList(data_path, num_continual_tasks, phase, mode, data_transform=None, mask_transform=None):
     MVTecContinualList = []
     className = mvtec_2d_classes()
     for i in range(0, int(15/num_continual_tasks)):
@@ -68,7 +68,7 @@ def MVTec2DContinualDataloaderList(MVTecContinualList, batch_size, shuffle, num_
 
 class MVTec2D(Dataset):
     def __init__(self, data_path, class_name, mode='centralized', phase='train', 
-                 data_transform=None, mask_transform=None):
+                 data_transform=None, mask_transform=None, task_id=None):
 
         self.data_path = data_path
         self.mode = mode
@@ -76,9 +76,16 @@ class MVTec2D(Dataset):
         self.data_transform = data_transform 
         self.mask_transform = mask_transform
         self.class_name = class_name
+        self.task_id = task_id
         assert set(self.class_name) <= set(mvtec_2d_classes())
+
         # load dataset
-        self.x, self.y, self.mask = self.load_dataset_folder()
+        if self.mode == 'centralized': 
+            self.x, self.y, self.mask = self.load_dataset_folder()
+        elif self.mode == 'continual':
+            assert self.task_id is not None
+            self.x, self.y, self.mask, self.task_id = self.load_dataset_folder()
+        
 
         # data preprocessing 
         self.data_transform = data_transform
