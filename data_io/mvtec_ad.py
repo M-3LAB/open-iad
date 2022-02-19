@@ -75,6 +75,9 @@ class CLData(object):
     def get_data(self):
         pass
 
+    def get_dataloader(self): 
+        pass
+
 
 class MVTec2D(Dataset):
     def __init__(self, data_path, class_name, mode='centralized', phase='train', 
