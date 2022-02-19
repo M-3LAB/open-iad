@@ -9,7 +9,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 __all__ = ['MVTec2D', 'MVTec3D', 'mvtec_2d_classes', 'mvtec_3d_classes', 
-           'CLData','MVTec2DContinualList', 'MVTec2DContinualDataloaderList']
+           'CLData']
 
 def mvtec_2d_classes():
     return [
@@ -71,6 +71,9 @@ class CLData(object):
     def __init__(self, dataset, num_tasks):
         self.dataset = dataset
         self.num_tasks = num_tasks
+
+        self.data_list = []
+        self.dataloader_list = []
 
     def get_data(self):
         pass
