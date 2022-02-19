@@ -1,4 +1,6 @@
+from data_io.mvtec_ad import *
 
+__all__ = ['CLData']
 class CLData(object):
     
     def __init__(self, dataset, num_tasks):
