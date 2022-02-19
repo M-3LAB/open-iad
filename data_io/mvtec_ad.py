@@ -68,8 +68,9 @@ def MVTec2DContinualDataloaderList(MVTecContinualList, batch_size, shuffle, num_
 
 class CLData(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, dataset, num_tasks):
+        self.dataset = dataset
+        self.num_tasks = num_tasks
 
     def get_data(self):
         pass
