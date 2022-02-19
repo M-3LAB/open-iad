@@ -4,12 +4,11 @@ from PIL import Image
 import numpy as np
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
-import matplotlib.pyplot as plt
-import matplotlib
-matplotlib.use('Agg')
+#import matplotlib.pyplot as plt
+#import matplotlib
+#matplotlib.use('Agg')
 
-__all__ = ['MVTec2D', 'MVTec3D', 'mvtec_2d_classes', 'mvtec_3d_classes', 
-           'CLData']
+__all__ = ['MVTec2D', 'MVTec3D', 'mvtec_2d_classes', 'mvtec_3d_classes']
 
 def mvtec_2d_classes():
     return [
@@ -66,20 +65,7 @@ def MVTec2DContinualDataloaderList(MVTecContinualList, batch_size, shuffle, num_
     
     return MVTecContinualDataloaderList
 
-class CLData(object):
 
-    def __init__(self, dataset, num_tasks):
-        self.dataset = dataset
-        self.num_tasks = num_tasks
-
-        self.data_list = []
-        self.dataloader_list = []
-
-    def get_data(self):
-        pass
-
-    def get_dataloader(self): 
-        pass
 
 
 class MVTec2D(Dataset):
