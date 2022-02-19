@@ -84,6 +84,11 @@ class MVTec2D(Dataset):
         elif self.mode == 'continual':
             assert task_id is not None
             self.x, self.y, self.mask, self.task_ids = self.load_dataset_folder(task_id)
+        elif self.mode == 'federated':
+            #TODO: Jinbao Not Finished Yet 
+            pass
+        else: 
+            raise NotImplementedError('This mode has not been implemented yet')
 
         # data preprocessing 
         self.data_transform = data_transform
@@ -96,7 +101,7 @@ class MVTec2D(Dataset):
             x, y, mask, task_id = self.x[idx], self.y[idx], self.mask[idx], self.task_ids
 
         x = Image.open(x).convert('RGB')
-        x = mvtec_2d_resize(x)
+        x = self.data_transform(x)
 
         if y == 0:
             mask = torch.zeros([1, x.shape[1], x.shape[2]])
@@ -108,6 +113,8 @@ class MVTec2D(Dataset):
             return x, y, mask
         elif self.mode == 'continual':
             return x, y, mask, task_id
+        else:
+            raise NotImplementedError('This mode has not been implemented yet')
 
     def __len__(self):
         return len(self.x)
