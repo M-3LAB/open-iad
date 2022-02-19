@@ -104,7 +104,10 @@ class MVTec2D(Dataset):
             mask = Image.open(mask)
             mask = self.mask_transforms(mask)
 
-        return x, y, mask
+        if self.mode == 'centralized':
+            return x, y, mask
+        elif self.mode == 'continual':
+            return x, y, mask, task_id
 
     def __len__(self):
         return len(self.x)
