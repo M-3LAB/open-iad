@@ -30,7 +30,8 @@ class CLData(object):
         """
         Assign the number of classes for each task
         """
-        #for i in range():
+        num_classes_per_task = int(self.num_classes /  self.num_tasks)
+        for i in range():
         pass
          
     def get_dataloader(self): 
