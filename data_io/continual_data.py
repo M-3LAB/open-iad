@@ -2,6 +2,7 @@ from data_io.mvtec_ad import *
 from torch.utils.data import DataLoader
 
 __all__ = ['CLData']
+
 class CLData(object):
     
     def __init__(self, config, dataset_name, num_tasks=None):
