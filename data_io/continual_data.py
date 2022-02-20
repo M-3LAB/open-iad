@@ -31,8 +31,9 @@ class CLData(object):
         Assign the number of classes for each task
         """
         num_classes_per_task = int(self.num_classes /  self.num_tasks)
-        for i in range():
-        pass
+        for i in range(num_classes_per_task):
+            sub_class_name = self.class_name[self.num_tasks * i: self.num_tasks * (i + 1)]
+            sub_dataset = data
          
     def get_dataloader(self): 
         for dataset in self.dataset_list:
