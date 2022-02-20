@@ -57,16 +57,6 @@ def MVTec2DContinualList(data_path, num_continual_tasks, phase, mode, data_trans
 
     return MVTecContinualList
 
-def MVTec2DContinualDataloaderList(MVTecContinualList, batch_size, shuffle, num_workers):
-    MVTecContinualDataloaderList = []
-    for mvtecDataset in MVTecContinualList:
-        train_loader = DataLoader(mvtecDataset, batch_size, shuffle, num_workers)
-        MVTecContinualDataloaderList.append(train_loader)
-    
-    return MVTecContinualDataloaderList
-
-
-
 
 class MVTec2D(Dataset):
     def __init__(self, data_path, class_name, mode='centralized', phase='train', 
