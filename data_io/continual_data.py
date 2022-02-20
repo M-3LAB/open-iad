@@ -27,6 +27,9 @@ class CLData(object):
         assert self.num_tasks <= len(self.class_name)
 
     def get_data(self):
+        """
+        Assign the number of classes for each task
+        """
         #for i in range():
         pass
          
