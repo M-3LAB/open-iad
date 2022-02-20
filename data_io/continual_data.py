@@ -31,5 +31,9 @@ class CLData(object):
         pass
          
     def get_dataloader(self): 
-        for j in self.dataset_list:
-            train_loader = DataLoader()
+        for dataset in self.dataset_list:
+            data_loader = DataLoader(dataset, self.config['batchsize'], 
+                                      shuffle=True, 
+                                      num_workers=self.config['num_workers'])
+            
+            self.dataloader_list.append(data_loader)
