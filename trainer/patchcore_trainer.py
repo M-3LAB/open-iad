@@ -14,6 +14,7 @@ class PatchCoreTrainer(object):
         self.config = config
         self.train_loader = train_loader
         self.test_loader = test_loader
+        self.device = device
 
         self.random_projector = SaprseRandomProjection(n_components='auto',
                                                        eps=0.9)
@@ -27,6 +28,9 @@ class PatchCoreTrainer(object):
         self.criterion = torch.nn.MSELoss(reduction='sum').to(self.device)
 
         # optimizer
+        self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.config['lr'],
+                                         momentum=self.config['momentum'], 
+                                         weight_decay=self.config['weight_decay']) 
 
         # lr scheduler
 
