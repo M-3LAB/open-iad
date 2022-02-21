@@ -134,7 +134,7 @@ def record_path(para_dict):
     # mkdir ./work_dir/fed/brats/time-dir
     localtime = time.asctime(time.localtime(time.time()))
     file_path = '{}/{}/{}/{}'.format(
-        para_dict['learning_mode'], para_dict['work_dir'], para_dict['dataset'], localtime)
+        para_dict['work_dir'], para_dict['learning_mode'], para_dict['dataset'], localtime)
 
     os.makedirs(file_path)
 
