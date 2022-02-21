@@ -5,7 +5,9 @@ __all__ = ['CLData']
 
 class CLData(object):
     
-    def __init__(self, config, dataset_name, num_tasks=None):
+    def __init__(self, config, dataset_name, num_tasks=None, 
+                 sub_class_name=None, mode=None, phase=None, 
+                 data_transform=None, mask_transform=None):
 
         self.config = config
 
