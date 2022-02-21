@@ -12,8 +12,13 @@ class CLData(object):
                  phase=None, data_transform=None, mask_transform=None):
 
         self.config = config
-
+        self.data_path = data_path
         self.dataset_name = dataset_name
+        self.sub_class_name = sub_class_name
+        self.mode = mode
+        self.phase = phase
+        self.data_transform = data_transform
+        self.mask_transform = mask_transform
 
         self.data_list = []
         self.dataloader_list = []
@@ -38,13 +43,25 @@ class CLData(object):
         for i in range(num_classes_per_task):
             sub_class_name = self.class_name[self.num_tasks * i: self.num_tasks * (i + 1)]
             if self.dataset == 'mvtec2d':
-                sub_dataset = MVTec2D() 
+                sub_dataset = MVTec2D(data_path=self.data_path, class_name=sub_class_name,
+                                      mode=self.mode, phase=self.phase,
+                                      data_transform=self.data_transform,
+                                      mask_transform=self.mask_transform) 
+
             elif self.dataset == 'mvtec3d':
-                sub_dataset = MVTec3D()
+                sub_dataset = MVTec3D(data_path=self.data_path, class_name=sub_class_name,
+                                      mode=self.mode, phase=self.phase,
+                                      data_transform=self.data_transform,
+                                      mask_transform=self.mask_transform) 
             elif self.dataset == 'mtd':
-                sub_dataset = MTD() 
+                sub_dataset = MTD(data_path=self.data_path, class_name=sub_class_name,
+                                      mode=self.mode, phase=self.phase,
+                                      data_transform=self.data_transform,
+                                      mask_transform=self.mask_transform) 
             else:
                 raise NotImplementedError('This data has not been implemented Yet')
+            
+            self.data_list.append(sub_dataset)
          
     def get_dataloader(self): 
         for dataset in self.dataset_list:
