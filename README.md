@@ -6,5 +6,17 @@ scikit-image, pip install scikit-image\
 scikit-learn, pip instll scikit-learn\
 opencv, pip install opencv-python
 
+## Preliminary
+> Dependency
 
-To Future, Boys! COME ON!
+```bash
+conda install pytorch=1.8.1 torchvision torchaudio cudatoolkit=10.1 -c pytorch
+```
+```bash
+pip3 install -r requirements.txt
+```
+## Centralized Training
+```bash
+python3 centralized_training.py --dataset 'mvtec2d' --model 'patchcore2d' --data-path '/disk1/mvtec/2D'
+python3 centralized_training.py --dataset 'mvtec3d' --model 'patchcore3d' --data-path '/disk1/mvtec/3D'
+```
