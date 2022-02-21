@@ -43,21 +43,6 @@ def mvtec_3d_classes():
         "tire",
     ]
 
-def MVTec2DContinualList(data_path, num_continual_tasks, phase, mode, data_transform=None, mask_transform=None):
-    MVTecContinualList = []
-    className = mvtec_2d_classes()
-    for i in range(0, int(15/num_continual_tasks)):
-        sub_class_name = className[num_continual_tasks*i: num_continual_tasks*i+num_continual_tasks]
-        MVTecContinualList.append(MVTec2DContinual(data_path, sub_class_name, i, mode, phase, 
-                 data_transform=None, mask_transform=None))
-    if 15%num_continual_tasks != 0:
-        sub_class_name = className[int(15/num_continual_tasks)*num_continual_tasks: 15]
-        MVTecContinualList.append(MVTec2DContinual(data_path, sub_class_name, int(15/num_continual_tasks), mode, phase, 
-                    data_transform=None, mask_transform=None))
-
-    return MVTecContinualList
-
-
 class MVTec2D(Dataset):
     def __init__(self, data_path, class_name, mode='centralized', phase='train', 
                  data_transform=None, mask_transform=None, task_id=None):
