@@ -1,5 +1,7 @@
 from data_io.mvtec_ad import *
 from torch.utils.data import DataLoader
+from data_io.mtd import *
+
 
 __all__ = ['CLData']
 
@@ -37,6 +39,12 @@ class CLData(object):
             sub_class_name = self.class_name[self.num_tasks * i: self.num_tasks * (i + 1)]
             if self.dataset == 'mvtec2d':
                 sub_dataset = MVTec2D() 
+            elif self.dataset == 'mvtec3d':
+                sub_dataset = MVTec3D()
+            elif self.dataset == 'mtd':
+                sub_dataset = MTD() 
+            else:
+                raise NotImplementedError('This data has not been implemented Yet')
          
     def get_dataloader(self): 
         for dataset in self.dataset_list:
