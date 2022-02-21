@@ -31,6 +31,9 @@ class CentralizedTrain():
         self.para_dict = merge_config(config, self.args)
         self.args = extract_config(self.args)
 
+        if not self.para_dict['continual']:
+            self.para_dict['num_task'] = 1
+
     def preliminary(self):
         print('---------------------')
         print(self.args)
