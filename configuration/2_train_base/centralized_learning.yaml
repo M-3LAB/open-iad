@@ -1,0 +1,33 @@
+# centralzied learning
+learning_mode: 'centralized'
+clients_data_weight:
+- 1.0
+# no differential privacy
+diff_privacy: false
+clip_bound: 1
+sensitivity: 2
+noise_multiplier: 1.07
+# continual learning
+continual: false
+num_task: 5
+# training
+batch_size: 8 
+gpu_id: 0
+gpu_ids:
+- '01234567'
+lr: 0.0001
+num_epoch: 10 
+decay_epoch: 8 
+seed: 123 
+num_workers: 8
+# work file
+work_dir: ./work_dir
+save_log: true
+debug: false 
+# save and load model
+save_model: false
+load_model: false
+load_model_dir: None
+# optimizer
+beta1: 0.5
+beta2: 0.999
