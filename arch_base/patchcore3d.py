@@ -9,8 +9,7 @@ __all__ = ['PatchCore3D']
 
 
 class PatchCore3D():
-    def __init__(self, config, train_loader, valid_loader,
-                 device, file_path, batch_limit_weight=1.0):
+    def __init__(self, config, train_loader, valid_loader, device, file_path, batch_limit_weight=1.0):
         
         self.config = config
         self.train_loader = train_loader
@@ -21,13 +20,16 @@ class PatchCore3D():
         self.batch_limit = 2
 
     def train_epoch(self, inf=''):
-        for i, batch in enumerate(self.train_loader):
-            if self.config['debug'] and i > self.batch_limit:
-                break
+        for task_idx, train_loader in enumerate(self.train_loader):
+            print('run task: {}'.format(task_idx))
 
-            x, y, mask, task_id, xyz = batch
+            for i, batch in enumerate(train_loader):
+                if self.config['debug'] and i > self.batch_limit:
+                    break
+
+                x, y, mask, task_id, xyz = batch
                 
-            pass
+                pass
 
 
     def evaluation(self):

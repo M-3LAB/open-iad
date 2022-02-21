@@ -1,9 +1,10 @@
 import torch
 import os
+import math
+import random
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms as T
-import math
 
 
 __all__ = ['MVTec2D', 'mvtec2d_classes']
@@ -32,9 +33,14 @@ class MVTec2D(Dataset):
         self.all_y = []
         self.all_mask = []
         self.all_task_id = []
+        
+        # continual
+        self.conti_len = []
+        self.continual_indices = []
 
         # load dataset
         self.load_dataset()
+        self.allocate_task_data()
 
         # data preprocessing 
         self.imge_transform = T.Compose([T.Resize(self.data_transform['data_size']),
@@ -99,20 +105,29 @@ class MVTec2D(Dataset):
                         y.extend([1] * len(img_path_list))
                         gt_type_dir = os.path.join(gt_dir, img_type)
                         img_name_list = [os.path.splitext(os.path.basename(f))[0] for f in img_path_list]
-                        gt_path_list = [os.path.join(gt_type_dir, img_fname + '.png')
+                        gt_path_list = [os.path.join(gt_type_dir, img_fname + '_mask.png')
                                         for img_fname in img_name_list]
                         mask.extend(gt_path_list)
             # continual
             task_id = [id for i in range(len(x))]
+            self.conti_len.append(len(x))
 
             self.all_x.extend(x)
             self.all_y.extend(y)
             self.all_mask.extend(mask)
             self.all_task_id.extend(task_id) 
 
+    def allocate_task_data(self):
+        start = 0
+        for num in self.conti_len:
+            end = start + num
+            indice = [i for i in range(start, end)]
+            random.shuffle(indice)
+            self.continual_indices.append(indice)
+            start = end
+
     # split the arr into n chunks
     @staticmethod
     def split_chunks(arr, m):
         n = int(math.ceil(len(arr) / float(m)))
         return [arr[i:i + n] for i in range(0, len(arr), n)]
-

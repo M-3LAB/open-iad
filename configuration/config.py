@@ -5,11 +5,12 @@ __all__ = ['parse_arguments_centralized', 'parse_arguments_federated']
 
 def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', '-d', type=str, default='mvtec3d', choices=['mvtec2d', 'mvtec3d', 'mtd'])
-    parser.add_argument('--model', '-m', type=str, default='patchcore3d', choices=['patchcore2d', 'patchcore3d'])
+    parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mtd'])
+    parser.add_argument('--model', '-m', type=str, default='patchcore2d', choices=['patchcore2d', 'patchcore3d'])
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
     parser.add_argument('--continual', '-conti', action='store_true', default=False)
+    parser.add_argument('--num-task', type=int, default=None)
 
     parser.add_argument('--gpu-id', '-g', type=str, default=None)
     parser.add_argument('--num-epoch', type=int, default=None)

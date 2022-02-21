@@ -1,9 +1,10 @@
 import torch
 import os
+import math
+import random
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms as T
-import math
 
 
 __all__ = ['MVTec3D', 'mvtec3d_classes']
@@ -34,8 +35,13 @@ class MVTec3D(Dataset):
         self.all_task_id = []
         self.all_xyz = []
 
+        # continual
+        self.conti_len = []
+        self.continual_indices = []
+
         # load dataset
         self.load_dataset()
+        self.allocate_task_data()
 
         # data preprocessing 
         self.imge_transform = T.Compose([T.Resize(self.data_transform['data_size']),
@@ -117,13 +123,22 @@ class MVTec3D(Dataset):
                         
             # continual
             task_id = [id for i in range(len(x))]
+            self.conti_len.append(len(x))
 
             self.all_x.extend(x)
             self.all_y.extend(y)
             self.all_mask.extend(mask)
             self.all_task_id.extend(task_id) 
             self.all_xyz.extend(xyz) 
-        pass
+
+    def allocate_task_data(self):
+        start = 0
+        for num in self.conti_len:
+            end = start + num
+            indice = [i for i in range(start, end)]
+            random.shuffle(indice)
+            self.continual_indices.append(indice)
+            start = end
 
     # split the arr into n chunks
     @staticmethod

@@ -2,6 +2,7 @@ import torch
 import yaml
 from tools.utilize import *
 from torch.utils.data import DataLoader
+from torch.utils.data.sampler import SubsetRandomSampler
 from data_io.mvtec2d import MVTec2D
 from data_io.mvtec3d import MVTec3D
 
@@ -60,7 +61,8 @@ class CentralizedTrain():
             self.train_dataset = MVTec2D(data_path=self.para_dict['data_path'],
                                          learning_mode=self.para_dict['learning_mode'],
                                          phase='train',
-                                         data_transform=mvtec2d_transform)
+                                         data_transform=mvtec2d_transform,
+                                         num_task=self.para_dict['num_task'])
             self.valid_dataset = MVTec2D(data_path=self.para_dict['data_path'],
                                          learning_mode=self.para_dict['learning_mode'],
                                          phase='test',
@@ -69,7 +71,8 @@ class CentralizedTrain():
             self.train_dataset = MVTec3D(data_path=self.para_dict['data_path'],
                                          learning_mode=self.para_dict['learning_mode'],
                                          phase='train',
-                                         data_transform=mvtec3d_transform)
+                                         data_transform=mvtec3d_transform,
+                                         num_task=self.para_dict['num_task'])
             self.valid_dataset = MVTec3D(data_path=self.para_dict['data_path'],
                                          learning_mode=self.para_dict['learning_mode'],
                                          phase='test',
@@ -79,11 +82,18 @@ class CentralizedTrain():
         else:
             raise NotImplemented('Dataset Does Not Exist')
 
-        self.train_loader = DataLoader(self.train_dataset, num_workers=self.para_dict['num_workers'],
-                                 batch_size=self.para_dict['batch_size'], shuffle=True)
+        self.train_loader = []
+        task_data_list = self.train_dataset.continual_indices
+        for i in range(self.para_dict['num_task']):
+            train_loader = DataLoader(self.train_dataset,
+                                      batch_size=self.para_dict['batch_size'],
+                                      drop_last=True,
+                                      num_workers=self.para_dict['num_workers'],
+                                      sampler=SubsetRandomSampler(task_data_list[i]))
+            self.train_loader.append(train_loader)
+
         self.valid_loader = DataLoader(self.valid_dataset, num_workers=self.para_dict['num_workers'],
                                  batch_size=self.para_dict['batch_size'], shuffle=False)
-
 
     def init_model(self):
         if self.para_dict['model'] == 'patchcore2d':
