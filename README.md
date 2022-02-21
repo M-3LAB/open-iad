@@ -17,6 +17,6 @@ pip3 install -r requirements.txt
 ```
 ## Centralized Training
 ```bash
-python3 centralized_training.py --dataset 'mvtec2d' --model 'patchcore2d' --data-path '/disk1/mvtec/2D'
-python3 centralized_training.py --dataset 'mvtec3d' --model 'patchcore3d' --data-path '/disk1/mvtec/3D'
+python3 centralized_training.py --dataset 'mvtec2d' --model 'patchcore2d' --data-path '/disk1/mvtec/2D' --num-task 5
+python3 centralized_training.py --dataset 'mvtec3d' --model 'patchcore3d' --data-path '/disk1/mvtec/3D' --num-task 5
 ```
