@@ -109,13 +109,13 @@ class CentralizedTrain():
             raise ValueError('Model is invalid!')
 
         if self.para_dict['load_model']:
-            self.load_models()
+            self.load_model()
             print('load model: {}'.format(self.para_dict['load_model_dir']))
 
-    def load_models(self):
+    def load_model(self):
         pass
 
-    def save_models(self, psnr):
+    def save_model(self, psnr):
         pass
 
     def work_flow(self):
