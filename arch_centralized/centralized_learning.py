@@ -120,7 +120,7 @@ class CentralizedTrain():
 
     def work_flow(self):
         self.trainer.train_epoch()
-        acc = self.trainer.evaluation()
+        acc = self.trainer.prediction()
 
         infor = '[Epoch {}/{}] acc: {:.4f}'.format(self.epoch+1, self.para_dict['num_epoch'], acc)
 
