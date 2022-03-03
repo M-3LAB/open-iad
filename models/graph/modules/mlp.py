@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+__all__ = ['MLP']
+
 class MLP(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim, layer_num=3, normalize=False, bias=True):
         super(MLP, self).__init__()
