@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
-from models.spade.spade import SPADE 
+from models.padim.padim import PaDim 
 
-__all__ = ['SPADE2D']
+__all__ = ['PatchCore2D']
 
-class SPADE2D():
+class PaDim2D():
     def __init__(self, config, train_loader, valid_loader, device):
         
         self.config = config
