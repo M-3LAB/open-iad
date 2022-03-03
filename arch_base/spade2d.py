@@ -12,7 +12,7 @@ class SPADE2D():
         self.valid_loader = valid_loader
         self.device = device
 
-        self.model = SPADE()
+        self.model = SPADE().to(self.device)
 
 
     def train_epoch(self, inf=''):
