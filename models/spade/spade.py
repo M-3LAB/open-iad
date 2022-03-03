@@ -1,12 +1,11 @@
-from turtle import forward
 import torch
 import torch.nn as nn
 
-__all__ = ['Spade']
+__all__ = ['SPADE']
 
-class Spade(nn.Module):
+class SPADE(nn.Module):
     def __init__(self):
-        super(Spade).__init__()
+        super(SPADE).__init__()
 
     def forward(self, x):
         pass
