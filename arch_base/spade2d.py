@@ -12,6 +12,8 @@ class SPADE2D():
         self.valid_loader = valid_loader
         self.device = device
 
+        self.model = SPADE()
+
 
     def train_epoch(self, inf=''):
         for task_idx, train_loader in enumerate(self.train_loader):
