@@ -3,9 +3,9 @@ import torch.nn as nn
 
 __all__ = ['GraphPropagation']
 
-class GraphPropLayer(nn.Module):
+class GraphPropagation(nn.Module):
     def __init__(self, node_state_dim, hidden_sizes):
-        super(GraphPropLayer, self).__init__()
+        super(GraphPropagation, self).__init__()
         self.message_net = MLP(node_state_dim * 3, hidden_sizes, node_state_dim, layer_num=3, normalize=False)
         self.reverse_message_net = MLP(node_state_dim * 3, hidden_sizes, node_state_dim, layer_num=3, normalize=False)
         self.gru_0 = nn.GRUCell(node_state_dim, node_state_dim)

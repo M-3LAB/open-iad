@@ -1,14 +1,18 @@
 import torch
 import torch.nn as nn
+from models.graph.modules.mlp import MLP
+from models.graph.modules.encoder import GraphEncoder
+from models.graph.modules.decoder import GraphDecoder
+from models.graph.modules.aggregator import GraphAggregator
+from models.graph.modules.propagation import GraphPropagation
+__all__ = ['PointCore']
 
-__all__ = ['hgnn']
-
-class GNN_V1(nn.Module):
+class PointCore(nn.Module):
     def __init__(self, encode_dim=64, hidden_dim=64, n_prop_layer=5, g_repr_dim=128):
-        super(GNN_V1, self).__init__()
+        super(PointCore, self).__init__()
  
         self.encoder = GraphEncoder(1, encode_dim // 2, encode_dim)
-        self.prop_layers = nn.ModuleList([GraphPropLayer(encode_dim, hidden_dim) for i in range(n_prop_layer)])
+        self.prop_layers = nn.ModuleList([GraphPropagation(encode_dim, hidden_dim) for i in range(n_prop_layer)])
         self.aggregator = GraphAggregator(encode_dim, hidden_dim, g_repr_dim)
         self.multiagg_layers = nn.ModuleList([GraphAggregator(encode_dim, hidden_dim, g_repr_dim) for i in range(n_prop_layer)])
         self.multihead_layer = MLP(g_repr_dim * 5, g_repr_dim * 3, g_repr_dim)

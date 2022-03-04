@@ -1,9 +1,9 @@
 import torch
 import numpy as np
 
-__all__ = ['PointCore']
+__all__ = ['PointCore3D']
 
-class PointCore():
+class PointCore3D():
     def __init__(self, config, train_loader, valid_loader, device):
         
         self.config = config

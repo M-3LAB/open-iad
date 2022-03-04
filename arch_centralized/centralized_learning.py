@@ -7,7 +7,7 @@ from data_io.mvtec2d import MVTec2D
 from data_io.mvtec3d import MVTec3D
 
 from arch_base.patchcore2d import PatchCore2D
-from arch_base.pointcore import PointCore
+from arch_base.pointcore3d import PointCore3D
 
 from rich import print
 
@@ -103,7 +103,7 @@ class CentralizedTrain():
             self.trainer = PatchCore2D(self.para_dict, self.train_loader, self.valid_loader,
                                      self.device, self.file_path)
         elif self.para_dict['model'] == 'pointcore':
-            self.trainer = PointCore(self.para_dict, self.train_loader, self.valid_loader,
+            self.trainer = PointCore3D(self.para_dict, self.train_loader, self.valid_loader,
                                      self.device, self.file_path)
         else:
             raise ValueError('Model is invalid!')
