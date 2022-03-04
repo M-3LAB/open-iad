@@ -12,9 +12,9 @@ class PointCore(nn.Module):
         super(PointCore, self).__init__()
  
         self.encoder = GraphEncoder(1, encode_dim // 2, encode_dim)
-        self.prop_layers = nn.ModuleList([GraphPropagation(encode_dim, hidden_dim) for i in range(n_prop_layer)])
+        self.prop_layers = nn.ModuleList([GraphPropagation(encode_dim, hidden_dim) for _ in range(n_prop_layer)])
         self.aggregator = GraphAggregator(encode_dim, hidden_dim, g_repr_dim)
-        self.multiagg_layers = nn.ModuleList([GraphAggregator(encode_dim, hidden_dim, g_repr_dim) for i in range(n_prop_layer)])
+        self.multiagg_layers = nn.ModuleList([GraphAggregator(encode_dim, hidden_dim, g_repr_dim) for _ in range(n_prop_layer)])
         self.multihead_layer = MLP(g_repr_dim * 5, g_repr_dim * 3, g_repr_dim)
         # self.pridictor = GraphDecoder(n_node, encode_dim)
 
