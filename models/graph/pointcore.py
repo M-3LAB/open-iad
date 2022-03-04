@@ -8,15 +8,21 @@ from models.graph.modules.propagation import GraphPropagation
 __all__ = ['PointCore']
 
 class PointCore(nn.Module):
-    def __init__(self, encode_dim=64, hidden_dim=64, n_prop_layer=5, g_repr_dim=128):
+    def __init__(self, encode_dim=64, hidden_dim=64, n_prop_layer=5, g_repr_dim=128, n_node=None):
         super(PointCore, self).__init__()
+
+        self.encode_dim = encode_dim
+        self.hidden_dim = hidden_dim
+        self.n_prop_layer = n_prop_layer
+        self.g_repr_dim = g_repr_dim
+        self.n_node = n_node
  
         self.encoder = GraphEncoder(1, encode_dim // 2, encode_dim)
         self.prop_layers = nn.ModuleList([GraphPropagation(encode_dim, hidden_dim) for _ in range(n_prop_layer)])
         self.aggregator = GraphAggregator(encode_dim, hidden_dim, g_repr_dim)
         self.multiagg_layers = nn.ModuleList([GraphAggregator(encode_dim, hidden_dim, g_repr_dim) for _ in range(n_prop_layer)])
         self.multihead_layer = MLP(g_repr_dim * 5, g_repr_dim * 3, g_repr_dim)
-        # self.pridictor = GraphDecoder(n_node, encode_dim)
+        self.predictor = GraphDecoder(n_node, encode_dim)
 
     def forward(self, x):
         node, edge, edge_index, graph_idx = x
