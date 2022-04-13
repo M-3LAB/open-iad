@@ -4,3 +4,4 @@ opencv_python==4.5.4.58
 scipy==1.5.4
 tqdm==4.62.3
 PyYAML==6.0
+dgl==0.8.0post2
