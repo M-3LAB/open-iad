@@ -5,3 +5,5 @@ scipy==1.5.4
 tqdm==4.62.3
 PyYAML==6.0
 dgl==0.8.0post2
+skimage==0.19.2
+open3d==0.15.1
