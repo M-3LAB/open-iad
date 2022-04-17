@@ -4,4 +4,7 @@ opencv_python==4.5.4.58
 scipy==1.5.4
 tqdm==4.62.3
 PyYAML==6.0
-# dgl==0.8.0post2
+dgl==0.8.0post2
+open3d==0.15.2
+scikit-image==0.19.2
+scikit-learn==1.0.2
