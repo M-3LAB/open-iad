@@ -8,7 +8,7 @@ Created on Sun Apr 10 15:02:02 2022
 import open3d as o3d
 import numpy as np
 
-txt_path = 'test.xyzrgb'
+txt_path = './legacy_code/test.xyzrgb'
 # 通过numpy读取txt点云
 pcd = np.genfromtxt(txt_path, delimiter=" ")
 

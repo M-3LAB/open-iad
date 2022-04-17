@@ -11,9 +11,9 @@ import numpy as np
  
 # data=img.getdata()
   
-xyz = io.imread('001.tiff')
-rgb = io.imread('001.png')
-AD = io.imread('001_gt.png')
+xyz = io.imread('/disk4/xgy/mvtec/3D/rope/test/contamination/xyz/001.tiff')
+rgb = io.imread('/disk4/xgy/mvtec/3D/rope/test/contamination/rgb/001.png')
+AD = io.imread('/disk4/xgy/mvtec/3D/rope/test/contamination/gt/001.png')
 pos = AD!=0
 rgb[pos,0] = AD[pos]
 rgb[pos,1:3] = 0
@@ -23,4 +23,4 @@ img.resize(img.shape[0]*img.shape[1],6)
 
 # AD.resize(AD.shape[0]*AD.shape[1],1)
 # print(AD.shape)
-np.savetxt('test.xyzrgb', img, fmt='%f', delimiter=' ')
+np.savetxt('./legacy_code/test.xyzrgb', img, fmt='%f', delimiter=' ')
