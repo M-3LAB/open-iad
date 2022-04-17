@@ -5,12 +5,13 @@ from models.graph.modules.mlp import MLP
 __all__ = ['GraphDecoder']
 
 class GraphDecoder(nn.Module):
-    def __init__(self, n_node, encode_dim):
+    def __init__(self, n_node, encode_dim, device):
         super(GraphDecoder, self).__init__()
         self.n_node = n_node
         self.encode_dim = encode_dim
         self.mlp = MLP(encode_dim * 2, encode_dim, 2, layer_num=5)
-        self.idx = self._get_idx().cuda()
+        self.device = device
+        self.idx = self._get_idx().to(self.device)
         self.n = (self.n_node * self.n_node - self.n_node) // 2
 
     def _get_idx(self):

@@ -18,3 +18,6 @@ def min_max_norm(image):
 
 def cal_anomaly_map():
     pass
+
+if __name__ == 'main':
+    pass
