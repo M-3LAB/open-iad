@@ -1,5 +1,5 @@
 from configuration.config import parse_arguments_centralized
-from arch_centralized.centralized_learning import CentralizedTrain
+from architecture.centralized.centralized_learning import CentralizedTrain
 
 
 def centralized_training():

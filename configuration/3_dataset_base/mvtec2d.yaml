@@ -1,4 +1,4 @@
 dataset: mvtec2d
-data_path: '/disk1/mvtec/2D'
+data_path: '/disk4/xgy/mvtec/2D'
 data_size: 224
 mask_size: 224
