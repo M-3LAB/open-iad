@@ -10,9 +10,6 @@ opencv, pip install opencv-python
 > Dependency
 
 ```bash
-conda install pytorch=1.8.1 torchvision torchaudio cudatoolkit=10.1 -c pytorch
-```
-```bash
 pip3 install -r requirements.txt
 ```
 ## Centralized Training
