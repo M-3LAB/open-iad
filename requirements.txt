@@ -9,3 +9,6 @@ open3d==0.15.2
 scikit-image==0.19.2
 scikit-learn==1.0.2
 munch==2.5.0
+torch==1.10.1
+ninja==1.10.2.3
+matplotlib==3.5.1
