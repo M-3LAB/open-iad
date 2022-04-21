@@ -25,3 +25,8 @@ python3 centralized_training.py --dataset 'mvtec3d' --model 'patchcore3d' --data
 python3 legacy_code/MVTec3D-ADPC.py 
 python3 legacy_code/MVTec3D-PCVis.py 
 ```
+
+## Install Third Party Library
+```bash
+bash setup.sh
+```
