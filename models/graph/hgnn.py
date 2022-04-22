@@ -5,11 +5,11 @@ from models.graph.modules.encoder import GraphEncoder
 from models.graph.modules.decoder import GraphDecoder
 from models.graph.modules.aggregator import GraphAggregator
 from models.graph.modules.propagation import GraphPropagation
-__all__ = ['PointCore']
+__all__ = ['HGNN']
 
-class PointCore(nn.Module):
+class HGNN(nn.Module):
     def __init__(self, encode_dim=64, hidden_dim=64, n_prop_layer=5, g_repr_dim=128, n_node=None):
-        super(PointCore, self).__init__()
+        super(HGNN, self).__init__()
 
         self.encode_dim = encode_dim
         self.hidden_dim = hidden_dim
