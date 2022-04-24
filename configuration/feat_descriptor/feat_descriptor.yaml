@@ -1,5 +1,0 @@
-dataset: mvtec3d
-feat: neuralpoint_pointmlp
-gpu_id: 0
-gpu_ids:
-- '01234567'
