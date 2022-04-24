@@ -3,6 +3,7 @@ import torch.nn as nn
 from configuration.feat_descriptor.config import parser_arguments_feat_descriptor
 from tools.utilize import *
 import yaml
+from models.pointcore.descriptor.neural_point.neural_point import NeuralPoint
 
 
 if __name__ == '__main__':
@@ -13,3 +14,9 @@ if __name__ == '__main__':
 
     para_dict = merge_config(para_dict, args)
     print(para_dict)
+
+    #TODO: Data Loader
+
+    #TODO: Model 
+
+    #TODO: Trainer
