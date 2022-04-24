@@ -4,6 +4,7 @@ from configuration.feat_descriptor.config import parser_arguments_feat_descripto
 from tools.utilize import *
 import yaml
 
+
 if __name__ == '__main__':
     args = parser_arguments_feat_descriptor()
 
