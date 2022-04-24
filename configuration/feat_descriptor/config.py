@@ -8,5 +8,6 @@ def parser_arguments_feat_descriptor():
     parser.add_argument('--feat', '-f', type=str, default=None, choices=['neuralpoint_dgcnn', 'neuralpoint_pointmlp'])
     parser.add_argument('--num-affinity-points', type=int, default=None, help='the required number of affinity points for feature calculation ')
     parser.add_argument('--distance', type=str, choices=['cd','dcd','emd','normal'])
+    parser.add_argument('--method', type=str)
     args = parser.parse_args()
     return args
