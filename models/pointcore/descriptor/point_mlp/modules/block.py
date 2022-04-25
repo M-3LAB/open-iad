@@ -11,7 +11,13 @@ class MLP1D(nn.Module):
         self.ouc = ouc
         self.ks = ks
         self.bias = bias
-        self.activation = activation
+        self.activation = get_activation(activation)
+        self.net = nn.Sequential(
+            nn.Conv1d(input_channles=self.inc, out_channels=self.ouc, kernel_size=self.ks, bias=self.bias),
+            nn.BatchNorm1d(num_features=self.ouc),
+            self.activation)
+
 
     def forward(self, x):
-        pass
+       output = self.net(x) 
+       return output
