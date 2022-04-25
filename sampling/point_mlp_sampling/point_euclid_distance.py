@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 
-__all__ = ['square_distance']
+__all__ = ['point_euclid_distance']
 
-def square_distance(src, dst):
+def point_euclid_distance(src, dst):
     """
     Calculate Euclid distance between each two points.
     src^T * dst = xn * xm + yn * ym + zn * zm；
