@@ -1,6 +1,7 @@
 import torch
 from sampling.point_mlp_sampling.point_euclid_distance import point_euclid_distance
-__all__ = ['index_points']
+
+__all__ = ['index_points', 'farthest_pint_sample', 'query_ball_point', 'knn_point']
 
 def index_points(points, idx):
     """
@@ -62,4 +63,17 @@ def query_ball_point(radius, nsample, xyz, new_xyz):
     group_first = group_idx[:, :, 0].view(B, S, 1).repeat([1, 1, nsample])
     mask = group_idx == N
     group_idx[mask] = group_first[mask]
+    return group_idx
+
+def knn_point(nsample, xyz, new_xyz):
+    """
+    Input:
+        nsample: max sample number in local region
+        xyz: all points, [B, N, C]
+        new_xyz: query points, [B, S, C]
+    Return:
+        group_idx: grouped points index, [B, S, nsample]
+    """
+    sqrdists = point_euclid_distance(new_xyz, xyz)
+    _, group_idx = torch.topk(sqrdists, nsample, dim=-1, largest=False, sorted=False)
     return group_idx
