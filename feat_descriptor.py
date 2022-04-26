@@ -19,4 +19,4 @@ if __name__ == '__main__':
 
     #TODO: Model 
 
-    #TODO: Trainer
+    #TODO: Self-Supervised Training 
