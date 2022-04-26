@@ -39,13 +39,26 @@ class MLPRes1D(nn.Module):
                       kernel_size=self.ks, groups=self.groups, bias=self.bias),
             nn.BatchNorm1d(num_features=int(self.inc * self.res_expansion)),
             self.activation)
-        
-        
-        
-    
 
-
+        # main branch second part -- the group convolution part
+        if self.groups > 1:
+            self.net2 = nn.Sequential(
+                nn.Conv1d(in_channels=int(self.inc*self.res_expansion), out_channels=self.inc,
+                          kernel_size=self.ks, groups=self.groups, bias=self.bias),
+                nn.BatchNorm1d(self.inc),
+                self.act,
+                nn.Conv1d(in_channels=self.inc, out_channels=self.inc, kernel_size=self.ks,
+                          bias=self.bias),
+                nn.BatchNorm1d(self.inc)
+            )
+        else:
+            self.net2 = nn.Sequential(
+                nn.Conv1d(in_channels=int(self.inc*self.res_expansion), out_channels=self.inc,
+                          kernel_size=self.ks, bias=self.bias),
+                nn.BatchNorm1d(self.inc)
+            )
 
     def forward(self, x):
-       output = self.net(x) 
+       output_main_branch = self.net2(self.net1(x)) 
+       output = self.act(output_main_branch + x)
        return output
