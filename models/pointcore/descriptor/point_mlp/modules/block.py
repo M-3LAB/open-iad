@@ -21,3 +21,31 @@ class MLP1D(nn.Module):
     def forward(self, x):
        output = self.net(x) 
        return output
+
+class MLPRes1D(nn.Module):
+
+    def __init__(self, inc, ks=1, bias=True, groups=1, res_expansion=1.0, activation='relu'):
+        super(MLPRes1D).__init__()
+        self.inc = inc
+        self.ks = ks
+        self.bias = bias
+        self.activation = get_activation(activation)
+        self.res_expansion = res_expansion
+        self.groups = groups
+
+        # main branch first part -- the part before group convolution
+        self.net1 = nn.Sequential(
+            nn.Conv1d(input_channles=self.inc, out_channels=int(self.inc * self.res_expansion), 
+                      kernel_size=self.ks, groups=self.groups, bias=self.bias),
+            nn.BatchNorm1d(num_features=int(self.inc * self.res_expansion)),
+            self.activation)
+        
+        
+        
+    
+
+
+
+    def forward(self, x):
+       output = self.net(x) 
+       return output
