@@ -11,6 +11,7 @@ def parse_arguments_mmad():
     parser.add_argument('--num-epochs', default=None, type=int)
     parser.add_argument('--data-path', default=None, type=str)
     parser.add_argument('--dataset', default=None, type=str)
+    parser.add_argument('--fusion-method', default=None, type=str)
     
     args = parser.parse_args()
     return args
