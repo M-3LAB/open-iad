@@ -27,3 +27,8 @@ python3 legacy_code/MVTec3D-PCVis.py
 ```bash
 bash setup.sh
 ```
+
+## Train MMAD
+```bash
+python3 mmad_training.py
+```
