@@ -16,3 +16,7 @@ if __name__ == '__main__':
 
     #TODO: Data Loader
 
+    #TODO: Model 
+
+    #TODO: Self-Supervised Training 
+
