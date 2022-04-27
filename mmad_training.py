@@ -36,7 +36,11 @@ if __name__ == '__main__':
                                 phase='test',
                                 data_transform=mvtec3d_transform)
 
-
+    train_loader = DataLoader(train_dataset,
+                              batch_size=para_dict['batch_size'],
+                                      drop_last=True,
+                                      num_workers=para_dict['num_workers'],
+                                      sampler=SubsetRandomSampler(task_data_list[i]))
     #TODO: Model 
 
     #TODO: Self-Supervised Training 
