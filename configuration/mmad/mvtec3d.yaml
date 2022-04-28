@@ -2,3 +2,4 @@ gpu_ids:
 - '01234567'
 num_workers: 4
 batch_size: 8
+cl: False
