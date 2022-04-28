@@ -8,7 +8,7 @@ from torchvision import transforms as T
 import tifffile as tiff
 import numpy as np
 
-__all__ = ['MVTec3D', 'mvtec3d_classes', 'MVTecCL3D']
+__all__ = ['MVTec3D', 'mvtec3d_classes', 'MVTecCL3D', 'read_tiff', 'tiff_to_depth']
 
 
 def mvtec3d_classes():
@@ -19,7 +19,7 @@ def read_tiff(path):
     tiff_img = tiff.imread(path)
     return tiff_img
 
-def tiff_to_depth_map(tiff):
+def tiff_to_depth(tiff):
     return tiff[:, :, 2]
 
 

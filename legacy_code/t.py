@@ -1,23 +1,16 @@
 import torch
 import os
+import tifffile as tiff
+from data_io.mvtec3d import *
+import numpy as np
 
-data_path = '/disk/mvtec/2D'
-class_name = 'bottle'
-#phase = 'train'
-phase = 'test'
+tiff_path = 'test_data/good/000.tiff'
 
-img_dir = os.path.join(data_path, class_name, phase)
-gt_dir = os.path.join(data_path, class_name, 'ground_truth')
+tiff_img = read_tiff(tiff_path)
+print(tiff_img.shape)
 
-img_types = sorted(os.listdir(img_dir))
-print(img_types)
+depth_map = tiff_to_depth(tiff_img)
+print(depth_map.shape)
 
-img_type = 'good'
-
-img_type_dir = os.path.join(img_dir, img_type)
-
-img_fpath_list = sorted([os.path.join(img_type_dir, f)
-                                     for f in os.listdir(img_type_dir)
-                                     if f.endswith('.png')])
-
-print(img_fpath_list)
+depth_map_3channel = np.repeat(depth_map[:, :, np.newaxis], 3, axis=2)
+print(depth_map_3channel.shape)
