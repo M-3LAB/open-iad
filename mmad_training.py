@@ -4,6 +4,8 @@ import yaml
 from configuration.mmad.config import parse_arguments_mmad 
 from tools.utilize import *
 from data_io.mvtec3d import MVTec3D
+from torch.utils.data import DataLoader
+from torch.utils.data.sampler import SubsetRandomSampler
 
 if __name__ == '__main__':
 
@@ -38,9 +40,12 @@ if __name__ == '__main__':
 
     train_loader = DataLoader(train_dataset,
                               batch_size=para_dict['batch_size'],
-                                      drop_last=True,
-                                      num_workers=para_dict['num_workers'],
-                                      sampler=SubsetRandomSampler(task_data_list[i]))
+                              drop_last=True,
+                              num_workers=para_dict['num_workers'],
+                              sampler=SubsetRandomSampler(task_data_list[i]))
+
+    valid_loader = DataLoader(valid_dataset, num_workers=para_dict['num_workers'],
+                              batch_size=para_dict['batch_size'], shuffle=False)
     #TODO: Model 
 
     #TODO: Self-Supervised Training 
