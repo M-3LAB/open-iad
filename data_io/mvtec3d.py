@@ -5,7 +5,7 @@ import random
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms as T
-
+import tifffile as tiff
 
 __all__ = ['MVTec3D', 'mvtec3d_classes', 'MVTecCL3D']
 
@@ -13,6 +13,14 @@ __all__ = ['MVTec3D', 'mvtec3d_classes', 'MVTecCL3D']
 def mvtec3d_classes():
     return [ "bagel", "cable_gland", "carrot", "cookie", "dowel",
              "foam", "peach", "potato", "rope", "tire"]
+
+def read_tiff(path):
+    tiff_img = tiff.imread(path)
+    return tiff_img
+
+def tiff_to_depth_map(tiff):
+    return tiff[:, :, 2]
+
 
 class MVTec3D(Dataset):
     def __init__(self, data_path, class_names, phase='train'):
@@ -109,6 +117,8 @@ class MVTec3D(Dataset):
                     xyz_path_list = [os.path.join(xyz_type_dir, img_fname + '.tiff')
                                     for img_fname in img_name_list]
                     xyz.extend(xyz_path_list)
+
+        assert len(x) == len(y) == len(xyz), 'Number of Image Should Be The Same'
                         
 
 class MVTecCL3D(Dataset):

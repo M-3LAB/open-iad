@@ -41,6 +41,7 @@ if __name__ == '__main__':
 
         valid_loader = DataLoader(valid_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False)
+
     #TODO: Model 
 
     #TODO: Self-Supervised Training 

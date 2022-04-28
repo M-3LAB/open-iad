@@ -12,3 +12,4 @@ munch==2.5.0
 torch==1.10.1
 ninja==1.10.2.3
 matplotlib==3.5.1
+tifffile==2021.11.2
