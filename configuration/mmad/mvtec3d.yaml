@@ -4,6 +4,7 @@ num_workers: 4
 batch_size: 8
 cl: False
 data_size: 224
+mask_size: 224
 class_name: tire
 lr: 0.0001
 num_epochs: 300 
