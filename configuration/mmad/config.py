@@ -12,7 +12,8 @@ def parse_arguments_mmad():
     parser.add_argument('--data-path', default=None, type=str)
     parser.add_argument('--dataset', default=None, type=str)
     parser.add_argument('--fusion-method', default=None, type=str)
-    parser.add_argument('--cl', action='store_true', default=False)
+    parser.add_argument('--cl', action='store_true', default=None)
+    parser.add_argument('--depth-duplicate', action='store_true', default=None)
     
     args = parser.parse_args()
     return args

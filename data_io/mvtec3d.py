@@ -5,7 +5,7 @@ import random
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms as T
-import tifffile as tiff
+import tifffile
 import numpy as np
 
 __all__ = ['MVTec3D', 'mvtec3d_classes', 'MVTecCL3D', 'read_tiff', 'tiff_to_depth']
@@ -15,20 +15,35 @@ def mvtec3d_classes():
     return [ "bagel", "cable_gland", "carrot", "cookie", "dowel",
              "foam", "peach", "potato", "rope", "tire"]
 
-def read_tiff(path):
-    tiff_img = tiff.imread(path)
+def read_tiff(tiff):
+    # tiff_img: numpy format
+    tiff_img = tifffile.imread(tiff)
     return tiff_img
 
-def tiff_to_depth(tiff):
-    return tiff[:, :, 2]
+def tiff_to_depth(tiff, resized_img_size=224, duplicate=False):
+    depth_map = tiff[:, :, 2]
+    # Duplicate depth_map into 3 channels, Convert numpy format into BCHW
+    if duplicate: 
+        depth_map = np.repeat(depth_map[:, :, np.newaxis], 3, axis=2)
+        depth_map = torch.tensor(depth_map).permute(2, 0, 1).unsqueeze(dim=0)
+    else: 
+        # One channel, Convert numpy into BCHW
+        depth_map = torch.tensor(depth_map).unsqueeze(dim=0).unsqueeze(dim=0)
+
+    # Downsampling, Nearest Interpolation
+    resized_depth_map = torch.nn.functional.interpolate(depth_map, size=(resized_img_size, resized_img_size),
+                                                        mode='nearest')
+    return resized_depth_map
 
 
 class MVTec3D(Dataset):
-    def __init__(self, data_path, class_names, phase='train'):
+    def __init__(self, data_path, class_names, phase='train', depth_duplicate=False, data_transform=None):
 
         self.data_path = data_path
         self.phase = phase
         self.class_names = class_names
+        self.data_transform = data_transform
+        self.depth_duplicate = depth_duplicate
         assert set(self.class_names) <= set(mvtec3d_classes()), 'Class Are Out of Range'
 
         """
@@ -59,7 +74,7 @@ class MVTec3D(Dataset):
                                         ])
     def __getitem__(self, idx):
         x, y, mask, xyz = self.x[idx], self.y[idx], self.mask[idx], self.xyz[idx]
-
+        
         x = Image.open(x).convert('RGB')
         x = self.imge_transform(x)
 
@@ -68,8 +83,12 @@ class MVTec3D(Dataset):
         else:
             mask = Image.open(mask)
             mask = self.mask_transform(mask)
+        
+        tiff_img = read_tiff(xyz)
+        depth_map = tiff_to_depth(tiff=tiff_img, resized_img_size=self.data_transform['data_size'],
+                                  duplicate=self.depth_duplicate) 
 
-        return x, y, mask, xyz
+        return x, y, mask, depth_map  
 
     def __len__(self):
         return len(self.all_x)
