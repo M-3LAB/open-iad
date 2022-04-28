@@ -15,13 +15,20 @@ def mvtec3d_classes():
              "foam", "peach", "potato", "rope", "tire"]
 
 class MVTec3D(Dataset):
-    def __init__(self, data_path, phase='train'):
+    def __init__(self, data_path, class_names, phase='train'):
 
         self.data_path = data_path
         self.phase = phase
-        self.class_name = mvtec3d_classes()
-        assert set(self.class_name) <= set(mvtec3d_classes())
-        
+        self.class_names = class_names
+        assert set(self.class_names) <= set(mvtec3d_classes()), 'Class Are Out of Range'
+
+        """
+        x: RGB image
+        y: Label, 0: good, 1: bad(anomaly)
+        mask: anomaly mask 
+        xyz: TIFF image
+        """ 
+
         self.x = []
         self.y = []
         self.mask = []
@@ -42,7 +49,7 @@ class MVTec3D(Dataset):
                                         T.ToTensor()
                                         ])
     def __getitem__(self, idx):
-        x, y, mask, task_id, xyz = self.x[idx], self.y[idx], self.mask[idx], self.task_id[idx], self.xyz[idx]
+        x, y, mask, xyz = self.x[idx], self.y[idx], self.mask[idx], self.xyz[idx]
 
         x = Image.open(x).convert('RGB')
         x = self.imge_transform(x)
@@ -53,7 +60,7 @@ class MVTec3D(Dataset):
             mask = Image.open(mask)
             mask = self.mask_transform(mask)
 
-        return x, y, mask, task_id, xyz
+        return x, y, mask, xyz
 
     def __len__(self):
         return len(self.all_x)
@@ -65,59 +72,44 @@ class MVTec3D(Dataset):
         # test directory: bad and good cases 
         # ground truth directory: only bad case
 
-        # get classes in each task group
-        self.class_in_task = self.split_chunks(self.class_name, self.num_task)
-        # get data
-        for id, class_in_task in enumerate(self.class_in_task):
-            x, y, mask, xyz  = [], [], [], []
-            for class_name in class_in_task:
-                img_dir = os.path.join(self.data_path, class_name, self.phase)
+        x, y, mask, xyz  = [], [], [], []
+        for class_name in self.class_names:
+            img_dir = os.path.join(self.data_path, class_name, self.phase)
 
-                img_types = sorted(os.listdir(img_dir))
-                for img_type in img_types:
+            img_types = sorted(os.listdir(img_dir))
+            for img_type in img_types:
 
-                    # load images
-                    img_type_dir = os.path.join(img_dir, img_type)
-                    if not os.path.isdir(img_type_dir):
-                        continue
-                    img_path_list = sorted([os.path.join(img_type_dir, 'rgb', f)
-                                            for f in os.listdir(img_type_dir + '/rgb')
-                                            if f.endswith('.png')])
-                    x.extend(img_path_list)
-                    xyz_path_list = sorted([os.path.join(img_type_dir, 'xyz', f)
-                                            for f in os.listdir(img_type_dir + '/xyz')
-                                            if f.endswith('.tiff')])
+                # load images
+                img_type_dir = os.path.join(img_dir, img_type)
+                if not os.path.isdir(img_type_dir):
+                    continue
+                img_path_list = sorted([os.path.join(img_type_dir, 'rgb', f)
+                                        for f in os.listdir(img_type_dir + '/rgb')
+                                        if f.endswith('.png')])
+                x.extend(img_path_list)
+                xyz_path_list = sorted([os.path.join(img_type_dir, 'xyz', f)
+                                        for f in os.listdir(img_type_dir + '/xyz')
+                                        if f.endswith('.tiff')])
 
-
-                    if img_type == 'good':
-                        y.extend([0] * len(img_path_list))
-                        mask.extend([None] * len(img_path_list))
-                        # load xyz data
-                        xyz.extend(xyz_path_list)
-                    else:
-                        y.extend([1] * len(img_path_list))
-                        gt_type_dir = os.path.join(img_dir, img_type, 'gt')
-                        img_name_list = [os.path.splitext(os.path.basename(f))[0] for f in img_path_list]
-                        gt_path_list = [os.path.join(gt_type_dir, img_fname + '.png')
-                                        for img_fname in img_name_list]
-                        mask.extend(gt_path_list)
-                        # load xyz data
-                        xyz_type_dir = os.path.join(img_dir, img_type, 'xyz')
-                        img_name_list = [os.path.splitext(os.path.basename(f))[0] for f in img_path_list]
-                        xyz_path_list = [os.path.join(xyz_type_dir, img_fname + '.tiff')
-                                        for img_fname in img_name_list]
-                        xyz.extend(xyz_path_list)
+                if img_type == 'good':
+                    y.extend([0] * len(img_path_list))
+                    mask.extend([None] * len(img_path_list))
+                    # load xyz data
+                    xyz.extend(xyz_path_list)
+                else:
+                    y.extend([1] * len(img_path_list))
+                    gt_type_dir = os.path.join(img_dir, img_type, 'gt')
+                    img_name_list = [os.path.splitext(os.path.basename(f))[0] for f in img_path_list]
+                    gt_path_list = [os.path.join(gt_type_dir, img_fname + '.png')
+                                    for img_fname in img_name_list]
+                    mask.extend(gt_path_list)
+                    # load xyz data
+                    xyz_type_dir = os.path.join(img_dir, img_type, 'xyz')
+                    img_name_list = [os.path.splitext(os.path.basename(f))[0] for f in img_path_list]
+                    xyz_path_list = [os.path.join(xyz_type_dir, img_fname + '.tiff')
+                                    for img_fname in img_name_list]
+                    xyz.extend(xyz_path_list)
                         
-            # continual
-            task_id = [id for i in range(len(x))]
-            self.conti_len.append(len(x))
-
-            self.all_x.extend(x)
-            self.all_y.extend(y)
-            self.all_mask.extend(mask)
-            self.all_task_id.extend(task_id) 
-            self.all_xyz.extend(xyz) 
-
 
 class MVTecCL3D(Dataset):
     def __init__(self, data_path, learning_mode='centralized', phase='train', 
