@@ -6,6 +6,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms as T
 import tifffile as tiff
+import numpy as np
 
 __all__ = ['MVTec3D', 'mvtec3d_classes', 'MVTecCL3D']
 
