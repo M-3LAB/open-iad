@@ -9,3 +9,4 @@ mask_size: 224
 class_names: tire
 lr: 0.0001
 num_epochs: 300 
+depth_duplicate: False
