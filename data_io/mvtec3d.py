@@ -15,18 +15,13 @@ def mvtec3d_classes():
              "foam", "peach", "potato", "rope", "tire"]
 
 class MVTec3D(Dataset):
-    def __init__(self, data_path, learning_mode='centralized', phase='train', 
-                 data_transform=None, num_task=5):
+    def __init__(self, data_path, phase='train'):
 
         self.data_path = data_path
-        self.learning_mode = learning_mode
         self.phase = phase
-        self.data_transform = data_transform
         self.class_name = mvtec3d_classes()
         assert set(self.class_name) <= set(mvtec3d_classes())
         
-        self.num_task = num_task 
-        self.class_in_task = []
 
         self.all_x = []
         self.all_y = []
