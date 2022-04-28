@@ -22,20 +22,13 @@ class MVTec3D(Dataset):
         self.class_name = mvtec3d_classes()
         assert set(self.class_name) <= set(mvtec3d_classes())
         
-
-        self.all_x = []
-        self.all_y = []
-        self.all_mask = []
-        self.all_task_id = []
-        self.all_xyz = []
-
-        # continual
-        self.conti_len = []
-        self.continual_indices = []
+        self.x = []
+        self.y = []
+        self.mask = []
+        self.xyz = []
 
         # load dataset
         self.load_dataset()
-        self.allocate_task_data()
 
         # data preprocessing 
         self.imge_transform = T.Compose([T.Resize(self.data_transform['data_size']),
@@ -49,7 +42,7 @@ class MVTec3D(Dataset):
                                         T.ToTensor()
                                         ])
     def __getitem__(self, idx):
-        x, y, mask, task_id, xyz = self.all_x[idx], self.all_y[idx], self.all_mask[idx], self.all_task_id[idx], self.all_xyz[idx]
+        x, y, mask, task_id, xyz = self.x[idx], self.y[idx], self.mask[idx], self.task_id[idx], self.xyz[idx]
 
         x = Image.open(x).convert('RGB')
         x = self.imge_transform(x)
@@ -124,21 +117,6 @@ class MVTec3D(Dataset):
             self.all_mask.extend(mask)
             self.all_task_id.extend(task_id) 
             self.all_xyz.extend(xyz) 
-
-    def allocate_task_data(self):
-        start = 0
-        for num in self.conti_len:
-            end = start + num
-            indice = [i for i in range(start, end)]
-            random.shuffle(indice)
-            self.continual_indices.append(indice)
-            start = end
-
-    # split the arr into n chunks
-    @staticmethod
-    def split_chunks(arr, m):
-        n = int(math.ceil(len(arr) / float(m)))
-        return [arr[i:i + n] for i in range(0, len(arr), n)]
 
 
 class MVTecCL3D(Dataset):
