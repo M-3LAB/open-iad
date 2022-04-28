@@ -1,3 +1,4 @@
+data_path: '/disk/mvtec/3D'
 gpu_ids:
 - '01234567'
 num_workers: 4
@@ -5,6 +6,6 @@ batch_size: 8
 cl: False
 data_size: 224
 mask_size: 224
-class_name: tire
+class_names: tire
 lr: 0.0001
 num_epochs: 300 

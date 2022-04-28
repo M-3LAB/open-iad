@@ -3,9 +3,9 @@ import torch.nn as nn
 import yaml
 from configuration.mmad.config import parse_arguments_mmad 
 from tools.utilize import *
-from data_io.mvtec3d import MVTec3D, MVTecCL3D
+from data_io.mvtec3d import MVTec3D, MVTecCL3D, mvtec3d_classes
 from torch.utils.data import DataLoader
-from torch.utils.data.sampler import SubsetRandomSampler
+#from torch.utils.data.sampler import SubsetRandomSampler
 
 if __name__ == '__main__':
 
@@ -25,12 +25,17 @@ if __name__ == '__main__':
     mvtec3d_transform = {'data_size':para_dict['data_size'],
                          'mask_size':para_dict['mask_size']}
     
+    if para_dict['class_names'] == 'all':
+        class_names = mvtec3d_classes() 
+    else: 
+        class_names = para_dict['class_names']
+    
     if para_dict['dataset'] == 'mvtec3d':
         if para_dict['cl']:
             train_dataset = MVTecCL3D()
             valid_dataset = MVTecCL3D()
         else:
-            train_dataset = MVTec3D()
+            train_dataset = MVTec3D(data_path=para_dict['data_path'])
             valid_dataset = MVTec3D() 
 
     if not para_dict['cl']:
