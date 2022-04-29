@@ -39,7 +39,9 @@ if __name__ == '__main__':
                                     phase='train', depth_duplicate=para_dict['depth_duplicate'], 
                                     data_transform=mvtec3d_transform)
 
-            valid_dataset = MVTec3D() 
+            valid_dataset = MVTec3D(data_path=para_dict['data_path'], class_names=class_names,
+                                    phase='test', depth_deplicate=para_dict['depth_duplicate'],
+                                    data_transform=mvtec3d_transform) 
 
     if not para_dict['cl']:
         train_loader = DataLoader(train_dataset,

@@ -73,6 +73,8 @@ class MVTec3D(Dataset):
                                         T.ToTensor()
                                         ])
     def __getitem__(self, idx):
+        #TODO: Denoise
+        
         x, y, mask, xyz = self.x[idx], self.y[idx], self.mask[idx], self.xyz[idx]
         
         x = Image.open(x).convert('RGB')
