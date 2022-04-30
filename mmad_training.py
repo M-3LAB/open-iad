@@ -29,7 +29,7 @@ if __name__ == '__main__':
         class_names = mvtec3d_classes() 
     else: 
         class_names = para_dict['class_names']
-    
+
     if para_dict['dataset'] == 'mvtec3d':
         if para_dict['cl']:
             train_dataset = MVTecCL3D()
@@ -40,7 +40,7 @@ if __name__ == '__main__':
                                     data_transform=mvtec3d_transform)
 
             valid_dataset = MVTec3D(data_path=para_dict['data_path'], class_names=class_names,
-                                    phase='test', depth_deplicate=para_dict['depth_duplicate'],
+                                    phase='test', depth_duplicate=para_dict['depth_duplicate'],
                                     data_transform=mvtec3d_transform) 
 
     if not para_dict['cl']:

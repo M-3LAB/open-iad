@@ -41,9 +41,12 @@ class MVTec3D(Dataset):
 
         self.data_path = data_path
         self.phase = phase
-        self.class_names = class_names
+        if not isinstance(class_names, list):
+            self.class_names = [class_names] 
+
         self.data_transform = data_transform
         self.depth_duplicate = depth_duplicate
+        
         assert set(self.class_names) <= set(mvtec3d_classes()), 'Class is Out of Range'
 
         """
@@ -104,8 +107,8 @@ class MVTec3D(Dataset):
         # ground truth directory: only bad case
 
         x, y, mask, xyz  = [], [], [], []
-        for class_name in self.class_names:
-            img_dir = os.path.join(self.data_path, class_name, self.phase)
+        for cls in self.class_names:
+            img_dir = os.path.join(self.data_path, cls, self.phase)
 
             img_types = sorted(os.listdir(img_dir))
             for img_type in img_types:

@@ -14,8 +14,8 @@ import torchvision
 import glob
 
 __all__ = ['to_batch', 'seed_everything', 'parse_device_list', 'allocate_gpus', 
-           'merge_config', 'convert_list_float_type',
-           'weights_init_normal', 'load_model', 'merge_config', 'override_config', 'extract_config',
+           'merge_config', 'convert_list_float_type', 'weights_init_normal', 'load_model', 
+           'merge_config', 'override_config', 'extract_config',
            'record_path', 'save_arg', 'save_log', 'save_script', 'save_image', 'save_model']
 
 def to_batch(images, transforms, device):
