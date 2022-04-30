@@ -44,7 +44,7 @@ class MVTec3D(Dataset):
         self.class_names = class_names
         self.data_transform = data_transform
         self.depth_duplicate = depth_duplicate
-        assert set(self.class_names) <= set(mvtec3d_classes()), 'Class Are Out of Range'
+        assert set(self.class_names) <= set(mvtec3d_classes()), 'Class is Out of Range'
 
         """
         x: RGB image

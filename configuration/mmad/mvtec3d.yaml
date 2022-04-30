@@ -1,4 +1,7 @@
+dataset: mvtec3d
+seed: 1000
 data_path: '/disk/mvtec/3D'
+gpu_id: 3
 gpu_ids:
 - '01234567'
 num_workers: 4
