@@ -1,4 +1,4 @@
-import  matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 __all__ = ['show_cam_on_image', 'cv2heatmap', 'heatmap_on_image', 'min_max_norm',
            'cal_anomaly_map']
