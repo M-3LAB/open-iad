@@ -93,11 +93,11 @@ class MVTec3D(Dataset):
         depth_map = tiff_to_depth(tiff=tiff_img, resized_img_size=self.data_transform['data_size'],
                                   duplicate=self.depth_duplicate) 
 
-        #return x, y, mask, depth_map, xyz  
-        return {'rgb':x, 'label':y, 'gt_mask':mask, 'depth':depth_map, 'tiff': xyz} 
+        return x, y, mask, depth_map, xyz  
+        #return {'rgb':x, 'label':y, 'gt_mask':mask, 'depth':depth_map, 'tiff': xyz} 
 
     def __len__(self):
-        return len(self.all_x)
+        return len(self.x)
 
 
     def load_dataset(self):
@@ -106,7 +106,6 @@ class MVTec3D(Dataset):
         # test directory: bad and good cases 
         # ground truth directory: only bad case
 
-        x, y, mask, xyz  = [], [], [], []
         for cls in self.class_names:
             img_dir = os.path.join(self.data_path, cls, self.phase)
 
@@ -120,31 +119,31 @@ class MVTec3D(Dataset):
                 img_path_list = sorted([os.path.join(img_type_dir, 'rgb', f)
                                         for f in os.listdir(img_type_dir + '/rgb')
                                         if f.endswith('.png')])
-                x.extend(img_path_list)
+                self.x.extend(img_path_list)
                 xyz_path_list = sorted([os.path.join(img_type_dir, 'xyz', f)
                                         for f in os.listdir(img_type_dir + '/xyz')
                                         if f.endswith('.tiff')])
 
                 if img_type == 'good':
-                    y.extend([0] * len(img_path_list))
-                    mask.extend([None] * len(img_path_list))
+                    self.y.extend([0] * len(img_path_list))
+                    self.mask.extend([None] * len(img_path_list))
                     # load xyz data
-                    xyz.extend(xyz_path_list)
+                    self.xyz.extend(xyz_path_list)
                 else:
-                    y.extend([1] * len(img_path_list))
+                    self.y.extend([1] * len(img_path_list))
                     gt_type_dir = os.path.join(img_dir, img_type, 'gt')
                     img_name_list = [os.path.splitext(os.path.basename(f))[0] for f in img_path_list]
                     gt_path_list = [os.path.join(gt_type_dir, img_fname + '.png')
                                     for img_fname in img_name_list]
-                    mask.extend(gt_path_list)
+                    self.mask.extend(gt_path_list)
                     # load xyz data
                     xyz_type_dir = os.path.join(img_dir, img_type, 'xyz')
                     img_name_list = [os.path.splitext(os.path.basename(f))[0] for f in img_path_list]
                     xyz_path_list = [os.path.join(xyz_type_dir, img_fname + '.tiff')
                                     for img_fname in img_name_list]
-                    xyz.extend(xyz_path_list)
+                    self.xyz.extend(xyz_path_list)
 
-        assert len(x) == len(y) == len(xyz), 'Number of Image Should Be The Same'
+        assert len(self.x) == len(self.y) == len(self.xyz), 'Number of Image Should Be The Same'
                         
 
 class MVTecCL3D(Dataset):
