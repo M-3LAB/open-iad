@@ -49,16 +49,16 @@ if __name__ == '__main__':
                                   num_workers=para_dict['num_workers'],
                                   shuffle=False)
 
-        #valid_loader = DataLoader(valid_dataset, num_workers=para_dict['num_workers'],
-        #                          batch_size=para_dict['batch_size'], shuffle=False)
+        valid_loader = DataLoader(valid_dataset, num_workers=para_dict['num_workers'],
+                                  batch_size=para_dict['batch_size'], shuffle=False)
 
     #TODO: Model 
 
     for i, batch in enumerate(train_loader):
-        x, y, mask, depth_map, xyz = batch
-        #img = batch['rgb']
-        #label = batch['label']
-        #depth_map = batch['depth_map']
+        #x, y, mask, depth_map, xyz = batch
+        img = batch['rgb']
+        label = batch['label']
+        depth_map = batch['depth']
 
     #TODO: Self-Supervised Training 
 

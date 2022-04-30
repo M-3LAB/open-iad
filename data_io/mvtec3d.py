@@ -93,8 +93,8 @@ class MVTec3D(Dataset):
         depth_map = tiff_to_depth(tiff=tiff_img, resized_img_size=self.data_transform['data_size'],
                                   duplicate=self.depth_duplicate) 
 
-        return x, y, mask, depth_map, xyz  
-        #return {'rgb':x, 'label':y, 'gt_mask':mask, 'depth':depth_map, 'tiff': xyz} 
+        #return x, y, mask, depth_map, xyz  
+        return {'rgb':x, 'label':y, 'gt_mask':mask, 'depth':depth_map, 'tiff': xyz} 
 
     def __len__(self):
         return len(self.x)
