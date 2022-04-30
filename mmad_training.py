@@ -54,5 +54,10 @@ if __name__ == '__main__':
 
     #TODO: Model 
 
+    for i, batch in enumerate(train_loader):
+        img = batch['rgb']
+        label = batch['label']
+        depth_map = batch['depth_map']
+
     #TODO: Self-Supervised Training 
 
