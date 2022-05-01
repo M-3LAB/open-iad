@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
 
-__all__ = ['DepthDis']
+__all__ = ['DepthSeg']
 
-class DepthDis(nn.Module):
+class DepthSeg(nn.Module):
     def __init__(self):
-        super(DepthDis).__init__()
+        super(DepthSeg).__init__()
         pass
 
     def forward(self, x):

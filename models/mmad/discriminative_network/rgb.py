@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
 
-__all__=['RGBDis']
+__all__=['RGBSeg']
 
-class RGBDis(nn.Module):
+class RGBSeg(nn.Module):
     def __init__(self):
-        super(RGBDis, self).__init__()
+        super(RGBSeg, self).__init__()
         pass
 
     def forward(self, x):
