@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from skimage import io
 
 __all__ = ['show_cam_on_image', 'cv2heatmap', 'heatmap_on_image', 'min_max_norm',
            'cal_anomaly_map']

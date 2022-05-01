@@ -56,9 +56,9 @@ if __name__ == '__main__':
 
     for i, batch in enumerate(train_loader):
         #x, y, mask, depth_map, xyz = batch
-        img = batch['rgb']
-        label = batch['label']
-        depth_map = batch['depth']
+        img = batch['rgb'].to(device)
+        label = batch['label'].to(device)
+        depth_map = batch['depth'].to(device)
 
     #TODO: Self-Supervised Training 
 
