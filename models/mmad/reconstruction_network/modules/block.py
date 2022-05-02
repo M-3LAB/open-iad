@@ -31,18 +31,18 @@ class StemBlock(nn.Module):
 DRAEM Reconstructive Encoder Block
 """
 class EncBlock(nn.Module):
-    def __init__(self, inc, expansion_ratio, ks=3, padding=1):
+    def __init__(self, inc, ouc, ks=3, padding=1):
         super(EncBlock).__init__()
         self.inc = inc
-        self.exp = expansion_ratio
+        self.ouc = ouc
         self.ks = ks
         self.pad = padding
         self.block = nn.Sequential(
-            nn.Conv2d(self.inc, self.inc*self.exp, kernel_size=self.ks, padding=self.pad),
-            nn.BatchNorm2d(self.inc*self.exp),
+            nn.Conv2d(self.inc, self.ouc, kernel_size=self.ks, padding=self.pad),
+            nn.BatchNorm2d(self.ouc),
             nn.ReLU(inplace=True),
-            nn.Conv2d(self.inc*self.exp, self.inc*self.exp, kernel_size=self.ks, padding=self.pad),
-            nn.BatchNorm2d(self.inc*self.exp),
+            nn.Conv2d(self.ouc, self.ouc, kernel_size=self.ks, padding=self.pad),
+            nn.BatchNorm2d(self.ouc),
             nn.ReLU(inplace=True),
             nn.MaxPooling2d(kernel_size=2)
         ) 
@@ -83,19 +83,19 @@ DRAEM Reconstructive Decoder Downsampling Block
 """
 
 class DecDownBlock(nn.Module):
-    def __init__(self, inc, divide_ratio, ks=3, padding=1):
+    def __init__(self, inc, ouc, ks=3, padding=1):
         super(DecDownBlock).__init__()
         self.inc = inc
-        self.div = divide_ratio
         self.ks = ks
         self.pad = padding
+        self.ouc = ouc
 
         self.block = nn.Sequential(
-            nn.Conv2d(self.inc, self.inc, kernel_size=self.ks, padding=self.pad),
-            nn.BatchNorm2d(self.inc),
+            nn.Conv2d(self.inc, self.ouc, kernel_size=self.ks, padding=self.pad),
+            nn.BatchNorm2d(self.ouc),
             nn.ReLU(inplace=True),
-            nn.Conv2d(self.inc, self.inc, kernel_size=self.ks, padding=self.pad),
-            nn.BatchNorm2d(self.inc),
+            nn.Conv2d(self.ouc, self.ouc, kernel_size=self.ks, padding=self.pad),
+            nn.BatchNorm2d(self.ouc),
             nn.ReLU(inplace=True)
         )
     
