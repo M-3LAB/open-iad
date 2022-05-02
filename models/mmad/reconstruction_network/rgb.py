@@ -17,5 +17,10 @@ class RGBRecons(nn.Module):
         self.enc4 = EncBlock(inc=self.base_width*4, ouc=base_width*8)
         self.enc5 = StemBlock(inc=self.base_width*8, ouc=self.base_width*8) 
 
+
     def forward(self, x):
-        pass
+        d1 = self.enc1(x)
+        d2 = self.enc2(x)
+        d3 = self.enc3(x)
+        d4 = self.enc4(x)
+        d5 = self.enc5(x)
