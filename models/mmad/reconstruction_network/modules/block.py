@@ -63,10 +63,11 @@ class DecDownBlock(nn.Module):
         self.pad = padding
 
         self.block = nn.Sequential(
-            nn.Conv2d(),
-            nn.BatchNorm2d(),
+            nn.Conv2d(self.inc, self.inc, kernel_size=self.ks, padding=self.pad),
+            nn.BatchNorm2d(self.inc),
             nn.ReLU(inplace=True),
-            nn.BatchNorm2d(),
+            nn.Conv2d(self.inc, self.inc, kernel_size=self.ks, padding=self.pad),
+            nn.BatchNorm2d(self.inc),
             nn.ReLU(inplace=True)
         )
     
