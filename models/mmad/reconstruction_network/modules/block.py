@@ -7,12 +7,25 @@ __all__ = ['EncBlock', 'DecUpBlock', 'DecDownBlock', 'StemBlock']
 DRAEM Stem Block
 """
 class StemBlock(nn.Module):
-    def __init__(self, inc):
+    def __init__(self, inc, ouc, ks=3, padding=1):
         super().__init__()
         self.inc = inc
+        self.ouc = ouc
+        self.ks = ks
+        self.pad = padding
+
+        self.block = nn.Sequential(
+            nn.Conv2d(),
+            nn.BatchNorm2d(),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(),
+            nn.BatchNorm2d(),
+            nn.ReLU(inplace=True) 
+        )
     
     def forward(self, x):
-        pass
+       output = self.block(x) 
+       return output
 
 """
 DRAEM Reconstructive Encoder Block
