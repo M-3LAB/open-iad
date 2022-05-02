@@ -1,13 +1,13 @@
 import torch
 import torch.nn as nn
 
-__all__ = ['EncBlock', 'DecBlock']
+__all__ = ['EncBlock', 'DecUpBlock', 'DecDownBlock']
 
 """
 DRAEM Reconstructive Encoder Block
 """
 class EncBlock(nn.Module):
-    def __init__(self, inc, expansion_ratio, ks, padding=1):
+    def __init__(self, inc, expansion_ratio, ks=3, padding=1):
         super(EncBlock).__init__()
         self.inc = inc
         self.exp = expansion_ratio
@@ -52,10 +52,20 @@ class DecUpBlock(nn.Module):
         return output
 
 class DecDownBlock(nn.Module):
-    def __init__(self, inc, divide_ratio):
+    def __init__(self, inc, divide_ratio, ks=3):
         super(DecDownBlock).__init__()
         self.inc = inc
         self.div = divide_ratio
+        self.ks = ks
+
+        self.block = nn.Sequential(
+            nn.Conv2d(),
+            nn.BatchNorm2d(),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(),
+            nn.ReLU(inplace=True)
+        )
     
     def forward(self, x):
-        pass
+        output = self.block(x)
+        return output
