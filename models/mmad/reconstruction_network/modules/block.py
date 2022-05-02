@@ -50,3 +50,12 @@ class DecUpBlock(nn.Module):
     def forward(self, x):
         output = self.block(x) 
         return output
+
+class DecDownBlock(nn.Module):
+    def __init__(self, inc, divide_ratio):
+        super(DecDownBlock).__init__()
+        self.inc = inc
+        self.div = divide_ratio
+    
+    def forward(self, x):
+        pass
