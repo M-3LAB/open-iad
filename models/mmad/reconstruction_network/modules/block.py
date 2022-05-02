@@ -36,5 +36,17 @@ class DecUpBlock(nn.Module):
     def __init__(self, inc, up_mode='bilinear', scale_factors=2, align_corners=True):
         super(DecUpBlock).__init__()
 
+        self.inc = inc
+        self.up_mode = up_mode
+        self.scale_factors = scale_factors
+        self.align_corners = align_corners
+        self.block = nn.Sequential(
+            nn.Upsample(),
+            nn.Conv2d(),
+            nn.BatchNorm2d(),
+            nn.ReLU()
+        )
+
     def forward(self, x):
-        pass
+        output = self.block(x) 
+        return output
