@@ -33,18 +33,21 @@ DRAEM Reconstructive Decoder Upsampling Block
 """
 
 class DecUpBlock(nn.Module):
-    def __init__(self, inc, up_mode='bilinear', scale_factors=2, align_corners=True):
+    def __init__(self, inc, ks=3, padding=1, up_mode='bilinear', scale_factors=2, align_corners=True):
         super(DecUpBlock).__init__()
 
         self.inc = inc
         self.up_mode = up_mode
         self.scale_factors = scale_factors
         self.align_corners = align_corners
+        self.ks = ks
+        self.pad = padding
+
         self.block = nn.Sequential(
-            nn.Upsample(),
-            nn.Conv2d(),
-            nn.BatchNorm2d(),
-            nn.ReLU()
+            nn.Upsample(scale_factors=self.scale_factors, mode=self.up_mode, align_corners=self.align_corners),
+            nn.Conv2d(self.inc, self.inc, kernel_size=self.ks, padding=self.pad),
+            nn.BatchNorm2d(self.inc),
+            nn.ReLU(inplace=True)
         )
 
     def forward(self, x):
@@ -52,11 +55,12 @@ class DecUpBlock(nn.Module):
         return output
 
 class DecDownBlock(nn.Module):
-    def __init__(self, inc, divide_ratio, ks=3):
+    def __init__(self, inc, divide_ratio, ks=3, padding=1):
         super(DecDownBlock).__init__()
         self.inc = inc
         self.div = divide_ratio
         self.ks = ks
+        self.pad = padding
 
         self.block = nn.Sequential(
             nn.Conv2d(),
