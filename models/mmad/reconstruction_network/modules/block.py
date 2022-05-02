@@ -1,7 +1,18 @@
 import torch
 import torch.nn as nn
 
-__all__ = ['EncBlock', 'DecUpBlock', 'DecDownBlock']
+__all__ = ['EncBlock', 'DecUpBlock', 'DecDownBlock', 'StemBlock']
+
+"""
+DRAEM Stem Block
+"""
+class StemBlock(nn.Module):
+    def __init__(self, inc):
+        super().__init__()
+        self.inc = inc
+    
+    def forward(self, x):
+        pass
 
 """
 DRAEM Reconstructive Encoder Block
@@ -53,6 +64,10 @@ class DecUpBlock(nn.Module):
     def forward(self, x):
         output = self.block(x) 
         return output
+
+"""
+DRAEM Reconstructive Decoder Downsampling Block
+"""
 
 class DecDownBlock(nn.Module):
     def __init__(self, inc, divide_ratio, ks=3, padding=1):
