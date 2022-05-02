@@ -10,6 +10,7 @@ class RGBRecons(nn.Module):
         super(RGBRecons, self).__init__()
         self.inc = inc
         self.base_width = base_width
+        self.stem = StemBlock(inc=self.inc, ouc=self.base_width)
         # Encoder Part
 
     def forward(self, x):
