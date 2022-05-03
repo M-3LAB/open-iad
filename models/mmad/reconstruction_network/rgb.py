@@ -19,7 +19,7 @@ class RGBRecons(nn.Module):
         self.enc5 = StemBlock(inc=self.base_width*8, ouc=self.base_width*8) 
 
         #Decoder Part
-        self.up1 = DecUpBlock() 
+        self.up1 = DecUpBlock(inc=self.base_width*8, ouc=self.base_width*8) 
         self.dec1 = DecDownBlock()
 
     
