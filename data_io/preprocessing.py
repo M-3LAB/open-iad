@@ -9,6 +9,7 @@ import numpy as np
 from pathlib import Path
 
 """
+MVTec3D Preprocessing
 pc: Point Cloud
 """
 
