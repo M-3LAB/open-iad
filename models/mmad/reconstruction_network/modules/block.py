@@ -92,10 +92,10 @@ class DecDownBlock(nn.Module):
         self.ouc = ouc
 
         self.block = nn.Sequential(
-            nn.Conv2d(self.inc, self.ouc, kernel_size=self.ks, padding=self.pad),
-            nn.BatchNorm2d(self.ouc),
+            nn.Conv2d(self.inc, self.inc, kernel_size=self.ks, padding=self.pad),
+            nn.BatchNorm2d(self.inc),
             nn.ReLU(inplace=True),
-            nn.Conv2d(self.ouc, self.ouc, kernel_size=self.ks, padding=self.pad),
+            nn.Conv2d(self.inc, self.ouc, kernel_size=self.ks, padding=self.pad),
             nn.BatchNorm2d(self.ouc),
             nn.ReLU(inplace=True)
         )

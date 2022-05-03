@@ -6,10 +6,11 @@ __all__ = ['RGBRecons']
 
 class RGBRecons(nn.Module):
 
-    def __init__(self, inc, base_width):
+    def __init__(self, inc, base_width, fin_ouc):
         super(RGBRecons, self).__init__()
         self.inc = inc
         self.base_width = base_width
+        self.fin_ouc = fin_ouc
 
         # Encoder Part
         self.enc1 = EncBlock(inc=self.inc, ouc=self.base_width)
@@ -20,7 +21,18 @@ class RGBRecons(nn.Module):
 
         #Decoder Part
         self.up1 = DecUpBlock(inc=self.base_width*8, ouc=self.base_width*8) 
-        self.dec1 = DecDownBlock()
+        self.dec1 = DecDownBlock(inc=self.base_width*8, ouc=self.base_width*4)
+
+        self.up2 = DecUpBlock(inc=self.base_width*4, ouc=self.base_width*4)
+        self.dec2 = DecDownBlock(inc=self.base_with*4, ouc=self.base_width*2)
+
+        self.up3 = DecUpBlock(inc=self.base_width*2, ouc=self.base_with*2)
+        self.dec3 = DecDownBlock(inc=self.base_with*2, ouc=self.base_width)
+
+        self.up4 = DecUpBlock(inc=self.base_width, ouc=self.base_width)
+        self.dec4 = DecDownBlock(inc=self.base_width, ouc=self.base_width)
+
+        self.fin_out = nn.Conv2d(base_width, self.fin_ouc, kernel_size=3, padding=1)
 
     
 
