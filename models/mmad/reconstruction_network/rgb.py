@@ -34,12 +34,11 @@ class RGBRecons(nn.Module):
 
         self.fin_out = nn.Conv2d(base_width, self.fin_ouc, kernel_size=3, padding=1)
 
-    
-
-
     def forward(self, x):
         d1 = self.enc1(x)
         d2 = self.enc2(x)
         d3 = self.enc3(x)
         d4 = self.enc4(x)
         d5 = self.enc5(x)
+
+        up1 = self.up1(d5)
