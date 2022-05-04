@@ -10,6 +10,7 @@ class RGBRecons(nn.Module):
         super(RGBRecons, self).__init__()
         self.inc = inc
         self.base_width = base_width
+        # Final output channel
         self.fin_ouc = fin_ouc
 
         # Encoder Part
