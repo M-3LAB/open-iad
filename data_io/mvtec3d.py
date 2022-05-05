@@ -81,7 +81,7 @@ class MVTec3D(Dataset):
         
         x, y, mask, xyz = self.x[idx], self.y[idx], self.mask[idx], self.xyz[idx]
         
-        #TODO: add perlin noise 
+        #TODO: add perlin noise, JIAQI! 
         if self.perlin:
             pass
         else:
@@ -91,6 +91,7 @@ class MVTec3D(Dataset):
         if y == 0:
             mask = torch.zeros([1, x.shape[1], x.shape[2]])
         elif self.perlin:
+            #TODO: add perlin noise, JIAQI!
             pass
         else:
             mask = Image.open(mask)
