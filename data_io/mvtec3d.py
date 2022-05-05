@@ -37,7 +37,8 @@ def tiff_to_depth(tiff, resized_img_size=224, duplicate=False):
 
 
 class MVTec3D(Dataset):
-    def __init__(self, data_path, class_names, phase='train', depth_duplicate=False, data_transform=None):
+    def __init__(self, data_path, class_names, phase='train', depth_duplicate=False, data_transform=None,
+                 perlin=False):
 
         self.data_path = data_path
         self.phase = phase
@@ -46,6 +47,7 @@ class MVTec3D(Dataset):
 
         self.data_transform = data_transform
         self.depth_duplicate = depth_duplicate
+        self.perlin = perlin
         
         assert set(self.class_names) <= set(mvtec3d_classes()), 'Class is Out of Range'
 
@@ -76,15 +78,20 @@ class MVTec3D(Dataset):
                                         T.ToTensor()
                                         ])
     def __getitem__(self, idx):
-        #TODO: Denoise
         
         x, y, mask, xyz = self.x[idx], self.y[idx], self.mask[idx], self.xyz[idx]
         
-        x = Image.open(x).convert('RGB')
-        x = self.imge_transform(x)
+        #TODO: add perlin noise 
+        if self.perlin:
+            pass
+        else:
+            x = Image.open(x).convert('RGB')
+            x = self.imge_transform(x)
 
         if y == 0:
             mask = torch.zeros([1, x.shape[1], x.shape[2]])
+        elif self.perlin:
+            pass
         else:
             mask = Image.open(mask)
             mask = self.mask_transform(mask)
