@@ -41,7 +41,7 @@ def tiff_to_depth(tiff, resized_img_size=224, duplicate=False):
 
 class MVTec3D(Dataset):
     def __init__(self, data_path, class_names, phase='train', depth_duplicate=False, data_transform=None,
-                 perlin=False):
+                 perlin=False, anomaly_source_path=None):
         # no perlin in test dataloader
         if(phase=='test'):
             self.perlin=False
@@ -53,6 +53,8 @@ class MVTec3D(Dataset):
         self.data_transform = data_transform
         self.depth_duplicate = depth_duplicate
         self.perlin = perlin
+        self.resize_shape = self.data_transform['data_size']
+        self.anomaly_source_path = anomaly_source_path
         
         assert set(self.class_names) <= set(mvtec3d_classes()), 'Class is Out of Range'
 
@@ -105,7 +107,10 @@ class MVTec3D(Dataset):
                              )
         return aug
 
-    def augment_image(self, image, anomaly_source_path):
+    def augment_image(self, image, anomaly_source_paths):
+        anomaly_source_paths_list = os.listdir(anomaly_source_paths)
+        anomaly_source_idx = torch.randint(0, len(anomaly_source_paths_list), (1,)).item()
+        anomaly_source_path = anomaly_source_paths+anomaly_source_paths_list[anomaly_source_idx]
         aug = self.randAugmenter()
         perlin_scale = 6
         min_perlin_scale = 0
@@ -155,7 +160,9 @@ class MVTec3D(Dataset):
         augmented_image = np.transpose(augmented_image, (2, 0, 1))
         image = np.transpose(image, (2, 0, 1))
         anomaly_mask = np.transpose(anomaly_mask, (2, 0, 1))
-        return image, augmented_image, anomaly_mask, has_anomaly
+        # return image, augmented_image, anomaly_mask, has_anomaly
+        # return torch.from_numpy(image), torch.from_numpy(augmented_image), torch.from_numpy(anomaly_mask), torch.from_numpy(has_anomaly)
+        return torch.from_numpy(augmented_image), torch.from_numpy(anomaly_mask), torch.from_numpy(has_anomaly)
     
     def __getitem__(self, idx):
         
@@ -163,17 +170,14 @@ class MVTec3D(Dataset):
         
         #TODO: add perlin noise, JIAQI! 
         if self.perlin:
-            pass
+            x, mask, y = self.transform_image(x, self.anomaly_source_path)
+        elif y == 0:
+            x = Image.open(x).convert('RGB')
+            x = self.imge_transform(x)
+            mask = torch.zeros([1, x.shape[1], x.shape[2]])
         else:
             x = Image.open(x).convert('RGB')
             x = self.imge_transform(x)
-
-        if y == 0:
-            mask = torch.zeros([1, x.shape[1], x.shape[2]])
-        elif self.perlin:
-            #TODO: add perlin noise, JIAQI!
-            pass
-        else:
             mask = Image.open(mask)
             mask = self.mask_transform(mask)
         
