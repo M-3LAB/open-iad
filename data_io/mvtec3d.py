@@ -42,9 +42,6 @@ def tiff_to_depth(tiff, resized_img_size=224, duplicate=False):
 class MVTec3D(Dataset):
     def __init__(self, data_path, class_names, phase='train', depth_duplicate=False, data_transform=None,
                  perlin=False, anomaly_source_path=None):
-        # no perlin in test dataloader
-        if(phase=='test'):
-            self.perlin=False
         self.data_path = data_path
         self.phase = phase
         if not isinstance(class_names, list):
@@ -52,7 +49,11 @@ class MVTec3D(Dataset):
 
         self.data_transform = data_transform
         self.depth_duplicate = depth_duplicate
-        self.perlin = perlin
+        # no perlin in test dataloader
+        if(phase=='test'):
+            self.perlin=False
+        else:
+            self.perlin = perlin
         self.resize_shape = self.data_transform['data_size']
         self.anomaly_source_path = anomaly_source_path
         
