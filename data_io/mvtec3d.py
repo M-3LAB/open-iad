@@ -38,10 +38,18 @@ def tiff_to_depth(tiff, resized_img_size=224, duplicate=False):
                                                         mode='nearest')
     return resized_depth_map
 
+def getFileList(path, list_name):
+    for file in os.listdir(path):
+        file_path = os.path.join(path,file)
+        if os.path.isdir(file_path):
+            getFileList(file_path, list_name)
+        else:
+            list_name.append(file_path)
+
 
 class MVTec3D(Dataset):
     def __init__(self, data_path, class_names, phase='train', depth_duplicate=False, data_transform=None,
-                 perlin=False, anomaly_source_path=None):
+                 perlin=False, anomaly_rgb_source_path=None):
         self.data_path = data_path
         self.phase = phase
         if not isinstance(class_names, list):
@@ -50,12 +58,14 @@ class MVTec3D(Dataset):
         self.data_transform = data_transform
         self.depth_duplicate = depth_duplicate
         # no perlin in test dataloader
-        if(phase=='test'):
+        if phase=='test' :
             self.perlin=False
         else:
             self.perlin = perlin
         self.resize_shape = self.data_transform['data_size']
-        self.anomaly_source_path = anomaly_source_path
+        self.anomaly_rgb_source_list = []
+        if(perlin==True):
+            getFileList(anomaly_rgb_source_path, self.anomaly_rgb_source_list)
         
         assert set(self.class_names) <= set(mvtec3d_classes()), 'Class is Out of Range'
 
@@ -108,10 +118,9 @@ class MVTec3D(Dataset):
                              )
         return aug
 
-    def augment_image(self, image, anomaly_source_paths):
-        anomaly_source_paths_list = os.listdir(anomaly_source_paths)
+    def augment_image(self, image, anomaly_source_paths_list):
         anomaly_source_idx = torch.randint(0, len(anomaly_source_paths_list), (1,)).item()
-        anomaly_source_path = anomaly_source_paths+anomaly_source_paths_list[anomaly_source_idx]
+        anomaly_source_path = anomaly_source_paths_list[anomaly_source_idx]
         aug = self.randAugmenter()
         perlin_scale = 6
         min_perlin_scale = 0
@@ -148,7 +157,9 @@ class MVTec3D(Dataset):
                 has_anomaly=0.0
             return augmented_image, msk, np.array([has_anomaly],dtype=np.float32)
 
-    def transform_image(self, image_path, anomaly_source_path):
+    def transform_image(self, image_path, anomaly_source_list = None):
+        if anomaly_source_list == None:
+            anomaly_source_list = self.anomaly_rgb_source_list
         image = cv2.imread(image_path)
         image = cv2.resize(image, dsize=(self.resize_shape[1], self.resize_shape[0]))
 
@@ -157,7 +168,7 @@ class MVTec3D(Dataset):
             image = self.rot(image=image)
 
         image = np.array(image).reshape((image.shape[0], image.shape[1], image.shape[2])).astype(np.float32) / 255.0
-        augmented_image, anomaly_mask, has_anomaly = self.augment_image(image, anomaly_source_path)
+        augmented_image, anomaly_mask, has_anomaly = self.augment_image(image, anomaly_source_list)
         augmented_image = np.transpose(augmented_image, (2, 0, 1))
         image = np.transpose(image, (2, 0, 1))
         anomaly_mask = np.transpose(anomaly_mask, (2, 0, 1))
