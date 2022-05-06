@@ -186,6 +186,8 @@ class MVTec3D(Dataset):
         #TODO: add perlin noise, JIAQI! 
         if self.perlin:
             x, mask, y = self.transform_image(x, self.anomaly_source_path)
+            x = x.unsqueeze()
+            mask = mask.unsqueeze()
         elif y == 0:
             x = Image.open(x).convert('RGB')
             x = self.imge_transform(x)
@@ -195,6 +197,8 @@ class MVTec3D(Dataset):
             x = self.imge_transform(x)
             mask = Image.open(mask)
             mask = self.mask_transform(mask)
+        
+        y = y.unsqueeze()
         
         tiff_img = read_tiff(xyz)
         depth_map = tiff_to_depth(tiff=tiff_img, resized_img_size=self.data_transform['data_size'],
