@@ -50,6 +50,9 @@ def getFileList(path, list_name):
 class MVTec3D(Dataset):
     def __init__(self, data_path, class_names, phase='train', depth_duplicate=False, data_transform=None,
                  perlin=False, anomaly_rgb_source_path=None):
+        """
+        anomaly_rgb_source_path: str, noise image dir
+        """
         self.data_path = data_path
         self.phase = phase
         if not isinstance(class_names, list):
