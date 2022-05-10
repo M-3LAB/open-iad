@@ -69,6 +69,8 @@ class MVTec3D(Dataset):
         self.phase = phase
         if not isinstance(class_names, list):
             self.class_names = [class_names] 
+        else:
+            self.class_names = class_names
 
         self.data_transform = data_transform
         self.depth_duplicate = depth_duplicate
@@ -78,7 +80,6 @@ class MVTec3D(Dataset):
         else:
             self.resize_shape = [256,256]
         self.aug_method = aug_method
-        
         
         
         assert set(self.class_names) <= set(mvtec3d_classes()), 'Class is Out of Range'

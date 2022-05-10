@@ -172,7 +172,7 @@ def transform_image_DREAM_noperlin(image, resize_shape=[256,256]):
     image = normlize(image)
     image = np.array(image).reshape((image.shape[0], image.shape[1], 3)).astype(np.float32)
     image = np.transpose(image, (2, 0, 1))
-    return torch.from_numpy(image).unsqueeze(0)
+    return torch.from_numpy(image)
 
 def transform_depth_DREAM_noperlin(image, resize_shape=[256,256], depth_duplicate=1):
     if resize_shape != None:
@@ -181,17 +181,13 @@ def transform_depth_DREAM_noperlin(image, resize_shape=[256,256], depth_duplicat
     image = np.array(image).reshape((image.shape[0], image.shape[1], 3)).astype(np.float32)
     image = np.transpose(image, (2, 0, 1))
     if(depth_duplicate==1):
-        return torch.from_numpy(image[0,:,:]).unsqueeze(0)
+        return torch.from_numpy(image[0,:,:])
     else:
-        return torch.from_numpy(image).unsqueeze(0)
+        return torch.from_numpy(image)
 
 def aug_DREAM_3D(x, xyz, mask, y, phase='train', depth_duplicate=1, resize_shape=[256,256]):
     if phase=='train':
         x, depth_map, mask, y = transform_image_perlin(x, xyz, resize_shape=resize_shape)
-        x = x.unsqueeze(0)
-        mask = mask.unsqueeze(0)
-        depth_map = depth_map.unsqueeze(0)
-        y = y.unsqueeze(0)
     elif (phase == 'test' and y == 0):
         x = cv2.imread(x)
         x = transform_image_DREAM_noperlin(x)
@@ -199,7 +195,7 @@ def aug_DREAM_3D(x, xyz, mask, y, phase='train', depth_duplicate=1, resize_shape
         tiff_img = read_tiff(xyz)
         depth_map = transform_depth_DREAM_noperlin(tiff_img, resize_shape=resize_shape, depth_duplicate=depth_duplicate)
         y = np.array([0], dtype=np.float32)
-        y = torch.from_numpy(y).unsqueeze(0)
+        y = torch.from_numpy(y)
     else:
         x = cv2.imread(x)
         x = transform_image_DREAM_noperlin(x)
@@ -208,6 +204,6 @@ def aug_DREAM_3D(x, xyz, mask, y, phase='train', depth_duplicate=1, resize_shape
         tiff_img = read_tiff(xyz)
         depth_map = transform_depth_DREAM_noperlin(tiff_img, resize_shape=resize_shape, depth_duplicate=depth_duplicate)
         y = np.array([1], dtype=np.float32)
-        y = torch.from_numpy(y).unsqueeze(0)
+        y = torch.from_numpy(y)
     
     return x, y, mask, depth_map
