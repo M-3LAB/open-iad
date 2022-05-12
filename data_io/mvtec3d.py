@@ -23,7 +23,7 @@ def read_tiff(tiff):
     tiff_img = tifffile.imread(tiff)
     return tiff_img
 
-def tiff_to_depth(tiff, resized_img_size=224, duplicate=False):
+def tiff_to_depth(tiff, resized_img_size=256, duplicate=False):
     depth_map = np.array(tiff[:, :, 2])
     # Duplicate depth_map into 3 channels, Convert numpy format into BCHW
     if duplicate: 
@@ -34,7 +34,7 @@ def tiff_to_depth(tiff, resized_img_size=224, duplicate=False):
         depth_map = torch.from_numpy(depth_map).unsqueeze(dim=0).unsqueeze(dim=0)
 
     # Downsampling, Nearest Interpolation
-    resized_depth_map = torch.nn.functional.interpolate(depth_map, size=(resized_img_size, resized_img_size),
+    resized_depth_map = torch.nn.functional.interpolate(depth_map, size=(resized_img_size[0], resized_img_size[1]),
                                                         mode='nearest')
     return resized_depth_map
 
@@ -45,22 +45,6 @@ def getFileList(path, list_name):
             getFileList(file_path, list_name)
         else:
             list_name.append(file_path)
-
-def get_depth_image_list():
-    depth_list_sun3d = glob.glob(r"/disk2/SUNRGBD/xtion/sun3ddata/*/*/*/depth/*.png")
-    depth_list_other = glob.glob(r"/disk2/SUNRGBD/*/*/*/depth/*.png")
-    # print(len(depth_list_other))
-    # print(len(depth_list_sun3d))
-    depth_list = depth_list_sun3d + depth_list_other
-    return depth_list
-
-def get_rgb_image_list():
-    image_list_sun3d = glob.glob(r"/disk2/SUNRGBD/xtion/sun3ddata/*/*/*/image/*.jpg")
-    image_list_other = glob.glob(r"/disk2/SUNRGBD/*/*/*/image/*.jpg")
-    # print(len(image_list_other))
-    # print(len(image_list_sun3d))
-    image_list = image_list_sun3d + image_list_other
-    return image_list
 
 class MVTec3D(Dataset):
     def __init__(self, data_path, class_names, phase='train', depth_duplicate=False, data_transform=None,
@@ -134,7 +118,7 @@ class MVTec3D(Dataset):
                 tiff_img = read_tiff(xyz)
                 depth_map = tiff_to_depth(tiff=tiff_img, resized_img_size=self.data_transform['data_size'],
                                     duplicate=self.depth_duplicate)
-            y = torch.from_numpy(y).unsqueeze(0)
+            y = torch.from_numpy(y)
         
          
 
