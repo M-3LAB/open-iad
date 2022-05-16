@@ -7,6 +7,7 @@ import cv2
 import imgaug.augmenters as iaa
 import glob
 from data_io.augmentation.perlin import rand_perlin_2d_np
+import os
 
 __all__ =  ['mvtec_2d_resize', 'mvtec_2d_image_transform', 'mvtec_2d_mask_transform', 'aug_DREAM_3D']
 
@@ -47,28 +48,32 @@ def tiff_to_depth(tiff, resized_img_size=256, duplicate=False):
     return resized_depth_map
 
 augmenters_DREAM = [iaa.GammaContrast((0.5,2.0),per_channel=True),
-                iaa.MultiplyAndAddToBrightness(mul=(0.8,1.2),add=(-30,30)),
-                iaa.pillike.EnhanceSharpness(),
-                iaa.AddToHueAndSaturation((-50,50),per_channel=True),
-                iaa.Solarize(0.5, threshold=(32,128)),
-                iaa.Posterize(),
-                iaa.Invert(),
-                iaa.pillike.Autocontrast(),
-                iaa.pillike.Equalize(),
-                iaa.Affine(rotate=(-45, 45))
+                    iaa.MultiplyAndAddToBrightness(mul=(0.8,1.2),add=(-30,30)),
+                    iaa.pillike.EnhanceSharpness(),
+                    iaa.AddToHueAndSaturation((-50,50),per_channel=True),
+                    iaa.Solarize(0.5, threshold=(32,128)),
+                    iaa.Posterize(),
+                    iaa.Invert(),
+                    iaa.pillike.Autocontrast(),
+                    iaa.pillike.Equalize(),
+                    iaa.Affine(rotate=(-45, 45))
                 ]
 
 rot_DREAM = iaa.Sequential([iaa.Affine(rotate=(-90, 90))])
 
-def get_depth_image_list():
-    depth_list_sun3d = glob.glob(r"/disk2/SUNRGBD/xtion/sun3ddata/*/*/*/depth/*.png")
-    depth_list_other = glob.glob(r"/disk2/SUNRGBD/*/*/*/depth/*.png")
-    # print(len(depth_list_other))
-    # print(len(depth_list_sun3d))
+def sun3d_get_depth_image_list(data_path):
+    xtion_depth_path = os.path.join(data_path, 'xtion/sun3ddata/*/*/*/depth/*.png') 
+    other_depth_path = os.path.join(data_path, '*/*/*/depth/*.png')
+    depth_list_sun3d = glob.glob(xtion_depth_path)
+    depth_list_other = glob.glob(other_depth_path)
+
+    #depth_list_sun3d = glob.glob(r"/disk2/SUNRGBD/xtion/sun3ddata/*/*/*/depth/*.png")
+    #depth_list_other = glob.glob(r"/disk2/SUNRGBD/*/*/*/depth/*.png")
     depth_list = depth_list_sun3d + depth_list_other
     return depth_list
 
-def get_rgb_image_list():
+def sun3d_get_rgb_image_list(data_path):
+    xtion_img_path = os.path.join(data_path, 'xtion/sun3ddata/*/*/*/image/*.jpg')
     image_list_sun3d = glob.glob(r"/disk2/SUNRGBD/xtion/sun3ddata/*/*/*/image/*.jpg")
     image_list_other = glob.glob(r"/disk2/SUNRGBD/*/*/*/image/*.jpg")
     # print(len(image_list_other))
