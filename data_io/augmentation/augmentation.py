@@ -32,18 +32,18 @@ def read_tiff(tiff):
     tiff_img = tifffile.imread(tiff)
     return tiff_img
 
-def tiff_to_depth(tiff, resized_img_size=256, duplicate=False):
+def tiff_to_depth(tiff, resized_img_size=256, duplicate=1):
     depth_map = np.array(tiff[:, :, 2])
     # Duplicate depth_map into 3 channels, Convert numpy format into BCHW
-    if duplicate: 
+    if duplicate == 3: 
         depth_map = np.repeat(depth_map[:, :, np.newaxis], 3, axis=2)
         depth_map = torch.from_numpy(depth_map).permute(2, 0, 1).unsqueeze(dim=0)
-    else: 
+    else: # duplicate = 1 
         # One channel, Convert numpy into BCHW
         depth_map = torch.from_numpy(depth_map).unsqueeze(dim=0).unsqueeze(dim=0)
 
     # Downsampling, Nearest Interpolation
-    resized_depth_map = torch.nn.functional.interpolate(depth_map, size=(resized_img_size, resized_img_size),
+    resized_depth_map = torch.nn.functional.interpolate(depth_map, size=(resized_img_size[0], resized_img_size[1]),
                                                         mode='nearest')
     return resized_depth_map
 
