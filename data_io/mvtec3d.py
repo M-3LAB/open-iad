@@ -5,10 +5,6 @@ import random
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms as T
-import tifffile
-import numpy as np
-import cv2
-import glob
 from data_io.augmentation.augmentation import aug_DREAM_3D, read_tiff, tiff_to_depth
 
 __all__ = ['MVTec3D', 'mvtec3d_classes', 'MVTecCL3D']
@@ -17,20 +13,6 @@ __all__ = ['MVTec3D', 'mvtec3d_classes', 'MVTecCL3D']
 def mvtec3d_classes():
     return [ "bagel", "cable_gland", "carrot", "cookie", "dowel",
              "foam", "peach", "potato", "rope", "tire"]
-
-def read_tiff(tiff):
-    # tiff_img: numpy format
-    tiff_img = tifffile.imread(tiff)
-    return tiff_img
-
-
-def getFileList(path, list_name):
-    for file in os.listdir(path):
-        file_path = os.path.join(path,file)
-        if os.path.isdir(file_path):
-            getFileList(file_path, list_name)
-        else:
-            list_name.append(file_path)
 
 class MVTec3D(Dataset):
     def __init__(self, data_path, class_names, phase='train', depth_duplicate=1, data_transform=None,
