@@ -64,28 +64,28 @@ rot_DREAM = iaa.Sequential([iaa.Affine(rotate=(-90, 90))])
 def sun3d_get_depth_image_list(data_path):
     xtion_depth_path = os.path.join(data_path, 'xtion/sun3ddata/*/*/*/depth/*.png') 
     other_depth_path = os.path.join(data_path, '*/*/*/depth/*.png')
+
     depth_list_sun3d = glob.glob(xtion_depth_path)
     depth_list_other = glob.glob(other_depth_path)
 
-    #depth_list_sun3d = glob.glob(r"/disk2/SUNRGBD/xtion/sun3ddata/*/*/*/depth/*.png")
-    #depth_list_other = glob.glob(r"/disk2/SUNRGBD/*/*/*/depth/*.png")
     depth_list = depth_list_sun3d + depth_list_other
     return depth_list
 
 def sun3d_get_rgb_image_list(data_path):
     xtion_img_path = os.path.join(data_path, 'xtion/sun3ddata/*/*/*/image/*.jpg')
+    other_img_path = os.path.join(data_path, '*/*/*/image/*.jpg')
+
     image_list_sun3d = glob.glob(r"/disk2/SUNRGBD/xtion/sun3ddata/*/*/*/image/*.jpg")
     image_list_other = glob.glob(r"/disk2/SUNRGBD/*/*/*/image/*.jpg")
-    # print(len(image_list_other))
-    # print(len(image_list_sun3d))
+
     image_list = image_list_sun3d + image_list_other
     return image_list
 
 def randAugmenter():
     aug_ind = np.random.choice(np.arange(len(augmenters_DREAM)), 3, replace=False)
     aug = iaa.Sequential([augmenters_DREAM[aug_ind[0]],
-                            augmenters_DREAM[aug_ind[1]],
-                            augmenters_DREAM[aug_ind[2]]]
+                          augmenters_DREAM[aug_ind[1]],
+                          augmenters_DREAM[aug_ind[2]]]
                             )
     return aug
 
@@ -140,9 +140,9 @@ def augment_image_DREAM(image, depth, anomaly_rgb, anomaly_depth, resize_shape=[
             has_anomaly=0.0
         return augmented_image, augmented_depth, msk, np.array([has_anomaly],dtype=np.float32)
 
-def transform_image_perlin(image_path, depth_path, resize_shape=[256,256]):
-    rgb_anomaly_source_list = get_rgb_image_list()
-    depth_anomaly_source_list = get_depth_image_list()
+def transform_image_perlin(image_path, depth_path, extra_rgbd_path, resize_shape=[256,256]):
+    rgb_anomaly_source_list = sun3d_get_rgb_image_list(extra_rgbd_path)
+    depth_anomaly_source_list = sun3d_get_depth_image_list(extra_rgbd_path)
     anomaly_source_idx = torch.randint(0, len(rgb_anomaly_source_list), (1,)).item()
     
     image = cv2.imread(image_path)
@@ -190,9 +190,9 @@ def transform_depth_DREAM_noperlin(image, resize_shape=[256,256], depth_duplicat
     else:
         return torch.from_numpy(image)
 
-def aug_DREAM_3D(x, xyz, mask, y, phase='train', depth_duplicate=1, resize_shape=[256,256]):
+def aug_DREAM_3D(x, xyz, mask, y, phase='train', depth_duplicate=1, resize_shape=[256,256], extra_rgbd_path=None):
     if phase=='train':
-        x, depth_map, mask, y = transform_image_perlin(x, xyz, resize_shape=resize_shape)
+        x, depth_map, mask, y = transform_image_perlin(x, xyz, extra_rgbd_path, resize_shape=resize_shape)
     elif (phase == 'test' and y == 0):
         x = cv2.imread(x)
         x = transform_image_DREAM_noperlin(x)

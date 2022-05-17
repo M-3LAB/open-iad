@@ -47,10 +47,12 @@ def getFileList(path, list_name):
             list_name.append(file_path)
 
 class MVTec3D(Dataset):
-    def __init__(self, data_path, class_names, phase='train', depth_duplicate=False, data_transform=None,
-                 aug_method='DREAM'):
+    def __init__(self, data_path, class_names, phase='train', depth_duplicate=1, data_transform=None,
+                 aug_method='DREAM', extra_rgbd_path=None):
         self.data_path = data_path
         self.phase = phase
+        self.extra_rgbd_path = extra_rgbd_path
+
         if not isinstance(class_names, list):
             self.class_names = [class_names] 
         else:
@@ -101,7 +103,10 @@ class MVTec3D(Dataset):
         x, y, mask, xyz = self.x[idx], self.y[idx], self.mask[idx], self.xyz[idx]
         
         if self.aug_method=='DREAM':
-            x, y, mask, depth_map = aug_DREAM_3D(x=x, xyz=xyz, mask=mask, y=y,phase=self.phase, depth_duplicate=1, resize_shape=self.resize_shape)
+            x, y, mask, depth_map = aug_DREAM_3D(x=x, xyz=xyz, mask=mask, y=y,phase=self.phase, 
+                                                 depth_duplicate=self.depth_duplicate, 
+                                                 extra_rgbd_path=self.extra_rgbd_path, 
+                                                 resize_shape=self.resize_shape)
         else:#no aug
             if y==0:
                 x = Image.open(x).convert('RGB')
