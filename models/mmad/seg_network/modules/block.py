@@ -5,11 +5,22 @@ __all__ = ['EncSegBlock']
 
 class EncSegBlock(nn.Module):
 
-    def __init__(self, inc, base_width):
-        super().__init__()
+    def __init__(self, inc, ouc):
+        super(EncSegBlock).__init__()
 
         self.inc = inc
-        self.base_width = base_width
+        self.ouc = ouc 
+    
+    def forward(self, x):
+        pass
+
+class DecSegBlock(nn.Module):
+
+    def __init__(self, inc, ouc):
+        super(DecSegBlock).__init__()
+
+        self.inc = inc
+        self.ouc = ouc
     
     def forward(self, x):
         pass

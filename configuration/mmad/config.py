@@ -11,7 +11,7 @@ def parse_arguments_mmad():
     parser.add_argument('--num-epochs', default=None, type=int)
     parser.add_argument('--data-path', default=None, type=str)
     parser.add_argument('--dataset', default='mvtec3d', type=str, choices=['mvtec3d'])
-    parser.add_argument('--fusion-method', default=None, type=str)
+    parser.add_argument('--fusion-method', default=None, type=str, choices=['late', 'early', 'middle'])
     parser.add_argument('--cl', action='store_true', default=None)
     parser.add_argument('--depth-duplicate', type=int, default=1)
     
