@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-__all__ = ['EncSegBlock']
+__all__ = ['EncSegBlock', 'DecSegBlock']
 
 class EncSegBlock(nn.Module):
 
