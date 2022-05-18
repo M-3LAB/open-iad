@@ -14,12 +14,12 @@ class EncSegBlock(nn.Module):
         self.pad = padding
 
         self.block = nn.Sequential(
-            nn.Conv2d(),
-            nn.BatchNorm2d(),
-            nn.ReLU(),
-            nn.Conv2d(),
-            nn.BatchNorm2d(),
-            nn.ReLU()
+            nn.Conv2d(self.inc, self.ouc, kernel_size=self.ks, padding=self.pad),
+            nn.BatchNorm2d(self.ouc),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(self.ouc, self.ouc, kernel_size=self.ks, padding=self.pad),
+            nn.BatchNorm2d(self.ouc),
+            nn.ReLU(inplace=True)
         )
     
     def forward(self, x):
