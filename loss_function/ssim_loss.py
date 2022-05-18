@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from math import exp
+import torch.nn.functional as F
 
 __all__ = ['SSIMLoss']
 
@@ -25,8 +26,12 @@ class SSIMLoss(nn.Module):
         gauss = torch.Tensor([exp(-(x - self.window_size//2)**2/float(2* self.sigma**2)) for x in range(self.window_size)])
         return gauss/gauss.sum()
 
-    def calculate_ssim(self):
-        pass
+    def calculate_ssim(self, img_a, img_b, window):
+        padding = self.window_size // 2
+
+        mu1 = F.conv2d(img_a, window, padding=padding, groups=self.channel)
+        mu2 = F.conv2d(img_b, window, padding=padding, groups=self.channel)
+
 
     def forward(self, img_a, img_b):
         _, channel, _, _ = img_a.size()
