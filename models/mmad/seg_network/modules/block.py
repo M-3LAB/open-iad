@@ -47,7 +47,8 @@ class DecDownSegBlock(nn.Module):
         )
 
     def forward(self, x):
-        pass
+        output = self.block(x)
+        return output
 
 class DecUpSegBlock(nn.Module):
 
@@ -57,6 +58,16 @@ class DecUpSegBlock(nn.Module):
         self.inc = inc
         self.ouc = ouc
         self.scale_factor = scale_factor
+        self.mode = mode
+        self.align_corners = align_corners
+
+        self.block = nn.Sequential(
+            nn.Upsample(scale_factor=self.scale_factor),
+            nn.Conv2d(self.inc, self.ouc, kernel_size=self.ks),
+            nn.BatchNorm2d(self.ouc),
+            nn.ReLU(inplace=True)
+        )
     
     def forward(self, x):
-        pass
+        output = self.block(x)
+        return output
