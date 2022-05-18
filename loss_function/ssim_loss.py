@@ -3,7 +3,7 @@ import torch.nn as nn
 
 __all__ = ['SSIMLoss']
 
-class SSIMLoss(torch.nn.Module):
+class SSIMLoss(nn.Module):
     def __init__(self):
         super(SSIMLoss, self).__init__()
         pass
