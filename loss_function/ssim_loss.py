@@ -26,5 +26,5 @@ class SSIMLoss(nn.Module):
     def calculate_ssim(self):
         pass
 
-    def forward(self, x):
+    def forward(self, img_a, img_b):
         pass
