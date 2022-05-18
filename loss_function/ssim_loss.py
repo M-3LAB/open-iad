@@ -14,7 +14,10 @@ class SSIMLoss(nn.Module):
         
 
     def create_window(self, channel=1):
-        pass
+        window_1d = self.gaussian(self.window_size, 1.5).unsqueeze(1)
+        window_2d = window_1d.mm(window_1d.t()).float().unsqueeze(0).unsqueeze(0)
+        window = window_2d.expand(channel, 1, self.window_size, self.window_size).contiguous()
+        return window
 
     def gaussian(self):
         gauss = torch.Tensor([exp(-(x - self.window_size//2)**2/float(2* self.sigma**2)) for x in range(self.window_size)])
