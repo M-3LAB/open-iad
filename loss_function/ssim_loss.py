@@ -26,11 +26,29 @@ class SSIMLoss(nn.Module):
         gauss = torch.Tensor([exp(-(x - self.window_size//2)**2/float(2* self.sigma**2)) for x in range(self.window_size)])
         return gauss/gauss.sum()
 
+    def define_val_range(self):
+        pass
+
     def calculate_ssim(self, img_a, img_b, window):
         padding = self.window_size // 2
 
         mu1 = F.conv2d(img_a, window, padding=padding, groups=self.channel)
         mu2 = F.conv2d(img_b, window, padding=padding, groups=self.channel)
+
+        mu1_sq = mu1.pow(2)
+        mu2_sq = mu2.pow(2)
+        mu1_mu2 = mu1 * mu2
+
+        sigma1_sq = F.conv2d(img_a * img_b, window, padding=padding, groups=self.channel) - mu1_sq
+        sigma2_sq = F.conv2d(img_a * img_b, window, padding=padding, groups=self.channel) - mu2_sq
+        sigma12 = F.conv2d(img_a * img_b, window, padding=padding, groups=self.channel) - mu1_mu2
+
+        c1 = (0.01 * l) ** 2
+        c2 = (0.03 * l) ** 2
+
+        v1 = 2.0 * sigma12 + c2
+        v2 = sigma1_sq + sigma2_sq + c2
+        cs = torch.mean(v1 / v2)  # contrast sensitivity
 
 
     def forward(self, img_a, img_b):
