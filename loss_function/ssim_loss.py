@@ -6,7 +6,7 @@ import torch.nn.functional as F
 __all__ = ['SSIMLoss']
 
 class SSIMLoss(nn.Module):
-    def __init__(self, window_size, size_average, sigma, 
+    def __init__(self, window_size, sigma, size_average=True, full=False, 
                  channel_number=1, device=None):
 
         super(SSIMLoss, self).__init__()
@@ -16,6 +16,7 @@ class SSIMLoss(nn.Module):
         self.sigma = sigma
         self.channel_number = channel_number
         self.window = self.create_window().to(device)
+        self.full = full
         
     def create_window(self):
         window_1d = self.gaussian(self.window_size, 1.5).unsqueeze(1)
@@ -68,6 +69,18 @@ class SSIMLoss(nn.Module):
         v1 = 2.0 * sigma12 + c2
         v2 = sigma1_sq + sigma2_sq + c2
         cs = torch.mean(v1 / v2)  # contrast sensitivity
+
+        ssim_map = ((2 * mu1_mu2 + c1) * v1) / ((mu1_sq + mu2_sq + c1) * v2)
+
+        if self.size_average:
+            ret = ssim_map.mean()
+        else:
+            ret = ssim_map.mean(1).mean(1).mean(1)
+
+        if self.full:
+            return ret, cs
+        else:
+            return ret, ssim_map
 
 
     def forward(self, img_a, img_b):
