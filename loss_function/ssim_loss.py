@@ -83,5 +83,7 @@ class SSIMLoss(nn.Module):
             return ret, ssim_map
 
 
-    def forward(self, img_a, img_b):
-        _, channel, _, _ = img_a.size()
+    def forward(self, img_a, img_b, value_range=None):
+        #_, channel, _, _ = img_a.size()
+        s_score, ssim_map = self.calculate_ssim(img_a=img_a, img_b=img_b, window=self.window, config_value_range=value_range)
+        return 1.0 - s_score
