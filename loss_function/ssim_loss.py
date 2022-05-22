@@ -25,6 +25,12 @@ class SSIMLoss(nn.Module):
         return window
 
     def gaussian(self):
+        """
+        Generates a list of Tensor values drawn from a gaussian distribution with standard
+        diviation = sigma and sum of all elements = 1.
+
+        Length of list = window_size
+        """    
         gauss = torch.Tensor([exp(-(x - self.window_size//2)**2/float(2* self.sigma**2)) for x in range(self.window_size)])
         return gauss/gauss.sum()
 
