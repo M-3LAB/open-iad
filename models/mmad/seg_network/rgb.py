@@ -31,4 +31,20 @@ class RGBSeg(nn.Module):
         
 
     def forward(self, x):
-        pass
+        e1 = self.enc1(x)
+        p1 = self.mp1(e1)
+
+        e2 = self.enc2(p1)
+        p2 = self.mp2(e2)
+
+        e3 = self.enc3(p2)
+        p3 = self.mp3(e3)
+
+        e4 = self.enc4(p3)
+        p4 = self.mp4(e4)
+
+        e5 = self.enc5(p4)
+        p5 = self.mp5(e5)
+
+        e6 = self.enc6(p5)
+
