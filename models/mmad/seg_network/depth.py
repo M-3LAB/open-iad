@@ -69,7 +69,6 @@ class DepthSeg(nn.Module):
         e6 = self.enc6(p5)
 
         # Decoder Part
-
         up_b = self.up_bottom(e6)
         cat_b = torch.cat((up_b, e5), dim=1) 
         db = self.dec_bottom(cat_b)
