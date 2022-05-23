@@ -71,8 +71,11 @@ if __name__ == '__main__':
 
     for cls in class_names: 
         #TODO: Model 
-        rgb_recons = RGBRecons().to(device)
-        depth_recons = DepthRecons().to(device)
+        rgb_recons = RGBRecons(inc=3, fin_ouc=3).to(device)
+        depth_recons = DepthRecons(inc=1, fin_ouc=2).to(device)
+        
+        rgb_seg = RGBSeg(inc=6, fin_ouc=2).to(device)
+        depth_seg = DepthSeg(inc=2, fin_ouc=2).to(device)
     
 
         #for i, batch in enumerate(train_loader):
