@@ -14,7 +14,7 @@ import torchvision
 import glob
 
 __all__ = ['to_batch', 'seed_everything', 'parse_device_list', 'allocate_gpus', 
-           'merge_config', 'convert_list_float_type', 'weights_init_normal', 'load_model', 
+           'merge_config', 'convert_list_float_type', 'draem_weights_init', 'load_model', 
            'merge_config', 'override_config', 'extract_config',
            'record_path', 'save_arg', 'save_log', 'save_script', 'save_image', 'save_model']
 
@@ -109,7 +109,7 @@ def extract_config(args):
 
     return config
 
-def weights_init_normal(m):
+def draem_weights_init(m):
     classname = m.__class__.__name__
     if classname.find("Conv") != -1:
         torch.nn.init.normal_(m.weight.data, 0.0, 0.02)
@@ -172,3 +172,4 @@ def load_model(model, file_path, description):
     model.load_state_dict(checkpoint['model_state_dict'])
 
     return model
+

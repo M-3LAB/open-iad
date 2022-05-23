@@ -6,6 +6,11 @@ from tools.utilize import *
 from data_io.mvtec3d import MVTec3D, MVTecCL3D, mvtec3d_classes
 from torch.utils.data import DataLoader
 #from torch.utils.data.sampler import SubsetRandomSampler
+import os
+from models.mmad.reconstruction_network.depth import DepthRecons
+from models.mmad.reconstruction_network.rgb import RGBRecons 
+from models.mmad.seg_network.depth import DepthSeg
+from models.mmad.seg_network.rgb import RGBSeg
 
 if __name__ == '__main__':
 
@@ -51,6 +56,17 @@ if __name__ == '__main__':
 
         valid_loader = DataLoader(valid_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False)
+
+    rgb_ck_path = os.path.join(para_dict['ck_path'], 'rgb') 
+    depth_ck_path = os.path.join(para_dict['ck_path'], 'depth')
+
+    rgb_recons_ck_path = os.path.join(rgb_ck_path, 'recons')
+    rgb_seg_ck_path = os.path.join(rgb_ck_path, 'seg')
+
+    depth_recons_ck_path = os.path.join(depth_ck_path, 'recons')
+    depth_seg_ck_path = os.path.join(depth_ck_path, 'seg')
+
+    
 
     #TODO: Model 
 
