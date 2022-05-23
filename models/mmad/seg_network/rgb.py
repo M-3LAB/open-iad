@@ -28,6 +28,21 @@ class RGBSeg(nn.Module):
         self.mp4 = nn.Sequnetial(nn.MaxPool2d(kernel_size=2))
 
         self.enc6 = EncSegBlock(inc=self.base_width*8, ouc=self.base_width*8)
+
+        #Decoder Part
+        self.up1 = DecUpSegBlock(inc=self.base_width*8, ouc=self.base_width*4)
+        self.dec1 = DecDownSegBlock(inc=self.base_width*(8+4), ouc=self.base_width*4)
+
+        self.up2 = DecUpSegBlock(inc=self.base_width*4, ouc=self.base_width*2)
+        self.dec2 = DecDownSegBlock(inc=self.base_width*(4+2), ouc=self.base_width*2)
+
+        self.up3 = DecUpSegBlock(inc=self.base_width*2, ouc=self.base_width)
+        self.dec3 = DecDownSegBlock(inc=self.base_width*(2+1), ouc=self.base_width)
+
+        self.up4 = DecUpSegBlock(inc=self.base_width, ouc=self.base_width)
+        self.dec4 = DecDownSegBlock(inc=self.base_width*(4+2), ouc=self.base_width)
+        
+        self.fin_out = nn.Sequential(nn.Conv2d()) 
         
 
     def forward(self, x):
