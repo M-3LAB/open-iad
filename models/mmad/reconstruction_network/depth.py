@@ -5,7 +5,8 @@ from reconstruction_network.modules.block import *
 __all__ = ['DepthRecons']
 
 class DepthRecons(nn.Module):
-    def __init__(self, inc, base_width, fin_ouc):
+
+    def __init__(self, inc, fin_ouc, base_width=128):
         super(DepthRecons).__init__()
         self.inc = inc
         self.base_width = base_width

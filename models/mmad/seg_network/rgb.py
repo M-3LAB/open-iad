@@ -5,7 +5,8 @@ from seg_network.modules.block import *
 __all__=['RGBSeg']
 
 class RGBSeg(nn.Module):
-    def __init__(self, inc, base_width, ouc):
+
+    def __init__(self, inc, ouc, base_width=128):
         super(RGBSeg, self).__init__()
 
         self.inc = inc

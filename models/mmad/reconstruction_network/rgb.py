@@ -6,7 +6,7 @@ __all__ = ['RGBRecons']
 
 class RGBRecons(nn.Module):
 
-    def __init__(self, inc, base_width, fin_ouc):
+    def __init__(self, inc, fin_ouc, base_width=128):
         super(RGBRecons, self).__init__()
         self.inc = inc
         self.base_width = base_width

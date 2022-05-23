@@ -66,15 +66,20 @@ if __name__ == '__main__':
     depth_recons_ck_path = os.path.join(depth_ck_path, 'recons')
     depth_seg_ck_path = os.path.join(depth_ck_path, 'seg')
 
+    if para_dict['class_names'] == 'all':
+        class_names = mvtec3d_classes()
+
+    for cls in class_names: 
+        #TODO: Model 
+        rgb_recons = RGBRecons().to(device)
+        depth_recons = DepthRecons().to(device)
     
 
-    #TODO: Model 
+        #for i, batch in enumerate(train_loader):
+        #    #x, y, mask, depth_map, xyz = batch
+        #    img = batch['rgb'].to(device)
+        #    label = batch['label'].to(device)
+        #    depth_map = batch['depth'].to(device)
 
-    for i, batch in enumerate(train_loader):
-        #x, y, mask, depth_map, xyz = batch
-        img = batch['rgb'].to(device)
-        label = batch['label'].to(device)
-        depth_map = batch['depth'].to(device)
-
-    #TODO: Self-Supervised Training 
+        ##TODO: Self-Supervised Training 
 
