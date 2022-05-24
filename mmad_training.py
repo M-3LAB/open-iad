@@ -119,10 +119,14 @@ if __name__ == '__main__':
             train_loader = DataLoader(train_dataset,
                                       batch_size=para_dict['batch_size'],
                                       num_workers=para_dict['num_workers'],
-                                      shuffle=False)
+                                      shuffle=True)
 
             valid_loader = DataLoader(valid_dataset, num_workers=para_dict['num_workers'],
                                       batch_size=para_dict['batch_size'], shuffle=False) 
+        
+        for epoch in range(para_dict['num_epochs']):
+            for _, batch in enumerate(train_loader): 
+                pass
         
         
         
