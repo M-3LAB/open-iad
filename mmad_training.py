@@ -69,9 +69,6 @@ if __name__ == '__main__':
     depth_recons_ck_path = os.path.join(depth_ck_path, 'recons')
     depth_seg_ck_path = os.path.join(depth_ck_path, 'seg')
 
-    if para_dict['class_names'] == 'all':
-        class_names = mvtec3d_classes()
-    
     loss_l2 = torch.nn.MSELoss().to(device)
     focal_loss = FocalLoss().to(device)
     ssim_loss = SSIMLoss().to(device)
@@ -105,6 +102,27 @@ if __name__ == '__main__':
                                                                milestones=[para_dict['milestones_lower'], para_dict['milestones_higher']],
                                                                gamma=para_dict['gamma'])
         
+        if para_dict['dataset'] == 'mvtec3d':
+            if para_dict['cl']:
+                train_dataset = MVTecCL3D()
+                valid_dataset = MVTecCL3D()
+            else:
+                train_dataset = MVTec3D(data_path=para_dict['data_path'], class_names=class_names,
+                                        phase='train', depth_duplicate=para_dict['depth_duplicate'], 
+                                        data_transform=mvtec3d_transform)
+
+                valid_dataset = MVTec3D(data_path=para_dict['data_path'], class_names=class_names,
+                                        phase='test', depth_duplicate=para_dict['depth_duplicate'],
+                                        data_transform=mvtec3d_transform) 
+
+        if not para_dict['cl']:
+            train_loader = DataLoader(train_dataset,
+                                      batch_size=para_dict['batch_size'],
+                                      num_workers=para_dict['num_workers'],
+                                      shuffle=False)
+
+            valid_loader = DataLoader(valid_dataset, num_workers=para_dict['num_workers'],
+                                      batch_size=para_dict['batch_size'], shuffle=False) 
         
         
         
