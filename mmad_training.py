@@ -76,6 +76,9 @@ if __name__ == '__main__':
         
         rgb_seg = RGBSeg(inc=6, fin_ouc=2).to(device)
         depth_seg = DepthSeg(inc=2, fin_ouc=2).to(device)
+
+        rgb_optimizer = torch.optim.Adam([{"params": rgb_seg.parameters(), "lr": args.lr},
+                                          {"params": rgb_recons.parameters(), "lr": args.lr}])
     
 
         #for i, batch in enumerate(train_loader):
