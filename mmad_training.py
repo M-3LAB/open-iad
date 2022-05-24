@@ -11,6 +11,7 @@ from models.mmad.reconstruction_network.depth import DepthRecons
 from models.mmad.reconstruction_network.rgb import RGBRecons 
 from models.mmad.seg_network.depth import DepthSeg
 from models.mmad.seg_network.rgb import RGBSeg
+from tools.utilize import * 
 
 if __name__ == '__main__':
 
@@ -73,12 +74,26 @@ if __name__ == '__main__':
         #TODO: Model 
         rgb_recons = RGBRecons(inc=3, fin_ouc=3).to(device)
         depth_recons = DepthRecons(inc=1, fin_ouc=2).to(device)
+
+        rgb_recons.apply(draem_weights_init)
+        depth_recons.apply(draem_weights_init)
         
         rgb_seg = RGBSeg(inc=6, fin_ouc=2).to(device)
         depth_seg = DepthSeg(inc=2, fin_ouc=2).to(device)
 
-        rgb_optimizer = torch.optim.Adam([{"params": rgb_seg.parameters(), "lr": args.lr},
-                                          {"params": rgb_recons.parameters(), "lr": args.lr}])
+        rgb_seg.apply(draem_weights_init)
+        depth_seg.apply(draem_weights_init)
+
+        rgb_optimizer = torch.optim.Adam([{"params": rgb_seg.parameters(), "lr": para_dict['lr']},
+                                          {"params": rgb_recons.parameters(), "lr": para_dict['lr']}])
+
+        depth_optimizer = torch.optim.Adam([{"params": depth_seg.parameters(), "lr": para_dict['lr']},
+                                            {"params": depth_recons.parameters(), "lr": para_dict['lr']}])
+        
+        
+
+        
+     
     
 
         #for i, batch in enumerate(train_loader):
