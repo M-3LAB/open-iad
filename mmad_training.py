@@ -12,6 +12,8 @@ from models.mmad.reconstruction_network.rgb import RGBRecons
 from models.mmad.seg_network.depth import DepthSeg
 from models.mmad.seg_network.rgb import RGBSeg
 from tools.utilize import * 
+from loss_function.ssim_loss import SSIMLoss 
+from loss_function.focal_loss import FocalLoss
 
 if __name__ == '__main__':
 
@@ -69,6 +71,11 @@ if __name__ == '__main__':
 
     if para_dict['class_names'] == 'all':
         class_names = mvtec3d_classes()
+    
+    loss_l2 = torch.nn.MSELoss().to(device)
+    focal_loss = FocalLoss().to(device)
+    ssim_loss = SSIMLoss().to(device)
+    
 
     for cls in class_names: 
         #TODO: Model 
@@ -97,6 +104,12 @@ if __name__ == '__main__':
         depth_scheduler = torch.optim.lr_scheduler.MultiStepLR(depth_optimizer, 
                                                                milestones=[para_dict['milestones_lower'], para_dict['milestones_higher']],
                                                                gamma=para_dict['gamma'])
+        
+        
+        
+        
+        
+                    
         
 
         
