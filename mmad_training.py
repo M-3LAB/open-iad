@@ -90,6 +90,13 @@ if __name__ == '__main__':
         depth_optimizer = torch.optim.Adam([{"params": depth_seg.parameters(), "lr": para_dict['lr']},
                                             {"params": depth_recons.parameters(), "lr": para_dict['lr']}])
         
+        rgb_scheduler = torch.optim.lr_scheduler.MultiStepLR(rgb_optimizer, 
+                                                             milestones=[para_dict['milestones_lower'], para_dict['milestones_higher']],
+                                                             gamma=para_dict['gamma'])
+
+        depth_scheduler = torch.optim.lr_scheduler.MultiStepLR(depth_optimizer, 
+                                                               milestones=[para_dict['milestones_lower'], para_dict['milestones_higher']],
+                                                               gamma=para_dict['gamma'])
         
 
         

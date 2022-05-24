@@ -13,3 +13,5 @@ class_names: tire
 lr: 0.0001
 num_epochs: 300 
 depth_duplicate: False
+milestones_lower: 240
+milestones_upper: 270
