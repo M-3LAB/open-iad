@@ -12,6 +12,6 @@ mask_size: 224
 class_names: tire
 lr: 0.0001
 num_epochs: 300 
-depth_duplicate: False
+depth_duplicate: 1 
 milestones_lower: 240
 milestones_upper: 270

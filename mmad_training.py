@@ -107,11 +107,11 @@ if __name__ == '__main__':
                 train_dataset = MVTecCL3D()
                 valid_dataset = MVTecCL3D()
             else:
-                train_dataset = MVTec3D(data_path=para_dict['data_path'], class_names=class_names,
+                train_dataset = MVTec3D(data_path=para_dict['data_path'], class_names=cls,
                                         phase='train', depth_duplicate=para_dict['depth_duplicate'], 
                                         data_transform=mvtec3d_transform)
 
-                valid_dataset = MVTec3D(data_path=para_dict['data_path'], class_names=class_names,
+                valid_dataset = MVTec3D(data_path=para_dict['data_path'], class_names=cls,
                                         phase='test', depth_duplicate=para_dict['depth_duplicate'],
                                         data_transform=mvtec3d_transform) 
 

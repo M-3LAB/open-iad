@@ -13,7 +13,7 @@ def parse_arguments_mmad():
     parser.add_argument('--dataset', default='mvtec3d', type=str, choices=['mvtec3d'])
     parser.add_argument('--fusion-method', default=None, type=str, choices=['late', 'early', 'middle'])
     parser.add_argument('--cl', action='store_true', default=None, help='continuous learning mode or not')
-    parser.add_argument('--depth-duplicate', type=int, default=1)
+    parser.add_argument('--depth-duplicate', type=int, default=1, choices=[1, 3])
     parser.add_argument('--ck-path', default=None, help='checkpoint path')
     
     args = parser.parse_args()
