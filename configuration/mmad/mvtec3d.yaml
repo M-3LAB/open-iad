@@ -15,3 +15,4 @@ num_epochs: 300
 depth_duplicate: 1 
 milestones_lower: 240
 milestones_upper: 270
+aug_method: DRAEM

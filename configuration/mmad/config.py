@@ -15,6 +15,7 @@ def parse_arguments_mmad():
     parser.add_argument('--cl', action='store_true', default=None, help='continuous learning mode or not')
     parser.add_argument('--depth-duplicate', type=int, default=1, choices=[1, 3])
     parser.add_argument('--ck-path', default=None, help='checkpoint path')
+    parser.add_argument()
     
     args = parser.parse_args()
     return args

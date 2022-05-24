@@ -33,7 +33,10 @@ class MVTec3D(Dataset):
             self.resize_shape = self.data_transform['data_size']
         else:
             self.resize_shape = [256,256]
+
         self.aug_method = aug_method
+
+        assert self.aug_method in ['DREAM', 'normal'], 'Augmentation Method is Out of Range' 
         
         
         assert set(self.class_names) <= set(mvtec3d_classes()), 'Class is Out of Range'
