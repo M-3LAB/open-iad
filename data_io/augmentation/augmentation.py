@@ -191,21 +191,22 @@ def transform_depth_DREAM_noperlin(image, resize_shape=[256,256], depth_duplicat
     else:
         return torch.from_numpy(image)
 
-def aug_DREAM_3D(x, xyz, mask, y, phase='train', depth_duplicate=1, resize_shape=[256,256], extra_rgbd_path=None):
+def aug_DREAM_3D(img, tiff, mask, label, phase='train', depth_duplicate=1, resize_shape=[256,256], extra_rgbd_path=None):
     if phase=='train':
-        x, aug_x, depth_map, mask, y = transform_image_perlin(x, xyz, extra_rgbd_path, resize_shape=resize_shape)
-        return x, aug_x, depth_map, mask, y
+        raw_img, aug_img, depth_map, mask, label = transform_image_perlin(img, tiff, extra_rgbd_path, resize_shape=resize_shape)
     elif phase== 'test':
-        x = cv2.imread(x)
-        x = transform_image_DREAM_noperlin(x)
-        tiff_img = read_tiff(xyz)
+        aug_img = None
+        raw_img = cv2.imread(img)
+        raw_img = transform_image_DREAM_noperlin(raw_img)
+        tiff_img = read_tiff(tiff)
         depth_map = transform_depth_DREAM_noperlin(tiff_img, resize_shape=resize_shape, depth_duplicate=depth_duplicate)
-        if y == 0:
-            y = np.array([0], dtype=np.float32)
-            y = torch.from_numpy(y)
-            mask = torch.zeros([1, x.shape[1], x.shape[2]]) 
+        if label == 0:
+            label = np.array([0], dtype=np.float32)
+            label = torch.from_numpy(label)
+            mask = torch.zeros([1, raw_img.shape[1], raw_img.shape[2]]) 
         else: 
-            y = np.array([1], dtype=np.float32)
-            y = torch.from_numpy(y)
+            label = np.array([1], dtype=np.float32)
+            label = torch.from_numpy(label)
             mask = transform_image_DREAM_noperlin(mask)
-        return x, y, mask, depth_map
+
+    return raw_img, aug_img, depth_map, mask, label 

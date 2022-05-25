@@ -48,10 +48,10 @@ class MVTec3D(Dataset):
         xyz: TIFF image
         """ 
 
-        self.x = []
-        self.y = []
-        self.mask = []
-        self.xyz = []
+        self.imgs_list = []
+        self.label_list = []
+        self.masks_list = []
+        self.tiffs_list = []
 
         # load dataset
         self.load_dataset()
@@ -71,14 +71,28 @@ class MVTec3D(Dataset):
     
     def __getitem__(self, idx):
         
-        x, y, mask, xyz = self.x[idx], self.y[idx], self.mask[idx], self.xyz[idx]
+        img, label, mask, tiff = self.imgs_list[idx], self.labels_list[idx], self.mask_list[idx], self.tiffs_list[idx]
         
         if self.aug_method=='DREAM':
-            x, y, mask, depth_map = aug_DREAM_3D(x=x, xyz=xyz, mask=mask, y=y,phase=self.phase, 
-                                                 depth_duplicate=self.depth_duplicate, 
-                                                 extra_rgbd_path=self.extra_rgbd_path, 
-                                                 resize_shape=self.resize_shape)
+            if self.phase == 'train':
+                x, aug_x, y, mask, depth_map = aug_DREAM_3D(x=img, xyz=tiff, mask=mask, y=y,
+                                                            phase=self.phase, 
+                                                            depth_duplicate=self.depth_duplicate, 
+                                                            extra_rgbd_path=self.extra_rgbd_path, 
+                                                            resize_shape=self.resize_shape)
+                return x, aug_x, y
+                
+            elif self.phase == 'test':
+                x, y, mask, depth_map = aug_DREAM_3D(x=x, xyz=xyz, mask=mask, y=y,
+                                                     phase=self.phase, 
+                                                     depth_duplicate=self.depth_duplicate, 
+                                                     extra_rgbd_path=self.extra_rgbd_path, 
+                                                     resize_shape=self.resize_shape)
+                
         else:#no aug
+
+            aug_x = None
+
             if y==0:
                 x = Image.open(x).convert('RGB')
                 x = self.imge_transform(x)
@@ -98,8 +112,8 @@ class MVTec3D(Dataset):
         
          
 
-        #return x, y, mask, depth_map, xyz  
-        return {'rgb':x, 'label':y, 'gt_mask':mask, 'depth':depth_map, 'tiff': xyz} 
+            #return x, y, mask, depth_map, xyz  
+            return {'rgb':x, 'label':y, 'gt_mask':mask, 'depth':depth_map, 'tiff': xyz} 
 
     def __len__(self):
         return len(self.x)
@@ -124,31 +138,31 @@ class MVTec3D(Dataset):
                 img_path_list = sorted([os.path.join(img_type_dir, 'rgb', f)
                                         for f in os.listdir(img_type_dir + '/rgb')
                                         if f.endswith('.png')])
-                self.x.extend(img_path_list)
-                xyz_path_list = sorted([os.path.join(img_type_dir, 'xyz', f)
+                self.imgs_list.extend(img_path_list)
+                tiff_path_list = sorted([os.path.join(img_type_dir, 'xyz', f)
                                         for f in os.listdir(img_type_dir + '/xyz')
                                         if f.endswith('.tiff')])
 
                 if img_type == 'good':
-                    self.y.extend([0] * len(img_path_list))
-                    self.mask.extend([None] * len(img_path_list))
+                    self.label_list.extend([0] * len(img_path_list))
+                    self.masks_list.extend([None] * len(img_path_list))
                     # load xyz data
-                    self.xyz.extend(xyz_path_list)
+                    self.tiffs_list.extend(xyz_path_list)
                 else:
-                    self.y.extend([1] * len(img_path_list))
+                    self.label_list.extend([1] * len(img_path_list))
                     gt_type_dir = os.path.join(img_dir, img_type, 'gt')
                     img_name_list = [os.path.splitext(os.path.basename(f))[0] for f in img_path_list]
                     gt_path_list = [os.path.join(gt_type_dir, img_fname + '.png')
                                     for img_fname in img_name_list]
-                    self.mask.extend(gt_path_list)
-                    # load xyz data
+                    self.masks_list.extend(gt_path_list)
+                    # load tiff data
                     xyz_type_dir = os.path.join(img_dir, img_type, 'xyz')
                     img_name_list = [os.path.splitext(os.path.basename(f))[0] for f in img_path_list]
                     xyz_path_list = [os.path.join(xyz_type_dir, img_fname + '.tiff')
                                     for img_fname in img_name_list]
-                    self.xyz.extend(xyz_path_list)
+                    self.tiffs_list.extend(xyz_path_list)
 
-        assert len(self.x) == len(self.y) == len(self.xyz), 'Number of Image Should Be The Same'
+        assert len(self.imgs_list) == len(self.label_list) == len(self.tiffs_list), 'Number of Image Should Be The Same'
                         
 
 class MVTecCL3D(Dataset):
