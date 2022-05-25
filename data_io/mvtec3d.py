@@ -5,7 +5,7 @@ import random
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms as T
-from data_io.augmentation.augmentation import aug_DREAM_3D, read_tiff, tiff_to_depth
+from data_io.augmentation.augmentation import read_tiff, tiff_to_depth, aug_draem_3d_train, aug_draem_3d_test
 
 __all__ = ['MVTec3D', 'mvtec3d_classes', 'MVTecCL3D']
 
@@ -71,29 +71,26 @@ class MVTec3D(Dataset):
     
     def __getitem__(self, idx):
         
-        img, label, mask, tiff = self.imgs_list[idx], self.labels_list[idx], self.mask_list[idx], self.tiffs_list[idx]
+        img_path, label, mask_path, tiff_path = self.imgs_list[idx], self.labels_list[idx], self.mask_list[idx], self.tiffs_list[idx]
         
         if self.aug_method=='DREAM':
             if self.phase == 'train':
-                x, aug_x, y, mask, depth_map = aug_DREAM_3D(x=img, xyz=tiff, mask=mask, y=y,
-                                                            phase=self.phase, 
-                                                            depth_duplicate=self.depth_duplicate, 
-                                                            extra_rgbd_path=self.extra_rgbd_path, 
-                                                            resize_shape=self.resize_shape)
-                return x, aug_x, y
-                
+                raw_img, aug_img, depth_map, aug_depth_map, aug_mask, aug_label = aug_draem_3d_train(img_path=img_path, tiff_path=tiff_path, 
+                                                                                          extra_rgbd_path=self.extra_rgbd_path, 
+                                                                                          resize_shape=self.resize_shape)
+                return {'rgb': raw_img, 'aug_rgb': aug_img, 'depth_map': depth_map} 
+
             elif self.phase == 'test':
-                x, y, mask, depth_map = aug_DREAM_3D(x=x, xyz=xyz, mask=mask, y=y,
-                                                     phase=self.phase, 
-                                                     depth_duplicate=self.depth_duplicate, 
-                                                     extra_rgbd_path=self.extra_rgbd_path, 
-                                                     resize_shape=self.resize_shape)
+                img, depth_map, mask, label = aug_draem_3d_test(img_path=img_path, tiff_path=tiff_path, 
+                                                                mask_path=mask_path, 
+                                                                depth_duplicate=self.depth_duplicate, 
+                                                                resize_shape=self.resize_shape)
                 
-        else:#no aug
+        elif self.aug_method == 'normal':
 
-            aug_x = None
+            aug_img = None
 
-            if y==0:
+            if label == 0:
                 x = Image.open(x).convert('RGB')
                 x = self.imge_transform(x)
                 mask = torch.zeros([1, x.shape[1], x.shape[2]])

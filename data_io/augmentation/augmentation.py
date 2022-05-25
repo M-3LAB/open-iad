@@ -1,4 +1,5 @@
 from asyncore import read
+from ctypes import resize
 from torchvision import transforms as T
 from PIL import Image
 import torch
@@ -10,7 +11,8 @@ import glob
 from data_io.augmentation.perlin import rand_perlin_2d_np
 import os
 
-__all__ =  ['mvtec_2d_resize', 'mvtec_2d_image_transform', 'mvtec_2d_mask_transform', 'aug_DREAM_3D']
+__all__ =  ['mvtec_2d_resize', 'mvtec_2d_image_transform', 'mvtec_2d_mask_transform', 
+            'aug_draem_3d_train', 'aug_draem_3d_test']
 
 # 2D 
 
@@ -33,7 +35,22 @@ def read_tiff(tiff):
     tiff_img = tifffile.imread(tiff)
     return tiff_img
 
-def tiff_to_depth(tiff, resized_img_size=256, duplicate=1):
+def np_to_torch(array):
+    array = np.transpose(array, (2, 0, 1)) 
+    tensor = torch.from_numpy(array)
+    return tensor
+    
+
+def tiff_to_depth_numpy(tiff, resized_img_size=256, duplicate=3):
+    depth_map = np.array(tiff[:, :, 2]).astype(np.float32)
+    depth_map = np.resize(depth_map, (resized_img_size, resized_img_size)) 
+    depth_map = np.expand_dims(depth_map, axis=2)
+    if duplicate == 3:
+        depth_map = np.repeat(depth_map, repeats=3, axis=2)
+    return depth_map
+
+
+def tiff_to_depth_torch(tiff, resized_img_size=256, duplicate=1):
     depth_map = np.array(tiff[:, :, 2])
     # Duplicate depth_map into 3 channels, Convert numpy format into BCHW
     if duplicate == 3: 
@@ -94,14 +111,14 @@ def normlize(numpy):
     numpy_norm = (numpy - np.min(numpy)) / (np.max(numpy) - np.min(numpy) + 1e-8)
     return numpy_norm
 
-def augment_image_DREAM(image, depth, anomaly_rgb, anomaly_depth, resize_shape=[256,256]):
+def augment_image_DREAM(image, depth, extra_anomaly_rgb, extra_anomaly_depth, resize_shape=[256,256]):
     
     aug = randAugmenter()
     perlin_scale = 6
     min_perlin_scale = 0
-    anomaly_source_img = cv2.imread(anomaly_rgb)
+    anomaly_source_img = cv2.imread(extra_anomaly_rgb)
     anomaly_source_img = cv2.resize(anomaly_source_img, dsize=(resize_shape[1], resize_shape[0]))
-    anomaly_source_depth = cv2.imread(anomaly_depth)
+    anomaly_source_depth = cv2.imread(extra_anomaly_depth)
     anomaly_source_depth = cv2.resize(anomaly_source_depth, dsize=(resize_shape[1], resize_shape[0]))
 
     anomaly_img_augmented = aug(image=anomaly_source_img)
@@ -141,36 +158,39 @@ def augment_image_DREAM(image, depth, anomaly_rgb, anomaly_depth, resize_shape=[
             has_anomaly=0.0
         return augmented_image, augmented_depth, msk, np.array([has_anomaly],dtype=np.float32)
 
-def transform_image_perlin(image_path, depth_path, extra_rgbd_path, resize_shape=[256,256]):
+def aug_draem_3d_train(image_path, tiff_path, extra_rgbd_path, resize_shape=[256,256], depth_duplicate=3):
     rgb_anomaly_source_list = sun3d_get_rgb_image_list(extra_rgbd_path)
     depth_anomaly_source_list = sun3d_get_depth_image_list(extra_rgbd_path)
     anomaly_source_idx = torch.randint(0, len(rgb_anomaly_source_list), (1,)).item()
     
-    image = cv2.imread(image_path)
-    image = cv2.resize(image, dsize=(resize_shape[1], resize_shape[0]))
-    depth = read_tiff(depth_path)
-    depth = cv2.resize(depth, dsize=(resize_shape[1], resize_shape[0]))
+    img = cv2.imread(image_path)
+    img = cv2.resize(img, dsize=(resize_shape[1], resize_shape[0]))
+    tiff_img = read_tiff(tiff_path)
+    tiff_img = cv2.resize(tiff_img, dsize=(resize_shape[1], resize_shape[0]))
 
     do_aug_orig = torch.rand(1).numpy()[0] > 0.7
     if do_aug_orig:
-        image = rot_DREAM(image=image)
-        depth = rot_DREAM(image=depth)
+        img = rot_DREAM(image=img)
+        tiff_img = rot_DREAM(image=tiff_img)
 
-    image = np.array(image).reshape((image.shape[0], image.shape[1], image.shape[2])).astype(np.float32)
-    depth = np.array(depth).reshape((depth.shape[0], depth.shape[1], depth.shape[2])).astype(np.float32)
-    image = normlize(image)
+    img_np = np.array(img).reshape((img.shape[0], img.shape[1], img.shape[2])).astype(np.float32)
+    img_np = normlize(img_np)
+
+    depth = tiff_to_depth_numpy(tiff=tiff_img, resized_img_size=resize_shape[0], duplicate=depth_duplicate)
     depth = normlize(depth)
-    # image = np.array(image).reshape((image.shape[0], image.shape[1], image.shape[2])).astype(np.float32) / 255.0
-    # depth = np.array(depth).reshape((depth.shape[0], depth.shape[1], depth.shape[2])).astype(np.float32) * 2.0
-    augmented_image, augmented_depth, anomaly_mask, has_anomaly = augment_image_DREAM(image, depth, anomaly_rgb=rgb_anomaly_source_list[anomaly_source_idx],
-                                                                        anomaly_depth=depth_anomaly_source_list[anomaly_source_idx])
-    augmented_image = np.transpose(augmented_image, (2, 0, 1))
-    augmented_depth = np.transpose(augmented_depth, (2, 0, 1))
-    # image = np.transpose(image, (2, 0, 1))
-    anomaly_mask = np.transpose(anomaly_mask, (2, 0, 1))
-    # return image, augmented_image, anomaly_mask, has_anomaly
-    # return torch.from_numpy(image), torch.from_numpy(augmented_image), torch.from_numpy(anomaly_mask), torch.from_numpy(has_anomaly)
-    return torch.from_numpy(image), torch.from_numpy(augmented_image), torch.from_numpy(augmented_depth[0,:,:]), torch.from_numpy(anomaly_mask), torch.from_numpy(has_anomaly)
+
+    augmented_img, augmented_depth, anomaly_mask, has_anomaly = augment_image_DREAM(img_np, depth, 
+                                                                                    extra_anomaly_rgb=rgb_anomaly_source_list[anomaly_source_idx],
+                                                                                    extra_anomaly_depth=depth_anomaly_source_list[anomaly_source_idx])
+
+    img_torch = np_to_torch(img_np)
+    augmented_img_torch = np_to_torch(augmented_img) 
+    depth_torch = np_to_torch(depth)
+    augmented_depth_torch = np_to_torch(augmented_depth)
+    mask_torch = np_to_torch(anomaly_mask) 
+    anomaly_label_torch = np_to_torch(has_anomaly)
+
+    return img_torch, augmented_img_torch, depth_torch, augmented_depth_torch, mask_torch, anomaly_label_torch
 
 def transform_image_DREAM_noperlin(image, resize_shape=[256,256]):
     if resize_shape != None:
@@ -191,22 +211,19 @@ def transform_depth_DREAM_noperlin(image, resize_shape=[256,256], depth_duplicat
     else:
         return torch.from_numpy(image)
 
-def aug_DREAM_3D(img, tiff, mask, label, phase='train', depth_duplicate=1, resize_shape=[256,256], extra_rgbd_path=None):
-    if phase=='train':
-        raw_img, aug_img, depth_map, mask, label = transform_image_perlin(img, tiff, extra_rgbd_path, resize_shape=resize_shape)
-    elif phase== 'test':
-        aug_img = None
-        raw_img = cv2.imread(img)
-        raw_img = transform_image_DREAM_noperlin(raw_img)
-        tiff_img = read_tiff(tiff)
-        depth_map = transform_depth_DREAM_noperlin(tiff_img, resize_shape=resize_shape, depth_duplicate=depth_duplicate)
-        if label == 0:
-            label = np.array([0], dtype=np.float32)
-            label = torch.from_numpy(label)
-            mask = torch.zeros([1, raw_img.shape[1], raw_img.shape[2]]) 
-        else: 
-            label = np.array([1], dtype=np.float32)
-            label = torch.from_numpy(label)
-            mask = transform_image_DREAM_noperlin(mask)
+def aug_draem_3d_test(img_path, tiff_path, mask_path, depth_duplicate, resize_shape=[256, 256]):
 
-    return raw_img, aug_img, depth_map, mask, label 
+    raw_img = cv2.imread(img_path)
+    raw_img = transform_image_DREAM_noperlin(raw_img)
+    tiff_img = read_tiff(tiff_path)
+    depth_map = transform_depth_DREAM_noperlin(tiff_img, resize_shape=resize_shape, depth_duplicate=depth_duplicate)
+    if label == 0:
+        label = np.array([0], dtype=np.float32)
+        label = torch.from_numpy(label)
+        mask = torch.zeros([1, raw_img.shape[1], raw_img.shape[2]]) 
+    else: 
+        label = np.array([1], dtype=np.float32)
+        label = torch.from_numpy(label)
+        mask = transform_image_DREAM_noperlin(mask_path)
+
+    return raw_img, depth_map, mask, label 
