@@ -1,5 +1,6 @@
 from asyncore import read
 from ctypes import resize
+from locale import normalize
 from torchvision import transforms as T
 from PIL import Image
 import torch
@@ -30,6 +31,20 @@ mvtec_2d_mask_transform = T.Compose([T.Resize(224),
                                      T.ToTensor()
                                      ])
 
+augmenters_DREAM = [iaa.GammaContrast((0.5,2.0),per_channel=True),
+                    iaa.MultiplyAndAddToBrightness(mul=(0.8,1.2),add=(-30,30)),
+                    iaa.pillike.EnhanceSharpness(),
+                    iaa.AddToHueAndSaturation((-50,50),per_channel=True),
+                    iaa.Solarize(0.5, threshold=(32,128)),
+                    iaa.Posterize(),
+                    iaa.Invert(),
+                    iaa.pillike.Autocontrast(),
+                    iaa.pillike.Equalize(),
+                    iaa.Affine(rotate=(-45, 45))
+                ]
+
+rot_DREAM = iaa.Sequential([iaa.Affine(rotate=(-90, 90))])
+
 def read_tiff(tiff):
     # tiff_img: numpy format
     tiff_img = tifffile.imread(tiff)
@@ -41,9 +56,13 @@ def np_to_torch(array):
     return tensor
     
 
-def tiff_to_depth_numpy(tiff, resized_img_size=256, duplicate=3):
+def tiff_to_depth_numpy(tiff, resized_img_size=256, duplicate=3, normalize=False):
     depth_map = np.array(tiff[:, :, 2]).astype(np.float32)
     depth_map = np.resize(depth_map, (resized_img_size, resized_img_size)) 
+
+    if normalize:
+        depth_map = min_max_normlize(depth_map)
+
     depth_map = np.expand_dims(depth_map, axis=2)
     if duplicate == 3:
         depth_map = np.repeat(depth_map, repeats=3, axis=2)
@@ -65,20 +84,6 @@ def tiff_to_depth_torch(tiff, resized_img_size=256, duplicate=1):
                                                         mode='nearest')
     return resized_depth_map
 
-augmenters_DREAM = [iaa.GammaContrast((0.5,2.0),per_channel=True),
-                    iaa.MultiplyAndAddToBrightness(mul=(0.8,1.2),add=(-30,30)),
-                    iaa.pillike.EnhanceSharpness(),
-                    iaa.AddToHueAndSaturation((-50,50),per_channel=True),
-                    iaa.Solarize(0.5, threshold=(32,128)),
-                    iaa.Posterize(),
-                    iaa.Invert(),
-                    iaa.pillike.Autocontrast(),
-                    iaa.pillike.Equalize(),
-                    iaa.Affine(rotate=(-45, 45))
-                ]
-
-rot_DREAM = iaa.Sequential([iaa.Affine(rotate=(-90, 90))])
-
 def sun3d_get_depth_image_list(data_path):
     xtion_depth_path = os.path.join(data_path, 'xtion/sun3ddata/*/*/*/depth/*.png') 
     other_depth_path = os.path.join(data_path, '*/*/*/depth/*.png')
@@ -93,8 +98,8 @@ def sun3d_get_rgb_image_list(data_path):
     xtion_img_path = os.path.join(data_path, 'xtion/sun3ddata/*/*/*/image/*.jpg')
     other_img_path = os.path.join(data_path, '*/*/*/image/*.jpg')
 
-    image_list_sun3d = glob.glob(r"/disk2/SUNRGBD/xtion/sun3ddata/*/*/*/image/*.jpg")
-    image_list_other = glob.glob(r"/disk2/SUNRGBD/*/*/*/image/*.jpg")
+    image_list_sun3d = glob.glob(xtion_img_path)
+    image_list_other = glob.glob(other_img_path)
 
     image_list = image_list_sun3d + image_list_other
     return image_list
@@ -104,10 +109,10 @@ def randAugmenter():
     aug = iaa.Sequential([augmenters_DREAM[aug_ind[0]],
                           augmenters_DREAM[aug_ind[1]],
                           augmenters_DREAM[aug_ind[2]]]
-                            )
+                        )
     return aug
 
-def normlize(numpy):
+def min_max_normlize(numpy):
     numpy_norm = (numpy - np.min(numpy)) / (np.max(numpy) - np.min(numpy) + 1e-8)
     return numpy_norm
 
@@ -174,10 +179,10 @@ def aug_draem_3d_train(image_path, tiff_path, extra_rgbd_path, resize_shape=[256
         tiff_img = rot_DREAM(image=tiff_img)
 
     img_np = np.array(img).reshape((img.shape[0], img.shape[1], img.shape[2])).astype(np.float32)
-    img_np = normlize(img_np)
+    img_np = min_max_normlize(img_np)
 
     depth = tiff_to_depth_numpy(tiff=tiff_img, resized_img_size=resize_shape[0], duplicate=depth_duplicate)
-    depth = normlize(depth)
+    depth = min_max_normlize(depth)
 
     augmented_img, augmented_depth, anomaly_mask, has_anomaly = augment_image_DREAM(img_np, depth, 
                                                                                     extra_anomaly_rgb=rgb_anomaly_source_list[anomaly_source_idx],
@@ -195,21 +200,20 @@ def aug_draem_3d_train(image_path, tiff_path, extra_rgbd_path, resize_shape=[256
 def transform_image_DREAM_noperlin(image, resize_shape=[256,256]):
     if resize_shape != None:
         image = cv2.resize(image, dsize=(resize_shape[1], resize_shape[0]))
-    image = normlize(image)
+    image = min_max_normlize(image)
     image = np.array(image).reshape((image.shape[0], image.shape[1], 3)).astype(np.float32)
     image = np.transpose(image, (2, 0, 1))
     return torch.from_numpy(image)
 
-def transform_depth_DREAM_noperlin(image, resize_shape=[256,256], depth_duplicate=1):
-    if resize_shape != None:
-        image = cv2.resize(image, dsize=(resize_shape[1], resize_shape[0]))
-    image = normlize(image)
-    image = np.array(image).reshape((image.shape[0], image.shape[1], 3)).astype(np.float32)
-    image = np.transpose(image, (2, 0, 1))
-    if(depth_duplicate==1):
-        return torch.from_numpy(image[0,:,:])
-    else:
-        return torch.from_numpy(image)
+
+def transform_depth_DREAM_noperlin(tiff_img, resize_shape=[256,256], depth_duplicate=1):
+
+    depth = tiff_to_depth_numpy(tiff_img, resized_img_size=resize_shape[0], 
+                                duplicate=depth_duplicate, normalize=True)
+
+    depth_torch = np_to_torch(depth)
+    return depth_torch
+    
 
 def aug_draem_3d_test(img_path, tiff_path, mask_path, depth_duplicate, resize_shape=[256, 256]):
 
