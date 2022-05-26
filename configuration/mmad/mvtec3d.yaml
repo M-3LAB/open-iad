@@ -18,4 +18,6 @@ milestones_upper: 270
 aug_method: DRAEM
 lambda_seg: 1.0
 lambda_ssim: 1.0
-lambda_l2: 1.0
+lambda_recon: 1.0
+lambda_rgb: 1.0
+lambda_depth: 1.0

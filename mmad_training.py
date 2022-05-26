@@ -154,6 +154,16 @@ if __name__ == '__main__':
                     rgb_seg_loss = focal_loss(rgb_output_mask_logit, aug_mask) 
                     depth_seg_loss = focal_loss(depth_output_mask_logit, aug_mask)
 
+                    rgb_total_loss = (para_dict['lambda_recon'] * rgb_recons_loss + 
+                                      para_dict['lambda_seg'] * rgb_seg_loss + 
+                                      para_dict['lambda_ssim'] * rgb_ssim_loss)
+
+                    depth_total_loss = (para_dict['lambda_recon'] * depth_recons_loss + 
+                                        para_dict['lambda_seg'] * depth_seg_loss + 
+                                        para_dict['lambda_ssim'] * depth_ssim_loss)
+                    
+                    total_loss = rgb_total_loss 
+
                      
                     
 
