@@ -221,13 +221,14 @@ def aug_draem_3d_test(img_path, tiff_path, mask_path, depth_duplicate, resize_sh
     raw_img = transform_image_DREAM_noperlin(raw_img)
     tiff_img = read_tiff(tiff_path)
     depth_map = transform_depth_DREAM_noperlin(tiff_img, resize_shape=resize_shape, depth_duplicate=depth_duplicate)
+
     if label == 0:
         label = np.array([0], dtype=np.float32)
-        label = torch.from_numpy(label)
         mask = torch.zeros([1, raw_img.shape[1], raw_img.shape[2]]) 
     else: 
         label = np.array([1], dtype=np.float32)
-        label = torch.from_numpy(label)
         mask = transform_image_DREAM_noperlin(mask_path)
+
+    label = torch.from_numpy(label)
 
     return raw_img, depth_map, mask, label 

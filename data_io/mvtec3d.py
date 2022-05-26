@@ -5,7 +5,7 @@ import random
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms as T
-from data_io.augmentation.augmentation import read_tiff, tiff_to_depth, aug_draem_3d_train, aug_draem_3d_test
+from data_io.augmentation.augmentation import read_tiff, tiff_to_depth_torch, aug_draem_3d_train, aug_draem_3d_test
 
 __all__ = ['MVTec3D', 'mvtec3d_classes', 'MVTecCL3D']
 
@@ -78,49 +78,41 @@ class MVTec3D(Dataset):
                 raw_img, aug_img, depth_map, aug_depth_map, aug_mask, aug_label = aug_draem_3d_train(img_path=img_path, tiff_path=tiff_path, 
                                                                                                      extra_rgbd_path=self.extra_rgbd_path, 
                                                                                                      resize_shape=self.resize_shape)
-                label = None
-                return {'rgb': raw_img, 'aug_rgb': aug_img, 'depth': depth_map, 'aug_depth': aug_depth_map, 
-                        'aug_mask': aug_mask, 'aug_label': aug_label, 'label': label} 
+                label = None #Uniform API
+                mask = None #Uniform API
 
-            elif self.phase == 'test':
+            else:
                 raw_img, depth_map, mask, label = aug_draem_3d_test(img_path=img_path, tiff_path=tiff_path, 
                                                                     mask_path=mask_path, 
                                                                     depth_duplicate=self.depth_duplicate, 
                                                                     resize_shape=self.resize_shape)
                 
-                aug_img = None
-                aug_depth_map = None
-                aug_mask = None
+                aug_img = None #Uniform API
+                aug_depth_map = None #Uniform API
+                aug_mask = None #Uniform API
+
+            return {'rgb': raw_img, 'aug_rgb': aug_img, 
+                    'depth': depth_map, 'aug_depth': aug_depth_map, 
+                    'mask':mask, 'aug_mask': aug_mask,  
+                    'label': label, 'aug_label': aug_label} 
                 
-                #return {'rgb': raw_img, 'depth': depth_map, 'mask': mask, 'label': label}
-                return {'rgb': raw_img, 'aug_rgb': aug_img, 'depth': depth_map, 
-                        'aug_depth': aug_depth_map, 'aug_mask': aug_mask, 'aug_label': aug_label} 
                 
         elif self.aug_method == 'normal':
 
-            aug_img = None
-
+            img = Image.open(img_path).convert('RGB')
+            img = self.imge_transform(img) 
+            tiff_img = read_tiff(tiff_path)
+            depth_map = tiff_to_depth_torch(tiff=tiff_img, resized_img_size=self.data_transform['data_size'],
+                                            duplicate=self.depth_duplicate)
+            
             if label == 0:
-                x = Image.open(x).convert('RGB')
-                x = self.imge_transform(x)
-                mask = torch.zeros([1, x.shape[1], x.shape[2]])
-                tiff_img = read_tiff(xyz)
-                depth_map = tiff_to_depth(tiff=tiff_img, resized_img_size=self.data_transform['data_size'],
-                                    duplicate=self.depth_duplicate)
+                mask = torch.zeros([1, img.shape[1], img.shape[2]])
             else:
-                x = Image.open(x).convert('RGB')
-                x = self.imge_transform(x)
-                mask = Image.open(mask)
                 mask = self.mask_transform(mask)
-                tiff_img = read_tiff(xyz)
-                depth_map = tiff_to_depth(tiff=tiff_img, resized_img_size=self.data_transform['data_size'],
-                                    duplicate=self.depth_duplicate)
-            y = torch.from_numpy(y)
-        
-         
+            
+            label = torch.from_numpy(label)
 
-            #return x, y, mask, depth_map, xyz  
-            return {'rgb':x, 'label':y, 'gt_mask':mask, 'depth':depth_map, 'tiff': xyz} 
+            return {'rgb':img, 'label':label, 'mask':mask, 'depth':depth_map} 
 
     def __len__(self):
         return len(self.x)
