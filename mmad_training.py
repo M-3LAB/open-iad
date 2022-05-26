@@ -64,7 +64,10 @@ if __name__ == '__main__':
     depth_ck_path = os.path.join(para_dict['ck_path'], 'depth')
 
     rgb_recons_ck_path = os.path.join(rgb_ck_path, 'recons')
+    create_folders(rgb_recons_ck_path)
+
     rgb_seg_ck_path = os.path.join(rgb_ck_path, 'seg')
+    create_folders(rgb_seg_ck_path)
 
     depth_recons_ck_path = os.path.join(depth_ck_path, 'recons')
     depth_seg_ck_path = os.path.join(depth_ck_path, 'seg')
