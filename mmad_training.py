@@ -139,6 +139,14 @@ if __name__ == '__main__':
                     depth_hat = depth_recons(depth)
                     depth_joined = torch.cat((depth_hat, aug_depth), dim=1)
 
+                    rgb_output_mask = rgb_seg(rgb_joined) 
+                    rgb_output_mask_logit = torch.softmax(rgb_output_mask, dim=1)
+
+                    depth_output_mask = depth_seg(depth_joined)
+                    depth_output_mask_logit = torch.softmax(depth_output_mask, dim=1)
+
+
+
                     
 
         
