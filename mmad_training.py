@@ -69,7 +69,7 @@ if __name__ == '__main__':
     depth_recons_ck_path = os.path.join(depth_ck_path, 'recons')
     depth_seg_ck_path = os.path.join(depth_ck_path, 'seg')
 
-    loss_l2 = torch.nn.MSELoss().to(device)
+    l2_loss = torch.nn.MSELoss().to(device)
     focal_loss = FocalLoss().to(device)
     ssim_loss = SSIMLoss().to(device)
     
@@ -145,20 +145,11 @@ if __name__ == '__main__':
                     depth_output_mask = depth_seg(depth_joined)
                     depth_output_mask_logit = torch.softmax(depth_output_mask, dim=1)
 
+                    rgb_recons_loss = l2_loss(rgb, rgb_hat)                   
+                    depth_recons_loss = l2_loss(depth, depth_hat)
 
-
-                    
-
-        
-        
-        
-        
-                    
-        
-
-        
-     
-    
+                    rgb_ssim_loss = ssim_loss(rgb, rgb_hat) 
+                    depth_ssim_loss = ssim_loss(depth, depth_hat)
 
         #for i, batch in enumerate(train_loader):
         #    #x, y, mask, depth_map, xyz = batch
