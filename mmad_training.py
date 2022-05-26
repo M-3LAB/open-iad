@@ -70,7 +70,10 @@ if __name__ == '__main__':
     create_folders(rgb_seg_ck_path)
 
     depth_recons_ck_path = os.path.join(depth_ck_path, 'recons')
+    create_folders(depth_recons_ck_path)
+
     depth_seg_ck_path = os.path.join(depth_ck_path, 'seg')
+    create_folders(depth_seg_ck_path)
 
     l2_loss = torch.nn.MSELoss().to(device)
     focal_loss = FocalLoss().to(device)
@@ -179,5 +182,5 @@ if __name__ == '__main__':
             depth_scheduler.step()
 
             #TODO: save rgb and depth model
-            torch.save(rgb_recons.state_dict(), rgb_recons_ck_path)
+            save_model()
             
