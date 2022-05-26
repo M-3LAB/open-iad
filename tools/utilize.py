@@ -152,24 +152,28 @@ def save_image(image, name, image_path):
     torchvision.utils.save_image(image, '{}/{}'.format(image_path, name), normalize=False)
 
 
-def save_model(model, file_path, para_dict, psnr):
+def save_model(model, file_path, infor, save_previous=False):
     if not os.path.exists(file_path):
         os.makedirs(file_path)
-    for file in glob.glob('{}/*.pth'.format(file_path)):
-        os.remove(file)      
 
-    model_path = '{}/best_model_{}_{}_{:.4f}.pth'.format(
-        file_path, para_dict['source_domain'], para_dict['target_domain'], psnr)
+    if not save_previous:
+        for file in glob.glob('{}/*.pth'.format(file_path)):
+            os.remove(file)      
+
+    model_path = '{}/{}.pth'.format(file_path, infor)
     torch.save({'model_state_dict': model.state_dict()}, model_path)
-
 
 def load_model(model, file_path, description):
     if not os.path.exists(file_path):
         raise ValueError('file is not exist, {}'.format(file_path)) 
 
-    model_path = glob.glob('{}/checkpoint/{}/*.pth'.format(file_path, description))[0]
-    checkpoint = torch.load(model_path)
+    #model_path = glob.glob('{}/checkpoint/{}/*.pth'.format(file_path, description))[0]
+    model_path = f'{file_path}/{description}.pth' 
+    checkpoint = torch.load(model_path, map_location='cpu')
     model.load_state_dict(checkpoint['model_state_dict'])
 
     return model
 
+def create_folders(tag_path):
+    if not os.path.exists(tag_path):
+        os.makedirs(tag_path)

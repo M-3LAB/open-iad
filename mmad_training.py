@@ -75,7 +75,6 @@ if __name__ == '__main__':
     
 
     for cls in class_names: 
-        #TODO: Model 
         rgb_recons = RGBRecons(inc=3, fin_ouc=3).to(device)
         depth_recons = DepthRecons(inc=1, fin_ouc=2).to(device)
 
@@ -162,16 +161,20 @@ if __name__ == '__main__':
                                         para_dict['lambda_seg'] * depth_seg_loss + 
                                         para_dict['lambda_ssim'] * depth_ssim_loss)
                     
-                    total_loss = rgb_total_loss 
+                    total_loss = (para_dict['lambda_rgb'] * rgb_total_loss + 
+                                  para_dict['lambda_depth'] * depth_total_loss)
 
-                     
+                    rgb_optimizer.zero_grad()
+                    depth_optimizer.zero_grad()
+
+                    total_loss.backward()
                     
+                    rgb_optimizer.step()
+                    depth_optimizer.step()
 
-        #for i, batch in enumerate(train_loader):
-        #    #x, y, mask, depth_map, xyz = batch
-        #    img = batch['rgb'].to(device)
-        #    label = batch['label'].to(device)
-        #    depth_map = batch['depth'].to(device)
+            rgb_scheduler.step()
+            depth_scheduler.step()
 
-        ##TODO: Self-Supervised Training 
-
+            #TODO: save rgb and depth model
+            torch.save(rgb_recons.state_dict(), rgb_recons_ck_path)
+            
