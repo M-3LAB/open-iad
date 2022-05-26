@@ -153,6 +153,8 @@ if __name__ == '__main__':
 
                     rgb_seg_loss = focal_loss(rgb_output_mask_logit, aug_mask) 
                     depth_seg_loss = focal_loss(depth_output_mask_logit, aug_mask)
+
+                     
                     
 
         #for i, batch in enumerate(train_loader):

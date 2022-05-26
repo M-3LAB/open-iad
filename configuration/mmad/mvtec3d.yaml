@@ -16,3 +16,6 @@ depth_duplicate: 1
 milestones_lower: 240
 milestones_upper: 270
 aug_method: DRAEM
+lambda_seg: 1.0
+lambda_ssim: 1.0
+lambda_l2: 1.0
