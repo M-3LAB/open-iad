@@ -41,12 +41,6 @@ class MVTec3D(Dataset):
         
         assert set(self.class_names) <= set(mvtec3d_classes()), 'Class is Out of Range'
 
-        """
-        x: RGB image
-        y: Label, 0: good, 1: bad(anomaly)
-        mask: anomaly mask 
-        xyz: TIFF image
-        """ 
 
         self.imgs_list = []
         self.label_list = []
