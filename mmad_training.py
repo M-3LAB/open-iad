@@ -126,7 +126,21 @@ if __name__ == '__main__':
         
         for epoch in range(para_dict['num_epochs']):
             for _, batch in enumerate(train_loader): 
-                pass
+                if para_dict['aug_method'] == 'DRAEM':
+                    rgb = batch['rgb'].to(device)
+                    aug_rgb = batch['aug_rgb'].to(device)
+                    depth = batch['depth'].to(device)
+                    aug_depth = batch['aug_depth'].to(device)
+                    aug_mask = batch['aug_mask'].to(device)
+
+                    rgb_hat = rgb_recons(rgb)
+                    rgb_joined = torch.cat((rgb_hat, aug_rgb), dim=1)
+
+                    depth_hat = depth_recons(depth)
+                    depth_joined = torch.cat((depth_hat, aug_depth), dim=1)
+
+                    
+
         
         
         
