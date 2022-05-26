@@ -78,9 +78,9 @@ class MVTec3D(Dataset):
                 raw_img, aug_img, depth_map, aug_depth_map, aug_mask, aug_label = aug_draem_3d_train(img_path=img_path, tiff_path=tiff_path, 
                                                                                                      extra_rgbd_path=self.extra_rgbd_path, 
                                                                                                      resize_shape=self.resize_shape)
-
-                return {'rgb': raw_img, 'aug_rgb': aug_img, 'depth': depth_map, 
-                        'aug_depth': aug_depth_map, 'aug_mask': aug_mask, 'aug_label': aug_label} 
+                label = None
+                return {'rgb': raw_img, 'aug_rgb': aug_img, 'depth': depth_map, 'aug_depth': aug_depth_map, 
+                        'aug_mask': aug_mask, 'aug_label': aug_label, 'label': label} 
 
             elif self.phase == 'test':
                 raw_img, depth_map, mask, label = aug_draem_3d_test(img_path=img_path, tiff_path=tiff_path, 
@@ -88,7 +88,13 @@ class MVTec3D(Dataset):
                                                                     depth_duplicate=self.depth_duplicate, 
                                                                     resize_shape=self.resize_shape)
                 
-                return {'rgb': raw_img, 'depth': depth_map, 'mask': mask, 'label': label}
+                aug_img = None
+                aug_depth_map = None
+                aug_mask = None
+                
+                #return {'rgb': raw_img, 'depth': depth_map, 'mask': mask, 'label': label}
+                return {'rgb': raw_img, 'aug_rgb': aug_img, 'depth': depth_map, 
+                        'aug_depth': aug_depth_map, 'aug_mask': aug_mask, 'aug_label': aug_label} 
                 
         elif self.aug_method == 'normal':
 
