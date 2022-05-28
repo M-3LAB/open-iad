@@ -182,5 +182,8 @@ if __name__ == '__main__':
             depth_scheduler.step()
 
             #TODO: save rgb and depth model
-            save_model()
+            save_model(model=rgb_recons, file_path=rgb_recons_ck_path, infor=cls+str(epoch))
+            save_model(model=rgb_seg, file_path=rgb_seg_ck_path, infor=cls+str(epoch))
+            save_model(model=depth_recons, file_path=depth_recons_ck_path, infor=cls+str(epoch))
+            save_model(model=depth_seg, file_path=depth_seg_ck_path, infor=cls+str(epoch))
             
