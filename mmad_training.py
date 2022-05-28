@@ -130,7 +130,7 @@ if __name__ == '__main__':
                                       batch_size=para_dict['batch_size'], shuffle=False) 
         
         for epoch in range(para_dict['num_epochs']):
-            for _, batch in enumerate(train_loader): 
+            for idx, batch in enumerate(train_loader): 
                 if para_dict['aug_method'] == 'DRAEM':
                     rgb = batch['rgb'].to(device)
                     aug_rgb = batch['aug_rgb'].to(device)
@@ -177,6 +177,17 @@ if __name__ == '__main__':
                     
                     rgb_optimizer.step()
                     depth_optimizer.step()
+
+                    infor = '\r{}[Epoch {} / {}] [Batch {}/{}] '.format(
+                        '', epoch+1, para_dict['number_epochs'], idx+1, len(train_loader) / para_dict['batch_size'])
+                    
+                    infor = '{} [RGB Recon Loss: {:.4f}] [RGB Seg Loss: {:.4f}] [RGB SSIM Loss: {:.4f}]'.format(
+                        infor, rgb_recons_loss.item(), rgb_ssim_loss.item(), rgb_seg_loss.item()
+                    ) 
+
+                    infor = '{} [Depth Recon Loss: {:.4f}] [Depth Seg Loss: {:.4f}] [Depth SSIM Loss: {:.4f}]'.format(
+                        infor, depth_recons_loss.item(), depth_ssim_loss.item(), depth_seg_loss.item()
+                    ) 
 
             rgb_scheduler.step()
             depth_scheduler.step()
