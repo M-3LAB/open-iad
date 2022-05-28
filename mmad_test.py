@@ -46,3 +46,12 @@ if __name__ == '__main__':
     if not para_dict['cl']:
         valid_loader = DataLoader(valid_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False)
+    
+    rgb_ck_path = os.path.join(para_dict['ck_path'], 'rgb') 
+    depth_ck_path = os.path.join(para_dict['ck_path'], 'depth')
+
+    rgb_recons_ck_path = os.path.join(rgb_ck_path, 'recons')
+    rgb_seg_ck_path = os.path.join(rgb_ck_path, 'seg')
+
+    depth_recons_ck_path = os.path.join(depth_ck_path, 'recons')
+    depth_seg_ck_path = os.path.join(depth_ck_path, 'seg')
