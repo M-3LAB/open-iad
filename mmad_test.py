@@ -6,7 +6,31 @@ from models.mmad.reconstruction_network.depth import DepthRecons
 from models.mmad.reconstruction_network.rgb import RGBRecons 
 from models.mmad.seg_network.depth import DepthSeg
 from models.mmad.seg_network.rgb import RGBSeg
-
+from configuration.mmad.config import parse_arguments_mmad 
+from tools.utilize import * 
+from data_io.mvtec3d import MVTec3D, MVTecCL3D, mvtec3d_classes
+import yaml
 
 if __name__ == '__main__':
-    pass
+    args = parse_arguments_mmad() 
+
+    args = parse_arguments_mmad() 
+
+    with open('./configuration/mmad/{}.yaml'.format(args.dataset), 'r') as f:
+        para_dict = yaml.load(f, Loader=yaml.SafeLoader)
+    
+    para_dict = merge_config(para_dict, args)
+    print(para_dict)
+
+    seed_everything(para_dict['seed'])
+
+    device, device_ids = parse_device_list(para_dict['gpu_ids'], int(para_dict['gpu_id']))
+    device = torch.device("cuda", device)
+
+    mvtec3d_transform = {'data_size':para_dict['data_size'],
+                         'mask_size':para_dict['mask_size']}
+    
+    if para_dict['class_names'] == 'all':
+        class_names = mvtec3d_classes() 
+    else: 
+        class_names = para_dict['class_names']
