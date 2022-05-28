@@ -55,3 +55,7 @@ if __name__ == '__main__':
 
     depth_recons_ck_path = os.path.join(depth_ck_path, 'recons')
     depth_seg_ck_path = os.path.join(depth_ck_path, 'seg')
+
+    for cls in class_names:
+        rgb_recons = RGBRecons(inc=3, fin_ouc=3).to(device)
+        rgb_seg = RGBSeg(inc=3, fin_ouc=2).to(device)

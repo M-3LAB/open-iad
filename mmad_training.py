@@ -82,13 +82,13 @@ if __name__ == '__main__':
 
     for cls in class_names: 
         rgb_recons = RGBRecons(inc=3, fin_ouc=3).to(device)
-        depth_recons = DepthRecons(inc=1, fin_ouc=2).to(device)
+        depth_recons = DepthRecons(inc=3, fin_ouc=2).to(device)
 
         rgb_recons.apply(draem_weights_init)
         depth_recons.apply(draem_weights_init)
         
         rgb_seg = RGBSeg(inc=6, fin_ouc=2).to(device)
-        depth_seg = DepthSeg(inc=2, fin_ouc=2).to(device)
+        depth_seg = DepthSeg(inc=6, fin_ouc=2).to(device)
 
         rgb_seg.apply(draem_weights_init)
         depth_seg.apply(draem_weights_init)
