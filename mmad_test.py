@@ -59,3 +59,19 @@ if __name__ == '__main__':
     for cls in class_names:
         rgb_recons = RGBRecons(inc=3, fin_ouc=3).to(device)
         rgb_seg = RGBSeg(inc=3, fin_ouc=2).to(device)
+
+        depth_recons = DepthRecons(inc=3, fin_ouc=3).to(device)
+        depth_seg = DepthSeg(inc=3, fin_ouc=3).to(device)
+
+        #TODO: Load Model
+        load_model(model=rgb_recons, file_path=rgb_recons_ck_path, description=cls+str(para_dict['num_epochs'])) 
+        load_model(model=rgb_seg, file_path=rgb_seg_ck_path, description=cls+str(para_dict['num_epochs'])) 
+
+        load_model(model=depth_recons, file_path=depth_recons_ck_path, description=cls+str(para_dict['num_epochs'])) 
+        load_model(model=depth_seg, file_path=depth_seg_ck_path, description=cls+str(para_dict['num_epochs'])) 
+
+        rgb_recons.eval()
+        rgb_seg.eval()
+
+        depth_recons.eval()
+        depth_seg.eval() 
