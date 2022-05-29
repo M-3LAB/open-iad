@@ -74,5 +74,7 @@ if __name__ == '__main__':
 
         valid_loader = DataLoader(valid_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False) 
-
-    
+        
+        for idx, batch in enumerate(valid_loader):
+            rgb = batch['rgb'].to(device)
+            depth = batch['depth'].to(device)
