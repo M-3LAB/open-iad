@@ -93,11 +93,13 @@ if __name__ == '__main__':
             mask = batch['mask'].to(device)
             label = batch['label'].to(device)
 
-            if para_dict['backbone-model'] == 'DRAEM':
+            if para_dict['backbone_model'] == 'DRAEM':
 
                 rgb_hat = RGBRecons(rgb)
                 rgb_joined = torch.cat((rgb, rgb_hat), dim=1)
+                rgb_out_mask = RGBSeg(rgb_joined)
 
                 depth_hat = DepthRecons(depth) 
                 depth_joined = torch.cat((depth, depth_hat), dim=1)
+                depth_out_mask = DepthSeg(depth_joined)
             
