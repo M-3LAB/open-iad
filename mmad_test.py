@@ -35,18 +35,6 @@ if __name__ == '__main__':
     else: 
         class_names = para_dict['class_names']
 
-    #if para_dict['dataset'] == 'mvtec3d':
-    #    if para_dict['cl']:
-    #        valid_dataset = MVTecCL3D()
-    #    else:
-    #        valid_dataset = MVTec3D(data_path=para_dict['data_path'], class_names=class_names,
-    #                                phase='test', depth_duplicate=para_dict['depth_duplicate'],
-    #                                data_transform=mvtec3d_transform) 
-
-    #if not para_dict['cl']:
-    #    valid_loader = DataLoader(valid_dataset, num_workers=para_dict['num_workers'],
-    #                              batch_size=para_dict['batch_size'], shuffle=False)
-    
     rgb_ck_path = os.path.join(para_dict['ck_path'], 'rgb') 
     depth_ck_path = os.path.join(para_dict['ck_path'], 'depth')
 
@@ -75,5 +63,13 @@ if __name__ == '__main__':
 
         depth_recons.eval()
         depth_seg.eval() 
+
+        if para_dict['dataset'] == 'mvtec3d':
+            if para_dict['cl']:
+                valid_dataset = MVTecCL3D()
+            else: 
+                valid_dataset = MVTec3D(data_path=para_dict['data_path'], class_names=cls,
+                                        phase='test', depth_duplicate=para_dict['depth_duplicate'],
+                                        data_transform=mvtec3d_transform) 
 
     
