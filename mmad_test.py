@@ -10,6 +10,7 @@ from configuration.mmad.config import parse_arguments_mmad
 from tools.utilize import * 
 from data_io.mvtec3d import MVTec3D, MVTecCL3D, mvtec3d_classes
 import yaml
+import numpy as np
 
 if __name__ == '__main__':
     args = parse_arguments_mmad() 
@@ -44,6 +45,11 @@ if __name__ == '__main__':
     depth_recons_ck_path = os.path.join(depth_ck_path, 'recons')
     depth_seg_ck_path = os.path.join(depth_ck_path, 'seg')
 
+    obj_ap_pixel_list = []
+    obj_auroc_pixel_list = []
+    obj_ap_image_list = []
+    obj_auroc_image_list = []
+
     for cls in class_names:
         rgb_recons = RGBRecons(inc=3, fin_ouc=3).to(device)
         rgb_seg = RGBSeg(inc=3, fin_ouc=2).to(device)
@@ -73,6 +79,10 @@ if __name__ == '__main__':
 
         valid_loader = DataLoader(valid_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False) 
+        
+        total_pixel_scores = np.zeros((mvtec3d_transform['data_size'] * mvtec3d_transform['data_size'] * len(valid_dataset)))
+        total_gt_pixel_scores = np.zeros((mvtec3d_transform['data_size'] * mvtec3d_transform['data_size'] * len(valid_dataset)))
+        mask_cnt = 0
         
         for idx, batch in enumerate(valid_loader):
             rgb = batch['rgb'].to(device)
