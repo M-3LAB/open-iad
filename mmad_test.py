@@ -72,4 +72,7 @@ if __name__ == '__main__':
                                         phase='test', depth_duplicate=para_dict['depth_duplicate'],
                                         data_transform=mvtec3d_transform) 
 
+        valid_loader = DataLoader(valid_dataset, num_workers=para_dict['num_workers'],
+                                  batch_size=para_dict['batch_size'], shuffle=False) 
+
     
