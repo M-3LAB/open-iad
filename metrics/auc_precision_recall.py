@@ -1,9 +1,10 @@
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve
 from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import average_precision_score 
 import numpy as np
 
-__all__ = ['get_auc', 'get_precision_recall']
+__all__ = ['get_auc', 'get_precision_recall', 'get_ap']
 
 def get_auc(target, prediciton):
     """
@@ -26,3 +27,7 @@ def get_precision_recall(target, prediction):
     f1 = np.divide(a, b, out=np.zeros_like(a), where=b != 0)
     idx = np.argmax(f1)
     return precision[idx], recall[idx], thresholds[idx]
+
+def get_ap(target, prediction):
+    ap = average_precision_score(target, prediction) 
+    return ap
