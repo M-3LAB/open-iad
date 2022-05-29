@@ -138,10 +138,10 @@ if __name__ == '__main__':
                     aug_depth = batch['aug_depth'].to(device)
                     aug_mask = batch['aug_mask'].to(device)
 
-                    rgb_hat = rgb_recons(rgb)
+                    rgb_hat = rgb_recons(rgb).to(device)
                     rgb_joined = torch.cat((rgb_hat, aug_rgb), dim=1)
 
-                    depth_hat = depth_recons(depth)
+                    depth_hat = depth_recons(depth).to(device)
                     depth_joined = torch.cat((depth_hat, aug_depth), dim=1)
 
                     rgb_output_mask = rgb_seg(rgb_joined) 
