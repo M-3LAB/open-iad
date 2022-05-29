@@ -22,3 +22,4 @@ lambda_recon: 1.0
 lambda_rgb: 1.0
 lambda_depth: 1.0
 smooth_kernel_size: 21
+backbone_model: 'DRAEM'
