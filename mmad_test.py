@@ -51,7 +51,6 @@ if __name__ == '__main__':
         depth_recons = DepthRecons(inc=3, fin_ouc=3).to(device)
         depth_seg = DepthSeg(inc=3, fin_ouc=3).to(device)
 
-        #TODO: Load Model
         load_model(model=rgb_recons, file_path=rgb_recons_ck_path, description=cls+str(para_dict['num_epochs'])) 
         load_model(model=rgb_seg, file_path=rgb_seg_ck_path, description=cls+str(para_dict['num_epochs'])) 
 
@@ -78,3 +77,6 @@ if __name__ == '__main__':
         for idx, batch in enumerate(valid_loader):
             rgb = batch['rgb'].to(device)
             depth = batch['depth'].to(device)
+            mask = batch['mask'].to(device)
+            label = batch['label'].to(device)
+            
