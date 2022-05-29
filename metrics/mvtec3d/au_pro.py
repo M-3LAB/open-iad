@@ -2,6 +2,7 @@ import numpy as np
 from scipy.ndimage.measurements import label
 from bisect import bisect
 
+__all__ = ['GroundTruthComponent', 'trapezoid', 'collect_anomaly_scores', 'compute_pro', 'calculate_au_pro']
 
 class GroundTruthComponent:
     """
