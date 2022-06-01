@@ -84,8 +84,12 @@ if __name__ == '__main__':
         total_gt_pixel_scores = np.zeros((mvtec3d_transform['data_size'] * mvtec3d_transform['data_size'] * len(valid_dataset)))
         mask_cnt = 0
 
-        anomaly_score_gt = []
-        anomaly_score_prediction = []
+        rgb_anomaly_score_gt = []
+        rgb_anomaly_score_prediction = []
+
+        depth_anomaly_score_gt = []
+        depth_anomaly_score_prediction = []
+        
         
         for idx, batch in enumerate(valid_loader):
             rgb = batch['rgb'].to(device)
