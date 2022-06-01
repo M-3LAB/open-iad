@@ -16,7 +16,7 @@ def parse_arguments_mmad():
     parser.add_argument('--depth-duplicate', type=int, default=3, choices=[1, 3])
     parser.add_argument('--ck-path', default=None, help='checkpoint path')
     parser.add_argument('--aug-method', default=None, choices=['DRAEM', 'normal'], help='Augmentation Method')
-    parser.add_argument('--smooth-kernel-size', default=int, help='smoothing kernel size')
+    parser.add_argument('--smooth-kernel-size', type=int, help='smoothing kernel size')
     parser.add_argument('--backbone-model', default='str', choices=['DRAEM'])
 
     

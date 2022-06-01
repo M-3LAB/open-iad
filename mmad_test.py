@@ -110,6 +110,20 @@ if __name__ == '__main__':
 
                 # segmentation output mask size  
                 out_mask_cv = rgb_out_mask_softmax[0, 1, :, :].detach().cpu().numpy()
-
                 
+                # smoothing mask and convert it into nympy format 
+                rgb_out_mask_averaged = torch.nn.functional_avg_pool2d(input=rgb_out_mask_softmax,
+                                                                       kernel_size=para_dict['smooth_kernel_size'],
+                                                                       stride=1,
+                                                                       padding=para_dict['smooth_kernel_size']//2).cpu().detach().numpy
+
+                depth_out_mask_averaged = torch.nn.functional_avg_pool2d(input=depth_out_mask_softmax,
+                                                                         kernel_size=para_dict['smooth_kernel_size'],
+                                                                         stride=1,
+                                                                         padding=para_dict['smooth_kernel_size']//2).cpu().detach().numpy
+                
+                rgb_score = np.max(rgb_out_mask_averaged)
+                depth_score = np.max(depth_out_mask_averaged)
+
+                 
             
