@@ -151,6 +151,19 @@ if __name__ == '__main__':
                 total_rgb_pixel_scores[mask_cnt * img_dim * img_dim: (mask_cnt + 1) * img_dim * img_dim] = flat_rgb_out_mask
                 total_rgb_gt_pixel_scores[mask_cnt * img_dim * img_dim: (mask_cnt + 1) * img_dim * img_dim] = flat_rgb_true_mask
 
+                total_depth_pixel_scores[mask_cnt * img_dim * img_dim: (mask_cnt + 1) * img_dim * img_dim] = flat_depth_out_mask
+                total_depth_gt_pixel_scores[mask_cnt * img_dim * img_dim: (mask_cnt + 1) * img_dim * img_dim] = flat_depth_true_mask
+
+                mask_cnt += 1
+
+        
+        rgb_anomaly_score_prediction = np.array(rgb_anomaly_score_prediction)
+        rgb_anomaly_score_gt = np.array(rgb_anomaly_score_gt)
+
+        depth_anomaly_score_prediction = np.array(depth_anomaly_score_prediction)
+        depth_anomaly_score_gt = np.array(depth_anomaly_score_gt)
+
+
                 
 
                  
