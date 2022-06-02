@@ -181,8 +181,8 @@ if __name__ == '__main__':
         rgb_auroc_pixel = get_auroc(total_rgb_gt_pixel_scores, total_rgb_pixel_scores)
         depth_auroc_pixel = get_auroc(total_depth_gt_pixel_scores, total_depth_pixel_scores)
 
-        rgb_ap_pixel = get_ap()
-        depth_ap_pixel = get_ap()
+        rgb_ap_pixel = get_ap(total_rgb_gt_pixel_scores, total_rgb_pixel_scores)
+        depth_ap_pixel = get_ap(total_depth_gt_pixel_scores, total_depth_pixel_scores)
 
         
 
