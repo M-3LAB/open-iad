@@ -80,8 +80,12 @@ if __name__ == '__main__':
         valid_loader = DataLoader(valid_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False) 
         
-        total_pixel_scores = np.zeros((mvtec3d_transform['data_size'] * mvtec3d_transform['data_size'] * len(valid_dataset)))
-        total_gt_pixel_scores = np.zeros((mvtec3d_transform['data_size'] * mvtec3d_transform['data_size'] * len(valid_dataset)))
+        total_rgb_pixel_scores = np.zeros((mvtec3d_transform['data_size'] * mvtec3d_transform['data_size'] * len(valid_dataset)))
+        total_rgb_gt_pixel_scores = np.zeros((mvtec3d_transform['data_size'] * mvtec3d_transform['data_size'] * len(valid_dataset)))
+
+        total_depth_pixel_scores = np.zeros((mvtec3d_transform['data_size'] * mvtec3d_transform['data_size'] * len(valid_dataset)))
+        total_depth_gt_pixel_scores = np.zeros((mvtec3d_transform['data_size'] * mvtec3d_transform['data_size'] * len(valid_dataset)))
+
         mask_cnt = 0
 
         rgb_anomaly_score_gt = []
@@ -96,6 +100,9 @@ if __name__ == '__main__':
             depth = batch['depth'].to(device)
             mask = batch['mask'].to(device)
             label = batch['label'].to(device)
+
+            rgb_anomaly_score_gt.append(label)
+            depth_anomaly_score_gt.append(label)
 
             # mask: convert torch format into open-cv format 
             mask_cv = mask.detach().numpy()[0. :, :, :].transpose((1, 2, 0))
@@ -128,6 +135,17 @@ if __name__ == '__main__':
                 
                 rgb_score = np.max(rgb_out_mask_averaged)
                 depth_score = np.max(depth_out_mask_averaged)
+
+                rgb_anomaly_score_prediction.append(rgb_score)
+                depth_anomaly_score_prediction.append(depth_score)
+
+                flat_rgb_true_mask = mask_cv.flatten()                                            
+                flat_rgb_out_mask = out_mask_cv.flatten()
+
+                flat_depth_true_mask = mask_cv.flatten() 
+                flat_depth_out_mask = out_mask_cv.flatten()  
+
+                
 
                  
             
