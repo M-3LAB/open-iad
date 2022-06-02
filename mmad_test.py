@@ -198,7 +198,11 @@ if __name__ == '__main__':
         depth_obj_auroc_pixel_list.append(depth_auroc_pixel)
         depth_obj_ap_image_list.append(depth_ap)
         depth_obj_auroc_image_list.append(depth_auroc)
-        
+
+        print("==============================")
+        print(f'{cls} begin processing')
+        print("==============================")
+
         
 
 
