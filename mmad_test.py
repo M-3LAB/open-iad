@@ -189,6 +189,16 @@ if __name__ == '__main__':
         rgb_ap_pixel = get_ap(total_rgb_gt_pixel_scores, total_rgb_pixel_scores)
         depth_ap_pixel = get_ap(total_depth_gt_pixel_scores, total_depth_pixel_scores)
 
+        rgb_obj_ap_pixel_list.append(rgb_ap_pixel)
+        rgb_obj_auroc_pixel_list.append(rgb_auroc_pixel)
+        rgb_obj_ap_image_list.append(rgb_ap)
+        rgb_obj_auroc_image_list.append(rgb_auroc)
+
+        depth_obj_ap_pixel_list.append(depth_ap_pixel)
+        depth_obj_auroc_pixel_list.append(depth_auroc_pixel)
+        depth_obj_ap_image_list.append(depth_ap)
+        depth_obj_auroc_image_list.append(depth_auroc)
+        
         
 
 
