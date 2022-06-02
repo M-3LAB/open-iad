@@ -172,6 +172,11 @@ if __name__ == '__main__':
 
         total_rgb_gt_pixel_scores = total_rgb_gt_pixel_scores.astype(np.uint8)
         total_rgb_gt_pixel_scores = total_rgb_pixel_scores[: img_dim * img_dim * mask_cnt]
+        total_rgb_pixel_scores = total_rgb_pixel_scores[:img_dim * img_dim * mask_cnt]
+
+        total_depth_gt_pixel_scores = total_depth_gt_pixel_scores.astype(np.uint8)
+        total_depth_gt_pixel_scores = total_depth_pixel_scores[: img_dim * img_dim * mask_cnt]
+        total_depth_pixel_scores = total_depth_pixel_scores[: img_dim * img_dim * mask_cnt]
 
 
                 
