@@ -11,6 +11,7 @@ from tools.utilize import *
 from data_io.mvtec3d import MVTec3D, MVTecCL3D, mvtec3d_classes
 import yaml
 import numpy as np
+from metrics.auc_precision_recall import get_auroc, get_precision_recall, get_ap
 
 if __name__ == '__main__':
     args = parse_arguments_mmad() 
@@ -162,6 +163,15 @@ if __name__ == '__main__':
 
         depth_anomaly_score_prediction = np.array(depth_anomaly_score_prediction)
         depth_anomaly_score_gt = np.array(depth_anomaly_score_gt)
+
+        rgb_auroc = get_auroc(rgb_anomaly_score_gt, rgb_anomaly_score_prediction)
+        depth_auroc = get_auroc(depth_anomaly_score_gt, depth_anomaly_score_prediction)
+
+        rgb_ap = get_ap(rgb_anomaly_score_gt, rgb_anomaly_score_prediction)
+        depth_ap = get_ap(depth_anomaly_score_gt, depth_anomaly_score_prediction)
+
+        total_rgb_gt_pixel_scores = total_rgb_gt_pixel_scores.astype(np.uint8)
+        total_rgb_gt_pixel_scores = total_rgb_pixel_scores[: img_dim * img_dim * mask_cnt]
 
 
                 

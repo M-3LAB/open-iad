@@ -4,9 +4,9 @@ from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import average_precision_score 
 import numpy as np
 
-__all__ = ['get_auc', 'get_precision_recall', 'get_ap']
+__all__ = ['get_auroc', 'get_precision_recall', 'get_ap']
 
-def get_auc(target, prediciton):
+def get_auroc(target, prediciton):
     """
     Args:
         target: np.ndarray 
