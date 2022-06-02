@@ -50,6 +50,8 @@ if __name__ == '__main__':
     obj_ap_image_list = []
     obj_auroc_image_list = []
 
+    img_dim = mvtec3d_transform['data_size']
+
     for cls in class_names:
         rgb_recons = RGBRecons(inc=3, fin_ouc=3).to(device)
         rgb_seg = RGBSeg(inc=3, fin_ouc=2).to(device)
@@ -79,13 +81,13 @@ if __name__ == '__main__':
 
         valid_loader = DataLoader(valid_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False) 
+
+        total_rgb_pixel_scores = np.zeros(img_dim * img_dim * len(valid_dataset))
+        total_rgb_gt_pixel_scores = np.zeros(img_dim * img_dim * len(valid_dataset))
+
+        total_depth_pixel_scores = np.zeros(img_dim * img_dim * len(valid_dataset))
+        total_depth_gt_pixel_scores = np.zeros(img_dim * img_dim * len(valid_dataset))
         
-        total_rgb_pixel_scores = np.zeros((mvtec3d_transform['data_size'] * mvtec3d_transform['data_size'] * len(valid_dataset)))
-        total_rgb_gt_pixel_scores = np.zeros((mvtec3d_transform['data_size'] * mvtec3d_transform['data_size'] * len(valid_dataset)))
-
-        total_depth_pixel_scores = np.zeros((mvtec3d_transform['data_size'] * mvtec3d_transform['data_size'] * len(valid_dataset)))
-        total_depth_gt_pixel_scores = np.zeros((mvtec3d_transform['data_size'] * mvtec3d_transform['data_size'] * len(valid_dataset)))
-
         mask_cnt = 0
 
         rgb_anomaly_score_gt = []
@@ -120,7 +122,8 @@ if __name__ == '__main__':
                 depth_out_mask_softmax = torch.softmax(depth_out_mask, dim=1)
 
                 # segmentation output mask size  
-                out_mask_cv = rgb_out_mask_softmax[0, 1, :, :].detach().cpu().numpy()
+                rgb_out_mask_cv = rgb_out_mask_softmax[0, 1, :, :].detach().cpu().numpy()
+                depth_out_mask_cv = depth_out_mask_softmax[0, 1, :, :].detach().cpu().numpy()
                 
                 # smoothing mask and convert it into nympy format 
                 rgb_out_mask_averaged = torch.nn.functional_avg_pool2d(input=rgb_out_mask_softmax,
@@ -140,10 +143,13 @@ if __name__ == '__main__':
                 depth_anomaly_score_prediction.append(depth_score)
 
                 flat_rgb_true_mask = mask_cv.flatten()                                            
-                flat_rgb_out_mask = out_mask_cv.flatten()
+                flat_rgb_out_mask = rgb_out_mask_cv.flatten()
 
                 flat_depth_true_mask = mask_cv.flatten() 
-                flat_depth_out_mask = out_mask_cv.flatten()  
+                flat_depth_out_mask = depth_out_mask_cv.flatten()  
+
+                total_rgb_pixel_scores[mask_cnt * img_dim * img_dim: (mask_cnt + 1) * img_dim * img_dim] = flat_rgb_out_mask
+                total_rgb_gt_pixel_scores[mask_cnt * img_dim * img_dim: (mask_cnt + 1) * img_dim * img_dim] = flat_rgb_true_mask
 
                 
 
