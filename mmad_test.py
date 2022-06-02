@@ -46,10 +46,15 @@ if __name__ == '__main__':
     depth_recons_ck_path = os.path.join(depth_ck_path, 'recons')
     depth_seg_ck_path = os.path.join(depth_ck_path, 'seg')
 
-    obj_ap_pixel_list = []
-    obj_auroc_pixel_list = []
-    obj_ap_image_list = []
-    obj_auroc_image_list = []
+    rgb_obj_ap_pixel_list = []
+    rgb_obj_auroc_pixel_list = []
+    rgb_obj_ap_image_list = []
+    rgb_obj_auroc_image_list = []
+
+    depth_obj_ap_pixel_list = []
+    depth_obj_auroc_pixel_list = []
+    depth_obj_ap_image_list = []
+    depth_obj_auroc_image_list = []
 
     img_dim = mvtec3d_transform['data_size']
 
