@@ -206,6 +206,10 @@ if __name__ == '__main__':
         print(f'RGB AP: {rgb_ap}')
         print(f'RGB AUROC: {rgb_auroc}')
         print(f'RGB Pixel AP: {rgb_ap_pixel}')
+        print(f'RGB Pixel AUROC: {rgb_auroc_pixel}')
+
+        print("==============================")
+
         print(f'Depth AP: {depth_ap}')
         print(f'Depth AUROC: {depth_auroc}')
 
