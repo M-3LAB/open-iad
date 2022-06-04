@@ -200,8 +200,14 @@ if __name__ == '__main__':
         depth_obj_auroc_image_list.append(depth_auroc)
 
         print("==============================")
-        print(f'{cls} begin processing')
+        print(f'{cls} begin evaluation')
         print("==============================")
+
+        print(f'RGB AP: {rgb_ap}')
+        print(f'RGB AUROC: {rgb_auroc}')
+        print(f'RGB Pixel AP: {rgb_ap_pixel}')
+        print(f'Depth AP: {depth_ap}')
+        print(f'Depth AUROC: {depth_auroc}')
 
         
 
