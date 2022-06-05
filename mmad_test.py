@@ -238,6 +238,12 @@ if __name__ == '__main__':
     print(f'RGB Mean Pixel AP: {rgb_mean_ap_pixel}')
     print(f'RGB Mean Pixel AUROC: {rgb_mean_auroc_pixel}')
 
+    print(f'Depth Mean AP: {depth_mean_ap}')
+    print(f'Depth Mean AUROC: {depth_mean_auroc}')
+    print(f'Depth Mean Pixel AP: {depth_mean_ap_pixel}')
+    print(f'Depth Mean Pixel AUROC: {depth_mean_auroc_pixel}')
+
+
 
         
 
