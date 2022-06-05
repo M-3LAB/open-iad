@@ -213,6 +213,13 @@ if __name__ == '__main__':
         print(f'Depth AP: {depth_ap}')
         print(f'Depth AUROC: {depth_auroc}')
 
+        print("==============================")
+    
+    print("==============================")
+    print('Overall Evaluation Started')
+    print("==============================")
+
+
         
 
 
