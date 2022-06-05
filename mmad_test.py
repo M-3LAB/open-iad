@@ -12,6 +12,7 @@ from data_io.mvtec3d import MVTec3D, MVTecCL3D, mvtec3d_classes
 import yaml
 import numpy as np
 from metrics.auc_precision_recall import get_auroc, get_precision_recall, get_ap
+from metrics.mvtec3d.au_pro import calculate_au_pro
 
 if __name__ == '__main__':
     args = parse_arguments_mmad() 
@@ -242,6 +243,7 @@ if __name__ == '__main__':
     print(f'Depth Mean AUROC: {depth_mean_auroc}')
     print(f'Depth Mean Pixel AP: {depth_mean_ap_pixel}')
     print(f'Depth Mean Pixel AUROC: {depth_mean_auroc_pixel}')
+    
 
 
 
