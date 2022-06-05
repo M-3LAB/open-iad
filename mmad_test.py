@@ -221,7 +221,19 @@ if __name__ == '__main__':
     print('Overall Evaluation Started')
     print("==============================")
 
-    print()
+    rgb_mean_ap = np.mean(rgb_obj_ap_image_list)
+    rgb_mean_auroc = np.mean(rgb_obj_auroc_image_list)
+
+    rgb_mean_ap_pixel = np.mean(rgb_obj_ap_pixel_list)    
+    rgb_mean_auroc_pixel = np.mean(rgb_obj_auroc_pixel_list)
+
+    depth_mean_ap = np.mean(depth_obj_ap_image_list)
+    depth_mean_auroc = np.mean(depth_obj_auroc_image_list)
+
+    depth_mean_ap_pixel = np.mean(depth_obj_ap_pixel_list)    
+    depth_mean_auroc_pixel = np.mean(depth_obj_auroc_pixel_list)
+
+    #print(f'RGB Mean AP: {}')
 
 
         
