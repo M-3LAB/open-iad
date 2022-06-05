@@ -212,12 +212,16 @@ if __name__ == '__main__':
 
         print(f'Depth AP: {depth_ap}')
         print(f'Depth AUROC: {depth_auroc}')
+        print(f'Depth Pixel AP: {depth_ap_pixel}')
+        print(f'Depth Pixel AUROC: {depth_auroc_pixel}')
 
         print("==============================")
     
     print("==============================")
     print('Overall Evaluation Started')
     print("==============================")
+
+    print()
 
 
         
