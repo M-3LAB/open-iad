@@ -233,7 +233,10 @@ if __name__ == '__main__':
     depth_mean_ap_pixel = np.mean(depth_obj_ap_pixel_list)    
     depth_mean_auroc_pixel = np.mean(depth_obj_auroc_pixel_list)
 
-    #print(f'RGB Mean AP: {}')
+    print(f'RGB Mean AP: {rgb_mean_ap}')
+    print(f'RGB Mean AUROC: {rgb_mean_auroc}')
+    print(f'RGB Mean Pixel AP: {rgb_mean_ap_pixel}')
+    print(f'RGB Mean Pixel AUROC: {rgb_mean_auroc_pixel}')
 
 
         
