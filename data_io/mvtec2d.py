@@ -17,7 +17,7 @@ def mvtec2d_classes():
 
 class MVTec2D(Dataset):
     def __init__(self, data_path, learning_mode='centralized', phase='train', 
-                 data_transform=None, num_task=5):
+                 data_transform=None, num_task=15):
 
         self.data_path = data_path
         self.learning_mode = learning_mode
@@ -35,8 +35,8 @@ class MVTec2D(Dataset):
         self.all_task_id = []
         
         # continual
-        self.conti_len = []
-        self.continual_indices = []
+        self.sample_num_in_task = []
+        self.sample_indices_in_task = []
 
         # load dataset
         self.load_dataset()
@@ -110,7 +110,7 @@ class MVTec2D(Dataset):
                         mask.extend(gt_path_list)
             # continual
             task_id = [id for i in range(len(x))]
-            self.conti_len.append(len(x))
+            self.sample_num_in_task.append(len(x))
 
             self.all_x.extend(x)
             self.all_y.extend(y)
@@ -119,11 +119,11 @@ class MVTec2D(Dataset):
 
     def allocate_task_data(self):
         start = 0
-        for num in self.conti_len:
+        for num in self.sample_num_in_task:
             end = start + num
             indice = [i for i in range(start, end)]
             random.shuffle(indice)
-            self.continual_indices.append(indice)
+            self.sample_indices_in_task.append(indice)
             start = end
 
     # split the arr into n chunks
@@ -131,3 +131,19 @@ class MVTec2D(Dataset):
     def split_chunks(arr, m):
         n = int(math.ceil(len(arr) / float(m)))
         return [arr[i:i + n] for i in range(0, len(arr), n)]
+
+class MVTec2DFewShot(MVTec2D):
+    def __init__(self, data_path, learning_mode='centralized', phase='train', 
+                 data_transform=None, num_task=15, fewshot_exm=16):
+        self.fewshot_exm = fewshot_exm
+        super(MVTec2DFewShot, self).__init__(data_path=data_path, learning_mode=learning_mode, phase=phase, 
+                 data_transform=data_transform, num_task=num_task)
+
+    def allocate_task_data(self):
+        start = 0
+        for num in self.sample_num_in_task:
+            end = start + num
+            indice = [i for i in range(start, end)]
+            random.shuffle(indice)
+            self.sample_indices_in_task.append(indice[:self.fewshot_exm])
+            start = end
