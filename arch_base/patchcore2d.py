@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from sklearn.random_projection import SaprseRandomProjection 
+from sklearn.random_projection import SparseRandomProjection 
 from sklearn.neighbors import NearestNeighbors
 from sampling.kcenter_greedy import KCenterGreedy
 from models.patchcore.patchcore import PatchCore
@@ -15,7 +15,7 @@ class PatchCore2D():
         self.valid_loader = valid_loader
         self.device = device
 
-        self.random_projector = SaprseRandomProjection(n_components='auto',
+        self.random_projector = SparseRandomProjection(n_components='auto',
                                                        eps=0.9)
         #Model 
         self.model = PatchCore(backbone_name=self.config.backbone_name,
