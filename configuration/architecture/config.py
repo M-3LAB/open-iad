@@ -9,8 +9,11 @@ def parse_arguments_centralized():
     parser.add_argument('--model', '-m', type=str, default='patchcore2d', choices=['patchcore2d', 'patchcore3d'])
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
+    parser.add_argument('--normal', action='store_true', default=False)
     parser.add_argument('--continual', '-conti', action='store_true', default=False)
-    parser.add_argument('--num-task', type=int, default=None)
+    parser.add_argument('--num-task', type=int, default=15)
+    parser.add_argument('--fewshot', action='store_true', default=True)
+    parser.add_argument('--fewshot-exm', type=int, default=16)
 
     parser.add_argument('--gpu-id', '-g', type=str, default=None)
     parser.add_argument('--num-epoch', type=int, default=None)
