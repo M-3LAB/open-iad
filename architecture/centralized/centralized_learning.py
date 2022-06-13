@@ -3,7 +3,7 @@ import yaml
 from tools.utilize import *
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-from data_io.mvtec2d import MVTec2D
+from data_io.mvtec2d import MVTec2D, MVTec2DFewShot
 from data_io.mvtec3d import MVTec3D
 
 from arch_base.patchcore2d import PatchCore2D
@@ -19,11 +19,11 @@ class CentralizedTrain():
         self.args = args
 
     def load_config(self):
-        with open('./configuration/3_dataset_base/{}.yaml'.format(self.args.dataset), 'r') as f:
+        with open('./configuration/architecture/3_dataset_base/{}.yaml'.format(self.args.dataset), 'r') as f:
             config_model = yaml.load(f, Loader=yaml.SafeLoader)
-        with open('./configuration/2_train_base/centralized_learning.yaml', 'r') as f:
+        with open('./configuration/architecture/2_train_base/centralized_learning.yaml', 'r') as f:
             config_train = yaml.load(f, Loader=yaml.SafeLoader)
-        with open('./configuration/1_model_base/{}.yaml'.format(self.args.model), 'r') as f:
+        with open('./configuration/architecture/1_model_base/{}.yaml'.format(self.args.model), 'r') as f:
             config_dataset = yaml.load(f, Loader=yaml.SafeLoader)
 
         config = override_config(config_model, config_train)
@@ -31,7 +31,7 @@ class CentralizedTrain():
         self.para_dict = merge_config(config, self.args)
         self.args = extract_config(self.args)
 
-        if not self.para_dict['continual']:
+        if self.para_dict['normal']:
             self.para_dict['num_task'] = 1
 
     def preliminary(self):
@@ -70,6 +70,13 @@ class CentralizedTrain():
                                          learning_mode=self.para_dict['learning_mode'],
                                          phase='test',
                                          data_transform=mvtec2d_transform)
+            if self.para_dict['fewshot']:
+                self.train_fewshot_dataset = MVTec2DFewShot(data_path=self.para_dict['data_path'],
+                                                            learning_mode=self.para_dict['learning_mode'],
+                                                            phase='train',
+                                                            data_transform=mvtec2d_transform,
+                                                            num_task=self.para_dict['num_task'],
+                                                            fewshot_exm=self.para_dict['fewshot_exm'])
         elif self.para_dict['dataset'] == 'mvtec3d':
             self.train_dataset = MVTec3D(data_path=self.para_dict['data_path'],
                                          learning_mode=self.para_dict['learning_mode'],
@@ -86,7 +93,7 @@ class CentralizedTrain():
             raise NotImplemented('Dataset Does Not Exist')
 
         self.train_loader = []
-        task_data_list = self.train_dataset.continual_indices
+        task_data_list = self.train_dataset.sample_indices_in_task
         for i in range(self.para_dict['num_task']):
             train_loader = DataLoader(self.train_dataset,
                                       batch_size=self.para_dict['batch_size'],
@@ -95,9 +102,19 @@ class CentralizedTrain():
                                       sampler=SubsetRandomSampler(task_data_list[i]))
             self.train_loader.append(train_loader)
 
+        if self.para_dict['fewshot']:
+            self.train_fewshot_loader = []
+            task_data_fewshot_list = self.train_fewshot_dataset.sample_indices_in_task
+            for i in range(self.para_dict['num_task']):
+                train_fewshot_loader = DataLoader(self.train_fewshot_dataset,
+                                        batch_size=self.para_dict['batch_size'],
+                                        drop_last=True,
+                                        num_workers=self.para_dict['num_workers'],
+                                        sampler=SubsetRandomSampler(task_data_fewshot_list[i]))
+                self.train_fewshot_loader.append(train_fewshot_loader)
+
         self.valid_loader = DataLoader(self.valid_dataset, num_workers=self.para_dict['num_workers'],
                                  batch_size=self.para_dict['batch_size'], shuffle=False)
-
     def init_model(self):
         if self.para_dict['model'] == 'patchcore2d':
             self.trainer = PatchCore2D(self.para_dict, self.train_loader, self.valid_loader,
