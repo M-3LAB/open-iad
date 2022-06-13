@@ -29,10 +29,10 @@ class MVTec2D(Dataset):
         self.num_task = num_task 
         self.class_in_task = []
 
-        self.all_x = []
-        self.all_y = []
-        self.all_mask = []
-        self.all_task_id = []
+        self.imgs_list = []
+        self.labels_list = []
+        self.masks_list = []
+        self.task_ids_list = []
         
         # continual
         self.sample_num_in_task = []
@@ -54,21 +54,23 @@ class MVTec2D(Dataset):
                                         T.ToTensor()
                                         ])
     def __getitem__(self, idx):
-        x, y, mask, task_id = self.all_x[idx], self.all_y[idx], self.all_mask[idx], self.all_task_id[idx]
+        img, label, mask, task_id = self.imgs_list[idx], self.labels_list[idx], self.masks_list[idx], self.task_ids_list[idx]
 
-        x = Image.open(x).convert('RGB')
-        x = self.imge_transform(x)
+        img = Image.open(img).convert('RGB')
+        img = self.imge_transform(img)
 
-        if y == 0:
-            mask = torch.zeros([1, x.shape[1], x.shape[2]])
+        if label == 0:
+            mask = torch.zeros([1, img.shape[1], img.shape[2]])
         else:
             mask = Image.open(mask)
             mask = self.mask_transform(mask)
 
-        return x, y, mask, task_id
+        return {
+            'img': img, 'label':label, 'mask':mask, 'task_id':task_id
+        }
 
     def __len__(self):
-        return len(self.all_x)
+        return len(self.imgs_list)
 
 
     def load_dataset(self):
@@ -112,10 +114,10 @@ class MVTec2D(Dataset):
             task_id = [id for i in range(len(x))]
             self.sample_num_in_task.append(len(x))
 
-            self.all_x.extend(x)
-            self.all_y.extend(y)
-            self.all_mask.extend(mask)
-            self.all_task_id.extend(task_id) 
+            self.imgs_list.extend(x)
+            self.labels_list.extend(y)
+            self.masks_list.extend(mask)
+            self.task_ids_list.extend(task_id) 
 
     def allocate_task_data(self):
         start = 0
