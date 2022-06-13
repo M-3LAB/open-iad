@@ -1,4 +1,4 @@
-from configuration.config import parse_arguments_centralized
+from configuration.architecture.config import parse_arguments_centralized
 from architecture.centralized.centralized_learning import CentralizedTrain
 
 
