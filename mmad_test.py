@@ -12,6 +12,7 @@ from data_io.mvtec3d import MVTec3D, MVTecCL3D, mvtec3d_classes
 import yaml
 import numpy as np
 from metrics.auc_precision_recall import get_auroc, get_precision_recall, get_ap
+from metrics.mvtec3d.au_pro import calculate_au_pro
 
 if __name__ == '__main__':
     args = parse_arguments_mmad() 
@@ -131,7 +132,7 @@ if __name__ == '__main__':
                 rgb_out_mask_cv = rgb_out_mask_softmax[0, 1, :, :].detach().cpu().numpy()
                 depth_out_mask_cv = depth_out_mask_softmax[0, 1, :, :].detach().cpu().numpy()
                 
-                # smoothing mask and convert it into nympy format 
+                # smoothing mask and convert it into numpy format 
                 rgb_out_mask_averaged = torch.nn.functional_avg_pool2d(input=rgb_out_mask_softmax,
                                                                        kernel_size=para_dict['smooth_kernel_size'],
                                                                        stride=1,
@@ -212,6 +213,39 @@ if __name__ == '__main__':
 
         print(f'Depth AP: {depth_ap}')
         print(f'Depth AUROC: {depth_auroc}')
+        print(f'Depth Pixel AP: {depth_ap_pixel}')
+        print(f'Depth Pixel AUROC: {depth_auroc_pixel}')
+
+        print("==============================")
+    
+    print("==============================")
+    print('Overall Evaluation Started')
+    print("==============================")
+
+    rgb_mean_ap = np.mean(rgb_obj_ap_image_list)
+    rgb_mean_auroc = np.mean(rgb_obj_auroc_image_list)
+
+    rgb_mean_ap_pixel = np.mean(rgb_obj_ap_pixel_list)    
+    rgb_mean_auroc_pixel = np.mean(rgb_obj_auroc_pixel_list)
+
+    depth_mean_ap = np.mean(depth_obj_ap_image_list)
+    depth_mean_auroc = np.mean(depth_obj_auroc_image_list)
+
+    depth_mean_ap_pixel = np.mean(depth_obj_ap_pixel_list)    
+    depth_mean_auroc_pixel = np.mean(depth_obj_auroc_pixel_list)
+
+    print(f'RGB Mean AP: {rgb_mean_ap}')
+    print(f'RGB Mean AUROC: {rgb_mean_auroc}')
+    print(f'RGB Mean Pixel AP: {rgb_mean_ap_pixel}')
+    print(f'RGB Mean Pixel AUROC: {rgb_mean_auroc_pixel}')
+
+    print(f'Depth Mean AP: {depth_mean_ap}')
+    print(f'Depth Mean AUROC: {depth_mean_auroc}')
+    print(f'Depth Mean Pixel AP: {depth_mean_ap_pixel}')
+    print(f'Depth Mean Pixel AUROC: {depth_mean_auroc_pixel}')
+    
+
+
 
         
 
