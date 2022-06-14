@@ -132,7 +132,7 @@ if __name__ == '__main__':
                 rgb_out_mask_cv = rgb_out_mask_softmax[0, 1, :, :].detach().cpu().numpy()
                 depth_out_mask_cv = depth_out_mask_softmax[0, 1, :, :].detach().cpu().numpy()
                 
-                # smoothing mask and convert it into nympy format 
+                # smoothing mask and convert it into numpy format 
                 rgb_out_mask_averaged = torch.nn.functional_avg_pool2d(input=rgb_out_mask_softmax,
                                                                        kernel_size=para_dict['smooth_kernel_size'],
                                                                        stride=1,
