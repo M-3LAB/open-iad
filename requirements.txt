@@ -1,4 +1,4 @@
-rich==11.2.0
+rich==12.4.4
 numpy==1.19.2
 opencv_python==4.5.4.58
 scipy==1.5.4

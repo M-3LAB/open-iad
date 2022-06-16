@@ -7,7 +7,7 @@ from data_io.mvtec2d import MVTec2D, MVTec2DFewShot
 from data_io.mvtec3d import MVTec3D
 
 from arch_base.patchcore2d import PatchCore2D
-from arch_base.pointcore3d import PointCore3D
+#from arch_base.pointcore3d import PointCore3D
 
 from rich import print
 
