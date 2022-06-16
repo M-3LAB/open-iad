@@ -12,9 +12,9 @@ class FeatureExtractor(nn.Module):
         self.output_dims = []
         self._features = {layer: torch.empty(0) for layer in self.layers}
 
-    def get_features(self, layer_id):
+    def get_layer_features(self, layer_id):
         pass
 
-    def forward():
+    def forward(self, input):
         pass
         
