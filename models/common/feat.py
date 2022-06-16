@@ -13,6 +13,15 @@ class FeatureExtractor(nn.Module):
         self._features = {layer: torch.empty(0) for layer in self.layers}
 
     def get_layer_features(self, layer_id):
+        """
+        Get Layer Features
+
+        Args:
+            layer_id(str)
+
+        Returns:
+            layer features
+        """
         pass
 
     def forward(self, input):
