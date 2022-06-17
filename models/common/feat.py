@@ -22,10 +22,17 @@ class FeatureExtractor(nn.Module):
         Returns:
             layer features
         """
-        pass
         
         def hook(module, input, output):
-            pass
+            """
+            Forward Hook to Extract Features
+
+            Args: 
+                output: Feature map collected after the forward-pass
+            """
+            self._features[layer_id] = output
+        
+        return hook
 
     def forward(self, input):
         pass
