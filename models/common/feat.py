@@ -23,6 +23,9 @@ class FeatureExtractor(nn.Module):
             layer features
         """
         pass
+        
+        def hook(module, input, output):
+            pass
 
     def forward(self, input):
         pass
