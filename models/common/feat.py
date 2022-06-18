@@ -35,5 +35,15 @@ class FeatureExtractor(nn.Module):
         return hook
 
     def forward(self, input):
-        pass
+        """_summary_
+
+        Args:
+            input (BCHW): input tensor 
+            output(torch.tensor): feature map
+        """
+        self._features = {layer: torch.empty(0) for layer in self.layers}
+        _ = self.backbone(input)
+        #TODO: Why?
+        return self._features
+
         
