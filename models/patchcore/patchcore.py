@@ -23,6 +23,7 @@ class PatchCore(nn.Module):
         self.backbone_name = backbone_name
         self.layers = layers
         self.input_size = input_size
+        self.num_neighbours = num_neighbours
 
         self.feature_extractor = FeatureExtractor(backbone=self.bachbone(pretrained=True), layers=self.layers) 
         self.feature_pooler = torch.nn.AvgPool2d(3, 1, 1)
