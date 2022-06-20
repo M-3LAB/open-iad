@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 from models.common.feat import FeatureExtractor
+from models.patchcore.anomaly_map import AnomalyMapGenerator
 
 __all__ = ['PatchCore']
 
