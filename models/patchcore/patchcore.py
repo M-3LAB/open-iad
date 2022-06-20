@@ -1,3 +1,4 @@
+from msilib.schema import Feature
 import torch
 import torch.nn as nn
 import numpy as np
@@ -21,6 +22,9 @@ class PatchCore(nn.Module):
         self.backbone_name = backbone_name
         self.layers = layers
         self.input_size = input_size
+
+        self.feature_extractor = FeatureExtractor(backbone=self.bachbone(pretrained=True), layers=self.layers) 
+        self.feature_pooler = torch.nn.AvgPool2d(3, 1, 1)
         
     def forward(self, x):
         pass
