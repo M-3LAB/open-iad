@@ -13,7 +13,7 @@ from data_io.augmentation.perlin import rand_perlin_2d_np
 import os
 
 __all__ =  ['mvtec_2d_resize', 'mvtec_2d_image_transform', 'mvtec_2d_mask_transform', 
-            'aug_draem_3d_train', 'aug_draem_3d_test']
+            'aug_draem_3d_train', 'aug_draem_3d_test', 'Tile']
 
 # 2D 
 
@@ -232,3 +232,8 @@ def aug_draem_3d_test(img_path, tiff_path, mask_path, depth_duplicate, resize_sh
     label = torch.from_numpy(label)
 
     return raw_img, depth_map, mask, label 
+
+#TODO: Tile, Jingbao
+class Tile:
+    def __init__(self):
+        pass
