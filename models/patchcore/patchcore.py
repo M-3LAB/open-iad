@@ -33,8 +33,13 @@ class PatchCore(nn.Module):
     
     def generate_embedding(self):
         pass
-
-    def reshape_embedding(self):
+    
+    @staticmethod
+    def reshape_embedding(embedding_tensor):
+        """
+        Reshape Embedding from [batch, embedding, patch, patch] to 
+        [batch*patch*patch, embedding]
+        """
         pass
         
         
