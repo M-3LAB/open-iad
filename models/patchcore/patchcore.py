@@ -40,7 +40,9 @@ class PatchCore(nn.Module):
         Reshape Embedding from [batch, embedding, patch, patch] to 
         [batch*patch*patch, embedding]
         """
-        pass
+        embedding_size = embedding_tensor.size(1)
+        embedding_tensor = embedding_tensor.permute(0, 2, 3, 1).reshape(-1, embedding_size)
+        return embedding_tensor
         
         
     def forward(self, x):
