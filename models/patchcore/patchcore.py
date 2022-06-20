@@ -32,6 +32,9 @@ class PatchCore(nn.Module):
     
     def generate_embedding(self):
         pass
+
+    def reshape_embedding(self):
+        pass
         
         
     def forward(self, x):
