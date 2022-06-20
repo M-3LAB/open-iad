@@ -29,6 +29,9 @@ class PatchCore(nn.Module):
 
         self.register_buffer("memory_bank", torch.Tensor())
         self.memory_bank: torch.Tensor
+    
+    def generate_embedding(self):
+        pass
         
         
     def forward(self, x):
