@@ -39,5 +39,6 @@ class PatchCore(nn.Module):
         with torch.no_grad():
             features = self.feature_extractor(x)
 
+        features = {layer: self.feature_pooler(feature) for layer, feature in features.items()}
 
         
