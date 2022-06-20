@@ -1,6 +1,6 @@
-from msilib.schema import Feature
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import numpy as np
 from models.common.feat import FeatureExtractor
 from models.patchcore.anomaly_map import AnomalyMapGenerator
@@ -31,7 +31,13 @@ class PatchCore(nn.Module):
         self.register_buffer("memory_bank", torch.Tensor())
         self.memory_bank: torch.Tensor
     
-    def generate_embedding(self):
+    def generate_embedding(self, features):
+        """Generate embedding from hierarchical feature map
+
+        Args:
+            features (Dict): torch tensor 
+        """
+
         pass
     
     @staticmethod
@@ -43,6 +49,12 @@ class PatchCore(nn.Module):
         embedding_size = embedding_tensor.size(1)
         embedding_tensor = embedding_tensor.permute(0, 2, 3, 1).reshape(-1, embedding_size)
         return embedding_tensor
+    
+    def subsample_embedding(self, embedding, sample_ratio):
+        pass
+
+    def nearest_neighbors(self):
+        pass
         
         
     def forward(self, x):
