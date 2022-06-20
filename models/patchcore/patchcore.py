@@ -32,6 +32,12 @@ class PatchCore(nn.Module):
         
         
     def forward(self, x):
-        pass
+
+        """
+        Return embedding during training
+        """
+        with torch.no_grad():
+            features = self.feature_extractor(x)
+
 
         
