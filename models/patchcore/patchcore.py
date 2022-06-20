@@ -26,6 +26,10 @@ class PatchCore(nn.Module):
 
         self.feature_extractor = FeatureExtractor(backbone=self.bachbone(pretrained=True), layers=self.layers) 
         self.feature_pooler = torch.nn.AvgPool2d(3, 1, 1)
+
+        self.register_buffer("memory_bank", torch.Tensor())
+        self.memory_bank: torch.Tensor
+        
         
     def forward(self, x):
         pass
