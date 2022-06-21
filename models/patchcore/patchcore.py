@@ -24,6 +24,7 @@ class PatchCore(nn.Module):
         self.layers = layers
         self.input_size = input_size
         self.num_neighbours = num_neighbours
+        self.anomaly_map_generator = AnomalyMapGenerator(input_size=self.input_size)
 
         self.feature_extractor = FeatureExtractor(backbone=self.bachbone(pretrained=True), layers=self.layers) 
         self.feature_pooler = torch.nn.AvgPool2d(3, 1, 1)
@@ -76,6 +77,9 @@ class PatchCore(nn.Module):
         patch_scores, _ = distances.topk(k=n_neighbors, largest=False, dim=1)
 
         return patch_scores
+    
+    def subsample_embedding(self):
+        pass
         
         
     def forward(self, x):
@@ -97,7 +101,10 @@ class PatchCore(nn.Module):
             output = embedding
         else:
             patch_scores = self.nearest_neighbors(embedding, n_neighbors=self.num_neighbours)
-        
+            anomaly_map, anomaly_score = self.anomaly_map_generator(
+                patch_scores=patch_scores, feature_map_shape=feature_map_shape
+            )
+            output = (anomaly_map, anomaly_score) 
         
         return output
 
