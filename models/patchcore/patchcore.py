@@ -28,6 +28,7 @@ class PatchCore(nn.Module):
         self.feature_extractor = FeatureExtractor(backbone=self.bachbone(pretrained=True), layers=self.layers) 
         self.feature_pooler = torch.nn.AvgPool2d(3, 1, 1)
 
+        # Register_buffer collect the one that does not belong to model into state_dict
         self.register_buffer("memory_bank", torch.Tensor())
         self.memory_bank: torch.Tensor
     
@@ -59,8 +60,21 @@ class PatchCore(nn.Module):
     def subsample_embedding(self, embedding, sample_ratio):
         pass
 
-    def nearest_neighbors(self):
-        pass
+    def nearest_neighbors(self, embedding, n_neighbors):
+        """ Nearest Neighbour Search
+
+        Args:
+            embedding (Tensor): Features to comprare the distance with the memory bank 
+            n_neighbors (int): Number of Neighbours 
+        
+        Returns:
+            Patch scores: (Tensor)
+        """
+        # Euclidean norm between embedding and memory bank
+        distances = torch.cdist(embedding, self.memory_bank, p=2.0)
+        patch_scores, _ = distances.topk()
+
+        return patch_scores
         
         
     def forward(self, x):
@@ -73,5 +87,17 @@ class PatchCore(nn.Module):
 
         features = {layer: self.feature_pooler(feature) for layer, feature in features.items()}
         embedding = self.generate_embedding(features)
+
+        # BCHW format
+        feature_map_shape = embedding.shape[-2:] 
+        embedding = self.reshape_embedding(embedding_tensor=embedding)
+
+        if self.training:
+            output = embedding
+        else:
+            patch_scores = self.nearest_neighbors(embedding, n_neighbors=self.num_neighbours)
+        
+        
+        return output
 
         
