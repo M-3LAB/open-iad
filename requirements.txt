@@ -14,3 +14,4 @@ ninja==1.10.2.3
 matplotlib==3.5.1
 tifffile==2021.11.2
 imgaug==0.4.0
+kornia==0.6.5
