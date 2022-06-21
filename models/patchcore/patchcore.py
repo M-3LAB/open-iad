@@ -37,8 +37,14 @@ class PatchCore(nn.Module):
         Args:
             features (Dict): torch tensor 
         """
+        embeddings = features[self.layers[0]]
+        for layer in self.layers[1:]:
+            layer_embedding = features[layer]
+            #TODO: Why Need to Interpolate
+            layer_embedding = F.interpolate(layer_embedding, size=embeddings.shape[-2:], mode="nearest")
+            embeddings = torch.cat((embeddings, layer_embedding), dim=1)
 
-        pass
+        return embeddings
     
     @staticmethod
     def reshape_embedding(embedding_tensor):
@@ -66,5 +72,6 @@ class PatchCore(nn.Module):
             features = self.feature_extractor(x)
 
         features = {layer: self.feature_pooler(feature) for layer, feature in features.items()}
+        embedding = self.generate_embedding(features)
 
         
