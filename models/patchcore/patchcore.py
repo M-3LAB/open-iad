@@ -71,8 +71,9 @@ class PatchCore(nn.Module):
             Patch scores: (Tensor)
         """
         # Euclidean norm between embedding and memory bank
+        #TODO: Why
         distances = torch.cdist(embedding, self.memory_bank, p=2.0)
-        patch_scores, _ = distances.topk()
+        patch_scores, _ = distances.topk(k=n_neighbors, largest=False, dim=1)
 
         return patch_scores
         
