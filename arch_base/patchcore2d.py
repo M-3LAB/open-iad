@@ -15,25 +15,13 @@ class PatchCore2D():
         self.valid_loader = valid_loader
         self.device = device
 
-        self.random_projector = SparseRandomProjection(n_components='auto',
-                                                       eps=0.9)
         #Model 
-        self.model = PatchCore(backbone_name=self.config.backbone_name,
-                               device=self.device,
-                               layer_hook=self.config.layer_hook,
-                               layer_indices=self.config.layer_indices,
-                               channel_indices=self.config.channel_indices) 
+        self.model = PatchCore(input_size=self.config['input_size'],
+                               backbone=self.config['backbone'],
+                               layers=self.config['layers'],
+                               sampling_ratio = self.config['sampling_ratio'],
+                               num_neighbours=self.config['num_neighbours']).to(self.device)
         
-        # loss function
-        self.criterion = torch.nn.MSELoss(reduction='sum').to(self.device)
-
-        # optimizer
-        self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.config['lr'],
-                                         momentum=self.config['momentum'], 
-                                         weight_decay=self.config['weight_decay']) 
-
-        # lr scheduler
-
     def train_epoch(self, inf=''):
         for task_idx, train_loader in enumerate(self.train_loader):
             print('run task: {}'.format(task_idx))
