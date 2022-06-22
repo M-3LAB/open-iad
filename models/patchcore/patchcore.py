@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import numpy as np
 from models.common.feat import FeatureExtractor
 from models.patchcore.anomaly_map import AnomalyMapGenerator
+from models.common.kcenter_greedy import KCenterGreedy
 
 __all__ = ['PatchCore']
 
@@ -81,7 +82,17 @@ class PatchCore(nn.Module):
     def subsample_embedding(self, embedding, sampling_ratio):
         """
         Subsample embedding based on coreset sampling and store to memory
+
+        Args:
+            embedding (np.ndarray): Embedding tensor from the CNN 
+            sampling_ratio (float): 
         """
+
+        # Coreset Subsampling
+
+        sampler = KCenterGreedy(embedding=embedding, sampling_ratio=sampling_ratio)
+        coreset = sampler.sample_coreset()
+        self.memory_bank = coreset
         
         
     def forward(self, x):
