@@ -29,7 +29,14 @@ class PatchCore2D():
         # Extract features for each image 
         self.model.feature_extractor.eval()
         for epoch in self.config['num_epoch']:
-            pass
+            for task_idx, train_loader in enumerate(self.train_loader):
+                print('run task: {}'.format(task_idx))
+                for batch_id, batch in enumerate(train_loader):
+                    if self.config['debug'] and i > self.batch_limit:
+                        break
+                    
+        
+           
 
         #for task_idx, train_loader in enumerate(self.train_loader):
         #    print('run task: {}'.format(task_idx))
