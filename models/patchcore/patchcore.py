@@ -78,8 +78,10 @@ class PatchCore(nn.Module):
 
         return patch_scores
     
-    def subsample_embedding(self):
-        pass
+    def subsample_embedding(self, embedding, sampling_ratio):
+        """
+        Subsample embedding based on coreset sampling and store to memory
+        """
         
         
     def forward(self, x):
