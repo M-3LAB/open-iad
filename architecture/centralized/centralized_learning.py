@@ -119,9 +119,6 @@ class CentralizedTrain():
         if self.para_dict['model'] == 'patchcore2d':
             self.trainer = PatchCore2D(self.para_dict, self.train_loader, self.valid_loader,
                                      self.device, self.file_path)
-        elif self.para_dict['model'] == 'pointcore':
-            self.trainer = PointCore3D(self.para_dict, self.train_loader, self.valid_loader,
-                                     self.device, self.file_path)
         else:
             raise ValueError('Model is invalid!')
 

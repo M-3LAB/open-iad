@@ -19,8 +19,10 @@ class PatchCore2D():
         self.model = PatchCore(input_size=self.config['input_size'],
                                backbone=self.config['backbone'],
                                layers=self.config['layers'],
-                               sampling_ratio = self.config['sampling_ratio'],
                                num_neighbours=self.config['num_neighbours']).to(self.device)
+        
+        self.coreset_sampling_ratio = self.config['sampling_ratio'] 
+        self.embeddings = []
         
     def train_epoch(self, inf=''):
         for task_idx, train_loader in enumerate(self.train_loader):
