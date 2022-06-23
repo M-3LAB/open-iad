@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from models.patchcore.patchcore import PatchCore
+import logging
 
 __all__ = ['PatchCore2D']
 
@@ -25,6 +26,7 @@ class PatchCore2D():
 
         # Extract features for each image 
         self.model.feature_extractor.eval()
+
         for epoch in self.config['num_epoch']:
             for task_idx, train_loader in enumerate(self.train_loaders):
                 print('run task: {}'.format(task_idx))
@@ -38,4 +40,5 @@ class PatchCore2D():
                     
                     
     def prediction(self):
+        self.model.eval()
         pass
