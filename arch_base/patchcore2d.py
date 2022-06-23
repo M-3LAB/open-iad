@@ -40,6 +40,12 @@ class PatchCore2D():
                     
     def prediction(self):
         self.model.eval()
+
         print(f'Aggregating the embedding extracted from the training set')
+        embeddings_list = torch.vstack(self.embeddings)
+        
+        print(f'Applying coreset subsampling to get the embedding')
+        #Obtain the memory bank
+        self.model.subsample_embedding(embeddings_list, self.coreset_sampling_ratio)
 
         pass
