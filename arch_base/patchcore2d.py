@@ -1,18 +1,15 @@
 import torch
 import torch.nn as nn
-from sklearn.random_projection import SparseRandomProjection 
-from sklearn.neighbors import NearestNeighbors
-from sampling.kcenter_greedy import KCenterGreedy
 from models.patchcore.patchcore import PatchCore
 
 __all__ = ['PatchCore2D']
 
 class PatchCore2D():
-    def __init__(self, config, train_loaders, valid_loader, device):
+    def __init__(self, config, train_loaders, valid_loaders, device):
         
         self.config = config
         self.train_loaders = train_loaders
-        self.valid_loader = valid_loader
+        self.valid_loaders = valid_loaders
         self.device = device
 
         #Model 
@@ -33,14 +30,12 @@ class PatchCore2D():
                 print('run task: {}'.format(task_idx))
                 for batch_id, batch in enumerate(train_loader):
                     if self.config['debug'] and batch_id > self.batch_limit:
-                        img = batch['image']
+                        break
+                    img = batch['image'].to(self.device)
+
+                    embedding = self.model(img)
+                    self.embeddings.append(embedding)                    
+                    
                     
     def prediction(self):
-        acc = 0
-
-        for i, batch in enumerate(self.valid_loader):
-            x, y, mask, task_id = batch
-                
-            pass
-
-        return acc
+        pass
