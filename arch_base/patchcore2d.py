@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from models.patchcore.patchcore import PatchCore
-import logging
 
 __all__ = ['PatchCore2D']
 
@@ -23,7 +22,7 @@ class PatchCore2D():
         self.embeddings = []
         
     def train_epoch(self, inf=''):
-
+        self.model.train()
         # Extract features for each image 
         self.model.feature_extractor.eval()
 
@@ -41,4 +40,6 @@ class PatchCore2D():
                     
     def prediction(self):
         self.model.eval()
+        print(f'Aggregating the embedding extracted from the training set')
+
         pass
