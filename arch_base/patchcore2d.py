@@ -48,14 +48,15 @@ class PatchCore2D():
         #Obtain the memory bank
         self.model.subsample_embedding(embeddings_list, self.coreset_sampling_ratio)
 
-        for task_idx, valid_loader in enumerate(self.valid_loaders):
-            print(f'run task: {task_idx}')
-            for batch_id, batch in enumerate(valid_loader):
-                if self.config['debug'] and batch_id > self.batch_limit:
-                    break
+        with torch.no_grad():
+            for task_idx, valid_loader in enumerate(self.valid_loaders):
+                print(f'run task: {task_idx}')
+                for batch_id, batch in enumerate(valid_loader):
+                    if self.config['debug'] and batch_id > self.batch_limit:
+                        break
 
-                img = batch['image'].to(self.device)
+                    img = batch['image'].to(self.device)
 
-                anomaly_maps, anomaly_score = self.model(img)
-                pred_scores = anomaly_score.unsqueeze(0)
+                    anomaly_maps, anomaly_score = self.model(img)
+                    pred_scores = anomaly_score.unsqueeze(0)
 
