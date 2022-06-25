@@ -1,9 +1,9 @@
 import torch
 import numpy as np
 
-__all__ = ['normalize']
+__all__ = ['min_max_normalize']
 
-def normalize(targets, threshold, min_val, max_val):
+def min_max_normalize(targets, threshold, min_val, max_val):
     """Apply min-max normalization for the target value
 
     Args:
