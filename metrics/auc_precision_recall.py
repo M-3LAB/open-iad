@@ -4,9 +4,9 @@ from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import average_precision_score 
 import numpy as np
 
-__all__ = ['get_auroc', 'get_precision_recall', 'get_ap']
+__all__ = ['np_get_auroc', 'np_get_precision_recall', 'np_get_ap']
 
-def get_auroc(target, prediciton):
+def np_get_auroc(target, prediciton):
     """
     Args:
         target: np.ndarray 
@@ -15,7 +15,7 @@ def get_auroc(target, prediciton):
     score = roc_auc_score(target, prediciton)
     return score
 
-def get_precision_recall(target, prediction):
+def np_get_precision_recall(target, prediction):
     """
     Args:
         target: np.ndarray 
@@ -28,6 +28,6 @@ def get_precision_recall(target, prediction):
     idx = np.argmax(f1)
     return precision[idx], recall[idx], thresholds[idx]
 
-def get_ap(target, prediction):
+def np_get_ap(target, prediction):
     ap = average_precision_score(target, prediction) 
     return ap
