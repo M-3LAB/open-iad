@@ -32,3 +32,15 @@ load_model_dir: None
 # optimizer
 beta1: 0.5
 beta2: 0.999
+# metric
+metrics:
+  image:
+    - F1Score
+    - AUROC
+  pixel:
+    - F1Score
+    - AUROC
+  threshold:
+    image_default: 0
+    pixel_default: 0
+    adaptive: true
