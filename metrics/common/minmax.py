@@ -2,7 +2,7 @@ import torch
 from torch import Tensor
 from torchmetrics import Metric
 
-
+__all__ = ['MinMax']
 class MinMax(Metric):
     """Track the min and max values of the observations in each batch."""
 
