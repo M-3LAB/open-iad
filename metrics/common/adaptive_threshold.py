@@ -1,6 +1,8 @@
 import torch
 from torchmetrics import Metric, PrecisionRecallCurve
 
+__all__ = ['AdaptiveThreshold']
+
 class AdaptiveThreshold(Metric):
     """Optimal F1 Metric.
 
