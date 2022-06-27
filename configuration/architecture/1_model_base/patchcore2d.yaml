@@ -1,5 +1,3 @@
 model: patchcore2d
 # resnet18/wide_resnet50
-backbone: resnet18
-layer_hook: None
-layer_indices: [1, 2]
+backbone: wide_resnet50

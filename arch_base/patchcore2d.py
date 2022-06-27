@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torchvision import models
 #from models.patchcore.patchcore import PatchCore
 
 __all__ = ['PatchCore2D']
@@ -12,7 +13,15 @@ class PatchCore2D():
         self.valid_loaders = valid_loaders
         self.device = device
 
-        #Model 
+        # Backbone model
+        if config['backbone'] == 'resnet18':
+            self.backbone = models.resnet18(pretrained=True, progress=True).to(self.device)
+        elif config['backbone'] == 'wide_resnet50':
+            self.backbone = models.wide_resnet50_2(pretrained=True, progress=True).to(self.device)
+        else:
+            raise NotImplementedError('This Pretrained Model Not Implemented Error')
+        
+        self.backbone.eval()
        
         
     def train_epoch(self, inf=''):
