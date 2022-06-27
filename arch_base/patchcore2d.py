@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from models.patchcore.patchcore import PatchCore
+#from models.patchcore.patchcore import PatchCore
 
 __all__ = ['PatchCore2D']
 

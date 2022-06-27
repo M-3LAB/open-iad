@@ -117,8 +117,7 @@ class CentralizedTrain():
                                  batch_size=self.para_dict['batch_size'], shuffle=False)
     def init_model(self):
         if self.para_dict['model'] == 'patchcore2d':
-            self.trainer = PatchCore2D(self.para_dict, self.train_loader, self.valid_loader,
-                                     self.device, self.file_path)
+            self.trainer = PatchCore2D(self.para_dict, self.train_loader, self.valid_loader, self.device)
         else:
             raise ValueError('Model is invalid!')
 

@@ -16,3 +16,4 @@ tifffile==2021.11.2
 imgaug==0.4.0
 kornia==0.6.5
 torchmetrics==0.9.1
+faiss-gpu==1.7.2
