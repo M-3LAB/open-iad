@@ -35,10 +35,8 @@ beta2: 0.999
 # metric
 metrics:
   image:
-    - F1Score
     - AUROC
   pixel:
-    - F1Score
     - AUROC
   threshold:
     image_default: 0

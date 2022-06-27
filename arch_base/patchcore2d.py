@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from models.patchcore.patchcore import PatchCore
+from metrics.common.torch_auroc import AUROC
 
 __all__ = ['PatchCore2D']
 
@@ -40,6 +41,8 @@ class PatchCore2D():
                     
     def prediction(self):
         self.model.eval()
+
+
 
         print(f'Aggregating the embedding extracted from the training set')
         embeddings_list = torch.vstack(self.embeddings)
