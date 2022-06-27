@@ -57,9 +57,14 @@ class CentralizedTrain():
 
     def load_data(self):
         mvtec2d_transform = {'data_size':self.para_dict['data_size'],
-                             'mask_size':self.para_dict['mask_size']}
+                             'data_crop_size': self.para_dict['data_crop_size'],
+                             'mask_size':self.para_dict['mask_size'],
+                             'mask_crop_size': self.para_dict['mask_crop_size']}
         mvtec3d_transform = {'data_size':self.para_dict['data_size'],
-                             'mask_size':self.para_dict['mask_size']}
+                             'data_crop_size': self.para_dict['data_crop_size'],
+                             'mask_size':self.para_dict['mask_size'],
+                             'mask_crop_size': self.para_dict['mask_crop_size']}
+
         if self.para_dict['dataset'] == 'mvtec2d':
             self.train_dataset = MVTec2D(data_path=self.para_dict['data_path'],
                                          learning_mode=self.para_dict['learning_mode'],
