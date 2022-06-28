@@ -3,6 +3,7 @@ import torch.nn as nn
 from torchvision import models
 from models.patchcore.kcenter_greedy import KCenterGreedy 
 from torchvision import transforms
+import cv2
 
 __all__ = ['PatchCore2D']
 
@@ -38,9 +39,12 @@ class PatchCore2D():
         self.backbone.layer2[-1].register_forward_hook(hook_t)
         self.backbone.layer3[-1].register_forward_hook(hook_t)
     
-    def save_img(self):
+    def torch_to_cv(self, torch_img):
         self.inverse_normalization = transforms.Normalize(mean=[-0.485/0.229, -0.456/0.224, -0.406/0.255], 
                                                           std=[1/0.229, 1/0.224, 1/0.255])
+        cv_img = cv2.cvtColor(torch_img.permute(0,2,3,1).cpu().numpy()[0]*255, cv2.COLOR_BGR2RGB) 
+        return cv_img
+
        
         
     def train_epoch(self, inf=''):
