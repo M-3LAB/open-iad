@@ -34,6 +34,9 @@ class CentralizedTrain():
         if self.para_dict['normal']:
             self.para_dict['num_task'] = 1
 
+        if self.para_dict['num_task'] > 1:
+            assert self.para_dict['normal'] is False
+
     def preliminary(self):
         print('---------------------')
         print(self.args)

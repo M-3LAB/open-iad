@@ -13,8 +13,9 @@ import numpy as np
 from sklearn.metrics import pairwise_distances
 from models.patchcore.sampling_base import SamplingMethod
 
+__all__ = ['KCenterGreedy']
 
-class kCenterGreedy(SamplingMethod):
+class KCenterGreedy(SamplingMethod):
 
   def __init__(self, X, y, seed, metric='euclidean'):
     self.X = X

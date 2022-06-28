@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torchvision import models
-#from models.patchcore.patchcore import PatchCore
+from models.patchcore.kcenter_greedy import KCenterGreedy 
 
 __all__ = ['PatchCore2D']
 
@@ -22,9 +22,24 @@ class PatchCore2D():
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
         
         self.backbone.eval()
+
+        self.features = []
+        self.pixel_gt_list = []
+        self.img_gt_list = []
+
+    def get_layer_features(self):
+
+        def hook_t(module, input, output):
+            self.features.append(output)
+        
+        self.backbone.layer2[-1].register_forward_hook(hook_t)
+        self.backbone.layer3[-1].register_forward_hook(hook_t)
        
         
     def train_epoch(self, inf=''):
+        
+        self.features.clear()
+        self.get_layer_features()
 
         for epoch in self.config['num_epoch']:
             for task_idx, train_loader in enumerate(self.train_loaders):
