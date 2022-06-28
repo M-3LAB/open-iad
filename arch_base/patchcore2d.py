@@ -4,6 +4,7 @@ from torchvision import models
 from models.patchcore.kcenter_greedy import KCenterGreedy 
 from torchvision import transforms
 import cv2
+from typing import List
 
 __all__ = ['PatchCore2D']
 
@@ -22,19 +23,19 @@ class PatchCore2D():
             self.backbone = models.wide_resnet50_2(pretrained=True, progress=True).to(self.device)
         else:
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
-        
-        self.backbone.eval()
 
-        self.features = []
+        self.features = [] 
+        self.get_layer_features(features=self.features)
+
         self.pixel_gt_list = []
         self.img_gt_list = []
         self.pixel_pred_list = []
         self.img_pred_list = []
 
-    def get_layer_features(self):
+    def get_layer_features(self, features: List):
 
         def hook_t(module, input, output):
-            self.features.append(output)
+            features.append(output)
         
         self.backbone.layer2[-1].register_forward_hook(hook_t)
         self.backbone.layer3[-1].register_forward_hook(hook_t)
@@ -49,8 +50,8 @@ class PatchCore2D():
         
     def train_epoch(self, inf=''):
         
-        self.features.clear()
-        self.get_layer_features()
+        self.backbone.eval()
+        self.embeddings_list = []
 
         for epoch in self.config['num_epoch']:
             for task_idx, train_loader in enumerate(self.train_loaders):
@@ -59,6 +60,8 @@ class PatchCore2D():
                     if self.config['debug'] and batch_id > self.batch_limit:
                         break
                     img = batch['image'].to(self.device)
+
+                    self.features.clear()
 
                               
                     
