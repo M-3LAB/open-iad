@@ -1,3 +1,4 @@
+from re import I
 import torch
 import torch.nn as nn
 from torchvision import models
@@ -5,16 +6,19 @@ from models.patchcore.kcenter_greedy import KCenterGreedy
 from torchvision import transforms
 import cv2
 from typing import List
+from tools.utilize import *
+import os
 
 __all__ = ['PatchCore2D']
 
 class PatchCore2D():
-    def __init__(self, config, train_loaders, valid_loaders, device):
+    def __init__(self, config, train_loaders, valid_loaders, device, file_path):
         
         self.config = config
         self.train_loaders = train_loaders
         self.valid_loaders = valid_loaders
         self.device = device
+        self.file_path = file_path
 
         # Backbone model
         if config['backbone'] == 'resnet18':
@@ -31,6 +35,8 @@ class PatchCore2D():
         self.img_gt_list = []
         self.pixel_pred_list = []
         self.img_pred_list = []
+
+        self.embeddings_list = []
 
     def get_layer_features(self, features: List):
 
@@ -51,17 +57,34 @@ class PatchCore2D():
     def train_epoch(self, inf=''):
         
         self.backbone.eval()
-        self.embeddings_list = []
 
         for epoch in self.config['num_epoch']:
             for task_idx, train_loader in enumerate(self.train_loaders):
+
                 print('run task: {}'.format(task_idx))
+                create_folders(os.path.join(self.file_path, 'embeddings', task_idx))
+                create_folders(os.path.join(self.file_path, 'samples', task_idx))
+                self.embeddings_list.clear()
+
                 for batch_id, batch in enumerate(train_loader):
                     if self.config['debug'] and batch_id > self.batch_limit:
                         break
                     img = batch['image'].to(self.device)
+                    mask = batch['mask'].to(self.device)
 
+                    # Extract features from backbone
                     self.features.clear()
+                    _ = self.backbone(img)
+
+                    # Pooling for layer 2 and layer 3 features
+                    embeddings = []
+                    for feat in self.features:
+                        pooling = torch.nn.AvgPool2d(3, 1, 1)
+                        embeddings.append(pooling(feat))
+                        
+                        feature = pooling(feat)
+                        print(f'feature.size: {feature.size()}')
+
 
                               
                     

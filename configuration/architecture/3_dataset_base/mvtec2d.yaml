@@ -1,5 +1,5 @@
 dataset: mvtec2d
-data_path: '/home/robot/mvtec/2D'
+data_path: '/home/robot/data/mvtec/2D'
 data_size: 256
 data_crop_size: 224
 mask_size: 256
