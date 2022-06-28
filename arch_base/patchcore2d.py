@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torchvision import models
 from models.patchcore.kcenter_greedy import KCenterGreedy 
+from torchvision import transforms
 
 __all__ = ['PatchCore2D']
 
@@ -26,6 +27,8 @@ class PatchCore2D():
         self.features = []
         self.pixel_gt_list = []
         self.img_gt_list = []
+        self.pixel_pred_list = []
+        self.img_pred_list = []
 
     def get_layer_features(self):
 
@@ -34,6 +37,10 @@ class PatchCore2D():
         
         self.backbone.layer2[-1].register_forward_hook(hook_t)
         self.backbone.layer3[-1].register_forward_hook(hook_t)
+    
+    def save_img(self):
+        self.inverse_normalization = transforms.Normalize(mean=[-0.485/0.229, -0.456/0.224, -0.406/0.255], 
+                                                          std=[1/0.229, 1/0.224, 1/0.255])
        
         
     def train_epoch(self, inf=''):
