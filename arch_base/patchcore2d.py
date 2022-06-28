@@ -8,6 +8,7 @@ import cv2
 from typing import List
 from tools.utilize import *
 import os
+import torch.nn.functional as F
 
 __all__ = ['PatchCore2D']
 
@@ -45,14 +46,29 @@ class PatchCore2D():
         
         self.backbone.layer2[-1].register_forward_hook(hook_t)
         self.backbone.layer3[-1].register_forward_hook(hook_t)
-    
-    def torch_to_cv(self, torch_img):
-        self.inverse_normalization = transforms.Normalize(mean=[-0.485/0.229, -0.456/0.224, -0.406/0.255], 
-                                                          std=[1/0.229, 1/0.224, 1/0.255])
+
+    @staticmethod 
+    def torch_to_cv(torch_img):
+        inverse_normalization = transforms.Normalize(mean=[-0.485/0.229, -0.456/0.224, -0.406/0.255], 
+                                                     std=[1/0.229, 1/0.224, 1/0.255])
+        torch_img = inverse_normalization(torch_img)
         cv_img = cv2.cvtColor(torch_img.permute(0,2,3,1).cpu().numpy()[0]*255, cv2.COLOR_BGR2RGB) 
         return cv_img
 
-       
+    @staticmethod
+    def embedding_concate(x, y):
+        B, C1, H1, W1 = x.size()
+        _, C2, H2, W2 = y.size()
+        s = int(H1 / H2)
+        x = F.unfold(x, kernel_size=s, dilation=1, stride=s)
+        x = x.view(B, C1, -1, H2, W2)
+        z = torch.zeros(B, C1 + C2, x.size(2), H2, W2)
+        for i in range(x.size(2)):
+            z[:, :, i, :, :] = torch.cat((x[:, :, i, :, :], y), 1)
+        z = z.view(B, -1, H2 * W2)
+        z = F.fold(z, kernel_size=s, output_size=(H1, W1), stride=s)
+
+        return z
         
     def train_epoch(self, inf=''):
         
@@ -82,8 +98,8 @@ class PatchCore2D():
                         pooling = torch.nn.AvgPool2d(3, 1, 1)
                         embeddings.append(pooling(feat))
                         
-                        feature = pooling(feat)
-                        print(f'feature.size: {feature.size()}')
+                        #feature = pooling(feat)
+                        #print(f'feature.size: {feature.size()}')
 
 
                               
