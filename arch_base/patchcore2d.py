@@ -97,9 +97,11 @@ class PatchCore2D():
                     for feat in self.features:
                         pooling = torch.nn.AvgPool2d(3, 1, 1)
                         embeddings.append(pooling(feat))
-                        
-                        #feature = pooling(feat)
-                        #print(f'feature.size: {feature.size()}')
+
+                    embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
+                    print(f'embedding.size: {embedding.size()}')
+                    print(f'embeddings[0].size: {embeddings[0].size()}')
+                    print(f'embeddings[1].size: {embeddings[1].size()}')
 
 
                               
