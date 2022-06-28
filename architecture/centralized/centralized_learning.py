@@ -132,7 +132,7 @@ class CentralizedTrain():
 
     def init_model(self):
         if self.para_dict['model'] == 'patchcore2d':
-            if self.para_dict['few_shot']:
+            if self.para_dict['fewshot']:
                 self.trainer = PatchCore2D(self.para_dict, self.train_fewshot_loaders, 
                                            self.valid_loaders, self.device, self.file_path)
             else:

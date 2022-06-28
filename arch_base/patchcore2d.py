@@ -58,19 +58,19 @@ class PatchCore2D():
         
         self.backbone.eval()
 
-        for epoch in self.config['num_epoch']:
+        for epoch in range(self.config['num_epoch']):
             for task_idx, train_loader in enumerate(self.train_loaders):
 
                 print('run task: {}'.format(task_idx))
-                create_folders(os.path.join(self.file_path, 'embeddings', task_idx))
-                create_folders(os.path.join(self.file_path, 'samples', task_idx))
+                create_folders(os.path.join(self.file_path, 'embeddings', str(task_idx)))
+                create_folders(os.path.join(self.file_path, 'samples', str(task_idx)))
                 self.embeddings_list.clear()
 
                 for batch_id, batch in enumerate(train_loader):
                     if self.config['debug'] and batch_id > self.batch_limit:
                         break
-                    img = batch['image'].to(self.device)
-                    mask = batch['mask'].to(self.device)
+                    img = batch['img'].to(self.device)
+                    #mask = batch['mask'].to(self.device)
 
                     # Extract features from backbone
                     self.features.clear()
