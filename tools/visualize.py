@@ -27,7 +27,14 @@ def cal_anomaly_map():
 def save_anomaly_map(anomaly_map, input_img, mask):
     if anomaly_map.shape != input_img.shape:
         anomaly_map = cv2.resize(anomaly_map, (input_img.shape[0], input_img.shape[1]))
-    pass
+
+    anomaly_map_norm = min_max_norm(anomaly_map) 
+    heatmap = cv2heatmap(anomaly_map_norm*255)
+
+    heatmap_on_img = heatmap_on_image(heatmap, input_img)
+    #TODO: save problems
+
+    
 
 if __name__ == 'main':
     pass
