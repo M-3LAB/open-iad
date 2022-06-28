@@ -77,7 +77,8 @@ class CentralizedTrain():
             self.valid_dataset = MVTec2D(data_path=self.para_dict['data_path'],
                                          learning_mode=self.para_dict['learning_mode'],
                                          phase='test',
-                                         data_transform=mvtec2d_transform)
+                                         data_transform=mvtec2d_transform,
+                                         num_task=self.para_dict['num_task'])
             if self.para_dict['fewshot']:
                 self.train_fewshot_dataset = MVTec2DFewShot(data_path=self.para_dict['data_path'],
                                                             learning_mode=self.para_dict['learning_mode'],
@@ -120,7 +121,6 @@ class CentralizedTrain():
 
         if self.para_dict['fewshot']:
             self.train_fewshot_loaders = []
-            self.valid_fewshot_loaders = []
             task_data_fewshot_list = self.train_fewshot_dataset.sample_indices_in_task
             for i in range(self.para_dict['num_task']):
                 train_fewshot_loader = DataLoader(self.train_fewshot_dataset,
@@ -130,17 +130,14 @@ class CentralizedTrain():
                                         sampler=SubsetRandomSampler(task_data_fewshot_list[i]))
                 self.train_fewshot_loaders.append(train_fewshot_loader)
 
-                valid_fewshot_loader = DataLoader(self.valid_fewshot_dataset,
-                                        batch_size=self.para_dict['batch_size'],
-                                        drop_last=True,
-                                        num_workers=self.para_dict['num_workers'],
-                                        sampler=SubsetRandomSampler(task_data_fewshot_list[i]))
-                self.valid_fewshot_loaders.append(valid_fewshot_loader)
-
     def init_model(self):
         if self.para_dict['model'] == 'patchcore2d':
-            self.trainer = PatchCore2D(self.para_dict, self.train_loaders, self.valid_loaders, 
-                                       self.device, self.file_path)
+            if self.para_dict['few_shot']:
+                self.trainer = PatchCore2D(self.para_dict, self.train_fewshot_loaders, 
+                                           self.valid_loaders, self.device, self.file_path)
+            else:
+                self.trainer = PatchCore2D(self.para_dict, self.train_loaders, self.valid_loaders, 
+                                           self.device, self.file_path)
         else:
             raise ValueError('Model is invalid!')
 
