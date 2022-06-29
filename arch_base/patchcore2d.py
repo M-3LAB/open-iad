@@ -95,8 +95,11 @@ class PatchCore2D():
         for task_idx, train_loader in enumerate(self.train_loaders):
 
             print('run task: {}'.format(task_idx))
-            #create_folders(os.path.join(self.file_path, 'embeddings', str(task_idx)))
-            create_folders(os.path.join(self.file_path, 'samples', str(task_idx)))
+            
+            embedding_dir_path = os.path.join(self.file_path, 'embeddings', str(task_idx))
+            create_folders(embedding_dir_path)
+            #sampling_dir_path = os.path.join(self.file_path, 'samples', str(task_idx))
+            #create_folders(sampling_dir_path)
             self.embeddings_list.clear()
 
             for _ in range(self.config['num_epoch']):
@@ -145,6 +148,7 @@ class PatchCore2D():
 
             self.index = faiss.IndexFlatL2(self.embedding_coreset.shape[1])
             self.index.add(self.embedding_coreset) 
+            faiss.write_index(self.index, os.path.join(embedding_dir_path, 'index.faiss'))
 
             
              
