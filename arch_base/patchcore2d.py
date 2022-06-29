@@ -10,6 +10,7 @@ import os
 import torch.nn.functional as F
 import numpy as np
 from sklearn.random_projection import SparseRandomProjection
+import faiss
 
 __all__ = ['PatchCore2D']
 
@@ -141,6 +142,9 @@ class PatchCore2D():
         
             print('initial embedding size : ', total_embeddings.shape)
             print('final embedding size : ', self.embedding_coreset.shape)
+
+            self.index = faiss.IndexFlatL2(self.embedding_coreset.shape[1])
+            self.index.add(self.embedding_coreset) 
 
             
              
