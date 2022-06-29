@@ -180,6 +180,10 @@ class PatchCore2D():
         sampling_dir_path = os.path.join(self.file_path, 'samples', str(self.config['chosen_test_task_id']))
         create_folders(sampling_dir_path)
 
+        for _ in range(int(self.config['num_epoch'])):
+            for batch_id, batch in enumerate():
+                pass
+
         
       
 
