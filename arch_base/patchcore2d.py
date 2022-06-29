@@ -90,17 +90,19 @@ class PatchCore2D():
         
         self.backbone.eval()
 
+        # When num_task is 15, per task means per class
         for task_idx, train_loader in enumerate(self.train_loaders):
 
             print('run task: {}'.format(task_idx))
-            create_folders(os.path.join(self.file_path, 'embeddings', str(task_idx)))
+            #create_folders(os.path.join(self.file_path, 'embeddings', str(task_idx)))
             create_folders(os.path.join(self.file_path, 'samples', str(task_idx)))
             self.embeddings_list.clear()
 
-            for epoch in range(self.config['num_epoch']):
+            for _ in range(self.config['num_epoch']):
                 for batch_id, batch in enumerate(train_loader):
-                    if self.config['debug'] and batch_id > self.batch_limit:
-                        break
+                    print(f'batch id: {batch_id}')
+                    #if self.config['debug'] and batch_id > self.config['batch_limit']:
+                    #    break
                     img = batch['img'].to(self.device)
                     #mask = batch['mask'].to(self.device)
 
@@ -134,6 +136,11 @@ class PatchCore2D():
             selected_idx = selector.select_batch(model=self.random_projector, 
                                                  already_selected=[],
                                                  N=int(total_embeddings.shape[0] * self.config['coreset_sampling_ratio']))
+
+            self.embedding_coreset = total_embeddings[selected_idx]
+        
+            print('initial embedding size : ', total_embeddings.shape)
+            print('final embedding size : ', self.embedding_coreset.shape)
 
             
              

@@ -13,6 +13,7 @@ fewshot: false
 fewshot_exm: 16
 # training
 batch_size: 8 
+batch_limit: 2
 gpu_id: 0
 gpu_ids:
 - '01234567'
