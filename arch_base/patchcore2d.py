@@ -176,5 +176,10 @@ class PatchCore2D():
         self.img_gt_list.clear()
         self.pixel_pred_list.clear()
         self.img_pred_list.clear()
+
+        sampling_dir_path = os.path.join(self.file_path, 'samples', str(self.config['chosen_test_task_id']))
+        create_folders(sampling_dir_path)
+
+        
       
 
