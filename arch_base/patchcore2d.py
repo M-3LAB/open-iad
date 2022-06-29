@@ -23,6 +23,15 @@ class PatchCore2D():
         self.device = device
         self.file_path = file_path
 
+        self.chosen_train_loaders = [] 
+        if self.config['chosen_train_task_ids'] is not None:
+            for idx in range(len(self.config['chosen_train_task_ids'])):
+                self.chosen_train_loaders.append(self.train_loaders[self.config['chosen_train_task_ids'][idx]])
+        else:
+            self.chosen_train_loaders = self.train_loaders
+        
+        self.chosen_valid_loader = self.valid_loaders[self.config['chosen_test_task_id']] 
+
         # Backbone model
         if config['backbone'] == 'resnet18':
             self.backbone = models.resnet18(pretrained=True, progress=True).to(self.device)
@@ -92,11 +101,13 @@ class PatchCore2D():
         self.backbone.eval()
 
         # When num_task is 15, per task means per class
-        for task_idx, train_loader in enumerate(self.train_loaders):
+        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
 
             print('run task: {}'.format(task_idx))
             
-            embedding_dir_path = os.path.join(self.file_path, 'embeddings', str(task_idx))
+            embedding_dir_path = os.path.join(self.file_path, 'embeddings', 
+                                              str(self.config['chosen_train_task_ids'][task_idx]))
+
             create_folders(embedding_dir_path)
             #sampling_dir_path = os.path.join(self.file_path, 'samples', str(task_idx))
             #create_folders(sampling_dir_path)
@@ -149,16 +160,12 @@ class PatchCore2D():
             self.index = faiss.IndexFlatL2(self.embedding_coreset.shape[1])
             self.index.add(self.embedding_coreset) 
             faiss.write_index(self.index, os.path.join(embedding_dir_path, 'index.faiss'))
-
-            
-             
-
-
-
-                              
-                    
                     
     def prediction(self):
-        pass
+
+        self.backbone.eval()
+
+        self.index = faiss.read_index(os.path.join(self.file_path, 'embeddings', 
+                                      str(self.config['chosen_test_task_id']), 'index.faiss')) 
       
 

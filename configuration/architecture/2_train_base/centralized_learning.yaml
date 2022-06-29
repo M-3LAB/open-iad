@@ -43,3 +43,9 @@ metrics:
     image_default: 0
     pixel_default: 0
     adaptive: true
+# chosen task ids
+chosen_train_task_ids:
+  - 0
+  - 1
+
+chosen_test_task_id: 0

@@ -153,14 +153,14 @@ class CentralizedTrain():
 
     def work_flow(self):
         self.trainer.train_epoch()
-        acc = self.trainer.prediction()
+        self.trainer.prediction()
 
-        infor = '[Epoch {}/{}] acc: {:.4f}'.format(self.epoch+1, self.para_dict['num_epoch'], acc)
+        #infor = '[Epoch {}/{}] acc: {:.4f}'.format(self.epoch+1, self.para_dict['num_epoch'], acc)
 
-        print(infor)
+        #print(infor)
 
-        if self.para_dict['save_log']:
-            save_log(infor, self.file_path, description='_clients')
+        #if self.para_dict['save_log']:
+        #    save_log(infor, self.file_path, description='_clients')
 
 
 
