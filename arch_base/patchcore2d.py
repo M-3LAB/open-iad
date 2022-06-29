@@ -167,5 +167,14 @@ class PatchCore2D():
 
         self.index = faiss.read_index(os.path.join(self.file_path, 'embeddings', 
                                       str(self.config['chosen_test_task_id']), 'index.faiss')) 
+        
+        if torch.cuda.is_available():
+            res = faiss.StandardGpuResources()
+            self.index = faiss.index_cpu_to_gpu(res, int(self.device), self.index)
+        
+        self.pixel_gt_list.clear()
+        self.img_gt_list.clear()
+        self.pixel_pred_list.clear()
+        self.img_pred_list.clear()
       
 
