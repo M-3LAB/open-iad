@@ -1,4 +1,3 @@
-from re import I
 import torch
 import torch.nn as nn
 from torchvision import models
@@ -9,6 +8,8 @@ from typing import List
 from tools.utilize import *
 import os
 import torch.nn.functional as F
+import numpy as np
+from sklearn.random_projection import SparseRandomProjection
 
 __all__ = ['PatchCore2D']
 
@@ -31,6 +32,9 @@ class PatchCore2D():
 
         self.features = [] 
         self.get_layer_features(features=self.features)
+
+        #TODO: Visualize Embeddings
+        self.random_projector = SparseRandomProjection(n_components='auto', eps=0.9)
 
         self.pixel_gt_list = []
         self.img_gt_list = []
@@ -69,19 +73,31 @@ class PatchCore2D():
         z = F.fold(z, kernel_size=s, output_size=(H1, W1), stride=s)
 
         return z
+
+    @staticmethod 
+    def reshape_embedding(embedding):
+        embedding_list = []
+        for k in range(embedding.shape[0]):
+            for i in range(embedding.shape[2]):
+                for j in range(embedding.shape[3]):
+                    embedding_list.append(embedding[k, :, i, j])
+                    #print(f'embedding[k,:,i,j].shape: {embedding[k,:,i,j].shape}')
+        
+        #print(f'embedding[k,:,i,j].shape: {embedding[4,:,2,3].shape}')
+        return embedding_list
         
     def train_epoch(self, inf=''):
         
         self.backbone.eval()
 
-        for epoch in range(self.config['num_epoch']):
-            for task_idx, train_loader in enumerate(self.train_loaders):
+        for task_idx, train_loader in enumerate(self.train_loaders):
 
-                print('run task: {}'.format(task_idx))
-                create_folders(os.path.join(self.file_path, 'embeddings', str(task_idx)))
-                create_folders(os.path.join(self.file_path, 'samples', str(task_idx)))
-                self.embeddings_list.clear()
+            print('run task: {}'.format(task_idx))
+            create_folders(os.path.join(self.file_path, 'embeddings', str(task_idx)))
+            create_folders(os.path.join(self.file_path, 'samples', str(task_idx)))
+            self.embeddings_list.clear()
 
+            for epoch in range(self.config['num_epoch']):
                 for batch_id, batch in enumerate(train_loader):
                     if self.config['debug'] and batch_id > self.batch_limit:
                         break
@@ -99,9 +115,19 @@ class PatchCore2D():
                         embeddings.append(pooling(feat))
 
                     embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
-                    print(f'embedding.size: {embedding.size()}')
-                    print(f'embeddings[0].size: {embeddings[0].size()}')
-                    print(f'embeddings[1].size: {embeddings[1].size()}')
+                    #print(f'embedding.size: {embedding.size()}')
+                    #print(f'embeddings[0].size: {embeddings[0].size()}')
+                    #print(f'embeddings[1].size: {embeddings[1].size()}')
+
+                    #print(f'embedding detach numpy.size: {embedding.detach().numpy().shape}')
+                    embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
+                    #print(f'reshape embedding shape: {len(embedding)}')
+                    self.embeddings_list.extend(embedding)
+
+            total_embeddings = np.array(self.embeddings_list)
+            self.random_projector.fit(total_embeddings)
+             
+
 
 
                               
