@@ -6,10 +6,9 @@ class SamplingMethod(object):
   __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
-  def __init__(self, X, y, seed, **kwargs):
+  def __init__(self, X, y, **kwargs):
     self.X = X
     self.y = y
-    self.seed = seed
 
   def flatten_X(self):
     shape = self.X.shape

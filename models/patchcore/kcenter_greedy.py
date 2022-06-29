@@ -17,7 +17,7 @@ __all__ = ['KCenterGreedy']
 
 class KCenterGreedy(SamplingMethod):
 
-  def __init__(self, X, y, seed, metric='euclidean'):
+  def __init__(self, X, y, metric='euclidean'):
     self.X = X
     self.y = y
     self.flat_X = self.flatten_X()

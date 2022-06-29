@@ -124,8 +124,18 @@ class PatchCore2D():
                     #print(f'reshape embedding shape: {len(embedding)}')
                     self.embeddings_list.extend(embedding)
 
+            # Sparse random projection from high-dimensional space into low-dimensional euclidean space
             total_embeddings = np.array(self.embeddings_list)
             self.random_projector.fit(total_embeddings)
+
+            # Coreset subsampling
+            # y refers to the label of total embeddings. X is good in training, so y=0
+            selector = KCenterGreedy(X=total_embeddings, y=0)
+            selected_idx = selector.select_batch(model=self.random_projector, 
+                                                 already_selected=[],
+                                                 N=int(total_embeddings.shape[0] * self.config['coreset_sampling_ratio']))
+
+            
              
 
 
