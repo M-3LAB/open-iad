@@ -110,8 +110,6 @@ class PatchCore2D():
                                               str(self.config['chosen_train_task_ids'][task_idx]))
 
             create_folders(embedding_dir_path)
-            #sampling_dir_path = os.path.join(self.file_path, 'samples', str(task_idx))
-            #create_folders(sampling_dir_path)
             self.embeddings_list.clear()
 
             for _ in range(self.config['num_epoch']):
@@ -171,7 +169,7 @@ class PatchCore2D():
         
         if torch.cuda.is_available():
             res = faiss.StandardGpuResources()
-            self.index = faiss.index_cpu_to_gpu(res, int(self.device), self.index)
+            self.index = faiss.index_cpu_to_gpu(res, int(self.config['gpu_id']), self.index)
         
         self.pixel_gt_list.clear()
         self.img_gt_list.clear()
@@ -180,6 +178,9 @@ class PatchCore2D():
 
         sampling_dir_path = os.path.join(self.file_path, 'samples', str(self.config['chosen_test_task_id']))
         create_folders(sampling_dir_path)
+
+        if self.config['batch_size'] != 1:
+            assert 'PatchCore Evaluation, Batch Size should be Equal to 1'
 
         for _ in range(int(self.config['num_epoch'])):
             for batch_id, batch in enumerate(tqdm.tqdm(self.chosen_valid_loader)):
@@ -196,9 +197,19 @@ class PatchCore2D():
 
                 embedding_test = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
                 embedding_test = PatchCore2D.reshape_embedding(embedding_test.detach().numpy())
+                embedding_test = np.array(embedding_test)
 
                 # Nearest Neighbour Search
                 score_patches, _ = self.index.search(embedding_test, k=int(self.config['n_neighbours']))
+
+                # Reweighting i.e., equation(7) in paper
+                print(score_patches[np.argmax(score_patches[:, 0])])
+
+
+
+                anomaly_map = score_patches[:,0].reshape((28, 28))
+
+
 
         
       
