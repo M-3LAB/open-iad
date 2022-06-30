@@ -11,6 +11,7 @@ import torch.nn.functional as F
 import numpy as np
 from sklearn.random_projection import SparseRandomProjection
 import faiss
+import tqdm
 
 __all__ = ['PatchCore2D']
 
@@ -101,7 +102,7 @@ class PatchCore2D():
         self.backbone.eval()
 
         # When num_task is 15, per task means per class
-        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
+        for task_idx, train_loader in enumerate(tqdm.tqdm(self.chosen_train_loaders)):
 
             print('run task: {}'.format(task_idx))
             
@@ -114,8 +115,8 @@ class PatchCore2D():
             self.embeddings_list.clear()
 
             for _ in range(self.config['num_epoch']):
-                for batch_id, batch in enumerate(train_loader):
-                    print(f'batch id: {batch_id}')
+                for batch_id, batch in enumerate(tqdm.tqdm(train_loader)):
+                    #print(f'batch id: {batch_id}')
                     #if self.config['debug'] and batch_id > self.config['batch_limit']:
                     #    break
                     img = batch['img'].to(self.device)
@@ -181,8 +182,23 @@ class PatchCore2D():
         create_folders(sampling_dir_path)
 
         for _ in range(int(self.config['num_epoch'])):
-            for batch_id, batch in enumerate():
-                pass
+            for batch_id, batch in enumerate(tqdm.tqdm(self.chosen_valid_loader)):
+                img = batch['img'].to(self.device)
+                # Extract features from backbone
+                self.features.clear()
+                _ = self.backbone(img)
+
+                # Pooling for layer 2 and layer 3 features
+                embeddings = []
+                for feat in self.features:
+                    pooling = torch.nn.AvgPool2d(3, 1, 1)
+                    embeddings.append(pooling(feat))
+
+                embedding_test = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
+                embedding_test = PatchCore2D.reshape_embedding(embedding_test.detach().numpy())
+
+                # Nearest Neighbour Search
+                score_patches, _ = self.index.search(embedding_test, k=int(self.config['n_neighbours']))
 
         
       
