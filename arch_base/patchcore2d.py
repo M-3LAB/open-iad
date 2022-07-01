@@ -203,7 +203,11 @@ class PatchCore2D():
                 score_patches, _ = self.index.search(embedding_test, k=int(self.config['n_neighbours']))
 
                 # Reweighting i.e., equation(7) in paper
-                print(score_patches[np.argmax(score_patches[:, 0])])
+                max_min_distance = score_patches[:, 0]
+                ind = np.argmax(max_min_distance)
+                N_b = score_patches[ind]
+                w = (1 - (np.max(np.exp(N_b))/np.sum(np.exp(N_b))))
+                score = w * max(max_min_distance)
 
 
 
