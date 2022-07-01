@@ -14,6 +14,7 @@ import faiss
 #import tqdm
 import math
 from scipy.ndimage import gaussian_filter
+from metrics.common.np_auc_precision_recall import np_get_auroc
 
 __all__ = ['PatchCore2D']
 
@@ -226,7 +227,13 @@ class PatchCore2D():
                 self.img_gt_list.extend(label.cpu().numpy()[0])
                 self.img_pred_list.extend(img_score)
 
-                #TODO: Image Visualization
+                #TODO: Anomaly Map Visualization
+                
+        pixel_auroc = np_get_auroc(self.pixel_gt_list, self.pixel_pred_list) 
+        img_auroc = np_get_auroc(self.img_gt_list, self.img_pred_list)
+
+        print(f"Pixel Level AUROC Score: {pixel_auroc}")
+        print(f"Image Level AUROC Score: {img_auroc}")
 
 
 
