@@ -11,7 +11,9 @@ import torch.nn.functional as F
 import numpy as np
 from sklearn.random_projection import SparseRandomProjection
 import faiss
-import tqdm
+#import tqdm
+import math
+from scipy.ndimage import gaussian_filter
 
 __all__ = ['PatchCore2D']
 
@@ -102,7 +104,7 @@ class PatchCore2D():
         self.backbone.eval()
 
         # When num_task is 15, per task means per class
-        for task_idx, train_loader in enumerate(tqdm.tqdm(self.chosen_train_loaders)):
+        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
 
             print('run task: {}'.format(task_idx))
             
@@ -113,7 +115,7 @@ class PatchCore2D():
             self.embeddings_list.clear()
 
             for _ in range(self.config['num_epoch']):
-                for batch_id, batch in enumerate(tqdm.tqdm(train_loader)):
+                for batch_id, batch in enumerate(train_loader):
                     #print(f'batch id: {batch_id}')
                     #if self.config['debug'] and batch_id > self.config['batch_limit']:
                     #    break
@@ -183,8 +185,10 @@ class PatchCore2D():
             assert 'PatchCore Evaluation, Batch Size should be Equal to 1'
 
         for _ in range(int(self.config['num_epoch'])):
-            for batch_id, batch in enumerate(tqdm.tqdm(self.chosen_valid_loader)):
+            for batch_id, batch in enumerate(self.chosen_valid_loader):
                 img = batch['img'].to(self.device)
+                mask = batch['mask'].to(self.device)
+                label = batch['label'].to(self.device)
                 # Extract features from backbone
                 self.features.clear()
                 _ = self.backbone(img)
@@ -207,11 +211,23 @@ class PatchCore2D():
                 ind = np.argmax(max_min_distance)
                 N_b = score_patches[ind]
                 w = (1 - (np.max(np.exp(N_b))/np.sum(np.exp(N_b))))
-                score = w * max(max_min_distance)
+                img_score = w * max(max_min_distance)
 
+                # Because the feature map size from the layer 2 of wide-resnet 18 is 28
+                #anomaly_map = max_min_distance.reshape((28, 28))
+                anomaly_map_size = int(math.sqrt(max_min_distance.size()[0]))
+                anomaly_map = max_min_distance.reshape(anomaly_map_size, anomaly_map_size)
+                anomaly_map_cv = cv2.resize(anomaly_map, (self.config['data_crop_size'], self.config['data_crop_size']))
+                anomaly_map_np = gaussian_filter(anomaly_map_cv, sigma=4)
 
+                mask_np = mask.cpu().numpy()[0,0].astype(int)
+                self.pixel_gt_list.extend(mask_np.ravel())
+                self.pixel_pred_list.extend(anomaly_map_np.ravel())
+                self.img_gt_list.extend(label.cpu().numpy()[0])
+                self.img_pred_list.extend(img_score)
 
-                anomaly_map = score_patches[:,0].reshape((28, 28))
+                #TODO: Image Visualization
+
 
 
 
