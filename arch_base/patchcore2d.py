@@ -36,6 +36,8 @@ class PatchCore2D():
         
         self.chosen_valid_loader = self.valid_loaders[self.config['chosen_test_task_id']] 
 
+        print(f'The length of valid loader: {len(self.chosen_valid_loader)}')
+
         # Backbone model
         if config['backbone'] == 'resnet18':
             self.backbone = models.resnet18(pretrained=True, progress=True).to(self.device)
@@ -184,7 +186,6 @@ class PatchCore2D():
 
         #if self.config['batch_size'] != 1:
         #    assert 'PatchCore Evaluation, Batch Size should be Equal to 1'
-
         for _ in range(int(self.config['num_epoch'])):
             for batch_id, batch in enumerate(self.chosen_valid_loader):
                 img = batch['img'].to(self.device)
