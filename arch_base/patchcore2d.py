@@ -45,7 +45,7 @@ class PatchCore2D():
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
 
         self.features = [] 
-        self.get_layer_features(features=self.features)
+        self.get_layer_features()
 
         #TODO: Visualize Embeddings
         self.random_projector = SparseRandomProjection(n_components='auto', eps=0.9)
@@ -57,10 +57,10 @@ class PatchCore2D():
 
         self.embeddings_list = []
 
-    def get_layer_features(self, features: List):
+    def get_layer_features(self):
 
         def hook_t(module, input, output):
-            features.append(output)
+            self.features.append(output)
         
         self.backbone.layer2[-1].register_forward_hook(hook_t)
         self.backbone.layer3[-1].register_forward_hook(hook_t)
@@ -182,8 +182,8 @@ class PatchCore2D():
         sampling_dir_path = os.path.join(self.file_path, 'samples', str(self.config['chosen_test_task_id']))
         create_folders(sampling_dir_path)
 
-        if self.config['batch_size'] != 1:
-            assert 'PatchCore Evaluation, Batch Size should be Equal to 1'
+        #if self.config['batch_size'] != 1:
+        #    assert 'PatchCore Evaluation, Batch Size should be Equal to 1'
 
         for _ in range(int(self.config['num_epoch'])):
             for batch_id, batch in enumerate(self.chosen_valid_loader):
@@ -216,16 +216,16 @@ class PatchCore2D():
 
                 # Because the feature map size from the layer 2 of wide-resnet 18 is 28
                 #anomaly_map = max_min_distance.reshape((28, 28))
-                anomaly_map_size = int(math.sqrt(max_min_distance.size()[0]))
-                anomaly_map = max_min_distance.reshape(anomaly_map_size, anomaly_map_size)
+                anomaly_map_size = math.sqrt(max_min_distance.shape[0])
+                anomaly_map = max_min_distance.reshape(int(anomaly_map_size), int(anomaly_map_size))
                 anomaly_map_cv = cv2.resize(anomaly_map, (self.config['data_crop_size'], self.config['data_crop_size']))
                 anomaly_map_np = gaussian_filter(anomaly_map_cv, sigma=4)
 
                 mask_np = mask.cpu().numpy()[0,0].astype(int)
                 self.pixel_gt_list.extend(mask_np.ravel())
                 self.pixel_pred_list.extend(anomaly_map_np.ravel())
-                self.img_gt_list.extend(label.cpu().numpy()[0])
-                self.img_pred_list.extend(img_score)
+                self.img_gt_list.append(label.cpu().numpy()[0])
+                self.img_pred_list.append(img_score)
 
                 #TODO: Anomaly Map Visualization
                 

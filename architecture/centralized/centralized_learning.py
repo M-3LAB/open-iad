@@ -114,7 +114,7 @@ class CentralizedTrain():
 
             valid_loader = DataLoader(self.valid_dataset, 
                                       num_workers=self.para_dict['num_workers'],
-                                      batch_size=self.para_dict['batch_size'], 
+                                      batch_size=1, 
                                       shuffle=False,
                                       sampler=SubsetRandomSampler(task_data_list[i]))
             self.valid_loaders.append(valid_loader)

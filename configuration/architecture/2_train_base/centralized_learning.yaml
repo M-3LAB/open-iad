@@ -1,7 +1,5 @@
 # centralzied learning
 learning_mode: 'centralized'
-clients_data_weight:
-- 1.0
 # different training
 num_task: 15 
 # train normal
@@ -12,7 +10,7 @@ continual: false
 fewshot: false 
 fewshot_exm: 16
 # training
-batch_size: 1 
+batch_size: 32 
 batch_limit: 2
 gpu_id: 0
 gpu_ids:
