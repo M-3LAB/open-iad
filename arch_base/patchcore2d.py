@@ -184,8 +184,9 @@ class PatchCore2D():
         sampling_dir_path = os.path.join(self.file_path, 'samples', str(self.config['chosen_test_task_id']))
         create_folders(sampling_dir_path)
 
-        #if self.config['batch_size'] != 1:
-        #    assert 'PatchCore Evaluation, Batch Size should be Equal to 1'
+        if self.chosen_valid_loader.batchsize != 1:
+            assert 'PatchCore Evaluation, Batch Size should be Equal to 1'
+
         for _ in range(int(self.config['num_epoch'])):
             for batch_id, batch in enumerate(self.chosen_valid_loader):
                 img = batch['img'].to(self.device)

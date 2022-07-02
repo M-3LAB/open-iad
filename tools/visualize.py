@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 #from skimage import io
 import cv2
 import numpy as np
+import os
 
 __all__ = ['show_cam_on_image', 'cv2heatmap', 'heatmap_on_image', 'min_max_norm',
            'cal_anomaly_map', 'save_anomaly_map']
@@ -24,7 +25,7 @@ def min_max_norm(image):
 def cal_anomaly_map():
     pass
 
-def save_anomaly_map(anomaly_map, input_img, mask):
+def save_anomaly_map(anomaly_map, input_img, mask, file_path):
     if anomaly_map.shape != input_img.shape:
         anomaly_map = cv2.resize(anomaly_map, (input_img.shape[0], input_img.shape[1]))
 
@@ -34,7 +35,10 @@ def save_anomaly_map(anomaly_map, input_img, mask):
     heatmap_on_img = heatmap_on_image(heatmap, input_img)
     #TODO: save problems
 
-    cv2.imwrite()
+    cv2.imwrite(os.path.join(file_path, '.jpg'), input_img)
+    cv2.imwrite(os.path.join(file_path, 'heatmap.jpg'), heatmap)
+    cv2.imwrite(os.path.join(file_path, 'heatmap_on_img.jpg'), heatmap_on_img)
+    cv2.imwrite(os.path.join(file_path, 'mask.jpg'), mask)
 
     
 
