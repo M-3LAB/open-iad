@@ -6,12 +6,12 @@ import numpy as np
 import torch
 import numpy as np
 import random
-import os
 import yaml
 import time
 import shutil
 import torchvision
 import glob
+import cv2
 
 __all__ = ['to_batch', 'seed_everything', 'parse_device_list', 'allocate_gpus', 
            'merge_config', 'convert_list_float_type', 'draem_weights_init', 'load_model', 

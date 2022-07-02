@@ -229,6 +229,7 @@ class PatchCore2D():
                 self.img_pred_list.append(img_score)
 
                 #TODO: Anomaly Map Visualization
+                img_cv = PatchCore2D.torch_to_cv(img)
                 
         pixel_auroc = np_get_auroc(self.pixel_gt_list, self.pixel_pred_list) 
         img_auroc = np_get_auroc(self.img_gt_list, self.img_pred_list)

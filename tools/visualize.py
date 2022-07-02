@@ -34,6 +34,8 @@ def save_anomaly_map(anomaly_map, input_img, mask):
     heatmap_on_img = heatmap_on_image(heatmap, input_img)
     #TODO: save problems
 
+    cv2.imwrite()
+
     
 
 if __name__ == 'main':
