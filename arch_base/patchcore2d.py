@@ -15,6 +15,7 @@ import faiss
 import math
 from scipy.ndimage import gaussian_filter
 from metrics.common.np_auc_precision_recall import np_get_auroc
+from tools.visualize import save_anomaly_map
 
 __all__ = ['PatchCore2D']
 
@@ -220,17 +221,21 @@ class PatchCore2D():
                 #anomaly_map = max_min_distance.reshape((28, 28))
                 anomaly_map_size = math.sqrt(max_min_distance.shape[0])
                 anomaly_map = max_min_distance.reshape(int(anomaly_map_size), int(anomaly_map_size))
-                anomaly_map_cv = cv2.resize(anomaly_map, (self.config['data_crop_size'], self.config['data_crop_size']))
-                anomaly_map_np = gaussian_filter(anomaly_map_cv, sigma=4)
+                anomaly_map_resized = cv2.resize(anomaly_map, (self.config['data_crop_size'], self.config['data_crop_size']))
+                anomaly_map_cv = gaussian_filter(anomaly_map_resized, sigma=4)
 
                 mask_np = mask.cpu().numpy()[0,0].astype(int)
                 self.pixel_gt_list.extend(mask_np.ravel())
-                self.pixel_pred_list.extend(anomaly_map_np.ravel())
+                self.pixel_pred_list.extend(anomaly_map_cv.ravel())
                 self.img_gt_list.append(label.cpu().numpy()[0])
                 self.img_pred_list.append(img_score)
 
                 #TODO: Anomaly Map Visualization
                 img_cv = PatchCore2D.torch_to_cv(img)
+                save_anomaly_map(anomaly_map=anomaly_map_cv, input_img=img_cv,
+                                 mask=mask_np, 
+                                 file_path=os.path.join(sampling_dir_path, str(batch_id), str(label.cpu().numpy()[0])))
+                
                 
         pixel_auroc = np_get_auroc(self.pixel_gt_list, self.pixel_pred_list) 
         img_auroc = np_get_auroc(self.img_gt_list, self.img_pred_list)
