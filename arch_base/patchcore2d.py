@@ -231,14 +231,20 @@ class PatchCore2D():
                 self.img_pred_list.append(img_score)
 
                 #TODO: Anomaly Map Visualization
+                if label == 0:
+                    defect_type = 'norminal'
+                else:
+                    defect_type = 'anomaly'
+
                 img_cv = PatchCore2D.torch_to_cv(img)
                 save_anomaly_map(anomaly_map=anomaly_map_cv, input_img=img_cv,
                                  mask=mask_np, 
-                                 file_path=os.path.join(sampling_dir_path, str(batch_id), str(label.cpu().numpy()[0])))
+                                 file_path=os.path.join(sampling_dir_path, defect_type, str(batch_id)))
                 
                 
         pixel_auroc = np_get_auroc(self.pixel_gt_list, self.pixel_pred_list) 
         img_auroc = np_get_auroc(self.img_gt_list, self.img_pred_list)
+    
 
         print(f"Task {self.config['chosen_test_task_id']} Pixel Level AUROC Score: {pixel_auroc}")
         print(f"Task {self.config['chosen_test_task_id']} Image Level AUROC Score: {img_auroc}")
