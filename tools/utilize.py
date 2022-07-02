@@ -13,9 +13,9 @@ import torchvision
 import glob
 import cv2
 
-__all__ = ['to_batch', 'seed_everything', 'parse_device_list', 'allocate_gpus', 
+__all__ = ['seed_everything', 'parse_device_list', 'allocate_gpus', 
            'merge_config', 'convert_list_float_type', 'draem_weights_init', 'load_model', 
-           'merge_config', 'override_config', 'extract_config', 'create_folders',
+           'override_config', 'extract_config', 'create_folders',
            'record_path', 'save_arg', 'save_log', 'save_script', 'save_image', 'save_model']
 
 def set_grad(model, flag=True):
