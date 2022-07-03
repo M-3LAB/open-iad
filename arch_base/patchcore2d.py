@@ -238,7 +238,7 @@ class PatchCore2D():
 
                 img_cv = PatchCore2D.torch_to_cv(img)
                 save_anomaly_map(anomaly_map=anomaly_map_cv, input_img=img_cv,
-                                 mask=mask_np, 
+                                 mask=mask_np*255, 
                                  file_path=os.path.join(sampling_dir_path, defect_type, str(batch_id)))
                 
                 
