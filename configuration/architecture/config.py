@@ -19,9 +19,9 @@ def parse_arguments_centralized():
     parser.add_argument('--num-epoch', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
 
-    parser.add_argument('--save-model', action='store_true', default=False)
-    parser.add_argument('--load-model', action='store_true', default=False)
-    parser.add_argument('--load-model-dir', type=str, default=None)
+    #parser.add_argument('--save-model', action='store_true', default=False)
+    #parser.add_argument('--load-model', action='store_true', default=False)
+    #parser.add_argument('--load-model-dir', type=str, default=None)
 
 
     args = parser.parse_args()
