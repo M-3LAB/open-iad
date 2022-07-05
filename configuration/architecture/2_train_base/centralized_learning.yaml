@@ -2,8 +2,6 @@
 learning_mode: 'centralized'
 # different training
 num_task: 15 
-# train normal
-normal: False 
 # continual learning
 continual: false
 # fewshot learning
@@ -31,18 +29,7 @@ load_model_dir: None
 # optimizer
 beta1: 0.5
 beta2: 0.999
-# metric
-metrics:
-  image:
-    - AUROC
-  pixel:
-    - AUROC
-  threshold:
-    image_default: 0
-    pixel_default: 0
-    adaptive: true
 # chosen task ids
 chosen_train_task_ids:
   - 3
-
 chosen_test_task_id: 4
