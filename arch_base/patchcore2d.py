@@ -34,10 +34,8 @@ class PatchCore2D():
                 self.chosen_train_loaders.append(self.train_loaders[self.config['chosen_train_task_ids'][idx]])
         else:
             self.chosen_train_loaders = self.train_loaders
-        
-        self.chosen_valid_loader = self.valid_loaders[self.config['chosen_test_task_id']] 
 
-        print(f'The length of valid loader: {len(self.chosen_valid_loader)}')
+        self.chosen_valid_loader = self.valid_loaders[self.config['chosen_test_task_id']] 
 
         # Backbone model
         if config['backbone'] == 'resnet18':
@@ -65,6 +63,7 @@ class PatchCore2D():
         def hook_t(module, input, output):
             self.features.append(output)
         
+        #self.backbone.layer1[-1].register_forward_hook(hook_t)
         self.backbone.layer2[-1].register_forward_hook(hook_t)
         self.backbone.layer3[-1].register_forward_hook(hook_t)
 
@@ -108,7 +107,7 @@ class PatchCore2D():
         # When num_task is 15, per task means per class
         for task_idx, train_loader in enumerate(self.chosen_train_loaders):
 
-            print('run task: {}'.format(task_idx))
+            print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
             
             embedding_dir_path = os.path.join(self.file_path, 'embeddings', 
                                               str(self.config['chosen_train_task_ids'][task_idx]))
@@ -118,7 +117,7 @@ class PatchCore2D():
 
             for _ in range(self.config['num_epoch']):
                 for batch_id, batch in enumerate(train_loader):
-                    #print(f'batch id: {batch_id}')
+                    print(f'batch id: {batch_id}')
                     #if self.config['debug'] and batch_id > self.config['batch_limit']:
                     #    break
                     img = batch['img'].to(self.device)

@@ -11,7 +11,7 @@ fewshot: false
 fewshot_exm: 16
 # training
 batch_size: 32 
-batch_limit: 2
+#batch_limit: 2
 gpu_id: 0
 gpu_ids:
 - '01234567'
@@ -43,7 +43,6 @@ metrics:
     adaptive: true
 # chosen task ids
 chosen_train_task_ids:
-  - 0
-#  - 1
+  - 1
 
-chosen_test_task_id: 0
+chosen_test_task_id: 1

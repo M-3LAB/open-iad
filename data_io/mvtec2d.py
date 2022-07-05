@@ -5,12 +5,13 @@ import random
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms as T
+import glob
 
 
-__all__ = ['MVTec2D', 'mvtec2d_classes']
+__all__ = ['MVTec2D', 'mvtec2d_classes', 'MVTecDataset']
 
 def mvtec2d_classes():
-    return [ "bottle", "cable", "capsule", "carpet", "grid", "hazelnut",
+    return ["bottle", "cable", "capsule", "carpet", "grid", "hazelnut",
              "leather", "metal_nut", "pill", "screw", "tile",
             "toothbrush", "transistor", "wood", "zipper"]
 
@@ -43,7 +44,7 @@ class MVTec2D(Dataset):
         self.allocate_task_data()
 
         # data preprocessing 
-        self.imge_transform = T.Compose([T.Resize(self.data_transform['data_size']),
+        self.imge_transform = T.Compose([T.Resize((self.data_transform['data_size'], self.data_transform['data_size'])),
                                         T.CenterCrop(self.data_transform['data_crop_size']),
                                         T.ToTensor(),
                                         T.Normalize(mean=[0.485, 0.456, 0.406],
@@ -51,7 +52,7 @@ class MVTec2D(Dataset):
                                         ])
         self.mask_transform = T.Compose([T.Resize(self.data_transform['mask_size']),
                                         T.CenterCrop(self.data_transform['mask_crop_size']),
-                                        T.ToTensor()
+                                        T.ToTensor(),
                                         ])
     def __getitem__(self, idx):
         img, label, mask, task_id = self.imgs_list[idx], self.labels_list[idx], self.masks_list[idx], self.task_ids_list[idx]
@@ -151,3 +152,4 @@ class MVTec2DFewShot(MVTec2D):
             random.shuffle(indice)
             self.sample_indices_in_task.append(indice[:self.fewshot_exm])
             start = end
+
