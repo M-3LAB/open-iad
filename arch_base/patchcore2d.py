@@ -98,9 +98,7 @@ class PatchCore2D():
             for i in range(embedding.shape[2]):
                 for j in range(embedding.shape[3]):
                     embedding_list.append(embedding[k, :, i, j])
-                    #print(f'embedding[k,:,i,j].shape: {embedding[k,:,i,j].shape}')
         
-        #print(f'embedding[k,:,i,j].shape: {embedding[4,:,2,3].shape}')
         return embedding_list
         
     def train_epoch(self, inf=''):
@@ -137,13 +135,8 @@ class PatchCore2D():
                         embeddings.append(pooling(feat))
 
                     embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
-                    #print(f'embedding.size: {embedding.size()}')
-                    #print(f'embeddings[0].size: {embeddings[0].size()}')
-                    #print(f'embeddings[1].size: {embeddings[1].size()}')
 
-                    #print(f'embedding detach numpy.size: {embedding.detach().numpy().shape}')
                     embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
-                    #print(f'reshape embedding shape: {len(embedding)}')
                     self.embeddings_list.extend(embedding)
 
             # Sparse random projection from high-dimensional space into low-dimensional euclidean space
