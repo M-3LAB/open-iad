@@ -20,13 +20,14 @@ from tools.visualize import save_anomaly_map
 __all__ = ['PatchCore2D']
 
 class PatchCore2D():
-    def __init__(self, config, train_loaders, valid_loaders, device, file_path):
+    def __init__(self, config, train_loaders, valid_loaders, device, file_path, train_fewshot_loaders=None):
         
         self.config = config
         self.train_loaders = train_loaders
         self.valid_loaders = valid_loaders
         self.device = device
         self.file_path = file_path
+        self.train_fewshot_loaders = train_fewshot_loaders
 
         self.chosen_train_loaders = [] 
         if self.config['chosen_train_task_ids'] is not None:
@@ -36,6 +37,7 @@ class PatchCore2D():
             self.chosen_train_loaders = self.train_loaders
 
         self.chosen_valid_loader = self.valid_loaders[self.config['chosen_test_task_id']] 
+        self.chosen_fewshot_loader = self.train_fewshot_loaders[self.config['chosen_test_task_id']]
 
         # Backbone model
         if config['backbone'] == 'resnet18':
@@ -57,6 +59,16 @@ class PatchCore2D():
         self.img_pred_list = []
 
         self.embeddings_list = []
+
+        for i in range(len(self.config['chosen_train_task_ids'])):
+            if i == 0:
+                source_domain = str(self.config['chosen_train_task_ids'][0])
+            else:
+                source_domain = source_domain + str(self.config['chosen_train_task_ids'][i])
+
+        target_domain = str(self.config['chosen_test_task_id'])
+        self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', 
+                                          source_domain+'_to_'+target_domain)
 
     def get_layer_features(self):
 
@@ -104,6 +116,8 @@ class PatchCore2D():
         
         self.backbone.eval()
 
+        
+
         # When num_task is 15, per task means per class
         for task_idx, train_loader in enumerate(self.chosen_train_loaders):
 
@@ -138,32 +152,54 @@ class PatchCore2D():
                     embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
                     self.embeddings_list.extend(embedding)
 
-            # Sparse random projection from high-dimensional space into low-dimensional euclidean space
-            total_embeddings = np.array(self.embeddings_list)
-            self.random_projector.fit(total_embeddings)
+        for _ in range(self.config['num_epoch']):
+            for batch_id, batch in enumerate(self.chosen_fewshot_loader):
+                print(f'fewshot batch id: {batch_id}')
+                #if self.config['debug'] and batch_id > self.config['batch_limit']:
+                #    break
+                img = batch['img'].to(self.device)
+                #mask = batch['mask'].to(self.device)
 
-            # Coreset subsampling
-            # y refers to the label of total embeddings. X is good in training, so y=0
-            selector = KCenterGreedy(X=total_embeddings, y=0)
-            selected_idx = selector.select_batch(model=self.random_projector, 
-                                                 already_selected=[],
-                                                 N=int(total_embeddings.shape[0] * self.config['coreset_sampling_ratio']))
+                # Extract features from backbone
+                self.features.clear()
+                _ = self.backbone(img)
 
-            self.embedding_coreset = total_embeddings[selected_idx]
+                # Pooling for layer 2 and layer 3 features
+                embeddings = []
+                for feat in self.features:
+                    pooling = torch.nn.AvgPool2d(3, 1, 1)
+                    embeddings.append(pooling(feat))
+
+                embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
+
+                embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
+                self.embeddings_list.extend(embedding)
         
-            print('initial embedding size : ', total_embeddings.shape)
-            print('final embedding size : ', self.embedding_coreset.shape)
+        # Sparse random projection from high-dimensional space into low-dimensional euclidean space
+        total_embeddings = np.array(self.embeddings_list)
+        self.random_projector.fit(total_embeddings)
 
-            self.index = faiss.IndexFlatL2(self.embedding_coreset.shape[1])
-            self.index.add(self.embedding_coreset) 
-            faiss.write_index(self.index, os.path.join(embedding_dir_path, 'index.faiss'))
+        # Coreset subsampling
+        # y refers to the label of total embeddings. X is good in training, so y=0
+        selector = KCenterGreedy(X=total_embeddings, y=0)
+        selected_idx = selector.select_batch(model=self.random_projector, 
+                                             already_selected=[],
+                                             N=int(total_embeddings.shape[0] * self.config['coreset_sampling_ratio']))
+
+        self.embedding_coreset = total_embeddings[selected_idx]
+        
+        print('initial embedding size : ', total_embeddings.shape)
+        print('final embedding size : ', self.embedding_coreset.shape)
+
+        self.index = faiss.IndexFlatL2(self.embedding_coreset.shape[1])
+        self.index.add(self.embedding_coreset) 
+        faiss.write_index(self.index, os.path.join(self.embedding_dir_path, 'index.faiss'))
                     
     def prediction(self):
 
         self.backbone.eval()
 
-        self.index = faiss.read_index(os.path.join(self.file_path, 'embeddings', 
-                                      str(self.config['chosen_test_task_id']), 'index.faiss')) 
+        self.index = faiss.read_index(self.embedding_dir_path) 
         
         if torch.cuda.is_available():
             res = faiss.StandardGpuResources()
