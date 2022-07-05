@@ -27,7 +27,10 @@ bash setup.sh
 ```bash
 python3 data_io/preprocessing.py --dataset-path '/disk/mvtec/3D'
 ```
-
+## Fewshot AD
+'''bash
+python3 centralized_training.py --fewshot --fewshot-exm 5 --model 'patchcore2d'
+'''bash
 ## Train MMAD
 ```bash
 python3 mmad_training.py

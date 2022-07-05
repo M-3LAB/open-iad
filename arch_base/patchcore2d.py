@@ -37,6 +37,10 @@ class PatchCore2D():
             self.chosen_train_loaders = self.train_loaders
 
         self.chosen_valid_loader = self.valid_loaders[self.config['chosen_test_task_id']] 
+
+        if self.config['fewshot']:
+            assert self.train_fewshot_loaders is not None
+
         self.chosen_fewshot_loader = self.train_fewshot_loaders[self.config['chosen_test_task_id']]
 
         # Backbone model
@@ -68,7 +72,8 @@ class PatchCore2D():
 
         target_domain = str(self.config['chosen_test_task_id'])
         self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', 
-                                          source_domain+'_to_'+target_domain)
+                                          source_domain)
+        create_folders(self.embedding_dir_path)
 
     def get_layer_features(self):
 
@@ -116,18 +121,10 @@ class PatchCore2D():
         
         self.backbone.eval()
 
-        
-
         # When num_task is 15, per task means per class
         for task_idx, train_loader in enumerate(self.chosen_train_loaders):
 
             print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
-            
-            embedding_dir_path = os.path.join(self.file_path, 'embeddings', 
-                                              str(self.config['chosen_train_task_ids'][task_idx]))
-
-            create_folders(embedding_dir_path)
-            self.embeddings_list.clear()
 
             for _ in range(self.config['num_epoch']):
                 for batch_id, batch in enumerate(train_loader):
@@ -152,6 +149,8 @@ class PatchCore2D():
                     embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
                     self.embeddings_list.extend(embedding)
 
+        print('Fewshot Processing')
+        print(f'The length of fewshot loader: {len(self.chosen_fewshot_loader)}')
         for _ in range(self.config['num_epoch']):
             for batch_id, batch in enumerate(self.chosen_fewshot_loader):
                 print(f'fewshot batch id: {batch_id}')
@@ -199,7 +198,7 @@ class PatchCore2D():
 
         self.backbone.eval()
 
-        self.index = faiss.read_index(self.embedding_dir_path) 
+        self.index = faiss.read_index(os.path.join(self.embedding_dir_path, 'index.faiss')) 
         
         if torch.cuda.is_available():
             res = faiss.StandardGpuResources()

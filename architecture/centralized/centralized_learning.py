@@ -124,13 +124,13 @@ class CentralizedTrain():
 
         if self.para_dict['fewshot']:
             self.train_fewshot_loaders = []
-            task_data_fewshot_list = self.train_fewshot_dataset.sample_indices_in_task
+            fewshot_task_data_list = self.train_fewshot_dataset.sample_indices_in_task
             for i in range(self.para_dict['num_task']):
                 train_fewshot_loader = DataLoader(self.train_fewshot_dataset,
                                         batch_size=self.para_dict['batch_size'],
                                         drop_last=True,
                                         num_workers=self.para_dict['num_workers'],
-                                        sampler=SubsetRandomSampler(task_data_fewshot_list[i]))
+                                        sampler=SubsetRandomSampler(fewshot_task_data_list[i]))
                 self.train_fewshot_loaders.append(train_fewshot_loader)
 
     def init_model(self):

@@ -7,10 +7,10 @@ normal: False
 # continual learning
 continual: false
 # fewshot learning
-fewshot: false 
-fewshot_exm: 16
+fewshot: true 
+fewshot_exm: 5 
 # training
-batch_size: 32 
+batch_size: 4 
 #batch_limit: 2
 gpu_id: 0
 gpu_ids:
@@ -43,6 +43,6 @@ metrics:
     adaptive: true
 # chosen task ids
 chosen_train_task_ids:
-  - 1
+  - 3
 
-chosen_test_task_id: 1
+chosen_test_task_id: 4
