@@ -10,5 +10,5 @@ for fewshot_n in fewshots:
         for test_id in test_ids:
             if train_id == test_id:
                 continue
-            script = 'python3 centralized_training.py --model patchcore2d --chosen-train-task-ids {} --chosen-test-task-id {} --fewshot --fewshot-exm {}'.format(train_id, test_id, fewshot_n)
+            script = 'python3 centralized_training.py --model patchcore2d --chosen-train-task-ids {} --chosen-test-task-id {} --fewshot --fewshot-exm {} -g {}'.format(train_id, test_id, fewshot_n, 1)
             os.system(script)
