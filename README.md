@@ -12,10 +12,9 @@ opencv, pip install opencv-python
 ```bash
 pip3 install -r requirements.txt
 ```
-## Centralized Training
+## Normal AD 
 ```bash
-python3 centralized_training.py --dataset 'mvtec2d' --model 'patchcore2d' --data-path '/disk1/mvtec/2D' --continual --num-task 5
-python3 centralized_training.py --dataset 'mvtec3d' --model 'patchcore3d' --data-path '/disk1/mvtec/3D' --continual --num-task 5
+python3 centralized_training.py --model 'patchcore2d' --data-path '/disk2/mvtec/2D' 
 ```
 
 ## Install Third Party Library
