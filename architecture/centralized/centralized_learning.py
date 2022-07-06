@@ -31,12 +31,6 @@ class CentralizedTrain():
         self.para_dict = merge_config(config, self.args)
         self.args = extract_config(self.args)
 
-        if self.para_dict['normal']:
-            self.para_dict['num_task'] = 1
-
-        if self.para_dict['num_task'] > 1:
-            assert self.para_dict['normal'] is False
-
     def preliminary(self):
         print('---------------------')
         print(self.args)

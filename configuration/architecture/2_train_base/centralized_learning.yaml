@@ -8,7 +8,7 @@ continual: false
 fewshot: true 
 fewshot_exm: 5 
 # training
-batch_size: 4 
+batch_size: 32 
 #batch_limit: 2
 gpu_id: 0
 gpu_ids:
