@@ -110,7 +110,6 @@ class CentralizedTrain():
         for i in range(self.para_dict['num_task']):
             train_loader = DataLoader(self.train_dataset,
                                       batch_size=self.para_dict['batch_size'],
-                                      drop_last=True,
                                       num_workers=self.para_dict['num_workers'],
                                       sampler=SubsetRandomSampler(train_task_data_list[i]))
             self.train_loaders.append(train_loader)
@@ -128,7 +127,6 @@ class CentralizedTrain():
             for i in range(self.para_dict['num_task']):
                 train_fewshot_loader = DataLoader(self.train_fewshot_dataset,
                                         batch_size=self.para_dict['batch_size'],
-                                        drop_last=True,
                                         num_workers=self.para_dict['num_workers'],
                                         sampler=SubsetRandomSampler(fewshot_task_data_list[i]))
                 self.train_fewshot_loaders.append(train_fewshot_loader)
