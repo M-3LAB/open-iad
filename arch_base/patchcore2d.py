@@ -77,6 +77,8 @@ class PatchCore2D():
                                           source_domain)
         create_folders(self.embedding_dir_path)
 
+        print(f"test task id: {self.config['chosen_test_task_id']}")
+
     def get_layer_features(self):
 
         def hook_t(module, input, output):
