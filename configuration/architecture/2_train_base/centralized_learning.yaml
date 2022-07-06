@@ -5,7 +5,7 @@ num_task: 15
 # continual learning
 continual: false
 # fewshot learning
-fewshot: true 
+fewshot: false 
 fewshot_exm: 5 
 # training
 batch_size: 32 
