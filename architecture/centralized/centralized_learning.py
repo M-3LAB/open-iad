@@ -1,3 +1,4 @@
+from re import I
 import torch
 import yaml
 from tools.utilize import *
@@ -149,16 +150,20 @@ class CentralizedTrain():
 
     def work_flow(self):
         self.trainer.train_epoch()
-        self.trainer.prediction()
+        pixel_auroc, img_auroc = self.trainer.prediction()
 
-        #infor = '[Epoch {}/{}] acc: {:.4f}'.format(self.epoch+1, self.para_dict['num_epoch'], acc)
+        infor = 'train_task_id: {} test_task_id: {}'.format(self.para_dict['chosen_train_task_ids'], self.para_dict['chosen_test_task_id'])
+        
+        save_path = '{}/result_normal.txt'.format(self.para_dict['work_dir']) 
+        if self.para_dict['fewshot']:
+            infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])       
+            save_path = '{}/result_shot_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['fewshot_exm']) 
+        infor = '{} pixel_auroc: {:.4f} img_auroc: {:.4f}'.format(infor, pixel_auroc, img_auroc)
 
-        #print(infor)
+        print(infor)
 
-        #if self.para_dict['save_log']:
-        #    save_log(infor, self.file_path, description='_clients')
-
-
+        with open(save_path, 'a') as f:
+            print(infor, file=f)
 
     def run_work_flow(self):
         self.load_config()

@@ -276,9 +276,10 @@ class PatchCore2D():
         img_auroc = np_get_auroc(self.img_gt_list, self.img_pred_list)
     
 
-        print(f"Task {self.config['chosen_test_task_id']} Pixel Level AUROC Score: {pixel_auroc}")
-        print(f"Task {self.config['chosen_test_task_id']} Image Level AUROC Score: {img_auroc}")
+        # print(f"Task {self.config['chosen_test_task_id']} Pixel Level AUROC Score: {pixel_auroc}")
+        # print(f"Task {self.config['chosen_test_task_id']} Image Level AUROC Score: {img_auroc}")
 
+        return pixel_auroc, img_auroc
 
 
 
