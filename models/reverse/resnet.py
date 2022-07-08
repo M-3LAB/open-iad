@@ -2,13 +2,14 @@ import torch
 import torch.nn as nn
 from typing import Type, Any, Callable, Union, List, Optional
 from models.reverse.blocks import *
-
+from models.reverse.encoder import *  
+from models.reverse.decoder import *
 
 class ResNet(nn.Module):
     
     def __init__(
         self,
-        block: Type[Union[BasicBlock, Bottleneck]],
+        block: Type[Union[EncBasicBlock, EncBottleneck, DecBasicBlock, DecBottleneck]],
         layers: List[int],
         num_classes: int = 1000,
         zero_init_residual: bool = False,
@@ -16,7 +17,7 @@ class ResNet(nn.Module):
         width_per_group: int = 64,
         replace_stride_with_dilation: Optional[List[bool]] = None,
         norm_layer: Optional[Callable[..., nn.Module]] = None
-    ) -> None:
+    ):
         super(ResNet, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
