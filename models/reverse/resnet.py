@@ -45,3 +45,8 @@ def _resnet(
         model.load_state_dict(state_dict)
     return model
 
+def enc_wide_resnet_50_2(pretrained: bool = False, progress: bool = True, **kwargs: Any):
+    pass
+
+def dec_wide_resnet_50_2(pretrained: bool = False, progress: bool = True, **kwargs: Any):
+    pass
