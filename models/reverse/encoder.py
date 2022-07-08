@@ -53,7 +53,7 @@ class EncBasicBlock(nn.Module):
 
         return out
 
-class Bottleneck(nn.Module):
+class EncBottleneck(nn.Module):
     # Bottleneck in torchvision places the stride for downsampling at 3x3 convolution(self.conv2)
     # while original implementation places the stride at the first 1x1 convolution(self.conv1)
     # according to "Deep residual learning for image recognition"https://arxiv.org/abs/1512.03385.
@@ -71,7 +71,7 @@ class Bottleneck(nn.Module):
                  base_width: int = 64,
                  dilation: int = 1,
                  norm_layer: Optional[Callable[..., nn.Module]] = None):
-        super(Bottleneck, self).__init__()
+        super(EncBottleneck, self).__init__()
 
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d

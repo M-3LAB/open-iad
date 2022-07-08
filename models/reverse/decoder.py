@@ -1,8 +1,9 @@
 import torch
 import torch.nn as nn
 from typing import Type, Any, Callable, Union, List, Optional
+from models.reverse.blocks import *
 
-__all__ = ['DecBasicBlock']
+__all__ = ['DecBasicBlock', 'DecBottleneck']
 
 class DecBasicBlock(nn.Module):
     expansion: int = 1
