@@ -3,7 +3,7 @@ import torch.nn as nn
 from typing import Type, Any, Callable, Union, List, Optional
 from models.reverse.blocks import *
 
-__all__ = ['EncBasicBlock', 'EncBottleneck', 'EncResNet']
+__all__ = ['EncBasicBlock', 'EncBottleneck', 'EncResNet', 'BNLayer']
 
 class EncBasicBlock(nn.Module):
     expansion: int = 1
@@ -108,6 +108,85 @@ class EncBottleneck(nn.Module):
         out = self.relu(out)
 
         return out
+
+class BNLayer(nn.Module):
+    def __init__(self,
+                 block: Type[Union[EncBasicBlock, EncBottleneck]],
+                 layers: int,
+                 groups: int = 1,
+                 width_per_group: int = 64,
+                 norm_layer: Optional[Callable[..., nn.Module]] = None,
+                 ):
+        super(BNLayer, self).__init__()
+        if norm_layer is None:
+            norm_layer = nn.BatchNorm2d
+        self._norm_layer = norm_layer
+        self.groups = groups
+        self.base_width = width_per_group
+        self.inplanes = 256 * block.expansion
+        self.dilation = 1
+        self.bn_layer = self._make_layer(block, 512, layers, stride=2)
+
+        self.conv1 = conv3x3(64 * block.expansion, 128 * block.expansion, 2)
+        self.bn1 = norm_layer(128 * block.expansion)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = conv3x3(128 * block.expansion, 256 * block.expansion, 2)
+        self.bn2 = norm_layer(256 * block.expansion)
+        self.conv3 = conv3x3(128 * block.expansion, 256 * block.expansion, 2)
+        self.bn3 = norm_layer(256 * block.expansion)
+
+        self.conv4 = conv1x1(1024 * block.expansion, 512 * block.expansion, 1)
+        self.bn4 = norm_layer(512 * block.expansion)
+
+
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+
+    def _make_layer(self, block: Type[Union[EncBasicBlock, EncBottleneck]], planes: int, blocks: int,
+                    stride: int = 1, dilate: bool = False):
+        norm_layer = self._norm_layer
+        downsample = None
+        previous_dilation = self.dilation
+        if dilate:
+            self.dilation *= stride
+            stride = 1
+        if stride != 1 or self.inplanes != planes * block.expansion:
+            downsample = nn.Sequential(
+                conv1x1(self.inplanes*3, planes * block.expansion, stride),
+                norm_layer(planes * block.expansion),
+            )
+
+        layers = []
+        layers.append(block(self.inplanes*3, planes, stride, downsample, self.groups,
+                            self.base_width, previous_dilation, norm_layer))
+        self.inplanes = planes * block.expansion
+        for _ in range(1, blocks):
+            layers.append(block(self.inplanes, planes, groups=self.groups,
+                                base_width=self.base_width, dilation=self.dilation,
+                                norm_layer=norm_layer))
+
+        return nn.Sequential(*layers)
+
+    def _forward_impl(self, x: torch.Tensor):
+        # See note [TorchScript super()]
+        #x = self.cbam(x)
+        l1 = self.relu(self.bn2(self.conv2(self.relu(self.bn1(self.conv1(x[0]))))))
+        l2 = self.relu(self.bn3(self.conv3(x[1])))
+        feature = torch.cat([l1,l2,x[2]],1)
+        output = self.bn_layer(feature)
+        #x = self.avgpool(feature_d)
+        #x = torch.flatten(x, 1)
+        #x = self.fc(x)
+
+        return output.contiguous()
+
+    def forward(self, x: torch.Tensor):
+        return self._forward_impl(x)
+
 
 class EncResNet(nn.Module):
     
