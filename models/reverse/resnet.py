@@ -9,7 +9,7 @@ try:
 except ImportError:
     from torch.utils.model_zoo import load_url as load_state_dict_from_url
 
-__all__ = ['_resnet']
+__all__ = ['enc_wide_resnet_50_2', 'dec_wide_resnet_50_2']
 
 model_urls = {
     'resnet18': 'https://download.pytorch.org/models/resnet18-f37072fd.pth',
