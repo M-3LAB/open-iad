@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from models.reverse.resnet import * 
+from models.reverse.loss import *
 
 __all__ = ['Reverse']
 
