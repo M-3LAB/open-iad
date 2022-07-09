@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from models.reverse.resnet import * 
 from models.reverse.loss import *
+import numpy as np
 
 __all__ = ['Reverse']
 
@@ -53,6 +54,7 @@ class Reverse():
         #BN and Decoder
         self.bn.train()
         self.decoder.train()
+        loss_list = []
         # When num_task is 15, per task means per class
         for task_idx, train_loader in enumerate(self.chosen_train_loaders):
             print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
@@ -66,10 +68,18 @@ class Reverse():
                     inputs = self.encoder(img)
                     outputs = self.decoder(self.bn(inputs))
                     loss = reverse_loss(inputs, outputs)
+                    loss_list.append(loss)
+
 
                     self.optimizer.zero_grad()
                     loss.backward()
                     self.optimizer.step()
+
+                infor = '\r{}[Epoch {} / {}] [Batch {}/{}] [Loss: {:.4f}]'.format(
+                            '', epoch+1, self.config['num_epochs'], batch_id+1, batch, 
+                            np.mean(loss.item()))
+
+                print(infor, flush=True, end='  ') 
 
 
 
