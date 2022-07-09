@@ -23,6 +23,8 @@ class Reverse():
                 self.chosen_train_loaders.append(self.train_loaders[self.config['chosen_train_task_ids'][idx]])
         else:
             self.chosen_train_loaders = self.train_loaders
+        
+        assert len(self.chosen_train_loaders) == 1, 'Only Support Single Transfer Single'
 
         self.chosen_valid_loader = self.valid_loaders[self.config['chosen_test_task_id']] 
 
@@ -67,6 +69,7 @@ class Reverse():
 
                     self.optimizer.zero_grad()
                     loss.backward()
+                    self.optimizer.step()
 
 
 
