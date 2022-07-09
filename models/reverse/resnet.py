@@ -48,7 +48,7 @@ def _resnet(
 def enc_wide_resnet_50_2(pretrained: bool = False, progress: bool = True, **kwargs: Any):
     kwargs['width_per_group'] = 64 * 2
     return _resnet('wide_resnet50_2', EncBottleneck, [3, 4, 6, 3],
-                   pretrained, progress, **kwargs), BNLayer(AttnBottleneck,3,**kwargs)
+                   pretrained, progress, phase='encode', **kwargs), BNLayer(AttnBottleneck,3,**kwargs)
 
 def dec_wide_resnet_50_2(pretrained: bool = False, progress: bool = True, **kwargs: Any):
     kwargs['width_per_group'] = 64 * 2
