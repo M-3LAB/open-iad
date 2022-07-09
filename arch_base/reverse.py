@@ -46,6 +46,11 @@ class Reverse():
         self.optimizer = torch.optim.Adam(list(self.decoder.parameters() + list(self.bn.parameters())),
                                           lr=self.config['lr'],
                                           betas=[self.config['beta1'], self.config['beta2']])
+        
+        self.pixel_gt_list = []
+        self.img_gt_list = []
+        self.pixel_pred_list = []
+        self.img_pred_list = []
 
     def train_epoch(self):
         #Encoder Do Not Need to Train
