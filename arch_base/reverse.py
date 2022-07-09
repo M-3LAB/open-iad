@@ -38,9 +38,21 @@ class Reverse():
         self.encoder = self.encoder.to(self.device)
         self.bn = self.bn.to(self.device)
         self.decoder = self.decoder.to(self.device)
+        self.optimizer = torch.optim.Adam(list(self.decoder.parameters() + list(self.bn.parameters())),
+                                          lr=self.config['lr'],
+                                          betas=[self.config['beta1'], self.config['beta2']])
 
     def train_epoch(self):
+        #Encoder Do Not Need to Train
         self.encoder.eval()
+
+        #BN and Decoder
+        self.bn.train()
+        self.decoder.train()
+
+        for epoch in range(self.config['num_epochs']):
+            pass
+
         pass
 
     def prediction(self):
