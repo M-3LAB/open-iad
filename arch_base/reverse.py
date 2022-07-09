@@ -35,12 +35,12 @@ class Reverse():
             self.encoder, self.bn = enc_wide_resnet_50_2(pretrained=True)
             self.decoder = dec_wide_resnet_50_2(pretrained=True)
         
-        encoder = encoder.to(self.device)
-        bn = bn.to(self.device)
-        decoder = decoder.to(self.device)
+        self.encoder = self.encoder.to(self.device)
+        self.bn = self.bn.to(self.device)
+        self.decoder = self.decoder.to(self.device)
 
     def train_epoch(self):
-        encoder.eval()
+        self.encoder.eval()
         pass
 
     def prediction(self):
