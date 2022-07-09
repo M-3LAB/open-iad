@@ -1,3 +1,4 @@
+from models.reverse.loss import reverse_loss
 import torch
 import torch.nn as nn
 from models.reverse.resnet import * 
@@ -58,7 +59,15 @@ class Reverse():
                 for batch_id, batch in enumerate(train_loader):
                     print(f'batch id: {batch_id}')
                     img = batch['img'].to(self.device)
-                    mask = batch['mask'].to(self.device)
+                    #mask = batch['mask'].to(self.device)
+
+                    inputs = self.encoder(img)
+                    outputs = self.decoder(self.bn(inputs))
+                    loss = reverse_loss(inputs, outputs)
+
+                    self.optimizer.zero_grad()
+                    loss.backward()
+
 
 
     def prediction(self):
