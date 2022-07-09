@@ -86,7 +86,8 @@ class Reverse():
 
                 print(infor, flush=True, end='  ') 
 
-
-
     def prediction(self):
-        pass
+
+        self.encoder.eval()
+        self.bn.eval()
+        self.decoder.eval()
