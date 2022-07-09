@@ -218,7 +218,7 @@ class PatchCore2D():
         if self.chosen_valid_loader.batch_size != 1:
             assert 'PatchCore Evaluation, Batch Size should be Equal to 1'
 
-        for _ in range(int(self.config['num_epoch'])):
+        with torch.no_grad():
             for batch_id, batch in enumerate(self.chosen_valid_loader):
                 img = batch['img'].to(self.device)
                 mask = batch['mask'].to(self.device)

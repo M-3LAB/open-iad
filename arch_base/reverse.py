@@ -91,3 +91,8 @@ class Reverse():
         self.encoder.eval()
         self.bn.eval()
         self.decoder.eval()
+
+        self.pixel_gt_list.clear()
+        self.img_gt_list.clear()
+        self.pixel_pred_list.clear()
+        self.img_pred_list.clear()
