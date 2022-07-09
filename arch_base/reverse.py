@@ -30,6 +30,14 @@ class Reverse():
         
         if self.config['chosen_test_task_id'] in self.config['chosen_train_task_ids']:
             assert self.config['fewshot'] is False, 'Changeover: test task id should not be the same as train task id'
+        
+        if self.config['backbone'] == 'wide_resnet50':
+            encoder, bn = enc_wide_resnet_50_2(pretrained=True)
+            decoder = dec_wide_resnet_50_2(pretrained=True)
+        
+        encoder = encoder.to(self.device)
+        bn = bn.to(self.device)
+        decoder = decoder.to(self.device)
 
     def train_epoch(self):
         pass

@@ -72,7 +72,7 @@ class PatchCore2D():
             else:
                 source_domain = source_domain + str(self.config['chosen_train_task_ids'][i])
 
-        target_domain = str(self.config['chosen_test_task_id'])
+        #target_domain = str(self.config['chosen_test_task_id'])
         self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', 
                                           source_domain)
         create_folders(self.embedding_dir_path)
