@@ -5,6 +5,8 @@ from models.reverse.resnet import *
 from models.reverse.loss import *
 import numpy as np
 from torch.nn import functional as F
+#from tools.visualize import *
+from scipy.ndimage import gaussian_filter
 
 __all__ = ['Reverse']
 
@@ -103,7 +105,12 @@ class Reverse():
                 img = batch['img'].to(self.device)
                 mask = batch['mask'].to(self.device)
                 label = batch['label'].to(self.device)
+
                 anomaly_map, _ = self.cal_anomaly_map()
+                anomaly_map = gaussian_filter(anomaly_map, sigma=4)
+
+                mask[mask>0.5] = 1
+                mask[mask<=0.5] = 0
     
     def cal_anomaly_map(self, fs_list, ft_list, out_size=224, amap_mode='full'):
         if amap_mode == 'mul':
