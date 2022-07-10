@@ -103,6 +103,7 @@ class Reverse():
                 img = batch['img'].to(self.device)
                 mask = batch['mask'].to(self.device)
                 label = batch['label'].to(self.device)
+                anomaly_map, _ = self.cal_anomaly_map()
     
     def cal_anomaly_map(self, fs_list, ft_list, out_size=224, amap_mode='full'):
         if amap_mode == 'mul':
