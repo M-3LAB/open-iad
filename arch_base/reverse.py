@@ -121,6 +121,11 @@ class Reverse():
                     aupro = np_get_aupro(mask.squeeze(0).cpu().numpy().astype(int),
                                          anomaly_map[np.newaxis, :, :])
                     self.aupro_list.append(aupro)
+
+                self.pixel_gt_list.extend(mask.cpu().numpy().astype(int).ravel())
+                self.pixel_pred_list.extend(anomaly_map.ravel())
+                self.img_gt_list.extend(np.max(mask.cpu().numpy().astype(int)))
+                self.img_pred_list.extend(np.max(anomaly_map))
     
     def cal_anomaly_map(self, fs_list, ft_list, out_size=224, amap_mode='full'):
         if amap_mode == 'mul':
