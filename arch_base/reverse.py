@@ -106,17 +106,20 @@ class Reverse():
         with torch.no_grad():
             for batch_id, batch in enumerate(self.chosen_valid_loader):
                 img = batch['img'].to(self.device)
-                mask = batch['mask'].to(self.device)
-                label = batch['label'].to(self.device)
+                mask = batch['mask']
+                label = batch['label']
+                inputs = self.encoder(img)
+                outputs = self.decoder(self.bn(inputs))
 
-                anomaly_map, _ = self.cal_anomaly_map()
+                anomaly_map, _ = self.cal_anomaly_map(inputs, outputs, img.shape[-1], amap_mode='a')
                 anomaly_map = gaussian_filter(anomaly_map, sigma=4)
 
                 mask[mask>0.5] = 1
                 mask[mask<=0.5] = 0
 
                 if label.item()!= 0:
-                    pass
+                    aupro = np_get_aupro()
+                    self.aupro_list.append()
     
     def cal_anomaly_map(self, fs_list, ft_list, out_size=224, amap_mode='full'):
         if amap_mode == 'mul':
