@@ -118,8 +118,9 @@ class Reverse():
                 mask[mask<=0.5] = 0
 
                 if label.item()!= 0:
-                    aupro = np_get_aupro()
-                    self.aupro_list.append()
+                    aupro = np_get_aupro(mask.squeeze(0).cpu().numpy().astype(int),
+                                         anomaly_map[np.newaxis, :, :])
+                    self.aupro_list.append(aupro)
     
     def cal_anomaly_map(self, fs_list, ft_list, out_size=224, amap_mode='full'):
         if amap_mode == 'mul':
