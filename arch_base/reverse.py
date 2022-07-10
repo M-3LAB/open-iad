@@ -7,6 +7,7 @@ import numpy as np
 from torch.nn import functional as F
 #from tools.visualize import *
 from scipy.ndimage import gaussian_filter
+from metrics.common.np_auc_precision_recall import *
 
 __all__ = ['Reverse']
 
@@ -54,6 +55,7 @@ class Reverse():
         self.img_gt_list = []
         self.pixel_pred_list = []
         self.img_pred_list = []
+        self.aupro_list = []
 
     def train_epoch(self):
         #Encoder Do Not Need to Train
@@ -99,6 +101,7 @@ class Reverse():
         self.img_gt_list.clear()
         self.pixel_pred_list.clear()
         self.img_pred_list.clear()
+        self.aupro_list.clear()
 
         with torch.no_grad():
             for batch_id, batch in enumerate(self.chosen_valid_loader):
