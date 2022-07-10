@@ -5,6 +5,7 @@ from sklearn.metrics import average_precision_score
 import numpy as np
 import pandas as pd
 from skimage import measure
+from numpy import ndarray
 
 __all__ = ['np_get_auroc', 'np_get_precision_recall', 'np_get_ap',
            'np_get_aupro']
@@ -43,4 +44,12 @@ def np_get_aupro(masks, amaps, num_th):
         amaps (ndarray): All anomaly maps in test. amaps.shape -> (num_test_data, h, w)
         num_th (int, optional): Number of thresholds
     """
+
+    assert isinstance(amaps, ndarray), "type(amaps) must be ndarray"
+    assert isinstance(masks, ndarray), "type(masks) must be ndarray"
+    assert amaps.ndim == 3, "amaps.ndim must be 3 (num_test_data, h, w)"
+    assert masks.ndim == 3, "masks.ndim must be 3 (num_test_data, h, w)"
+    assert amaps.shape == masks.shape, "amaps.shape and masks.shape must be same"
+    assert set(masks.flatten()) == {0, 1}, "set(masks.flatten()) must be {0, 1}"
+    assert isinstance(num_th, int), "type(num_th) must be int"
     pass
