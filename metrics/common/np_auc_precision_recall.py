@@ -3,6 +3,8 @@ from sklearn.metrics import roc_curve
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import average_precision_score 
 import numpy as np
+import pandas as pd
+from skimage import measure
 
 __all__ = ['np_get_auroc', 'np_get_precision_recall', 'np_get_ap',
            'np_get_aupro']
