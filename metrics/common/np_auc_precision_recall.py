@@ -4,7 +4,8 @@ from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import average_precision_score 
 import numpy as np
 
-__all__ = ['np_get_auroc', 'np_get_precision_recall', 'np_get_ap']
+__all__ = ['np_get_auroc', 'np_get_precision_recall', 'np_get_ap',
+           'np_get_aupro']
 
 def np_get_auroc(target, prediciton):
     """
@@ -31,3 +32,13 @@ def np_get_precision_recall(target, prediction):
 def np_get_ap(target, prediction):
     ap = average_precision_score(target, prediction) 
     return ap
+
+def np_get_aupro(masks, amaps, num_th):
+    """Compute the area under the curve of per-region overlaping (PRO) and 0 to 0.3 FPR
+    Args:
+        category (str): Category of product
+        masks (ndarray): All binary masks in test. masks.shape -> (num_test_data, h, w)
+        amaps (ndarray): All anomaly maps in test. amaps.shape -> (num_test_data, h, w)
+        num_th (int, optional): Number of thresholds
+    """
+    pass

@@ -111,6 +111,9 @@ class Reverse():
 
                 mask[mask>0.5] = 1
                 mask[mask<=0.5] = 0
+
+                if label.item()!= 0:
+                    pass
     
     def cal_anomaly_map(self, fs_list, ft_list, out_size=224, amap_mode='full'):
         if amap_mode == 'mul':
