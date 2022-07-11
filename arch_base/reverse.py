@@ -126,6 +126,12 @@ class Reverse():
                 self.pixel_pred_list.extend(anomaly_map.ravel())
                 self.img_gt_list.extend(np.max(mask.cpu().numpy().astype(int)))
                 self.img_pred_list.extend(np.max(anomaly_map))
+        
+        pixel_auroc = np_get_auroc(self.pixel_gt_list, self.pixel_pred_list)
+        img_auroc = np_get_auroc(self.img_gt_list, self.img_pred_list)
+        img_aupro = np.mean(self.aupro_list) 
+        
+        return pixel_auroc, img_auroc, img_aupro
     
     def cal_anomaly_map(self, fs_list, ft_list, out_size=224, amap_mode='full'):
         if amap_mode == 'mul':
