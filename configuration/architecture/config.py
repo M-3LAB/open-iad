@@ -6,7 +6,9 @@ __all__ = ['parse_arguments_centralized', 'parse_arguments_federated']
 def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mtd'])
-    parser.add_argument('--model', '-m', type=str, default='patchcore2d', choices=['patchcore2d', 'patchcore3d'])
+    parser.add_argument('--model', '-m', type=str, default='patchcore2d', choices=['patchcore2d', 'reverse',
+                                                                                   'draem', 'padim2d', 'csflow',
+                                                                                   'cflow'])
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
     parser.add_argument('--chosen-train-task-ids', type=int, default=3, nargs='+')
