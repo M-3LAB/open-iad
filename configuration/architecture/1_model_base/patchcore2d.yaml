@@ -3,3 +3,6 @@ model: patchcore2d
 backbone: wide_resnet50
 coreset_sampling_ratio: 0.001
 n_neighbours: 9
+lr: 0.0001
+num_epoch: 1 
+decay_epoch: 8 
