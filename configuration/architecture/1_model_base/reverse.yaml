@@ -1,0 +1,2 @@
+model: 'reverse'
+backbone: wide_resnet50
