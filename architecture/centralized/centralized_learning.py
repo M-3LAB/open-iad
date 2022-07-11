@@ -137,7 +137,8 @@ class CentralizedTrain():
                 self.trainer = PatchCore2D(self.para_dict, self.train_loaders, self.valid_loaders, 
                                            self.device, self.file_path)
         elif self.para_dict['model'] == 'reverse':
-            self.trainer = Reverse(self.para_dict) 
+            self.trainer = Reverse(self.para_dict, self.train_loaders, 
+                                   self.valid_loaders, self.device, self.file_path) 
         else:
             raise ValueError('Model is invalid!')
 
