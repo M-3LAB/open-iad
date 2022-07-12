@@ -11,8 +11,6 @@ class PaDim():
         self.valid_loader = valid_loader
         self.device = device
 
-
-
     def train_epoch(self, inf=''):
         for task_idx, train_loader in enumerate(self.train_loader):
             print('run task: {}'.format(task_idx))
