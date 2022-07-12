@@ -142,16 +142,7 @@ class CentralizedTrain():
         else:
             raise ValueError('Model is invalid!')
 
-        if self.para_dict['load_model']:
-            self.load_model()
-            print('load model: {}'.format(self.para_dict['load_model_dir']))
-
-    def load_model(self):
-        pass
-
-    def save_model(self, psnr):
-        pass
-
+       
     def work_flow(self):
         self.trainer.train_epoch()
         pixel_auroc, img_auroc = self.trainer.prediction()
@@ -176,7 +167,7 @@ class CentralizedTrain():
         self.init_model()
         print('---------------------')
 
-        for epoch in range(self.para_dict['num_epoch']):
+        for epoch in range(self.para_dict['num_epochs']):
             self.epoch = epoch
             self.work_flow()
             

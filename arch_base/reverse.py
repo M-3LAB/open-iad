@@ -42,12 +42,12 @@ class Reverse():
         
         if self.config['backbone'] == 'wide_resnet50':
             self.encoder, self.bn = enc_wide_resnet_50_2(pretrained=True)
-            self.decoder = dec_wide_resnet_50_2(pretrained=True)
+            self.decoder = dec_wide_resnet_50_2(pretrained=False)
         
         self.encoder = self.encoder.to(self.device)
         self.bn = self.bn.to(self.device)
         self.decoder = self.decoder.to(self.device)
-        self.optimizer = torch.optim.Adam(list(self.decoder.parameters() + list(self.bn.parameters())),
+        self.optimizer = torch.optim.Adam(list(self.decoder.parameters()) + list(self.bn.parameters()),
                                           lr=self.config['lr'],
                                           betas=[self.config['beta1'], self.config['beta2']])
         
@@ -71,23 +71,23 @@ class Reverse():
 
             for epoch in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(train_loader):
-                    print(f'batch id: {batch_id}')
+                    #print(f'batch id: {batch_id}')
                     img = batch['img'].to(self.device)
                     #mask = batch['mask'].to(self.device)
 
                     inputs = self.encoder(img)
                     outputs = self.decoder(self.bn(inputs))
                     loss = reverse_loss(inputs, outputs)
-                    loss_list.append(loss)
+                    loss_list.append(loss.item())
 
 
                     self.optimizer.zero_grad()
                     loss.backward()
                     self.optimizer.step()
 
-                infor = '\r{}[Epoch {} / {}] [Batch {}/{}] [Loss: {:.4f}]'.format(
-                            '', epoch+1, self.config['num_epochs'], batch_id+1, batch, 
-                            np.mean(loss.item()))
+                infor = '\r{}[Epoch {} / {}]  [Loss: {:.4f}]'.format(
+                            '', epoch+1, self.config['num_epochs'],  
+                            np.mean(loss_list))
 
                 print(infor, flush=True, end='  ') 
 

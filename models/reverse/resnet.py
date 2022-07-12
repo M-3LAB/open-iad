@@ -52,5 +52,5 @@ def enc_wide_resnet_50_2(pretrained: bool = False, progress: bool = True, **kwar
 
 def dec_wide_resnet_50_2(pretrained: bool = False, progress: bool = True, **kwargs: Any):
     kwargs['width_per_group'] = 64 * 2
-    return _resnet('wide_resnet101_2', DecBottleneck, [3, 4, 23, 3],
+    return _resnet('wide_resnet50_2', DecBottleneck, [3, 4, 6, 3],
                    pretrained, progress, phase='decode', **kwargs)

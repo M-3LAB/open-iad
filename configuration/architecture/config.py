@@ -11,7 +11,7 @@ def parse_arguments_centralized():
                                                                                    'cflow'])
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
-    parser.add_argument('--chosen-train-task-ids', type=int, default=3, nargs='+')
+    parser.add_argument('--chosen-train-task-ids', type=int, default=None, nargs='+')
     parser.add_argument('--chosen-test-task-id', type=int, default=None)
 
     parser.add_argument('--continual', '-conti', action='store_true', default=False)

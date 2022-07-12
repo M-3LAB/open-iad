@@ -154,7 +154,7 @@ class PatchCore2D():
         if self.config['fewshot']:
             print('Fewshot Processing')
             #print(f'The length of fewshot loader: {len(self.chosen_fewshot_loader)}')
-            for _ in range(self.config['num_epoch']):
+            for _ in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(self.chosen_fewshot_loader):
                     print(f'fewshot batch id: {batch_id}')
                     #if self.config['debug'] and batch_id > self.config['batch_limit']:
