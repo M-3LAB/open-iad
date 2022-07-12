@@ -1,10 +1,9 @@
 import torch
 import torch.nn as nn
-from models.padim.padim import PaDim 
 
-__all__ = ['PatchCore2D']
+__all__ = ['PaDim']
 
-class PaDim2D():
+class PaDim():
     def __init__(self, config, train_loader, valid_loader, device):
         
         self.config = config
@@ -12,7 +11,6 @@ class PaDim2D():
         self.valid_loader = valid_loader
         self.device = device
 
-        self.model = SPADE().to(self.device)
 
 
     def train_epoch(self, inf=''):
