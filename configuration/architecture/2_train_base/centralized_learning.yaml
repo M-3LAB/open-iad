@@ -7,15 +7,10 @@ continual: false
 # fewshot learning
 fewshot: false 
 fewshot_exm: 5 
-# training
-batch_size: 32 
 #batch_limit: 2
 gpu_id: 0
 gpu_ids:
 - '01234567'
-lr: 0.0001
-num_epoch: 1 
-decay_epoch: 8 
 seed: 123 
 num_workers: 8
 # work file
