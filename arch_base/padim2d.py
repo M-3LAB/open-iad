@@ -4,12 +4,14 @@ import torch.nn as nn
 __all__ = ['PaDim']
 
 class PaDim():
-    def __init__(self, config, train_loader, valid_loader, device):
+    def __init__(self, config, train_loaders, valid_loaders, device, file_path, train_fewshot_loaders=None):
         
         self.config = config
-        self.train_loader = train_loader
-        self.valid_loader = valid_loader
+        self.train_loader = train_loaders
+        self.valid_loader = valid_loaders
         self.device = device
+        self.file_path = file_path
+        self.train_fewshot_loaders = train_fewshot_loaders
 
     def train_epoch(self, inf=''):
         for task_idx, train_loader in enumerate(self.train_loader):
