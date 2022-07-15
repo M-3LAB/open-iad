@@ -1,5 +1,7 @@
 import torch
 import torch.nn as nn
+from torchvision import models
+from collections import OrderedDict
 
 __all__ = ['PaDim']
 
@@ -36,6 +38,18 @@ class PaDim():
             self.backbone = models.wide_resnet50_2(pretrained=True, progress=True).to(self.device)
         else:
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
+
+        self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
+        self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])]) 
+
+    def get_layer_features(self, outputs):
+    
+        def hook_t(module, input, output):
+            outputs.features.append(output)
+        
+        self.backbone.layer1[-1].register_forward_hook(hook_t)
+        self.backbone.layer2[-1].register_forward_hook(hook_t)
+        self.backbone.layer3[-1].register_forward_hook(hook_t)
 
     def train_epoch(self, inf=''):
         pass
