@@ -34,8 +34,12 @@ class PaDim():
         # Backbone model
         if config['backbone'] == 'resnet18':
             self.backbone = models.resnet18(pretrained=True, progress=True).to(self.device)
+            t_d = 448
+            d = 100
         elif config['backbone'] == 'wide_resnet50':
             self.backbone = models.wide_resnet50_2(pretrained=True, progress=True).to(self.device)
+            t_d = 1792
+            d = 550
         else:
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
 
