@@ -154,9 +154,29 @@ class PaDim():
     def prediction(self):
 
         self.backbone.eval()
+
         self.pixel_gt_list.clear()
         self.img_gt_list.clear()
         self.pixel_pred_list.clear()
         self.img_pred_list.clear()
+
+        if self.chosen_valid_loader.batch_size != 1:
+            assert 'PaDim Evaluation, Batch Size should be Equal to 1'
+
+        PaDim.dict_clear(self.test_outputs) 
+
+        with torch.no_grad():
+            for batch_id, batch in enumerate(self.chosen_valid_loader):
+                img = batch['img'].to(self.device)
+                mask = batch['mask'].to(self.device)
+                label = batch['label'].to(self.device)
+                # Extract features from backbone
+                self.features.clear()
+                _ = self.backbone(img)
+
+                #get the intermediate layer outputs
+                for k,v in zip(self.train_outputs.keys(), self.features):
+                    self.train_outputs[k].append(v.cpu().detach())
+
 
         pass
