@@ -52,10 +52,10 @@ class PaDim():
         self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
         self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])]) 
 
-    def get_layer_features(self, outputs):
+    def get_layer_features(self):
     
         def hook_t(module, input, output):
-            outputs.features.append(output)
+            self.features.append(output)
         
         self.backbone.layer1[-1].register_forward_hook(hook_t)
         self.backbone.layer2[-1].register_forward_hook(hook_t)
@@ -74,11 +74,17 @@ class PaDim():
                 for batch_id, batch in enumerate(train_loader):
                     #print(f'batch id: {batch_id}')
                     img = batch['img'].to(self.device) 
+
+                    self.features.clear()
                     with torch.no_grad():
                         _ = self.backbone(img)
                     
                     #get the intermediate layer outputs
-                    for k,v in zip(self.train_outputs.keys(), outputs)
+                    for k,v in zip(self.train_outputs.keys(), self.features):
+                        self.train_outputs[k].append(v.cpu().detach())
+                
+            for k, v in self.train_outputs.items():
+                self.train_outputs[k] = torch.cat(v, 0)
                 
         
 
