@@ -60,6 +60,12 @@ class PaDim():
         self.backbone.layer1[-1].register_forward_hook(hook_t)
         self.backbone.layer2[-1].register_forward_hook(hook_t)
         self.backbone.layer3[-1].register_forward_hook(hook_t)
+    
+    @staticmethod
+    def dict_clear(outputs):
+        for key, value in outputs.items():
+            if isinstance(value, list): 
+                value.clear()
 
     def train_epoch(self, inf=''):
         self.backbone.eval()
@@ -67,6 +73,8 @@ class PaDim():
         self.get_layer_features(outputs=self.train_outputs)
 
         for task_idx, train_loader in enumerate(self.chosen_train_loaders):
+
+            PaDim.dict_clear(self.train_outputs)
 
             print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
 
