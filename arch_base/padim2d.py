@@ -1,3 +1,4 @@
+from tools.utilize import save_feat_pickle
 import torch
 import torch.nn as nn
 from torchvision import models
@@ -5,6 +6,8 @@ from collections import OrderedDict
 from random import sample
 import torch.nn.functional as F
 import numpy as np
+import os
+from tools.utilize import *
 
 __all__ = ['PaDim']
 
@@ -53,6 +56,22 @@ class PaDim():
 
         self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
         self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])]) 
+
+        for i in range(len(self.config['chosen_train_task_ids'])):
+            if i == 0:
+                source_domain = str(self.config['chosen_train_task_ids'][0])
+            else:
+                source_domain = source_domain + str(self.config['chosen_train_task_ids'][i])
+
+        #target_domain = str(self.config['chosen_test_task_id'])
+        self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', 
+                                          source_domain)
+        create_folders(self.embedding_dir_path)
+
+        self.pixel_gt_list = []
+        self.img_gt_list = []
+        self.pixel_pred_list = []
+        self.img_pred_list = []
 
     def get_layer_features(self):
     
@@ -128,10 +147,16 @@ class PaDim():
                 cov[:, :, i] = np.cov(embedding_vectors[:, :, i].numpy(), rowvar=False) + 0.01 * I
             
             # save learned distribution
-            learn_distribution = [mean, cov]
+            learned_distribution = [mean, cov]
+            save_feat_pickle(feat=learned_distribution, file_path=self.embedding_dir_path)
                 
-        
-
 
     def prediction(self):
+
+        self.backbone.eval()
+        self.pixel_gt_list.clear()
+        self.img_gt_list.clear()
+        self.pixel_pred_list.clear()
+        self.img_pred_list.clear()
+
         pass
