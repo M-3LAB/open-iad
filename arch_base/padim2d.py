@@ -47,6 +47,8 @@ class PaDim():
         # random select d dimension 
         idx = torch.tensor(sample(range(0, t_d), d))
 
+        self.feaaturs = []
+
         self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
         self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])]) 
 
@@ -76,6 +78,7 @@ class PaDim():
                         _ = self.backbone(img)
                     
                     #get the intermediate layer outputs
+                    for k,v in zip(self.train_outputs.keys(), outputs)
                 
         
 
