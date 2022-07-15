@@ -128,7 +128,7 @@ class PaDim():
                 cov[:, :, i] = np.cov(embedding_vectors[:, :, i].numpy(), rowvar=False) + 0.01 * I
             
             # save learned distribution
-            self.train_outputs = [mean, cov]
+            learn_distribution = [mean, cov]
                 
         
 

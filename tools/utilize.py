@@ -11,11 +11,11 @@ import time
 import shutil
 import torchvision
 import glob
-import cv2
+import pickle
 
 __all__ = ['seed_everything', 'parse_device_list', 'allocate_gpus', 
            'merge_config', 'convert_list_float_type', 'draem_weights_init', 'load_model', 
-           'override_config', 'extract_config', 'create_folders',
+           'override_config', 'extract_config', 'create_folders', 'save_feat_pickle', 'load_feat_pickle',
            'record_path', 'save_arg', 'save_log', 'save_script', 'save_image', 'save_model']
 
 def set_grad(model, flag=True):
@@ -152,3 +152,13 @@ def load_model(model, file_path, description):
 def create_folders(tag_path):
     if not os.path.exists(tag_path):
         os.makedirs(tag_path)
+
+def save_feat_pickle(feat, file_path):
+    with open(file_path, 'wb') as f:
+        pickle.dump(feat, f)
+
+def load_feat_pickle(feat, file_path):
+    with open(file_path, 'rb') as f:
+        feat = pickle.load(f)
+        return feat
+
