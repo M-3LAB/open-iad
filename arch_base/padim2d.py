@@ -175,8 +175,12 @@ class PaDim():
                 _ = self.backbone(img)
 
                 #get the intermediate layer outputs
-                for k,v in zip(self.train_outputs.keys(), self.features):
-                    self.train_outputs[k].append(v.cpu().detach())
+                for k,v in zip(self.test_outputs.keys(), self.features):
+                    self.test_outputs[k].append(v.cpu().detach())
+        
+        for k, v in self.train_outputs.items():
+            self.test_outputs[k] = torch.cat(v, 0)
+        
 
 
         pass
