@@ -117,6 +117,18 @@ class PaDim():
             
             # randomly select d dimension
             embedding_vectors = torch.index_select(embedding_vectors, 1, self.idx)
+
+            # calculate multivariate Gaussian distribution
+            B, C, H, W = embedding_vectors.size()
+            embedding_vectors = embedding_vectors.view(B, C, H * W)
+            mean = torch.mean(embedding_vectors, dim=0).numpy()
+            cov = torch.zeros(C, C, H * W).numpy()
+            I = np.identity(C)
+            for i in range(H * W):
+                cov[:, :, i] = np.cov(embedding_vectors[:, :, i].numpy(), rowvar=False) + 0.01 * I
+            
+            # save learned distribution
+            self.train_outputs = [mean, cov]
                 
         
 
