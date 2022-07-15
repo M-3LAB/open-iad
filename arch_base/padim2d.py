@@ -3,6 +3,8 @@ import torch.nn as nn
 from torchvision import models
 from collections import OrderedDict
 from random import sample
+import torch.nn.functional as F
+import numpy as np
 
 __all__ = ['PaDim']
 
@@ -45,7 +47,7 @@ class PaDim():
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
 
         # random select d dimension 
-        idx = torch.tensor(sample(range(0, t_d), d))
+        self.idx = torch.tensor(sample(range(0, t_d), d))
 
         self.feaaturs = []
 
@@ -66,6 +68,21 @@ class PaDim():
         for key, value in outputs.items():
             if isinstance(value, list): 
                 value.clear()
+    
+    @staticmethod
+    def embedding_concate(x, y):
+        B, C1, H1, W1 = x.size()
+        _, C2, H2, W2 = y.size()
+        s = int(H1 / H2)
+        x = F.unfold(x, kernel_size=s, dilation=1, stride=s)
+        x = x.view(B, C1, -1, H2, W2)
+        z = torch.zeros(B, C1 + C2, x.size(2), H2, W2)
+        for i in range(x.size(2)):
+            z[:, :, i, :, :] = torch.cat((x[:, :, i, :, :], y), 1)
+        z = z.view(B, -1, H2 * W2)
+        z = F.fold(z, kernel_size=s, output_size=(H1, W1), stride=s)
+
+        return z
 
     def train_epoch(self, inf=''):
         self.backbone.eval()
@@ -93,6 +110,13 @@ class PaDim():
                 
             for k, v in self.train_outputs.items():
                 self.train_outputs[k] = torch.cat(v, 0)
+            
+            embedding_vectors = self.train_outputs['layer1']
+            for layer_name in ['layer2', 'layer3']:
+                embedding_vectors = PaDim.embedding_concate(embedding_vectors, self.train_outputs[layer_name])
+            
+            # randomly select d dimension
+            embedding_vectors = torch.index_select(embedding_vectors, 1, self.idx)
                 
         
 
