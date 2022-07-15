@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torchvision import models
 from collections import OrderedDict
+from random import sample
 
 __all__ = ['PaDim']
 
@@ -42,6 +43,9 @@ class PaDim():
             d = 550
         else:
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
+
+        # random select d dimension 
+        idx = torch.tensor(sample(range(0, t_d), d))
 
         self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
         self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])]) 
