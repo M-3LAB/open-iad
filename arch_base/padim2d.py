@@ -62,6 +62,8 @@ class PaDim():
     def train_epoch(self, inf=''):
         self.backbone.eval()
         # When num_task is 15, per task means per class
+        self.get_layer_features(outputs=self.train_outputs)
+
         for task_idx, train_loader in enumerate(self.chosen_train_loaders):
 
             print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
@@ -69,15 +71,14 @@ class PaDim():
             for _ in range(self.config['num_epoch']):
                 for batch_id, batch in enumerate(train_loader):
                     #print(f'batch id: {batch_id}')
+                    img = batch['img'].to(self.device) 
+                    with torch.no_grad():
+                        _ = self.backbone(img)
+                    
+                    #get the intermediate layer outputs
+                
         
 
 
     def prediction(self):
-        acc = 0
-
-        for i, batch in enumerate(self.valid_loader):
-            x, y, mask, task_id = batch
-                
-            pass
-
-        return acc
+        pass
