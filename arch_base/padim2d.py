@@ -10,6 +10,7 @@ import os
 from tools.utilize import *
 from scipy.spatial.distance import mahalanobis
 from scipy.ndimage import gaussian_filter
+from metrics.common.np_auc_precision_recall import np_get_auroc
 
 __all__ = ['PaDim']
 
@@ -72,11 +73,11 @@ class PaDim():
 
         self.pixel_gt_list = []
         self.img_gt_list = []
-        self.pixel_pred_list = []
-        self.img_pred_list = []
+        #self.pixel_pred_list = []
+        #self.img_pred_list = []
 
-        self.total_img_rocauc = []
-        self.total_pixel_rocauc = []
+        #self.total_img_rocauc = []
+        #self.total_pixel_rocauc = []
 
     def get_layer_features(self):
     
@@ -162,8 +163,9 @@ class PaDim():
 
         self.pixel_gt_list.clear()
         self.img_gt_list.clear()
-        self.pixel_pred_list.clear()
-        self.img_pred_list.clear()
+
+        #self.pixel_pred_list.clear()
+        #self.img_pred_list.clear()
 
         if self.chosen_valid_loader.batch_size != 1:
             assert 'PaDim Evaluation, Batch Size should be Equal to 1'
@@ -175,6 +177,8 @@ class PaDim():
                 img = batch['img'].to(self.device)
                 mask = batch['mask'].to(self.device)
                 label = batch['label'].to(self.device)
+                self.img_gt_list.extend(label.cpu().detach().numpy())
+                self.pixel_gt_list.extend(mask.cpu().detach().numpy())
                 # Extract features from backbone
                 self.features.clear()
                 _ = self.backbone(img)
@@ -207,7 +211,7 @@ class PaDim():
 
         # upsample
         dist_list = torch.tensor(dist_list)
-        score_map = F.interpolate(dist_list.unsqueeze(1), size=x.size(2), mode='bilinear',
+        score_map = F.interpolate(dist_list.unsqueeze(1), size=img.size(2), mode='bilinear',
                                   align_corners=False).squeeze().numpy()
         
         # apply gaussian smoothing on the score map
@@ -221,4 +225,12 @@ class PaDim():
 
         # calculate image-level ROC AUC score
         img_scores = scores.reshape(scores.shape[0], -1).max(axis=1)
+        self.img_gt_list = np.asarray(self.img_gt_list)
+        img_auroc = np_get_auroc(self.img_gt_list, img_scores) 
+
+        # calculate pixel-level AUROC
+        pixel_auroc = np_get_auroc(self.pixel_gt_list.flatten(), scores.flatten())
+
+        return pixel_auroc, img_auroc
+
 

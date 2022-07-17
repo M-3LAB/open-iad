@@ -131,8 +131,8 @@ class Reverse():
         img_auroc = np_get_auroc(self.img_gt_list, self.img_pred_list)
         img_aupro = np.mean(self.aupro_list) 
         
-        return pixel_auroc, img_auroc, img_aupro
-    
+        return pixel_auroc, img_auroc
+
     def cal_anomaly_map(self, fs_list, ft_list, out_size=224, amap_mode='full'):
         if amap_mode == 'mul':
             anomaly_map = np.ones([out_size, out_size])
