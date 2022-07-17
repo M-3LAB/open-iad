@@ -189,3 +189,15 @@ class PaDim():
         # randomly select d dimension
         embedding_vectors = torch.index_select(embedding_vectors, 1, self.idx)
 
+        # calculate distance matrix
+        B, C, H, W = embedding_vectors.size()
+        embedding_vectors = embedding_vectors.view(B, C, H * W).numpy()
+        dist_list = []
+        for i in range(H * W):
+            mean = self.train_outputs[0][:, i]
+            conv_inv = np.linalg.inv(self.train_outputs[1][:, :, i])
+            dist = [mahalanobis(sample[:, i], mean, conv_inv) for sample in embedding_vectors]
+            dist_list.append(dist)
+        
+        dist_list = np.array(dist_list).transpose(1, 0).reshape(B, H, W)
+
