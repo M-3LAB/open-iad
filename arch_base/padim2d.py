@@ -8,6 +8,7 @@ import torch.nn.functional as F
 import numpy as np
 import os
 from tools.utilize import *
+from scipy.spatial.distance import mahalanobis
 
 __all__ = ['PaDim']
 
@@ -180,7 +181,11 @@ class PaDim():
         
         for k, v in self.train_outputs.items():
             self.test_outputs[k] = torch.cat(v, 0)
+
+        embedding_vectors = self.test_outputs['layer1']
+        for layer_name in ['layer2', 'layer3']:
+            embedding_vectors = PaDim.embedding_concate(embedding_vectors, self.train_outputs[layer_name])  
         
+        # randomly select d dimension
+        embedding_vectors = torch.index_select(embedding_vectors, 1, self.idx)
 
-
-        pass
