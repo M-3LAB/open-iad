@@ -201,3 +201,8 @@ class PaDim():
         
         dist_list = np.array(dist_list).transpose(1, 0).reshape(B, H, W)
 
+        # upsample
+        dist_list = torch.tensor(dist_list)
+        score_map = F.interpolate(dist_list.unsqueeze(1), size=x.size(2), mode='bilinear',
+                                  align_corners=False).squeeze().numpy()
+
