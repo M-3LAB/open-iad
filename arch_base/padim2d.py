@@ -9,6 +9,7 @@ import numpy as np
 import os
 from tools.utilize import *
 from scipy.spatial.distance import mahalanobis
+from scipy.ndimage import gaussian_filter
 
 __all__ = ['PaDim']
 
@@ -73,6 +74,9 @@ class PaDim():
         self.img_gt_list = []
         self.pixel_pred_list = []
         self.img_pred_list = []
+
+        self.total_img_rocauc = []
+        self.total_pixel_rocauc = []
 
     def get_layer_features(self):
     
@@ -205,4 +209,16 @@ class PaDim():
         dist_list = torch.tensor(dist_list)
         score_map = F.interpolate(dist_list.unsqueeze(1), size=x.size(2), mode='bilinear',
                                   align_corners=False).squeeze().numpy()
+        
+        # apply gaussian smoothing on the score map
+        for i in range(score_map.shape[0]):
+            score_map[i] = gaussian_filter(score_map[i], sigma=4)
+        
+        # Normalization
+        max_score = score_map.max()
+        min_score = score_map.min()
+        scores = (score_map - min_score) / (max_score - min_score)
+
+        # calculate image-level ROC AUC score
+        img_scores = scores.reshape(scores.shape[0], -1).max(axis=1)
 
