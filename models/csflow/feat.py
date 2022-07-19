@@ -10,3 +10,5 @@ class FeatureExtractor(nn.Module):
 
         if self.backbone == 'efficient_net':
             self.feature_extractor = EfficientNet.from_pretrained()
+        else:
+            raise NotImplementedError('The backbone model has not been implemented yet')
