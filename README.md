@@ -28,7 +28,7 @@ python3 data_io/preprocessing.py --dataset-path '/disk/mvtec/3D'
 ```
 ## Fewshot AD
 '''bash
-python3 centralized_training.py --fewshot --fewshot-exm 5 --model 'patchcore2d'
+python3 centralized_training.py --fewshot --fewshot-exm 5 --model 'patchcore2d' --chosen-train-task-ids 0 --chosen-test-task-id 1 -dg -g 0
 '''bash
 ## Train MMAD
 ```bash

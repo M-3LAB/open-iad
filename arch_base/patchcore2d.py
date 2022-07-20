@@ -125,10 +125,8 @@ class PatchCore2D():
 
         # When num_task is 15, per task means per class
         for task_idx, train_loader in enumerate(self.chosen_train_loaders):
-
             print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
-
-            for _ in range(self.config['num_epoch']):
+            for _ in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(train_loader):
                     print(f'batch id: {batch_id}')
                     #if self.config['debug'] and batch_id > self.config['batch_limit']:
