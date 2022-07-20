@@ -8,7 +8,8 @@ from utils import *
 
 VERBOSE = False
 
-__all__ = ['dummy_data', 'CrossConvolutions', 'ParallelPermute']
+__all__ = ['dummy_data', 'CrossConvolutions', 'ParallelPermute', 
+           'parallel_glow_coupling_layer']
 
 class dummy_data:
     def __init__(self, *dims):
