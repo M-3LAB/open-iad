@@ -10,7 +10,8 @@ import warnings
 VERBOSE = False
 
 __all__ = ['dummy_data', 'CrossConvolutions', 'ParallelPermute', 
-           'parallel_glow_coupling_layer']
+           'parallel_glow_coupling_layer', 'Node', 'InputNode',
+           'OutputNode']
 
 class dummy_data:
     def __init__(self, *dims):
