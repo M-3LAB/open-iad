@@ -244,7 +244,7 @@ class PatchCore2D():
                 N_b = score_patches[ind]
                 w = (1 - (np.max(np.exp(N_b))/np.sum(np.exp(N_b))))
                 img_score = w * max(max_min_distance)
-                print(img_score)
+
                 # Because the feature map size from the layer 2 of wide-resnet 18 is 28
                 #anomaly_map = max_min_distance.reshape((28, 28))
                 anomaly_map_size = math.sqrt(max_min_distance.shape[0])
