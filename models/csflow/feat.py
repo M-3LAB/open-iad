@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from efficientnet_pytorch import EfficientNet
+import torch.nn.functional as F
 
 __all__ = ['FeatureExtractor']
 
@@ -28,8 +29,9 @@ class FeatureExtractor(nn.Module):
     
     def forward(self, x):
         y = list()
-        for s in range(c.n_scales):
-            feat_s = F.interpolate(x, size=(c.img_size[0] // (2 ** s), c.img_size[1] // (2 ** s))) if s > 0 else x
+        for s in range(self.config['n_scales']):
+            feat_s = F.interpolate(x, size=(self.config['img_size'][0] // (2 ** s), 
+                                            self.config['img_size'][1] // (2 ** s))) if s > 0 else x
             feat_s = self.eff_ext(feat_s)
 
             y.append(feat_s)
