@@ -1,3 +1,4 @@
+from re import I
 import torch
 import yaml
 from tools.utilize import *
@@ -7,6 +8,7 @@ from data_io.mvtec2d import MVTec2D, MVTec2DFewShot
 from data_io.mvtec3d import MVTec3D
 
 from arch_base.patchcore2d import PatchCore2D
+from arch_base.reverse import Reverse 
 #from arch_base.pointcore3d import PointCore3D
 
 from rich import print
@@ -30,12 +32,6 @@ class CentralizedTrain():
         config = override_config(config, config_dataset)
         self.para_dict = merge_config(config, self.args)
         self.args = extract_config(self.args)
-
-        if self.para_dict['normal']:
-            self.para_dict['num_task'] = 1
-
-        if self.para_dict['num_task'] > 1:
-            assert self.para_dict['normal'] is False
 
     def preliminary(self):
         print('---------------------')
@@ -110,7 +106,6 @@ class CentralizedTrain():
         for i in range(self.para_dict['num_task']):
             train_loader = DataLoader(self.train_dataset,
                                       batch_size=self.para_dict['batch_size'],
-                                      drop_last=True,
                                       num_workers=self.para_dict['num_workers'],
                                       sampler=SubsetRandomSampler(train_task_data_list[i]))
             self.train_loaders.append(train_loader)
@@ -128,7 +123,6 @@ class CentralizedTrain():
             for i in range(self.para_dict['num_task']):
                 train_fewshot_loader = DataLoader(self.train_fewshot_dataset,
                                         batch_size=self.para_dict['batch_size'],
-                                        drop_last=True,
                                         num_workers=self.para_dict['num_workers'],
                                         sampler=SubsetRandomSampler(fewshot_task_data_list[i]))
                 self.train_fewshot_loaders.append(train_fewshot_loader)
@@ -142,31 +136,29 @@ class CentralizedTrain():
             else:
                 self.trainer = PatchCore2D(self.para_dict, self.train_loaders, self.valid_loaders, 
                                            self.device, self.file_path)
+        elif self.para_dict['model'] == 'reverse':
+            self.trainer = Reverse(self.para_dict, self.train_loaders, 
+                                   self.valid_loaders, self.device, self.file_path) 
         else:
             raise ValueError('Model is invalid!')
 
-        if self.para_dict['load_model']:
-            self.load_model()
-            print('load model: {}'.format(self.para_dict['load_model_dir']))
-
-    def load_model(self):
-        pass
-
-    def save_model(self, psnr):
-        pass
-
+       
     def work_flow(self):
         self.trainer.train_epoch()
-        self.trainer.prediction()
+        pixel_auroc, img_auroc = self.trainer.prediction()
 
-        #infor = '[Epoch {}/{}] acc: {:.4f}'.format(self.epoch+1, self.para_dict['num_epoch'], acc)
+        infor = 'train_task_id: {} test_task_id: {}'.format(self.para_dict['chosen_train_task_ids'], self.para_dict['chosen_test_task_id'])
+        
+        save_path = '{}/result_normal.txt'.format(self.para_dict['work_dir']) 
+        if self.para_dict['fewshot']:
+            infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])       
+            save_path = '{}/result_shot_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['fewshot_exm']) 
+        infor = '{} pixel_auroc: {:.4f} img_auroc: {:.4f}'.format(infor, pixel_auroc, img_auroc)
 
-        #print(infor)
+        print(infor)
 
-        #if self.para_dict['save_log']:
-        #    save_log(infor, self.file_path, description='_clients')
-
-
+        with open(save_path, 'a') as f:
+            print(infor, file=f)
 
     def run_work_flow(self):
         self.load_config()
@@ -175,7 +167,7 @@ class CentralizedTrain():
         self.init_model()
         print('---------------------')
 
-        for epoch in range(self.para_dict['num_epoch']):
+        for epoch in range(self.para_dict['num_epochs']):
             self.epoch = epoch
             self.work_flow()
             

@@ -40,8 +40,10 @@ class PatchCore2D():
 
         if self.config['fewshot']:
             assert self.train_fewshot_loaders is not None
-
-        self.chosen_fewshot_loader = self.train_fewshot_loaders[self.config['chosen_test_task_id']]
+            self.chosen_fewshot_loader = self.train_fewshot_loaders[self.config['chosen_test_task_id']]
+        
+        if self.config['chosen_test_task_id'] in self.config['chosen_train_task_ids']:
+            assert self.config['fewshot'] is False, 'Changeover: test task id should not be the same as train task id'
 
         # Backbone model
         if config['backbone'] == 'resnet18':
@@ -70,7 +72,7 @@ class PatchCore2D():
             else:
                 source_domain = source_domain + str(self.config['chosen_train_task_ids'][i])
 
-        target_domain = str(self.config['chosen_test_task_id'])
+        #target_domain = str(self.config['chosen_test_task_id'])
         self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', 
                                           source_domain)
         create_folders(self.embedding_dir_path)
@@ -149,30 +151,31 @@ class PatchCore2D():
                     embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
                     self.embeddings_list.extend(embedding)
 
-        print('Fewshot Processing')
-        print(f'The length of fewshot loader: {len(self.chosen_fewshot_loader)}')
-        for _ in range(self.config['num_epoch']):
-            for batch_id, batch in enumerate(self.chosen_fewshot_loader):
-                print(f'fewshot batch id: {batch_id}')
-                #if self.config['debug'] and batch_id > self.config['batch_limit']:
-                #    break
-                img = batch['img'].to(self.device)
-                #mask = batch['mask'].to(self.device)
+        if self.config['fewshot']:
+            print('Fewshot Processing')
+            #print(f'The length of fewshot loader: {len(self.chosen_fewshot_loader)}')
+            for _ in range(self.config['num_epochs']):
+                for batch_id, batch in enumerate(self.chosen_fewshot_loader):
+                    print(f'fewshot batch id: {batch_id}')
+                    #if self.config['debug'] and batch_id > self.config['batch_limit']:
+                    #    break
+                    img = batch['img'].to(self.device)
+                    #mask = batch['mask'].to(self.device)
 
-                # Extract features from backbone
-                self.features.clear()
-                _ = self.backbone(img)
+                    # Extract features from backbone
+                    self.features.clear()
+                    _ = self.backbone(img)
 
-                # Pooling for layer 2 and layer 3 features
-                embeddings = []
-                for feat in self.features:
-                    pooling = torch.nn.AvgPool2d(3, 1, 1)
-                    embeddings.append(pooling(feat))
+                    # Pooling for layer 2 and layer 3 features
+                    embeddings = []
+                    for feat in self.features:
+                        pooling = torch.nn.AvgPool2d(3, 1, 1)
+                        embeddings.append(pooling(feat))
 
-                embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
+                    embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
 
-                embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
-                self.embeddings_list.extend(embedding)
+                    embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
+                    self.embeddings_list.extend(embedding)
         
         # Sparse random projection from high-dimensional space into low-dimensional euclidean space
         total_embeddings = np.array(self.embeddings_list)
@@ -215,7 +218,7 @@ class PatchCore2D():
         if self.chosen_valid_loader.batch_size != 1:
             assert 'PatchCore Evaluation, Batch Size should be Equal to 1'
 
-        for _ in range(int(self.config['num_epoch'])):
+        with torch.no_grad():
             for batch_id, batch in enumerate(self.chosen_valid_loader):
                 img = batch['img'].to(self.device)
                 mask = batch['mask'].to(self.device)
@@ -273,9 +276,10 @@ class PatchCore2D():
         img_auroc = np_get_auroc(self.img_gt_list, self.img_pred_list)
     
 
-        print(f"Task {self.config['chosen_test_task_id']} Pixel Level AUROC Score: {pixel_auroc}")
-        print(f"Task {self.config['chosen_test_task_id']} Image Level AUROC Score: {img_auroc}")
+        # print(f"Task {self.config['chosen_test_task_id']} Pixel Level AUROC Score: {pixel_auroc}")
+        # print(f"Task {self.config['chosen_test_task_id']} Image Level AUROC Score: {img_auroc}")
 
+        return pixel_auroc, img_auroc
 
 
 

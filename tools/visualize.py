@@ -9,8 +9,12 @@ __all__ = ['show_cam_on_image', 'cv2heatmap', 'heatmap_on_image', 'min_max_norm'
            'cal_anomaly_map', 'save_anomaly_map']
 
 
-def show_cam_on_image(img, anomaly_img):
-    pass
+def show_cam_on_image(img, anomaly_map):
+    #if anomaly_map.shape != img.shape:
+    #    anomaly_map = cv2.applyColorMap(np.uint8(anomaly_map), cv2.COLORMAP_JET)
+    cam = np.float32(anomaly_map)/255 + np.float32(img)/255
+    cam = cam / np.max(cam)
+    return np.uint8(255 * cam)
 
 def cv2heatmap(gray):
     heatmap = cv2.applyColorMap(np.uint8(gray), cv2.COLORMAP_JET)
