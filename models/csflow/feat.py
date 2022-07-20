@@ -10,7 +10,7 @@ class FeatureExtractor(nn.Module):
 
         self.config = config
 
-        if self.backbone == 'efficient_net':
+        if self.config['backbone'] == 'efficient_net':
             self.feature_extractor = EfficientNet.from_pretrained()
         else:
             raise NotImplementedError('This archichitecture has not been implemented yet')
