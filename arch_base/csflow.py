@@ -30,6 +30,8 @@ class CSFlow():
         if self.config['chosen_test_task_id'] in self.config['chosen_train_task_ids']:
             assert self.config['fewshot'] is False, 'Changeover: test task id should not be the same as train task id'
 
+    def get_cs_flow_model(self):
+        pass
 
     def train_epoch(self):
         pass 

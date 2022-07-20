@@ -3,7 +3,7 @@ import torch.nn as nn
 from efficientnet_pytorch import EfficientNet
 import torch.nn.functional as F
 
-__all__ = ['FeatureExtractor']
+__all__ = ['FeatureExtractor', 'nf_forward']
 
 class FeatureExtractor(nn.Module):
     def __init__(self, config):
@@ -36,3 +36,7 @@ class FeatureExtractor(nn.Module):
 
             y.append(feat_s)
         return y
+
+# Normalize Flow Forward
+def nf_forward(model, inputs):
+    return model(inputs), model.jacobian(run_forward=False)
