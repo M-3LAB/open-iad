@@ -125,10 +125,8 @@ class PatchCore2D():
 
         # When num_task is 15, per task means per class
         for task_idx, train_loader in enumerate(self.chosen_train_loaders):
-
             print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
-
-            for _ in range(self.config['num_epoch']):
+            for _ in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(train_loader):
                     print(f'batch id: {batch_id}')
                     #if self.config['debug'] and batch_id > self.config['batch_limit']:
@@ -246,7 +244,7 @@ class PatchCore2D():
                 N_b = score_patches[ind]
                 w = (1 - (np.max(np.exp(N_b))/np.sum(np.exp(N_b))))
                 img_score = w * max(max_min_distance)
-
+                print(img_score)
                 # Because the feature map size from the layer 2 of wide-resnet 18 is 28
                 #anomaly_map = max_min_distance.reshape((28, 28))
                 anomaly_map_size = math.sqrt(max_min_distance.shape[0])
