@@ -55,7 +55,7 @@ class PaDim():
         # random select d dimension 
         self.idx = torch.tensor(sample(range(0, t_d), d))
 
-        self.feaaturs = []
+        self.features = []
 
         self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
         self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])]) 

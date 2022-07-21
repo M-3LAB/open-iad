@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 from torchvision import models
+from collections import OrderedDict
+from tools.utilize import *
 
 __all__ = ['Spade']
 
@@ -38,4 +40,39 @@ class Spade():
             self.backbone = models.wide_resnet50_2(pretrained=True, progress=True).to(self.device)
         else:
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
+        
+        self.feaaturs = []
+
+        self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
+        self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])]) 
+
+        for i in range(len(self.config['chosen_train_task_ids'])):
+            if i == 0:
+                source_domain = str(self.config['chosen_train_task_ids'][0])
+            else:
+                source_domain = source_domain + str(self.config['chosen_train_task_ids'][i])
+
+        #target_domain = str(self.config['chosen_test_task_id'])
+        self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', 
+                                          source_domain)
+        create_folders(self.embedding_dir_path)
+
+        self.pixel_gt_list = []
+        self.img_gt_list = []
+    
+    @staticmethod
+    def dict_clear(outputs):
+        for key, value in outputs.items():
+            if isinstance(value, list): 
+                value.clear()
+    
+    def get_layer_features(self):
+        
+        def hook_t(module, input, output):
+            self.features.append(output)
+        
+        self.backbone.layer1[-1].register_forward_hook(hook_t)
+        self.backbone.layer2[-1].register_forward_hook(hook_t)
+        self.backbone.layer3[-1].register_forward_hook(hook_t)
+        self.backbone.avgpool.register_forward_hook(hook_t)
     
