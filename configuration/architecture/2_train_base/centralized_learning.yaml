@@ -23,4 +23,6 @@ beta2: 0.999
 # chosen task ids
 chosen_train_task_ids:
   - 0
-chosen_test_task_id: 0
+chosen_test_task_id: 1
+# domain
+domain_generalization: false
