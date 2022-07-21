@@ -103,6 +103,11 @@ class CentralizedTrain():
         train_task_data_list = self.train_dataset.sample_indices_in_task
         valid_task_data_list = self.valid_dataset.sample_indices_in_task
 
+        if self.para_dict['model'] == 'patchcore2d':
+            test_batch_size = 1
+        else:
+            test_batch_size = self.para_dict['batch_size']
+
         for i in range(self.para_dict['num_task']):
             train_loader = DataLoader(self.train_dataset,
                                       batch_size=self.para_dict['batch_size'],
@@ -112,7 +117,7 @@ class CentralizedTrain():
 
             valid_loader = DataLoader(self.valid_dataset, 
                                       num_workers=self.para_dict['num_workers'],
-                                      batch_size=1, 
+                                      batch_size=test_batch_size, 
                                       shuffle=False,
                                       sampler=SubsetRandomSampler(valid_task_data_list[i]))
             self.valid_loaders.append(valid_loader)

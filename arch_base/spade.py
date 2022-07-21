@@ -104,3 +104,9 @@ class Spade():
                     self.train_outputs[k] = torch.cat(v, 0)
                 
                 save_feat_pickle(feat=self.train_outputs, file_path=self.embedding_dir_path)
+    
+    def prediction(self):
+
+        self.backbone.eval()
+        self.pixel_gt_list.clear()
+        self.img_gt_list.clear()
