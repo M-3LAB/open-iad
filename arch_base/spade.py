@@ -91,3 +91,16 @@ class Spade():
                 for batch_id, batch in enumerate(train_loader):
                     #print(f'batch id: {batch_id}')
                     img = batch['img'].to(self.device) 
+
+                    self.features.clear()
+                    with torch.no_grad():
+                        _ = self.backbone(img)
+                    
+                    #get the intermediate layer outputs
+                    for k,v in zip(self.train_outputs.keys(), self.features):
+                        self.train_outputs[k].append(v.cpu().detach())
+
+                for k, v in self.train_outputs.items():
+                    self.train_outputs[k] = torch.cat(v, 0)
+                
+                save_feat_pickle(feat=self.train_outputs, file_path=self.embedding_dir_path)
