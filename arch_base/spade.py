@@ -3,6 +3,7 @@ import torch.nn as nn
 from torchvision import models
 from collections import OrderedDict
 from tools.utilize import *
+import os
 
 __all__ = ['Spade']
 
@@ -75,4 +76,18 @@ class Spade():
         self.backbone.layer2[-1].register_forward_hook(hook_t)
         self.backbone.layer3[-1].register_forward_hook(hook_t)
         self.backbone.avgpool.register_forward_hook(hook_t)
-    
+
+    def train_epoch(self, inf=''):
+
+        self.backbone.eval()
+        # When num_task is 15, per task means per class
+        self.get_layer_features(outputs=self.train_outputs)
+
+        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
+            Spade.dict_clear(self.train_outputs)
+            print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
+
+            for _ in range(self.config['num_epoch']):
+                for batch_id, batch in enumerate(train_loader):
+                    #print(f'batch id: {batch_id}')
+                    img = batch['img'].to(self.device) 
