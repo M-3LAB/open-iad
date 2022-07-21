@@ -128,18 +128,17 @@ class CentralizedTrain():
                 for idx in fewshot_task_data_list[i]:
                     img_list.append(self.train_fewshot_dataset[idx])
                 self.fewshot_images.append(img_list)
-
-            self.fewshot_images_dg = []
+            # data augumentation
             if self.para_dict['domain_generalization']:
+                self.fewshot_images_dg = []
                 for i in range(self.para_dict['num_task']):
-                    data_gen_dataset = domain_gen(self.fewshot_images[i])
+                    data_gen_dataset = domain_gen(self.para_dict, self.fewshot_images[i])
                     self.fewshot_images_dg.append(data_gen_dataset)
-            else:
-                self.fewshot_images_dg = self.fewshot_images
-
+                self.fewshot_images = self.fewshot_images_dg
+            # back to normal training
             self.train_fewshot_loaders = []
             for i in range(self.para_dict['num_task']):
-                fewshot_dg_datset = FewShot(self.fewshot_images_dg[i])
+                fewshot_dg_datset = FewShot(self.fewshot_images[i])
                 train_fewshot_loader = DataLoader(fewshot_dg_datset,
                                         batch_size=self.para_dict['batch_size'],
                                         num_workers=self.para_dict['num_workers'])

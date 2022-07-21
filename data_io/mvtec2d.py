@@ -157,12 +157,7 @@ class FewShot(Dataset):
     def __init__(self, data) -> None:
         self.data = data
 
-
     def __getitem__(self, idx):
-        # img, label, mask, task_id = self.data[idx]['img'], self.data[idx]['label'], self.data[idx]['mask'], self.data[idx]['task_id']
-        # return {
-        #     'img': img, 'label':label, 'mask':mask, 'task_id':task_id
-        # }
         return self.data[idx]
 
     def __len__(self):
