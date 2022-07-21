@@ -1,1 +1,1 @@
-backbone: resnet18
+backbone: wide_resnet50 
