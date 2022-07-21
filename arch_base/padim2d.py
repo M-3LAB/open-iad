@@ -167,8 +167,8 @@ class PaDim():
         #self.pixel_pred_list.clear()
         #self.img_pred_list.clear()
 
-        if self.chosen_valid_loader.batch_size != 1:
-            assert 'PaDim Evaluation, Batch Size should be Equal to 1'
+        #if self.chosen_valid_loader.batch_size != 1:
+        #    assert 'PaDim Evaluation, Batch Size should be Equal to 1'
 
         PaDim.dict_clear(self.test_outputs) 
 

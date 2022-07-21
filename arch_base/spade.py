@@ -110,3 +110,5 @@ class Spade():
         self.backbone.eval()
         self.pixel_gt_list.clear()
         self.img_gt_list.clear()
+
+        Spade.dict_clear(self.test_outputs)
