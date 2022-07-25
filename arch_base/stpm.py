@@ -42,4 +42,6 @@ class STPM():
 
             self.backbone_students = models.wide_resnet50_2(pretrained=True, 
                                                             progress=True).to(self.device)
+        else:
+            raise NotImplementedError('This Pretrained Model Not Implemented Error')
         
