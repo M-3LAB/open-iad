@@ -166,6 +166,8 @@ class Spade():
         # calculate image-level AUROC
         img_auroc = np_get_auroc(self.img_gt_list, scores) 
 
+        
+
 
         
 
