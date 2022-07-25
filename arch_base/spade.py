@@ -1,9 +1,14 @@
+from metrics.common.np_auc_precision_recall import np_get_auroc
 import torch
 import torch.nn as nn
 from torchvision import models
 from collections import OrderedDict
 from tools.utilize import *
 import os
+import torch.nn.functional as F
+from scipy.ndimage import gaussian_filter
+import numpy as np
+
 
 __all__ = ['Spade']
 
@@ -42,7 +47,7 @@ class Spade():
         else:
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
         
-        self.feaaturs = []
+        self.features = []
 
         self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
         self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])]) 
@@ -77,6 +82,17 @@ class Spade():
         self.backbone.layer2[-1].register_forward_hook(hook_t)
         self.backbone.layer3[-1].register_forward_hook(hook_t)
         self.backbone.avgpool.register_forward_hook(hook_t)
+    
+    @staticmethod
+    def cal_distance_matrix(x, y):
+        """Calculate Euclidean distance matrix with torch.tensor"""
+        n = x.size(0)
+        m = y.size(0)
+        d = x.size(1)
+        x = x.unsqueeze(1).expand(n, m, d)
+        y = y.unsqueeze(0).expand(n, m, d)
+        dist_matrix = torch.sqrt(torch.pow(x - y, 2).sum(2))
+        return dist_matrix
 
     def train_epoch(self, inf=''):
 
@@ -117,12 +133,84 @@ class Spade():
 
         self.get_layer_features(outputs=self.test_outputs)
 
-        with torch.no_grad():
-            for batch_id, batch in enumerate(self.chosen_valid_loader):
-                img = batch['img'].to(self.device)
-                mask = batch['mask'].to(self.device)
-                label = batch['label'].to(self.device)
+        for batch_id, batch in enumerate(self.chosen_valid_loader):
+            img = batch['img'].to(self.device)
+            mask = batch['mask'].to(self.device)
+            label = batch['label'].to(self.device)
 
-                self.img_list.extend(img.cpu().detach().numpy())
-                self.img_gt_list.extend(label.cpu().detach().numpy())
-                self.pixel_gt_list.extend(mask.cpu().detach().numpy())
+            self.img_list.extend(img.cpu().detach().numpy())
+            self.img_gt_list.extend(label.cpu().detach().numpy())
+            self.pixel_gt_list.extend(mask.cpu().detach().numpy())
+
+            # Extract features from backbone
+            with torch.no_grad():
+                self.features.clear()
+                _ = self.backbone(img)
+
+            for k,v in zip(self.test_outputs.keys(), self.features):
+                self.test_outputs[k].append(v)
+        
+        for k, v in zip(self.test_outputs.keys(), self.features):
+            self.test_outputs[k] = torch.cat(v, 0)
+        
+        # Load train feature 
+        self.train_outputs = load_feat_pickle(feat=self.train_outputs, 
+                                              file_path=self.embedding_dir_path)
+
+        # calculate distance matrix
+        dist_matrix = Spade.cal_distance_matrix(torch.flatten(self.test_outputs['avgpool'], 1),
+                                                torch.flatten(self.train_outputs['avgpool'], 1))
+        
+        # select K nearest neighbor and take advantage 
+        topk_values, topk_indexes = torch.topk(dist_matrix, k=self.config['top_k'], 
+                                               dim=1, largest=False)
+
+        scores = torch.mean(topk_values, 1).cpu().detach().numpy()
+
+        # calculate image-level AUROC
+        img_auroc = np_get_auroc(self.img_gt_list, scores) 
+
+        score_map_list = []
+
+        for t_idx in range(self.test_outputs['avgpol'].shape[0]):
+            score_maps = []
+            # for each layer
+            for layer_name in ['layer1', 'layer2', 'layer3']:
+
+                # construct a gallery of features at all pixel locations of the K nearest neighbors
+                topk_feat_map = self.train_outputs[layer_name][topk_indexes[t_idx]]
+                test_feat_map = self.test_outputs[layer_name][t_idx:t_idx + 1]
+                feat_gallery = topk_feat_map.transpose(3, 1).flatten(0, 2).unsqueeze(-1).unsqueeze(-1)
+
+                # calculate distance matrix
+                dist_matrix_list = []
+
+                for d_idx in range(feat_gallery.shape[0] // 100):
+                    dist_matrix = torch.pairwise_distance(feat_gallery[d_idx * 100:d_idx * 100 + 100], test_feat_map)
+                    dist_matrix_list.append(dist_matrix)
+                dist_matrix = torch.cat(dist_matrix_list, 0)
+
+                # k nearest features from the gallery (k=1)
+                score_map = torch.min(dist_matrix, dim=0)[0]
+                score_map = F.interpolate(score_map.unsqueeze(0).unsqueeze(0), size=224,
+                                          mode='bilinear', align_corners=False)
+                score_maps.append(score_map)
+            
+            # average distance between the features
+            score_map = torch.mean(torch.cat(score_maps, 0), dim=0)
+
+            # apply gaussian smoothing on the score map
+            score_map = gaussian_filter(score_map.squeeze().cpu().detach().numpy(), sigma=4)
+            score_map_list.append(score_map)
+
+        flatten_gt_mask_list = np.concatenate(self.pixel_gt_list).ravel()
+        flatten_score_map_list = np.concatenate(score_map_list).ravel()
+        pixel_auroc = np_get_auroc(flatten_gt_mask_list, flatten_score_map_list)
+
+        return pixel_auroc, img_auroc
+
+        
+
+
+        
+

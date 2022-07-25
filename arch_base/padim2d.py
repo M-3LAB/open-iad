@@ -112,7 +112,7 @@ class PaDim():
     def train_epoch(self, inf=''):
         self.backbone.eval()
         # When num_task is 15, per task means per class
-        self.get_layer_features(outputs=self.train_outputs)
+        self.get_layer_features()
 
         for task_idx, train_loader in enumerate(self.chosen_train_loaders):
 
@@ -172,24 +172,24 @@ class PaDim():
 
         PaDim.dict_clear(self.test_outputs) 
 
-        self.get_layer_features(outputs=self.test_outputs)
+        self.get_layer_features()
 
-        with torch.no_grad():
-            for batch_id, batch in enumerate(self.chosen_valid_loader):
-                img = batch['img'].to(self.device)
-                mask = batch['mask'].to(self.device)
-                label = batch['label'].to(self.device)
-                self.img_gt_list.extend(label.cpu().detach().numpy())
-                self.pixel_gt_list.extend(mask.cpu().detach().numpy())
-                # Extract features from backbone
+        for batch_id, batch in enumerate(self.chosen_valid_loader):
+            img = batch['img'].to(self.device)
+            mask = batch['mask'].to(self.device)
+            label = batch['label'].to(self.device)
+            self.img_gt_list.extend(label.cpu().detach().numpy())
+            self.pixel_gt_list.extend(mask.cpu().detach().numpy())
+            # Extract features from backbone
+            with torch.no_grad():
                 self.features.clear()
                 _ = self.backbone(img)
 
-                #get the intermediate layer outputs
-                for k,v in zip(self.test_outputs.keys(), self.features):
-                    self.test_outputs[k].append(v.cpu().detach())
+            #get the intermediate layer outputs
+            for k,v in zip(self.test_outputs.keys(), self.features):
+                self.test_outputs[k].append(v.cpu().detach())
         
-        for k, v in self.train_outputs.items():
+        for k, v in self.test_outputs.items():
             self.test_outputs[k] = torch.cat(v, 0)
 
         embedding_vectors = self.test_outputs['layer1']

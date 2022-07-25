@@ -157,7 +157,7 @@ def save_feat_pickle(feat, file_path):
     with open(file_path, 'wb') as f:
         pickle.dump(feat, f)
 
-def load_feat_pickle(feat, file_path):
+def load_feat_pickle(file_path):
     with open(file_path, 'rb') as f:
         feat = pickle.load(f)
         return feat
