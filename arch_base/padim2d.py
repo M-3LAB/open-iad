@@ -172,6 +172,8 @@ class PaDim():
 
         PaDim.dict_clear(self.test_outputs) 
 
+        self.get_layer_features(outputs=self.test_outputs)
+
         with torch.no_grad():
             for batch_id, batch in enumerate(self.chosen_valid_loader):
                 img = batch['img'].to(self.device)

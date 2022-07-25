@@ -112,3 +112,5 @@ class Spade():
         self.img_gt_list.clear()
 
         Spade.dict_clear(self.test_outputs)
+
+        self.get_layer_features(outputs=self.test_outputs)
