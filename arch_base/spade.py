@@ -1,3 +1,4 @@
+from metrics.common.np_auc_precision_recall import np_get_auroc
 import torch
 import torch.nn as nn
 from torchvision import models
@@ -149,10 +150,22 @@ class Spade():
             self.test_outputs[k] = torch.cat(v, 0)
         
         # Load train feature 
+        self.train_outputs = load_feat_pickle(feat=self.train_outputs, 
+                                              file_path=self.embedding_dir_path)
 
-        
-        #calculate distance matrix
+        # calculate distance matrix
         dist_matrix = Spade.cal_distance_matrix(torch.flatten(self.test_outputs['avgpool'], 1),
                                                 torch.flatten(self.train_outputs['avgpool'], 1))
+        
+        # select K nearest neighbor and take advantage 
+        topk_values, topk_indexes = torch.topk(dist_matrix, k=self.config['top_k'], 
+                                               dim=1, largest=False)
+
+        scores = torch.mean(topk_values, 1).cpu().detach().numpy()
+
+        # calculate image-level AUROC
+        img_auroc = np_get_auroc(self.img_gt_list, scores) 
+
+
         
 
