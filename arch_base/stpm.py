@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torchvision import models
 
 __all__ = ['STPM']
 
@@ -32,3 +33,13 @@ class STPM():
         
         # Backbone model
         if self.config['backbone'] == 'resnet18':
+            self.backbone_teacher = models.resnet(pretrained=True, progress=True).to(self.device) 
+            self.backbone_students = models.resnet(pretrained=True, progress=True).to(self.device)
+
+        elif self.config['backbone'] == 'wide_resnet50':
+            self.backbone_teacher = models.wide_resnet50_2(pretrained=True, 
+                                                           progress=True).to(self.device) 
+
+            self.backbone_students = models.wide_resnet50_2(pretrained=True, 
+                                                            progress=True).to(self.device)
+        
