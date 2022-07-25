@@ -42,7 +42,7 @@ class Spade():
         else:
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
         
-        self.feaaturs = []
+        self.features = []
 
         self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
         self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])]) 
@@ -77,6 +77,17 @@ class Spade():
         self.backbone.layer2[-1].register_forward_hook(hook_t)
         self.backbone.layer3[-1].register_forward_hook(hook_t)
         self.backbone.avgpool.register_forward_hook(hook_t)
+    
+    @staticmethod
+    def cal_distance_matrix(x, y):
+        """Calculate Euclidean distance matrix with torch.tensor"""
+        n = x.size(0)
+        m = y.size(0)
+        d = x.size(1)
+        x = x.unsqueeze(1).expand(n, m, d)
+        y = y.unsqueeze(0).expand(n, m, d)
+        dist_matrix = torch.sqrt(torch.pow(x - y, 2).sum(2))
+        return dist_matrix
 
     def train_epoch(self, inf=''):
 
@@ -117,12 +128,23 @@ class Spade():
 
         self.get_layer_features(outputs=self.test_outputs)
 
-        with torch.no_grad():
-            for batch_id, batch in enumerate(self.chosen_valid_loader):
-                img = batch['img'].to(self.device)
-                mask = batch['mask'].to(self.device)
-                label = batch['label'].to(self.device)
+        for batch_id, batch in enumerate(self.chosen_valid_loader):
+            img = batch['img'].to(self.device)
+            mask = batch['mask'].to(self.device)
+            label = batch['label'].to(self.device)
 
-                self.img_list.extend(img.cpu().detach().numpy())
-                self.img_gt_list.extend(label.cpu().detach().numpy())
-                self.pixel_gt_list.extend(mask.cpu().detach().numpy())
+            self.img_list.extend(img.cpu().detach().numpy())
+            self.img_gt_list.extend(label.cpu().detach().numpy())
+            self.pixel_gt_list.extend(mask.cpu().detach().numpy())
+
+            # Extract features from backbone
+            with torch.no_grad():
+                self.features.clear()
+                _ = self.backbone(img)
+
+            for k,v in zip(self.test_outputs.keys(), self.features):
+                self.test_outputs[k].append(v)
+        
+        for k, v in zip(self.test_outputs.keys(), self.features):
+            self.test_outputs[k] = torch.cat(v, 0)
+
