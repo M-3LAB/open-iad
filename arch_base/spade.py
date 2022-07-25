@@ -60,6 +60,7 @@ class Spade():
 
         self.pixel_gt_list = []
         self.img_gt_list = []
+        self.img_list = []
     
     @staticmethod
     def dict_clear(outputs):
@@ -110,7 +111,16 @@ class Spade():
         self.backbone.eval()
         self.pixel_gt_list.clear()
         self.img_gt_list.clear()
+        self.img_list.clear()
 
         Spade.dict_clear(self.test_outputs)
 
         self.get_layer_features(outputs=self.test_outputs)
+
+        with torch.no_grad():
+            for batch_id, batch in enumerate(self.chosen_valid_loader):
+                img = batch['img'].to(self.device)
+                mask = batch['mask'].to(self.device)
+                label = batch['label'].to(self.device)
+
+                self.img_list.extend(img.cpu().detach().numpy())
