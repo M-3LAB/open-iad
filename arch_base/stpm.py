@@ -22,3 +22,10 @@ class STPM():
             self.chosen_train_loaders = self.train_loaders
 
         self.chosen_valid_loader = self.valid_loaders[self.config['chosen_test_task_id']] 
+
+        if self.config['fewshot']:
+            assert self.train_fewshot_loaders is not None
+            self.chosen_fewshot_loader = self.train_fewshot_loaders[self.config['chosen_test_task_id']]
+        
+        if self.config['chosen_test_task_id'] in self.config['chosen_train_task_ids']:
+            assert self.config['fewshot'] is False, 'Changeover: test task id should not be the same as train task id'
