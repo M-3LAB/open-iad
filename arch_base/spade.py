@@ -124,3 +124,5 @@ class Spade():
                 label = batch['label'].to(self.device)
 
                 self.img_list.extend(img.cpu().detach().numpy())
+                self.img_gt_list.extend(label.cpu().detach().numpy())
+                self.pixel_gt_list.extend(mask.cpu().detach().numpy())
