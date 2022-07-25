@@ -147,4 +147,12 @@ class Spade():
         
         for k, v in zip(self.test_outputs.keys(), self.features):
             self.test_outputs[k] = torch.cat(v, 0)
+        
+        # Load train feature 
+
+        
+        #calculate distance matrix
+        dist_matrix = Spade.cal_distance_matrix(torch.flatten(self.test_outputs['avgpool'], 1),
+                                                torch.flatten(self.train_outputs['avgpool'], 1))
+        
 
