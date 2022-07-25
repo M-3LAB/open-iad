@@ -166,6 +166,11 @@ class Spade():
         # calculate image-level AUROC
         img_auroc = np_get_auroc(self.img_gt_list, scores) 
 
+        score_map_list = []
+
+        for t_idx in range(self.test_outputs['avgpol'].shape[0]):
+            score_maps = []
+
         
 
 
