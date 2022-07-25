@@ -5,6 +5,7 @@ from torchvision import models
 from collections import OrderedDict
 from tools.utilize import *
 import os
+import torch.nn.functional as F
 
 __all__ = ['Spade']
 
@@ -170,6 +171,27 @@ class Spade():
 
         for t_idx in range(self.test_outputs['avgpol'].shape[0]):
             score_maps = []
+            # for each layer
+            for layer_name in ['layer1', 'layer2', 'layer3']:
+
+                # construct a gallery of features at all pixel locations of the K nearest neighbors
+                topk_feat_map = self.train_outputs[layer_name][topk_indexes[t_idx]]
+                test_feat_map = self.test_outputs[layer_name][t_idx:t_idx + 1]
+                feat_gallery = topk_feat_map.transpose(3, 1).flatten(0, 2).unsqueeze(-1).unsqueeze(-1)
+
+                # calculate distance matrix
+                dist_matrix_list = []
+
+                for d_idx in range(feat_gallery.shape[0] // 100):
+                    dist_matrix = torch.pairwise_distance(feat_gallery[d_idx * 100:d_idx * 100 + 100], test_feat_map)
+                    dist_matrix_list.append(dist_matrix)
+                dist_matrix = torch.cat(dist_matrix_list, 0)
+
+                # k nearest features from the gallery (k=1)
+                score_map = torch.min(dist_matrix, dim=0)[0]
+                score_map = F.interpolate(score_map.unsqueeze(0).unsqueeze(0), size=224,
+                                          mode='bilinear', align_corners=False)
+                score_maps.append(score_map)
 
         
 
