@@ -6,6 +6,8 @@ from collections import OrderedDict
 from tools.utilize import *
 import os
 import torch.nn.functional as F
+from scipy.ndimage import gaussian_filter
+
 
 __all__ = ['Spade']
 
@@ -192,6 +194,13 @@ class Spade():
                 score_map = F.interpolate(score_map.unsqueeze(0).unsqueeze(0), size=224,
                                           mode='bilinear', align_corners=False)
                 score_maps.append(score_map)
+            
+            # average distance between the features
+            score_map = torch.mean(torch.cat(score_maps, 0), dim=0)
+
+            # apply gaussian smoothing on the score map
+            score_map = gaussian_filter(score_map.squeeze().cpu().detach().numpy(), sigma=4)
+            score_map_list.append(score_map)
 
         
 
