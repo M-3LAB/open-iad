@@ -7,6 +7,7 @@ from tools.utilize import *
 import os
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
+import numpy as np
 
 
 __all__ = ['Spade']
@@ -201,6 +202,10 @@ class Spade():
             # apply gaussian smoothing on the score map
             score_map = gaussian_filter(score_map.squeeze().cpu().detach().numpy(), sigma=4)
             score_map_list.append(score_map)
+
+        flatten_gt_mask_list = np.concatenate(self.pixel_gt_list).ravel()
+        flatten_score_map_list = np.concatenate(score_map_list).ravel()
+        pixel_auroc = np_get_auroc(flatten_gt_mask_list, flatten_score_map_list)
 
         
 
