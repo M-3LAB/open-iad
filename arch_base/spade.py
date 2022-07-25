@@ -207,6 +207,8 @@ class Spade():
         flatten_score_map_list = np.concatenate(score_map_list).ravel()
         pixel_auroc = np_get_auroc(flatten_gt_mask_list, flatten_score_map_list)
 
+        return pixel_auroc, img_auroc
+
         
 
 
