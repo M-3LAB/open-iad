@@ -143,7 +143,7 @@ class MVTec2DFewShot(MVTec2D):
         self.fewshot_exm = fewshot_exm
         super(MVTec2DFewShot, self).__init__(data_path=data_path, learning_mode=learning_mode, phase=phase, 
                  data_transform=data_transform, num_task=num_task)
-
+    
     def allocate_task_data(self):
         start = 0
         for num in self.sample_num_in_task:
@@ -153,3 +153,12 @@ class MVTec2DFewShot(MVTec2D):
             self.sample_indices_in_task.append(indice[:self.fewshot_exm])
             start = end
 
+class FewShot(Dataset):
+    def __init__(self, data) -> None:
+        self.data = data
+
+    def __getitem__(self, idx):
+        return self.data[idx]
+
+    def __len__(self):
+        return len(self.data)

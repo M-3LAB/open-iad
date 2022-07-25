@@ -1,11 +1,13 @@
 from re import I
+from xml.dom.minidom import DOMImplementation
 import torch
 import yaml
 from tools.utilize import *
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-from data_io.mvtec2d import MVTec2D, MVTec2DFewShot
+from data_io.mvtec2d import MVTec2D, MVTec2DFewShot, FewShot
 from data_io.mvtec3d import MVTec3D
+from data_io.domain_generalization import domain_gen
 
 from arch_base.patchcore2d import PatchCore2D
 from arch_base.reverse import Reverse 
@@ -123,13 +125,28 @@ class CentralizedTrain():
             self.valid_loaders.append(valid_loader)
 
         if self.para_dict['fewshot']:
-            self.train_fewshot_loaders = []
+            # capture few-shot images
+            self.fewshot_images = []
             fewshot_task_data_list = self.train_fewshot_dataset.sample_indices_in_task
             for i in range(self.para_dict['num_task']):
-                train_fewshot_loader = DataLoader(self.train_fewshot_dataset,
+                img_list = []
+                for idx in fewshot_task_data_list[i]:
+                    img_list.append(self.train_fewshot_dataset[idx])
+                self.fewshot_images.append(img_list)
+            # data augumentation
+            if self.para_dict['domain_generalization']:
+                self.fewshot_images_dg = []
+                for i in range(self.para_dict['num_task']):
+                    data_gen_dataset = domain_gen(self.para_dict, self.fewshot_images[i])
+                    self.fewshot_images_dg.append(data_gen_dataset)
+                self.fewshot_images = self.fewshot_images_dg
+            # back to normal training
+            self.train_fewshot_loaders = []
+            for i in range(self.para_dict['num_task']):
+                fewshot_dg_datset = FewShot(self.fewshot_images[i])
+                train_fewshot_loader = DataLoader(fewshot_dg_datset,
                                         batch_size=self.para_dict['batch_size'],
-                                        num_workers=self.para_dict['num_workers'],
-                                        sampler=SubsetRandomSampler(fewshot_task_data_list[i]))
+                                        num_workers=self.para_dict['num_workers'])
                 self.train_fewshot_loaders.append(train_fewshot_loader)
 
     def init_model(self):

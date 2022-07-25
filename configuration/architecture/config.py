@@ -16,11 +16,11 @@ def parse_arguments_centralized():
 
     parser.add_argument('--continual', '-conti', action='store_true', default=False)
     parser.add_argument('--num-task', type=int, default=15)
-    parser.add_argument('--fewshot', action='store_true', default=None)
+    parser.add_argument('--fewshot', action='store_true', default=True)
     parser.add_argument('--fewshot-exm', type=int, default=5)
-    parser.add_argument('--domain-generalization', '-dg', action='store_true', default=None)
+    parser.add_argument('--domain-generalization', '-dg', action='store_true', default=True)
 
-    parser.add_argument('--gpu-id', '-g', type=str, default=None)
+    parser.add_argument('--gpu-id', '-g', type=str, default=6)
     parser.add_argument('--num-epoch', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
 
