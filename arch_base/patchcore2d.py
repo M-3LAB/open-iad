@@ -38,12 +38,12 @@ class PatchCore2D():
 
         self.chosen_valid_loader = self.valid_loaders[self.config['chosen_test_task_id']] 
 
-        if self.config['fewshot']:
-            assert self.train_fewshot_loaders is not None
+        if self.config['fewshot'] or self.config['fewshot_normal']:
+        #     assert self.train_fewshot_loaders is not None
             self.chosen_fewshot_loader = self.train_fewshot_loaders[self.config['chosen_test_task_id']]
         
-        if self.config['chosen_test_task_id'] in self.config['chosen_train_task_ids']:
-            assert self.config['fewshot'] is False, 'Changeover: test task id should not be the same as train task id'
+        # if self.config['chosen_test_task_id'] in self.config['chosen_train_task_ids']:
+        #     assert self.config['fewshot'] is False, 'Changeover: test task id should not be the same as train task id'
 
         # Backbone model
         if config['backbone'] == 'resnet18':
@@ -123,38 +123,42 @@ class PatchCore2D():
         
         self.backbone.eval()
 
-        # When num_task is 15, per task means per class
-        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
-            print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
-            for _ in range(self.config['num_epochs']):
-                for batch_id, batch in enumerate(train_loader):
-                    print(f'batch id: {batch_id}')
-                    #if self.config['debug'] and batch_id > self.config['batch_limit']:
-                    #    break
-                    img = batch['img'].to(self.device)
-                    #mask = batch['mask'].to(self.device)
+        if self.config['fewshot_normal']:
+            pass
+        else:
+            # When num_task is 15, per task means per class
+            for task_idx, train_loader in enumerate(self.chosen_train_loaders):
+                print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
+                for _ in range(self.config['num_epochs']):
+                    for batch_id, batch in enumerate(train_loader):
+                        # print(f'batch id: {batch_id}')
+                        #if self.config['debug'] and batch_id > self.config['batch_limit']:
+                        #    break
+                        img = batch['img'].to(self.device)
+                        #mask = batch['mask'].to(self.device)
 
-                    # Extract features from backbone
-                    self.features.clear()
-                    _ = self.backbone(img)
+                        # Extract features from backbone
+                        self.features.clear()
+                        _ = self.backbone(img)
 
-                    # Pooling for layer 2 and layer 3 features
-                    embeddings = []
-                    for feat in self.features:
-                        pooling = torch.nn.AvgPool2d(3, 1, 1)
-                        embeddings.append(pooling(feat))
+                        # Pooling for layer 2 and layer 3 features
+                        embeddings = []
+                        for feat in self.features:
+                            pooling = torch.nn.AvgPool2d(3, 1, 1)
+                            embeddings.append(pooling(feat))
 
-                    embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
+                        embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
 
-                    embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
-                    self.embeddings_list.extend(embedding)
+                        embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
+                        self.embeddings_list.extend(embedding)
 
-        if self.config['fewshot']:
+        if self.config['fewshot'] or self.config['fewshot_normal']:
+            data = []
             print('Fewshot Processing')
             #print(f'The length of fewshot loader: {len(self.chosen_fewshot_loader)}')
             for _ in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(self.chosen_fewshot_loader):
-                    print(f'fewshot batch id: {batch_id}')
+                    # print(f'fewshot batch id: {batch_id}')
                     #if self.config['debug'] and batch_id > self.config['batch_limit']:
                     #    break
                     img = batch['img'].to(self.device)
@@ -174,9 +178,27 @@ class PatchCore2D():
 
                     embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
                     self.embeddings_list.extend(embedding)
-        
+            
+            if self.config['domain_generalization']:
+                print('using domain generalization')
+                fewshot_embedding = np.array(embedding).reshape(-1, 784, 1536).swapaxes(0, 1)
+                # dg        
+                mean_x = np.mean(fewshot_embedding, 1)
+                std_x = np.std(fewshot_embedding, 1)
+
+                for i in range(5):
+                    sampled_x = []
+                    for mu, sigma in zip(mean_x.flatten(), std_x.flatten()):
+                        s = np.random.normal(mu, sigma)
+                        sampled_x.append(s)
+
+                    sampled_x = np.array(sampled_x).reshape(784, 1536)
+                    data.append(sampled_x)
+                data = np.array(data).reshape(-1, 1536)
+                self.embeddings_list.extend(list(data))
+
         # Sparse random projection from high-dimensional space into low-dimensional euclidean space
-        total_embeddings = np.array(self.embeddings_list)
+        total_embeddings = np.array(self.embeddings_list).astype(np.float32)
         self.random_projector.fit(total_embeddings)
 
         # Coreset subsampling
