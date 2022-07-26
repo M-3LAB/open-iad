@@ -1,0 +1,15 @@
+train_task_id: [0] test_task_id: 0 shot: 1 pixel_auroc: 0.9646 img_auroc: 0.9452
+train_task_id: [1] test_task_id: 1 shot: 1 pixel_auroc: 0.9585 img_auroc: 0.8896
+train_task_id: [2] test_task_id: 2 shot: 1 pixel_auroc: 0.9753 img_auroc: 0.6562
+train_task_id: [3] test_task_id: 3 shot: 1 pixel_auroc: 0.9895 img_auroc: 0.9908
+train_task_id: [4] test_task_id: 4 shot: 1 pixel_auroc: 0.5194 img_auroc: 0.4069
+train_task_id: [5] test_task_id: 5 shot: 1 pixel_auroc: 0.9239 img_auroc: 0.8414
+train_task_id: [6] test_task_id: 6 shot: 1 pixel_auroc: 0.9905 img_auroc: 1.0000
+train_task_id: [7] test_task_id: 7 shot: 1 pixel_auroc: 0.8938 img_auroc: 0.7390
+train_task_id: [8] test_task_id: 8 shot: 1 pixel_auroc: 0.9518 img_auroc: 0.8148
+train_task_id: [9] test_task_id: 9 shot: 1 pixel_auroc: 0.8746 img_auroc: 0.4694
+train_task_id: [10] test_task_id: 10 shot: 1 pixel_auroc: 0.9489 img_auroc: 0.9870
+train_task_id: [11] test_task_id: 11 shot: 1 pixel_auroc: 0.9554 img_auroc: 0.8028
+train_task_id: [12] test_task_id: 12 shot: 1 pixel_auroc: 0.9401 img_auroc: 0.9704
+train_task_id: [13] test_task_id: 13 shot: 1 pixel_auroc: 0.9195 img_auroc: 0.9711
+train_task_id: [14] test_task_id: 14 shot: 1 pixel_auroc: 0.9744 img_auroc: 0.9837
