@@ -18,6 +18,7 @@ def parse_arguments_centralized():
     parser.add_argument('--fewshot', action='store_true', default=False)
     parser.add_argument('--fewshot-normal', action='store_true', default=False)
     parser.add_argument('--domain-generalization', '-dg', action='store_true', default=False)
+    parser.add_argument('--num-dg', type=int, default=5)
     parser.add_argument('--num-task', type=int, default=15)
     parser.add_argument('--fewshot-exm', type=int, default=5)
 

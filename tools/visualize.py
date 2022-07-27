@@ -4,9 +4,11 @@ import cv2
 import numpy as np
 import os
 from tools.utilize import create_folders
+from sklearn.manifold import TSNE
+from time import time
 
 __all__ = ['show_cam_on_image', 'cv2heatmap', 'heatmap_on_image', 'min_max_norm',
-           'cal_anomaly_map', 'save_anomaly_map']
+           'cal_anomaly_map', 'save_anomaly_map', 'plot_embedding', 'vis_embedding']
 
 
 def show_cam_on_image(img, anomaly_map):
@@ -51,6 +53,37 @@ def save_anomaly_map(anomaly_map, input_img, mask, file_path):
     cv2.imwrite(os.path.join(file_path, 'mask.jpg'), mask)
 
     
+def plot_embedding(data, label, num_shot, title):
+    x_min, x_max = np.min(data, 0), np.max(data, 0)
+    data = (data - x_min) / (x_max - x_min)
+
+    fig = plt.figure()
+    ax = plt.subplot(111)
+    p1 = None
+    p2 = None
+    for i in range(data.shape[0]):
+        # plt.text(data[i, 0], data[i, 1], str(label[i]), color=plt.cm.Set1(label[i] / 10.), fontdict={'weight': 'bold', 'size': 9})
+        if label[i] < num_shot:
+            p1 = plt.scatter(data[i, 0], data[i, 1], lw=1, color=plt.cm.Set1(label[i]), marker='.')
+        else:
+            p2 = plt.scatter(data[i, 0], data[i, 1], lw=1, color=plt.cm.Set1(label[i]), marker='^')
+    plt.xticks([])
+    plt.yticks([])
+    plt.legend([p1, p2], ['fewshot', 'dg'])
+    plt.title(title)
+
+    return fig
+
+
+def vis_embeddings(data, label, num_shot, file_path):
+    print('Computing t-SNE embedding')
+    tsne = TSNE(n_components=2, init='pca', random_state=0)
+    t0 = time()
+    result = tsne.fit_transform(data)
+    fig = plot_embedding(result, label, num_shot, 't-SNE (time %.2fs)' % (time() - t0))
+    # plt.show(fig)
+    plt.savefig(file_path)
+
 
 if __name__ == 'main':
     pass

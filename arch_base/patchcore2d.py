@@ -15,7 +15,7 @@ import faiss
 import math
 from scipy.ndimage import gaussian_filter
 from metrics.common.np_auc_precision_recall import np_get_auroc
-from tools.visualize import save_anomaly_map
+from tools.visualize import save_anomaly_map, vis_embeddings
 
 __all__ = ['PatchCore2D']
 
@@ -153,7 +153,6 @@ class PatchCore2D():
                         self.embeddings_list.extend(embedding)
 
         if self.config['fewshot'] or self.config['fewshot_normal']:
-            data = []
             print('Fewshot Processing')
             #print(f'The length of fewshot loader: {len(self.chosen_fewshot_loader)}')
             for _ in range(self.config['num_epochs']):
@@ -186,7 +185,8 @@ class PatchCore2D():
                 mean_x = np.mean(fewshot_embedding, 1)
                 std_x = np.std(fewshot_embedding, 1)
 
-                for i in range(5):
+                data = []
+                for i in range(self.config['num_dg']):
                     sampled_x = []
                     for mu, sigma in zip(mean_x.flatten(), std_x.flatten()):
                         s = np.random.normal(mu, sigma)
@@ -200,7 +200,6 @@ class PatchCore2D():
         # Sparse random projection from high-dimensional space into low-dimensional euclidean space
         total_embeddings = np.array(self.embeddings_list).astype(np.float32)
         self.random_projector.fit(total_embeddings)
-
         # Coreset subsampling
         # y refers to the label of total embeddings. X is good in training, so y=0
         selector = KCenterGreedy(X=total_embeddings, y=0)
@@ -209,7 +208,7 @@ class PatchCore2D():
                                              N=int(total_embeddings.shape[0] * self.config['coreset_sampling_ratio']))
 
         self.embedding_coreset = total_embeddings[selected_idx]
-        
+
         print('initial embedding size : ', total_embeddings.shape)
         print('final embedding size : ', self.embedding_coreset.shape)
 
@@ -217,6 +216,16 @@ class PatchCore2D():
         self.index.add(self.embedding_coreset) 
         faiss.write_index(self.index, os.path.join(self.embedding_dir_path, 'index.faiss'))
                     
+        # visualize embeddings
+        print('visualize embeddings')
+        total_labels = np.array([i // 784 for i in range(total_embeddings.shape[0])])
+        print(total_labels)
+        embedding_label = total_labels[selected_idx]        
+        embedding_data = self.embedding_coreset
+        print(embedding_label)
+        vis_embeddings(embedding_data, embedding_label, self.config['fewshot_exm'], '{}/vis_embedding.png'.format(self.file_path))
+
+
     def prediction(self):
 
         self.backbone.eval()
