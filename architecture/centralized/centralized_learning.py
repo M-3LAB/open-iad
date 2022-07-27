@@ -77,7 +77,7 @@ class CentralizedTrain():
                                          phase='test',
                                          data_transform=mvtec2d_transform,
                                          num_task=self.para_dict['num_task'])
-            if self.para_dict['fewshot']:
+            if self.para_dict['fewshot'] or self.para_dict['fewshot_normal']:
                 self.train_fewshot_dataset = MVTec2DFewShot(data_path=self.para_dict['data_path'],
                                                             learning_mode=self.para_dict['learning_mode'],
                                                             phase='train',
@@ -124,7 +124,7 @@ class CentralizedTrain():
                                       sampler=SubsetRandomSampler(valid_task_data_list[i]))
             self.valid_loaders.append(valid_loader)
 
-        if self.para_dict['fewshot']:
+        if self.para_dict['fewshot'] or self.para_dict['fewshot_normal']:
             # capture few-shot images
             self.fewshot_images = []
             fewshot_task_data_list = self.train_fewshot_dataset.sample_indices_in_task
@@ -151,7 +151,7 @@ class CentralizedTrain():
 
     def init_model(self):
         if self.para_dict['model'] == 'patchcore2d':
-            if self.para_dict['fewshot']:
+            if self.para_dict['fewshot'] or self.para_dict['fewshot_normal']:
                 self.trainer = PatchCore2D(self.para_dict, self.train_loaders,  
                                            self.valid_loaders, self.device, self.file_path, 
                                            train_fewshot_loaders=self.train_fewshot_loaders)
@@ -174,7 +174,10 @@ class CentralizedTrain():
         save_path = '{}/result_normal.txt'.format(self.para_dict['work_dir']) 
         if self.para_dict['fewshot']:
             infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])       
-            save_path = '{}/result_shot_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['fewshot_exm']) 
+            save_path = '{}/result_fewshot_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['fewshot_exm']) 
+        if self.para_dict['fewshot_normal']:
+            infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])       
+            save_path = '{}/result_fewshot_normal_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['fewshot_exm']) 
         infor = '{} pixel_auroc: {:.4f} img_auroc: {:.4f}'.format(infor, pixel_auroc, img_auroc)
 
         print(infor)

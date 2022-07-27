@@ -7,6 +7,7 @@ continual: false
 # fewshot learning
 fewshot: false 
 fewshot_exm: 5 
+fewshot_normal: false
 #batch_limit: 2
 gpu_id: 0
 gpu_ids:
@@ -23,6 +24,7 @@ beta2: 0.999
 # chosen task ids
 chosen_train_task_ids:
   - 0
-chosen_test_task_id: 1
+chosen_test_task_id: 0
 # domain augumentation
 domain_generalization: false
+num_dg: 5
