@@ -44,4 +44,22 @@ class STPM():
                                                             progress=True).to(self.device)
         else:
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
+
+        self.features_teacher = []
+        self.features_students = []
         
+    def get_layer_features(self):
+    
+        def hook_t(module, input, output):
+            self.features_teacher.append(output)
+        
+        def hook_s(module, input, output):
+            self.features_student.append(output)
+    
+        self.backbone_teacher.layer1[-1].register_forward_hook(hook_t)
+        self.backbone_teacher.layer2[-1].register_forward_hook(hook_t)
+        self.backbone_teacher.layer3[-1].register_forward_hook(hook_t)
+
+        self.backbone_teacher.layer1[-1].register_forward_hook(hook_t)
+        self.backbone_teacher.layer2[-1].register_forward_hook(hook_t)
+        self.backbone_teacher.layer3[-1].register_forward_hook(hook_t)
