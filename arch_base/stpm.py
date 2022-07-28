@@ -106,5 +106,9 @@ class STPM():
                         loss = self.cal_loss(feat_teachers=self.features_teacher,
                                              feat_students=self.features_student,
                                              criterion=self.criterion)
+                        
+                        loss.backward()
+
+                        self.optimizer.step()
 
                         
