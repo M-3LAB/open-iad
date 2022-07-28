@@ -46,7 +46,7 @@ class STPM():
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
 
         self.features_teacher = []
-        self.features_students = []
+        self.features_student = []
 
         self.criterion = torch.nn.MSELoss(reduction='sum')
         self.optimizer = torch.optim.SGD(self.model_s.parameters(), lr=self.config['lr'], 
@@ -68,3 +68,20 @@ class STPM():
         self.backbone_student.layer1[-1].register_forward_hook(hook_s)
         self.backbone_student.layer2[-1].register_forward_hook(hook_s)
         self.backbone_student.layer3[-1].register_forward_hook(hook_s)
+    
+    def train_epoch(self, inf=''):
+        self.backbone_teacher.eval()
+        self.backbone_student.train()
+
+        self.get_layer_features()
+
+        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
+            print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
+            for _ in range(self.config['num_epochs']):
+                for batch_id, batch in enumerate(train_loader):
+                    img = batch['img'].to(self.device)    
+                    self.optimizer.zero_grad()
+
+                    with torch.set_grad_enabled(True):
+                        self.features_teacher.clear()
+                        self.features_student.clear()
