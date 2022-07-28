@@ -59,6 +59,9 @@ class STPM():
         self.img_gt_list = []
         self.pixel_pred_list = []
         self.img_pred_list = [] 
+
+    def cal_anomaly_map(self):
+        pass
         
     def get_layer_features(self):
     
@@ -135,5 +138,12 @@ class STPM():
 
         for batch_id, batch in enumerate(self.chosen_valid_loader):
             img = batch['img'].to(self.device)
+            mask = batch['mask']
+
+            mask[mask>0.5] = 1
+            mask[mask<=0.5] = 0
+
+
+
 
                         
