@@ -79,9 +79,9 @@ class STPM():
             fs_norm = F.normalize(fs, p=2) 
             ft_norm = F.normalize(ft, p=2)
             f_loss = (0.5/(w*h))*criterion(fs_norm, ft_norm)
-            tot_loss += f_loss
+            total_loss += f_loss
         
-        return tot_loss
+        return total_loss
     
     def train_epoch(self, inf=''):
         self.backbone_teacher.eval()
@@ -102,5 +102,9 @@ class STPM():
 
                         _  = self.backbone_teacher(img)
                         _ = self.backbone_student(img)
+
+                        loss = self.cal_loss(feat_teachers=self.features_teacher,
+                                             feat_students=self.features_student,
+                                             criterion=self.criterion)
 
                         
