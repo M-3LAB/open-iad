@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torchvision import models
+import torch.nn.functional as F
 
 __all__ = ['STPM']
 
@@ -69,6 +70,13 @@ class STPM():
         self.backbone_student.layer2[-1].register_forward_hook(hook_s)
         self.backbone_student.layer3[-1].register_forward_hook(hook_s)
     
+    def cal_loss(self, feat_teachers, feat_students, criterion):
+        total_loss = 0
+        for i in range(len(feat_teachers)):
+            fs = feat_students[i] 
+            ft = feat_teachers[i]
+            fs_norm = F.normalize(fs, p=2) 
+    
     def train_epoch(self, inf=''):
         self.backbone_teacher.eval()
         self.backbone_student.train()
@@ -88,3 +96,5 @@ class STPM():
 
                         _  = self.backbone_teacher(img)
                         _ = self.backbone_student(img)
+
+                        
