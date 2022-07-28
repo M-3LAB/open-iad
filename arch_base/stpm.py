@@ -68,6 +68,12 @@ class STPM():
             ft = feat_teachers[i]
             fs_norm = F.normalize(fs, p=2)
             ft_norm = F.normalize(ft, p=2)
+            a_map = 1 - F.cosine_similarity(fs_norm, ft_norm)
+            a_map = torch.unsqueeze(a_map, dim=1)
+            a_map = F.interpolate(a_map, size=out_size, mode='bilinear')
+            a_map = a_map[0,0,:,:].to('cpu').detach().numpy()
+            a_map_list.append(a_map)
+            anomaly_map *= a_map
         return anomaly_map, a_map_list
         
     def get_layer_features(self):
