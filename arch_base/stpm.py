@@ -40,7 +40,7 @@ class STPM():
             self.backbone_teacher = models.wide_resnet50_2(pretrained=True, 
                                                            progress=True).to(self.device) 
 
-            self.backbone_students = models.wide_resnet50_2(pretrained=True, 
+            self.backbone_student = models.wide_resnet50_2(pretrained=True, 
                                                             progress=True).to(self.device)
         else:
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
@@ -60,6 +60,6 @@ class STPM():
         self.backbone_teacher.layer2[-1].register_forward_hook(hook_t)
         self.backbone_teacher.layer3[-1].register_forward_hook(hook_t)
 
-        self.backbone_teacher.layer1[-1].register_forward_hook(hook_t)
-        self.backbone_teacher.layer2[-1].register_forward_hook(hook_t)
-        self.backbone_teacher.layer3[-1].register_forward_hook(hook_t)
+        self.backbone_student.layer1[-1].register_forward_hook(hook_s)
+        self.backbone_student.layer2[-1].register_forward_hook(hook_s)
+        self.backbone_student.layer3[-1].register_forward_hook(hook_s)
