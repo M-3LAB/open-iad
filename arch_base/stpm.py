@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torchvision import models
 import torch.nn.functional as F
+import numpy as np
 
 __all__ = ['STPM']
 
@@ -91,7 +92,7 @@ class STPM():
 
         for task_idx, train_loader in enumerate(self.chosen_train_loaders):
             print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
-            for _ in range(self.config['num_epochs']):
+            for epoch in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(train_loader):
                     img = batch['img'].to(self.device)    
                     self.optimizer.zero_grad()
@@ -110,5 +111,11 @@ class STPM():
                         loss.backward()
 
                         self.optimizer.step()
+                
+                infor = '\r{}[Epoch {} / {}]  [Loss: {:.4f}]'.format(
+                           '', epoch+1, self.config['num_epochs'],  
+                           float(loss.data))
+                
+                print(infor, flush=True, end='  ') 
 
                         
