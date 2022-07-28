@@ -60,8 +60,15 @@ class STPM():
         self.pixel_pred_list = []
         self.img_pred_list = [] 
 
-    def cal_anomaly_map(self):
-        pass
+    def cal_anomaly_map(self, feat_teachers, feat_students, out_size=224):
+        anomaly_map = np.ones([out_size, out_size])
+        a_map_list = []
+        for i in range(len(feat_teachers)):
+            fs = feat_students[i]
+            ft = feat_teachers[i]
+            fs_norm = F.normalize(fs, p=2)
+            ft_norm = F.normalize(ft, p=2)
+        return anomaly_map, a_map_list
         
     def get_layer_features(self):
     
