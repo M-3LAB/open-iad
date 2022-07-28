@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torchvision import models
+import torch.nn.functional as F
 
 __all__ = ['STPM']
 
@@ -40,11 +41,70 @@ class STPM():
             self.backbone_teacher = models.wide_resnet50_2(pretrained=True, 
                                                            progress=True).to(self.device) 
 
-            self.backbone_students = models.wide_resnet50_2(pretrained=True, 
+            self.backbone_student = models.wide_resnet50_2(pretrained=True, 
                                                             progress=True).to(self.device)
         else:
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
+
+        self.features_teacher = []
+        self.features_student = []
+
+        self.criterion = torch.nn.MSELoss(reduction='sum')
+        self.optimizer = torch.optim.SGD(self.model_s.parameters(), lr=self.config['lr'], 
+                                         momentum=self.config['momentum'], 
+                                         weight_decay=self.config['weight_decay'])
         
+    def get_layer_features(self):
+    
+        def hook_t(module, input, output):
+            self.features_teacher.append(output)
         
-         
+        def hook_s(module, input, output):
+            self.features_student.append(output)
+    
+        self.backbone_teacher.layer1[-1].register_forward_hook(hook_t)
+        self.backbone_teacher.layer2[-1].register_forward_hook(hook_t)
+        self.backbone_teacher.layer3[-1].register_forward_hook(hook_t)
+
+        self.backbone_student.layer1[-1].register_forward_hook(hook_s)
+        self.backbone_student.layer2[-1].register_forward_hook(hook_s)
+        self.backbone_student.layer3[-1].register_forward_hook(hook_s)
+    
+    def cal_loss(self, feat_teachers, feat_students, criterion):
+        total_loss = 0
+        for i in range(len(feat_teachers)):
+            fs = feat_students[i] 
+            ft = feat_teachers[i]
+            _, _, h, w = fs.shape
+            fs_norm = F.normalize(fs, p=2) 
+            ft_norm = F.normalize(ft, p=2)
+            f_loss = (0.5/(w*h))*criterion(fs_norm, ft_norm)
+            total_loss += f_loss
         
+        return total_loss
+    
+    def train_epoch(self, inf=''):
+        self.backbone_teacher.eval()
+        self.backbone_student.train()
+
+        self.get_layer_features()
+
+        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
+            print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
+            for _ in range(self.config['num_epochs']):
+                for batch_id, batch in enumerate(train_loader):
+                    img = batch['img'].to(self.device)    
+                    self.optimizer.zero_grad()
+
+                    with torch.set_grad_enabled(True):
+                        self.features_teacher.clear()
+                        self.features_student.clear()
+
+                        _  = self.backbone_teacher(img)
+                        _ = self.backbone_student(img)
+
+                        loss = self.cal_loss(feat_teachers=self.features_teacher,
+                                             feat_students=self.features_student,
+                                             criterion=self.criterion)
+
+                        
