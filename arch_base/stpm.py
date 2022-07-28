@@ -76,6 +76,7 @@ class STPM():
             fs = feat_students[i] 
             ft = feat_teachers[i]
             fs_norm = F.normalize(fs, p=2) 
+            ft_norm = F.normalize(ft, p=2)
     
     def train_epoch(self, inf=''):
         self.backbone_teacher.eval()
