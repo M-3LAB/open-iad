@@ -47,6 +47,11 @@ class STPM():
 
         self.features_teacher = []
         self.features_students = []
+
+        self.criterion = torch.nn.MSELoss(reduction='sum')
+        self.optimizer = torch.optim.SGD(self.model_s.parameters(), lr=self.config['lr'], 
+                                         momentum=self.config['momentum'], 
+                                         weight_decay=self.config['weight_decay'])
         
     def get_layer_features(self):
     
