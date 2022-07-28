@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 
-__all__ = ['CFlow']
+__all__ = ['PFM']
 
-class CFlow():
+class PFM():
 
     def __init__(self):
         pass
