@@ -3,6 +3,7 @@ import torch.nn as nn
 from torchvision import models
 import torch.nn.functional as F
 import numpy as np
+from metrics.common.np_auc_precision_recall import *
 
 __all__ = ['STPM']
 
@@ -155,6 +156,26 @@ class STPM():
 
             mask[mask>0.5] = 1
             mask[mask<=0.5] = 0
+        
+            with torch.set_grad_enabled(False):
+                self.features_teacher.clear()
+                self.features_student.clear()
+
+                _ = self.features_teacher(img)
+                _ = self.features_student(img)
+
+                anomaly_map, _ = self.cal_anomaly_map(feat_teachers=self.features_teacher,
+                                                      feat_students=self.features_students)                 
+
+                self.pixel_pred_list.append(anomaly_map.ravel())
+                self.pixel_gt_list.extend(mask.cpu().numpy().astype(int).ravel())
+                self.img_gt_list.extend(np.max(mask.cpu().numpy().astype(int)))
+                self.img_gt_list.extend(np.max(anomaly_map))
+        
+        pixel_auroc = np_get_auroc(self.pixel_gt_list, self.pixel_pred_list)
+        img_auroc = np_get_auroc(self.img_gt_list, self.img_pred_list)
+
+        return pixel_auroc, img_auroc
 
 
 
