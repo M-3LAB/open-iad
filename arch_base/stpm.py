@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 from torchvision import models
 import torch.nn.functional as F
+import numpy as np
+from metrics.common.np_auc_precision_recall import *
 
 __all__ = ['STPM']
 
@@ -50,9 +52,30 @@ class STPM():
         self.features_student = []
 
         self.criterion = torch.nn.MSELoss(reduction='sum')
-        self.optimizer = torch.optim.SGD(self.model_s.parameters(), lr=self.config['lr'], 
+        self.optimizer = torch.optim.SGD(self.backbone_student.parameters(), lr=self.config['lr'], 
                                          momentum=self.config['momentum'], 
                                          weight_decay=self.config['weight_decay'])
+        
+        self.pixel_gt_list = []
+        self.img_gt_list = []
+        self.pixel_pred_list = []
+        self.img_pred_list = [] 
+
+    def cal_anomaly_map(self, feat_teachers, feat_students, out_size=224):
+        anomaly_map = np.ones([out_size, out_size])
+        a_map_list = []
+        for i in range(len(feat_teachers)):
+            fs = feat_students[i]
+            ft = feat_teachers[i]
+            fs_norm = F.normalize(fs, p=2)
+            ft_norm = F.normalize(ft, p=2)
+            a_map = 1 - F.cosine_similarity(fs_norm, ft_norm)
+            a_map = torch.unsqueeze(a_map, dim=1)
+            a_map = F.interpolate(a_map, size=out_size, mode='bilinear')
+            a_map = a_map[0,0,:,:].to('cpu').detach().numpy()
+            a_map_list.append(a_map)
+            anomaly_map *= a_map
+        return anomaly_map, a_map_list
         
     def get_layer_features(self):
     
@@ -91,7 +114,7 @@ class STPM():
 
         for task_idx, train_loader in enumerate(self.chosen_train_loaders):
             print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
-            for _ in range(self.config['num_epochs']):
+            for epoch in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(train_loader):
                     img = batch['img'].to(self.device)    
                     self.optimizer.zero_grad()
@@ -106,5 +129,55 @@ class STPM():
                         loss = self.cal_loss(feat_teachers=self.features_teacher,
                                              feat_students=self.features_student,
                                              criterion=self.criterion)
+                        
+                        loss.backward()
+
+                        self.optimizer.step()
+                
+                infor = '\r{}[Epoch {} / {}]  [Loss: {:.4f}]'.format(
+                           '', epoch+1, self.config['num_epochs'],  
+                           float(loss.data))
+                
+                print(infor, flush=True, end='  ') 
+
+    def prediction(self):
+
+        self.backbone_teacher.eval()
+        self.backbone_student.eval()
+
+        self.pixel_gt_list.clear()
+        self.img_gt_list.clear()
+        self.pixel_pred_list.clear()
+        self.img_pred_list.clear()
+
+        for batch_id, batch in enumerate(self.chosen_valid_loader):
+            img = batch['img'].to(self.device)
+            mask = batch['mask']
+
+            mask[mask>0.5] = 1
+            mask[mask<=0.5] = 0
+        
+            with torch.set_grad_enabled(False):
+                self.features_teacher.clear()
+                self.features_student.clear()
+
+                _ = self.features_teacher(img)
+                _ = self.features_student(img)
+
+                anomaly_map, _ = self.cal_anomaly_map(feat_teachers=self.features_teacher,
+                                                      feat_students=self.features_students)                 
+
+                self.pixel_pred_list.append(anomaly_map.ravel())
+                self.pixel_gt_list.extend(mask.cpu().numpy().astype(int).ravel())
+                self.img_gt_list.extend(np.max(mask.cpu().numpy().astype(int)))
+                self.img_gt_list.extend(np.max(anomaly_map))
+        
+        pixel_auroc = np_get_auroc(self.pixel_gt_list, self.pixel_pred_list)
+        img_auroc = np_get_auroc(self.img_gt_list, self.img_pred_list)
+
+        return pixel_auroc, img_auroc
+
+
+
 
                         
