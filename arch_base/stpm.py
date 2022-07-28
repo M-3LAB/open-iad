@@ -85,3 +85,6 @@ class STPM():
                     with torch.set_grad_enabled(True):
                         self.features_teacher.clear()
                         self.features_student.clear()
+
+                        _  = self.backbone_teacher(img)
+                        _ = self.backbone_student(img)
