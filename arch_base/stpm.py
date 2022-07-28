@@ -51,9 +51,14 @@ class STPM():
         self.features_student = []
 
         self.criterion = torch.nn.MSELoss(reduction='sum')
-        self.optimizer = torch.optim.SGD(self.model_s.parameters(), lr=self.config['lr'], 
+        self.optimizer = torch.optim.SGD(self.backbone_student.parameters(), lr=self.config['lr'], 
                                          momentum=self.config['momentum'], 
                                          weight_decay=self.config['weight_decay'])
+        
+        self.pixel_gt_list = []
+        self.img_gt_list = []
+        self.pixel_pred_list = []
+        self.img_pred_list = [] 
         
     def get_layer_features(self):
     
@@ -117,5 +122,18 @@ class STPM():
                            float(loss.data))
                 
                 print(infor, flush=True, end='  ') 
+
+    def prediction(self):
+
+        self.backbone_teacher.eval()
+        self.backbone_student.eval()
+
+        self.pixel_gt_list.clear()
+        self.img_gt_list.clear()
+        self.pixel_pred_list.clear()
+        self.img_pred_list.clear()
+
+        for batch_id, batch in enumerate(self.chosen_valid_loader):
+            img = batch['img'].to(self.device)
 
                         
