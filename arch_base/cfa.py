@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 
-__all__ = ['PFM']
+__all__ = ['CFA']
 
-class PFM():
+class CFA():
 
     def __init__(self, config, train_loaders, valid_loaders, device, 
                  file_path, train_fewshot_loaders=None):
