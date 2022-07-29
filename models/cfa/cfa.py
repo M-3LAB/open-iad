@@ -92,16 +92,16 @@ class Descriptor(nn.Module):
     def __init__(self, gamma_d, cnn):
         super(Descriptor, self).__init__()
         self.cnn = cnn
-        if cnn == 'wrn50_2':
+        if cnn == 'wide_resnet50':
             dim = 1792 
             self.layer = CoordConv2d(dim, dim//gamma_d, 1)
-        elif cnn == 'res18':
+        elif cnn == 'resnet18':
             dim = 448
             self.layer = CoordConv2d(dim, dim//gamma_d, 1)
-        elif cnn == 'effnet-b5':
+        elif cnn == 'efficientnet':
             dim = 568
             self.layer = CoordConv2d(dim, 2*dim//gamma_d, 1)
-        elif cnn == 'vgg19':
+        elif cnn == 'vgg':
             dim = 1280 
             self.layer = CoordConv2d(dim, dim//gamma_d, 1)
         
