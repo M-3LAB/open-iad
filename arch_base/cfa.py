@@ -1,5 +1,8 @@
 import torch
 import torch.nn as nn
+from models.cfa.efficientnet import EfficientNet as effnet
+from models.cfa.resnet import wide_resnet50_2, resnet18
+from models.cfa.vgg import vgg19_bn as vgg19
 
 __all__ = ['CFA']
 
