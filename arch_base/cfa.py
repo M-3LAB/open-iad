@@ -3,6 +3,7 @@ import torch.nn as nn
 from models.cfa.efficientnet import EfficientNet as effnet
 from models.cfa.resnet import wide_resnet50_2, resnet18
 from models.cfa.vgg import vgg19_bn as vgg19
+from models.cfa.cfa import *
 
 __all__ = ['CFA']
 
@@ -35,7 +36,11 @@ class CFA():
             assert self.config['fewshot'] is False, 'Changeover: test task id should not be the same as train task id'
         
         if self.config['backbone'] == 'resnet18':
-            self.backbone = resnet18()
+            self.backbone = resnet18(pretrained=True, progress=True)
+        elif self.config['backbone'] == 'wide_resnet50':
+            self.backbone = wide_resnet50_2(pretrained=True, progress=True)
+        elif self.config['backbone'] == 'vgg':
+            self.backbone = vgg19(pretrained=True, progress=True)
 
     def train_on_epoch(self):
         pass
