@@ -33,6 +33,9 @@ class CFA():
         
         if self.config['chosen_test_task_id'] in self.config['chosen_train_task_ids']:
             assert self.config['fewshot'] is False, 'Changeover: test task id should not be the same as train task id'
+        
+        if self.config['backbone'] == 'resnet18':
+            self.backbone = resnet18()
 
     def train_on_epoch(self):
         pass
