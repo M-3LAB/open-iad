@@ -7,6 +7,7 @@ from models.cfa.vgg import vgg19_bn as vgg19
 from models.cfa.cfa import DSVDD
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
+import numpy as np
 
 __all__ = ['CFA']
 
@@ -69,6 +70,10 @@ class CFA():
             x[i] = gaussian_filter(x[i], sigma=sigma)
 
         return x
+    
+    @staticmethod
+    def rescale(x):
+        return (x - x.min()) / (x.max() - x.min())
         
 
     def train_on_epoch(self):
@@ -104,7 +109,14 @@ class CFA():
 
         with torch.no_grad():
             for batch_id, batch in enumerate(self.chosen_valid_loader):
+
                 img = batch['img'].to(self.device)
+                label = batch['label'].to(self.device)
+                mask = batch['mask'].to(self.device)
+
+                self.img_gt_list.append(label.cpu().detach().numpy())
+                self.pixel_gt_list.append(mask.cpu().detach().numpy())
+
                 p = self.backbone(img)
 
                 _, score = self.loss_fn(p)
@@ -113,3 +125,6 @@ class CFA():
                 heatmaps = torch.cat((heatmaps, heatmap), dim=0) if heatmaps != None else heatmap
        
         heatmaps = CFA.upsample(heatmaps, size=img.size(2)) 
+        heatmaps = CFA.gaussian_smooth(heatmaps, sigma=4)
+        
+        gt_mask = np.asarray(self.pixel_gt_list)
