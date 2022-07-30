@@ -82,6 +82,12 @@ class CFA():
         return img_roc_auc
     
     @staticmethod
+    def roc_auc_pixel(gt, score):
+        per_pixel_roc_auc = roc_auc_score(gt.flatten(), score.flatten())
+        return per_pixel_roc_auc
+        
+    
+    @staticmethod
     def cal_img_roc(scores, gt_list):
         img_scores = scores.reshape(scores.shape[0], -1).max(axis=1)
         gt_list = np.asarray(gt_list)
