@@ -5,6 +5,8 @@ from models.cfa.efficientnet import EfficientNet as effnet
 from models.cfa.resnet import wide_resnet50_2, resnet18
 from models.cfa.vgg import vgg19_bn as vgg19
 from models.cfa.cfa import DSVDD
+import torch.nn.functional as F
+from scipy.ndimage import gaussian_filter
 
 __all__ = ['CFA']
 
@@ -45,15 +47,35 @@ class CFA():
         elif self.config['backbone'] == 'vgg':
             self.backbone = vgg19(pretrained=True, progress=True)
 
-    def train_on_epoch(self):
-        self.backbone.eval()
-
-        loss_fn = DSVDD(model=self.backbone, data_loader=self.chosen_train_loaders,
+        self.loss_fn = DSVDD(model=self.backbone, data_loader=self.chosen_train_loaders,
                         cnn=self.config['backbone'], gamma_c=self.config['gamma_c'],
                         gamma_d=self.config['gamma_d'], device=self.device)
 
-        loss_fn = loss_fn.to(self.device)
-        loss_fn.train()
+        self.loss_fn = self.loss_fn.to(self.device)
+
+        self.pixel_gt_list = []
+        self.img_gt_list = []
+        self.pixel_pred_list = []
+        self.img_pred_list = []
+    
+    @staticmethod 
+    def upsample(x, size, mode):
+        return F.interpolate(x.unsqueeze(1), size=size, mode=mode, align_corners=False).squeeze().numpy()
+    
+    @staticmethod
+    def gaussian_smooth(x, sigma=4):
+        bs = x.shape[0]
+        for i in range(0, bs):
+            x[i] = gaussian_filter(x[i], sigma=sigma)
+
+        return x
+        
+
+    def train_on_epoch(self):
+
+        self.backbone.eval()
+
+        self.loss_fn.train()
 
         optimizer = torch.optim.AdamW(params=self.backbone.parameters(),
                                       lr=self.config['lr'],
@@ -69,13 +91,25 @@ class CFA():
                     img = batch['img'].to(self.device)
                     p = self.backbone(img)
 
-                    loss, _ = loss_fn(p)
+                    loss, _ = self.loss_fn(p)
                     loss.backward()
                     optimizer.step()
 
     def prediction(self):
-        pass
-        
+        self.loss_fn.eval()
+        self.pixel_gt_list.clear()
+        self.img_gt_list.clear()
+        self.pixel_pred_list.clear()
+        self.img_pred_list.clear()
 
-    def prediction(self):
-        pass
+        with torch.no_grad():
+            for batch_id, batch in enumerate(self.chosen_valid_loader):
+                img = batch['img'].to(self.device)
+                p = self.backbone(img)
+
+                _, score = self.loss_fn(p)
+                heatmap = score.cpu().detach()
+                heatmap = torch.mean(heatmap, dim=1) 
+                heatmaps = torch.cat((heatmaps, heatmap), dim=0) if heatmaps != None else heatmap
+       
+        heatmaps = CFA.upsample(heatmaps, size=img.size(2)) 
