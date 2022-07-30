@@ -8,6 +8,7 @@ from models.cfa.cfa import DSVDD
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
 import numpy as np
+from sklearn.metrics import roc_auc_score
 
 __all__ = ['CFA']
 
@@ -74,6 +75,22 @@ class CFA():
     @staticmethod
     def rescale(x):
         return (x - x.min()) / (x.max() - x.min())
+    
+    @staticmethod
+    def roc_auc_img(gt, score):
+        img_roc_auc = roc_auc_score(gt, score)
+        return img_roc_auc
+    
+    @staticmethod
+    def cal_img_roc(scores, gt_list):
+        img_scores = scores.reshape(scores.shape[0], -1).max(axis=1)
+        gt_list = np.asarray(gt_list)
+        #fpr, tpr, _ = roc_curve(gt_list, img_scores)
+        img_roc_auc = CFA.roc_auc_img(gt_list, img_scores)
+
+        #return fpr, tpr, img_roc_auc
+        return img_roc_auc
+        
         
 
     def train_on_epoch(self):
@@ -128,3 +145,4 @@ class CFA():
         heatmaps = CFA.gaussian_smooth(heatmaps, sigma=4)
         
         gt_mask = np.asarray(self.pixel_gt_list)
+        scores = CFA.rescale(heatmaps)
