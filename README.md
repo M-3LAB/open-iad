@@ -40,15 +40,15 @@ python3 mmad_training.py
 
 > Normal
 ```bash
-python3 centralized_training.py --model patchcore2d --chosen-train-task-ids 0 --chosen-test-task-id 0 -g 0
+python3 centralized_training.py --model patchcore2d --chosen-train-task-ids 0 --chosen-test-task-id 0 --coreset-sampling-ratio 0.001 -g 1
 ```
 
 > Fewshot-Normal
 ```bash
-python3 centralized_training.py --fewshot-normal --fewshot-exm 5 --model patchcore2d --chosen-train-task-ids 0 --chosen-test-task-id 0 --coreset-sampling-ratio 0.1 -dg --num-dg 5 -g 0
+python3 centralized_training.py --fewshot-normal --fewshot-exm 5 --model patchcore2d --chosen-train-task-ids 0 --chosen-test-task-id 0 --coreset-sampling-ratio 1 -dg --num-dg 4 -g 1 --vis-em
 ```
 
-> Fewshot
+<!-- > Fewshot, for changeover
 ```bash
-python3 centralized_training.py --fewshot --fewshot-exm 5 --model patchcore2d --chosen-train-task-ids 0 --chosen-test-task-id 1 --coreset-sampling-ratio 0.1 -dg --num-dg 5 -g 0
-```
+python3 centralized_training.py --fewshot --fewshot-exm 5 --model patchcore2d --chosen-train-task-ids 0 --chosen-test-task-id 1 --coreset-sampling-ratio 1 -dg --num-dg 4 -g 1
+``` -->
