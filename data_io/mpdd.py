@@ -16,7 +16,7 @@ def mpdd_classes():
 
 class MPDD(Dataset):
     def __init__(self, data_path, learning_mode='centralized', phase='train', 
-                 data_transform=None, num_task=15):
+                 data_transform=None, num_task=6):
 
         self.data_path = data_path
         self.learning_mode = learning_mode
