@@ -57,7 +57,7 @@ def plot_embedding(data, label, num_shot, title):
     x_min, x_max = np.min(data, 0), np.max(data, 0)
     data = (data - x_min) / (x_max - x_min)
 
-    fig = plt.figure(figsize=(5, 4))
+    fig = plt.figure(figsize=(10, 8))
     ax = plt.subplot(111)
     p1 = None
     p2 = None
