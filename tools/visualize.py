@@ -57,7 +57,7 @@ def plot_embedding(data, label, num_shot, title):
     x_min, x_max = np.min(data, 0), np.max(data, 0)
     data = (data - x_min) / (x_max - x_min)
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(5, 4))
     ax = plt.subplot(111)
     p1 = None
     p2 = None
@@ -66,7 +66,7 @@ def plot_embedding(data, label, num_shot, title):
         if label[i] < num_shot:
             p1 = plt.scatter(data[i, 0], data[i, 1], lw=1, color=plt.cm.Set1(label[i]), marker='.')
         else:
-            p2 = plt.scatter(data[i, 0], data[i, 1], lw=1, color=plt.cm.Set1(label[i]), marker='^')
+            p2 = plt.scatter(data[i, 0], data[i, 1], lw=1, color=plt.cm.Set1(label[i]), marker='x')
     plt.xticks([])
     plt.yticks([])
     plt.legend([p1, p2], ['fewshot', 'dg'])

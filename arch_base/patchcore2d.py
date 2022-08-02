@@ -178,25 +178,6 @@ class PatchCore2D():
                     embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
                     self.embeddings_list.extend(embedding)
             
-            # if self.config['domain_generalization']:
-            #     print('using domain generalization')
-            #     fewshot_embedding = np.array(embedding).reshape(-1, 784, 1536).swapaxes(0, 1)
-            #     # dg        
-            #     mean_x = np.mean(fewshot_embedding, 1)
-            #     std_x = np.std(fewshot_embedding, 1)
-
-            #     data = []
-            #     for i in range(self.config['num_dg']):
-            #         sampled_x = []
-            #         for mu, sigma in zip(mean_x.flatten(), std_x.flatten()):
-            #             s = np.random.normal(mu, sigma)
-            #             sampled_x.append(s)
-
-            #         sampled_x = np.array(sampled_x).reshape(784, 1536)
-            #         data.append(sampled_x)
-            #     data = np.array(data).reshape(-1, 1536)
-            #     self.embeddings_list.extend(list(data))
-
         # Sparse random projection from high-dimensional space into low-dimensional euclidean space
         total_embeddings = np.array(self.embeddings_list).astype(np.float32)
         self.random_projector.fit(total_embeddings)
@@ -217,13 +198,14 @@ class PatchCore2D():
         faiss.write_index(self.index, os.path.join(self.embedding_dir_path, 'index.faiss'))
                     
         # visualize embeddings
-        print('visualize embeddings')
-        total_labels = np.array([i // 784 for i in range(total_embeddings.shape[0])])
-        print(total_labels)
-        embedding_label = total_labels[selected_idx]        
-        embedding_data = self.embedding_coreset
-        print(embedding_label)
-        vis_embeddings(embedding_data, embedding_label, self.config['fewshot_exm'], '{}/vis_embedding.png'.format(self.file_path))
+        if self.config['vis_em']:
+            print('visualize embeddings')
+            total_labels = np.array([i // 784 for i in range(total_embeddings.shape[0])])
+            print(total_labels)
+            embedding_label = total_labels[selected_idx]
+            embedding_data = self.embedding_coreset
+            print(embedding_label)
+            vis_embeddings(embedding_data, embedding_label, self.config['fewshot_exm'], '{}/vis_embedding.png'.format(self.file_path))
 
 
     def prediction(self):
