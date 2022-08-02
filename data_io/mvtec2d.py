@@ -46,6 +46,7 @@ class MVTec2D(Dataset):
         # data preprocessing 
         self.imge_transform = T.Compose([T.Resize((self.data_transform['data_size'], self.data_transform['data_size'])),
                                         T.CenterCrop(self.data_transform['data_crop_size']),
+                                        # T.RandomAffine(degrees=(90, 90)),
                                         T.ToTensor(),
                                         T.Normalize(mean=[0.485, 0.456, 0.406],
                                                     std=[0.229, 0.224, 0.225])
@@ -58,7 +59,7 @@ class MVTec2D(Dataset):
         img, label, mask, task_id = self.imgs_list[idx], self.labels_list[idx], self.masks_list[idx], self.task_ids_list[idx]
 
         img = Image.open(img).convert('RGB')
-        img = self.imge_transform(img)
+        img_t = self.imge_transform(img)
 
         if label == 0:
             mask = torch.zeros([1, img.shape[1], img.shape[2]])
@@ -67,7 +68,7 @@ class MVTec2D(Dataset):
             mask = self.mask_transform(mask)
 
         return {
-            'img': img, 'label':label, 'mask':mask, 'task_id':task_id
+            'img': img_t, 'label':label, 'mask':mask, 'task_id':task_id, 'img_src': img,
         }
 
     def __len__(self):

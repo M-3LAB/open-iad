@@ -178,24 +178,24 @@ class PatchCore2D():
                     embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
                     self.embeddings_list.extend(embedding)
             
-            if self.config['domain_generalization']:
-                print('using domain generalization')
-                fewshot_embedding = np.array(embedding).reshape(-1, 784, 1536).swapaxes(0, 1)
-                # dg        
-                mean_x = np.mean(fewshot_embedding, 1)
-                std_x = np.std(fewshot_embedding, 1)
+            # if self.config['domain_generalization']:
+            #     print('using domain generalization')
+            #     fewshot_embedding = np.array(embedding).reshape(-1, 784, 1536).swapaxes(0, 1)
+            #     # dg        
+            #     mean_x = np.mean(fewshot_embedding, 1)
+            #     std_x = np.std(fewshot_embedding, 1)
 
-                data = []
-                for i in range(self.config['num_dg']):
-                    sampled_x = []
-                    for mu, sigma in zip(mean_x.flatten(), std_x.flatten()):
-                        s = np.random.normal(mu, sigma)
-                        sampled_x.append(s)
+            #     data = []
+            #     for i in range(self.config['num_dg']):
+            #         sampled_x = []
+            #         for mu, sigma in zip(mean_x.flatten(), std_x.flatten()):
+            #             s = np.random.normal(mu, sigma)
+            #             sampled_x.append(s)
 
-                    sampled_x = np.array(sampled_x).reshape(784, 1536)
-                    data.append(sampled_x)
-                data = np.array(data).reshape(-1, 1536)
-                self.embeddings_list.extend(list(data))
+            #         sampled_x = np.array(sampled_x).reshape(784, 1536)
+            #         data.append(sampled_x)
+            #     data = np.array(data).reshape(-1, 1536)
+            #     self.embeddings_list.extend(list(data))
 
         # Sparse random projection from high-dimensional space into low-dimensional euclidean space
         total_embeddings = np.array(self.embeddings_list).astype(np.float32)
@@ -303,10 +303,6 @@ class PatchCore2D():
                 
         pixel_auroc = np_get_auroc(self.pixel_gt_list, self.pixel_pred_list) 
         img_auroc = np_get_auroc(self.img_gt_list, self.img_pred_list)
-    
-
-        # print(f"Task {self.config['chosen_test_task_id']} Pixel Level AUROC Score: {pixel_auroc}")
-        # print(f"Task {self.config['chosen_test_task_id']} Image Level AUROC Score: {img_auroc}")
 
         return pixel_auroc, img_auroc
 
