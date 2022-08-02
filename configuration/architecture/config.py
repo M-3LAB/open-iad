@@ -13,12 +13,12 @@ def parse_arguments_centralized():
 
     parser.add_argument('--chosen-train-task-ids', type=int, default=[4], nargs='+')
     parser.add_argument('--chosen-test-task-id', type=int, default=4)
-    parser.add_argument('--coreset-sampling-ratio', type=float, default=1)
+    parser.add_argument('--coreset-sampling-ratio', type=float, default=0.001)
 
     parser.add_argument('--fewshot', action='store_true', default=False)
-    parser.add_argument('--fewshot-normal', action='store_true', default=True)
-    parser.add_argument('--domain-generalization', '-dg', action='store_true', default=True)
-    parser.add_argument('--num-dg', type=int, default=5)
+    parser.add_argument('--fewshot-normal', action='store_true', default=False)
+    parser.add_argument('--domain-generalization', '-dg', action='store_true', default=False)
+    parser.add_argument('--num-dg', type=int, default=1)
     parser.add_argument('--num-task', type=int, default=15)
     parser.add_argument('--fewshot-exm', type=int, default=1)
 
@@ -26,6 +26,7 @@ def parse_arguments_centralized():
     parser.add_argument('--gpu-id', '-g', type=str, default=1)
     parser.add_argument('--num-epoch', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
+    parser.add_argument('--vis-em', action='store_true', default=False)
 
     #parser.add_argument('--save-model', action='store_true', default=False)
     #parser.add_argument('--load-model', action='store_true', default=False)
