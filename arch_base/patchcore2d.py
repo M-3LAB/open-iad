@@ -16,6 +16,7 @@ import math
 from scipy.ndimage import gaussian_filter
 from metrics.common.np_auc_precision_recall import np_get_auroc
 from tools.visualize import save_anomaly_map, vis_embeddings
+import kornia.geometry.transform as kt
 
 __all__ = ['PatchCore2D']
 
@@ -76,7 +77,7 @@ class PatchCore2D():
         self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', 
                                           source_domain)
         create_folders(self.embedding_dir_path)
-
+    
     def get_layer_features(self):
 
         def hook_t(module, input, output):
@@ -85,6 +86,18 @@ class PatchCore2D():
         #self.backbone.layer1[-1].register_forward_hook(hook_t)
         self.backbone.layer2[-1].register_forward_hook(hook_t)
         self.backbone.layer3[-1].register_forward_hook(hook_t)
+
+    def feature_augmentation(self, features):
+        assert len(features) > 0, 'Feature Augmentation should be done in Original Features'
+        out = features
+        angles_list = [45, 90, 135, 180, 225, 270, 325, 360]
+        for feat in features:
+            for angle in angles_list:
+                angle = torch.tensor([float(angle)]).to(self.device)
+                rot_feat = kt.rotate(feat, angle)
+                out.append(rot_feat)
+        
+        return out
 
     @staticmethod 
     def torch_to_cv(torch_img):
@@ -167,6 +180,7 @@ class PatchCore2D():
                     self.features.clear()
                     _ = self.backbone(img)
 
+                    print(self.features[0].size())
                     # Pooling for layer 2 and layer 3 features
                     embeddings = []
                     for feat in self.features:
