@@ -87,17 +87,30 @@ class PatchCore2D():
         self.backbone.layer2[-1].register_forward_hook(hook_t)
         self.backbone.layer3[-1].register_forward_hook(hook_t)
 
-    def feature_augmentation(self, features):
-        assert len(features) > 0, 'Feature Augmentation should be done in Original Features'
-        out = features
-        angles_list = [45, 90, 135, 180, 225, 270, 325, 360]
-        for feat in features:
-            for angle in angles_list:
-                angle = torch.tensor([float(angle)]).to(self.device)
-                rot_feat = kt.rotate(feat, angle)
-                out.append(rot_feat)
-        
-        return out
+    def feature_augmentation(self):
+        assert len(self.features) > 0, 'Feature Augmentation should be done in Original Features'
+        #print(len(self.features))
+        #angles_list = [45, 90, 135, 180, 225, 270, 315, 360]
+        angle = torch.tensor([90.]).to(self.device)
+        rot_feat_1 = kt.rotate(self.features[0], angle) 
+        rot_feat_2 = kt.rotate(self.features[1], angle) 
+        #print(rot_feat.size())
+        self.features.append(rot_feat_1)
+        self.features.append(rot_feat_2)
+        #for feat in self.features:
+        #    angle = torch.tensor([90.]).to(self.device)
+        #    rot_feat = kt.rotate(feat, angle) 
+        #    #print(rot_feat.size())
+        #    self.features.append(rot_feat)
+
+            #for angle in angles_list:
+            #    feat = feat.cpu()
+            #    angle = torch.tensor([float(angle)])
+            #    #print(angle)
+            #    rot_feat = kt.rotate(feat, angle)
+            #    #print(rot_feat.size())
+            #    out.append(rot_feat)
+
 
     @staticmethod 
     def torch_to_cv(torch_img):
@@ -154,9 +167,10 @@ class PatchCore2D():
                         self.features.clear()
                         _ = self.backbone(img)
 
-                        # Pooling for layer 2 and layer 3 features
                         embeddings = []
+
                         for feat in self.features:
+                            # Pooling for layer 2 and layer 3 features
                             pooling = torch.nn.AvgPool2d(3, 1, 1)
                             embeddings.append(pooling(feat))
 
@@ -180,10 +194,17 @@ class PatchCore2D():
                     self.features.clear()
                     _ = self.backbone(img)
 
-                    print(self.features[0].size())
+                    print(self.features[1].size())
                     # Pooling for layer 2 and layer 3 features
                     embeddings = []
+                    if self.config['feat_aug']:
+                        print('test')
+                        self.feature_augmentation()
+
+                    print(f'Augmentat Features Size: {len(self.features)}')
+
                     for feat in self.features:
+                        # Pooling for layer 2 and layer 3 features
                         pooling = torch.nn.AvgPool2d(3, 1, 1)
                         embeddings.append(pooling(feat))
 
