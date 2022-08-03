@@ -89,28 +89,13 @@ class PatchCore2D():
 
     def feature_augmentation(self):
         assert len(self.features) > 0, 'Feature Augmentation should be done in Original Features'
-        #print(len(self.features))
         #angles_list = [45, 90, 135, 180, 225, 270, 315, 360]
         angle = torch.tensor([90.]).to(self.device)
         rot_feat_1 = kt.rotate(self.features[0], angle) 
         rot_feat_2 = kt.rotate(self.features[1], angle) 
-        #print(rot_feat.size())
-        self.features.append(rot_feat_1)
-        self.features.append(rot_feat_2)
-        #for feat in self.features:
-        #    angle = torch.tensor([90.]).to(self.device)
-        #    rot_feat = kt.rotate(feat, angle) 
-        #    #print(rot_feat.size())
-        #    self.features.append(rot_feat)
+        feature_rot = [rot_feat_1, rot_feat_2]
 
-            #for angle in angles_list:
-            #    feat = feat.cpu()
-            #    angle = torch.tensor([float(angle)])
-            #    #print(angle)
-            #    rot_feat = kt.rotate(feat, angle)
-            #    #print(rot_feat.size())
-            #    out.append(rot_feat)
-
+        return feature_rot
 
     @staticmethod 
     def torch_to_cv(torch_img):
@@ -168,14 +153,12 @@ class PatchCore2D():
                         _ = self.backbone(img)
 
                         embeddings = []
-
                         for feat in self.features:
                             # Pooling for layer 2 and layer 3 features
                             pooling = torch.nn.AvgPool2d(3, 1, 1)
                             embeddings.append(pooling(feat))
 
                         embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
-
                         embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
                         self.embeddings_list.extend(embedding)
 
@@ -194,25 +177,30 @@ class PatchCore2D():
                     self.features.clear()
                     _ = self.backbone(img)
 
-                    print(self.features[1].size())
                     # Pooling for layer 2 and layer 3 features
                     embeddings = []
-                    if self.config['feat_aug']:
-                        print('test')
-                        self.feature_augmentation()
-
-                    print(f'Augmentat Features Size: {len(self.features)}')
-
                     for feat in self.features:
                         # Pooling for layer 2 and layer 3 features
                         pooling = torch.nn.AvgPool2d(3, 1, 1)
                         embeddings.append(pooling(feat))
 
                     embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
-
                     embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
                     self.embeddings_list.extend(embedding)
             
+                    embeddings_rot = []
+                    if self.config['feat_aug']:
+                        self.embed_rot = self.feature_augmentation()
+
+                    for feat in self.embed_rot:
+                        # Pooling for layer 2 and layer 3 features
+                        pooling = torch.nn.AvgPool2d(3, 1, 1)
+                        embeddings_rot.append(pooling(feat))
+
+                    embedding_rot = PatchCore2D.embedding_concate(embeddings_rot[0], embeddings_rot[1])
+                    embedding_rot = PatchCore2D.reshape_embedding(embedding_rot.detach().numpy())
+                    self.embeddings_list.extend(embedding_rot)
+
         # Sparse random projection from high-dimensional space into low-dimensional euclidean space
         total_embeddings = np.array(self.embeddings_list).astype(np.float32)
         self.random_projector.fit(total_embeddings)
@@ -275,12 +263,14 @@ class PatchCore2D():
 
                 # Pooling for layer 2 and layer 3 features
                 embeddings = []
+                # print(f'Augmentat Features Size: {len(self.features)}')
                 for feat in self.features:
+                    # Pooling for layer 2 and layer 3 features
                     pooling = torch.nn.AvgPool2d(3, 1, 1)
                     embeddings.append(pooling(feat))
 
-                embedding_test = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
-                embedding_test = PatchCore2D.reshape_embedding(embedding_test.detach().numpy())
+                embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
+                embedding_test = PatchCore2D.reshape_embedding(embedding.detach().numpy())
                 embedding_test = np.array(embedding_test)
 
                 # Nearest Neighbour Search
