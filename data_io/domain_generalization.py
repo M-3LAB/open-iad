@@ -16,6 +16,7 @@ import torchvision
 def domain_gen(config, data):
     data_dg = []
     degrees = [(0, 0), (90, 90), (180, 180), (270, 270)]
+    # degrees = [(0, 0), (45, 45), (90, 90), (135, 135), (180, 180), (225, 225), (270, 270), (315, 315)]
     for d in data:
         img_src = d['img_src']
         img = Image.open(img_src).convert('RGB')
