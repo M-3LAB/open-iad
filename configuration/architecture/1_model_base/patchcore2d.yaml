@@ -10,3 +10,4 @@ data_size: 256
 data_crop_size: 224
 mask_size: 256
 mask_crop_size: 224
+

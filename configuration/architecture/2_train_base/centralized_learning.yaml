@@ -30,3 +30,5 @@ domain_generalization: false
 num_dg: 5
 # vis embedding
 vis_em: false
+#feature augmentation
+feat_aug: false
