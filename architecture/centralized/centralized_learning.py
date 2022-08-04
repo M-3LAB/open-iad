@@ -151,7 +151,7 @@ class CentralizedTrain():
                     img_list.append(self.train_fewshot_dataset[idx])
                 self.fewshot_images.append(img_list)
             # data augumentation
-            if self.para_dict['domain_generalization']:
+            if self.para_dict['data_aug']:
                 self.fewshot_images_dg = []
                 for i in range(self.para_dict['num_task']):
                     data_gen_dataset = domain_gen(self.para_dict, self.fewshot_images[i])
