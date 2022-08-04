@@ -23,10 +23,10 @@ beta2: 0.999
 chosen_train_task_ids:
   - 0
 chosen_test_task_id: 0
-# domain augumentation
-domain_generalization: false
 num_dg: 5
 # vis embedding
 vis_em: false
-#feature augmentation
+# domain augumentation
+data_aug: false
+# feature augmentation
 feat_aug: false
