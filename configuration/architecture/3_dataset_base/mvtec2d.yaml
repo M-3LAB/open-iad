@@ -1,6 +1,7 @@
 dataset: mvtec2d
-data_path: '/disk4/xgy/mvtec/2D'
-num_task: 6 
+root_path: '/disk4/xgy'
+data_path: '/mvtec/2D'
+num_task: 15 
 data_size: 256
 data_crop_size: 256
 mask_size: 256

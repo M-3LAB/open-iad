@@ -7,12 +7,14 @@ from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 from data_io.mvtec2d import MVTec2D, MVTec2DFewShot, FewShot
 from data_io.mpdd import MPDD, MPDDFewShot, FewShot
+from data_io.mvteclogical import MVTecLogical, MVTecLogicalFewShot, FewShot
 from data_io.mvtec3d import MVTec3D
 from memory_augmentation.domain_generalization import domain_gen
 
 from arch_base.patchcore2d import PatchCore2D
 from arch_base.reverse import Reverse 
 #from arch_base.pointcore3d import PointCore3D
+from configuration.architecture.config import assign_service
 
 from rich import print
 
@@ -35,6 +37,10 @@ class CentralizedTrain():
         config = override_config(config, config_dataset)
         self.para_dict = merge_config(config, self.args)
         self.args = extract_config(self.args)
+
+        ip, root_path = assign_service()
+        print('local ip: {}, root_path: {}'.format(ip, root_path))
+        self.para_dict['data_path'] = '{}{}'.format(root_path, self.para_dict['data_path'])
 
     def preliminary(self):
         print('---------------------')
@@ -65,6 +71,10 @@ class CentralizedTrain():
                              'mask_size':self.para_dict['mask_size'],
                              'mask_crop_size': self.para_dict['mask_crop_size']}
         mpdd_transform = {'data_size':self.para_dict['data_size'],
+                             'data_crop_size': self.para_dict['data_crop_size'],
+                             'mask_size':self.para_dict['mask_size'],
+                             'mask_crop_size': self.para_dict['mask_crop_size']}
+        mvteclg_transform = {'data_size':self.para_dict['data_size'],
                              'data_crop_size': self.para_dict['data_crop_size'],
                              'mask_size':self.para_dict['mask_size'],
                              'mask_crop_size': self.para_dict['mask_crop_size']}
@@ -113,6 +123,23 @@ class CentralizedTrain():
                                                             data_transform=mpdd_transform,
                                                             num_task=self.para_dict['num_task'],
                                                             fewshot_exm=self.para_dict['fewshot_exm'])
+        elif self.para_dict['dataset'] == 'mvteclogical':
+            self.train_dataset = MVTecLogical(data_path=self.para_dict['data_path'],
+                                         learning_mode=self.para_dict['learning_mode'],
+                                         phase='train',
+                                         data_transform=mvteclg_transform,
+                                         num_task=self.para_dict['num_task'])
+            self.valid_dataset = MVTecLogical(data_path=self.para_dict['data_path'],
+                                         learning_mode=self.para_dict['learning_mode'],
+                                         phase='test',
+                                         data_transform=mvteclg_transform)
+            if self.para_dict['fewshot'] or self.para_dict['fewshot_normal']:
+                self.train_fewshot_dataset = MVTecLogicalFewShot(data_path=self.para_dict['data_path'],
+                                                            learning_mode=self.para_dict['learning_mode'],
+                                                            phase='train',
+                                                            data_transform=mvteclg_transform,
+                                                            num_task=self.para_dict['num_task'],
+                                                            fewshot_exm=self.para_dict['fewshot_exm'])
         else:
             raise NotImplemented('Dataset Does Not Exist')
 
@@ -151,7 +178,7 @@ class CentralizedTrain():
                     img_list.append(self.train_fewshot_dataset[idx])
                 self.fewshot_images.append(img_list)
             # data augumentation
-            if self.para_dict['domain_generalization']:
+            if self.para_dict['data_aug']:
                 self.fewshot_images_dg = []
                 for i in range(self.para_dict['num_task']):
                     data_gen_dataset = domain_gen(self.para_dict, self.fewshot_images[i])
@@ -191,13 +218,16 @@ class CentralizedTrain():
         save_path = '{}/result_normal.txt'.format(self.para_dict['work_dir']) 
         if self.para_dict['fewshot']:
             infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])       
-            save_path = '{}/result_fewshot_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['fewshot_exm']) 
+            save_path = '{}/result_{}_fewshot_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
         if self.para_dict['fewshot_normal']:
             infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])       
-            if self.para_dict['domain_generalization']:
-                save_path = '{}/result_fewshot_normal_{}_dg.txt'.format(self.para_dict['work_dir'], self.para_dict['fewshot_exm']) 
-            else:
-                save_path = '{}/result_fewshot_normal_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['fewshot_exm']) 
+            if self.para_dict['data_aug']:
+                save_path = '{}/result_{}_fewshot_normal_{}_da.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
+            if self.para_dict['feat_aug']:
+                save_path = '{}/result_{}_fewshot_normal_{}_fa.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
+            if self.para_dict['data_aug'] and self.para_dict['feat_aug']:
+                save_path = '{}/result_{}_fewshot_normal_{}_ma.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
+
         infor = '{} pixel_auroc: {:.4f} img_auroc: {:.4f}'.format(infor, pixel_auroc, img_auroc)
 
         print(infor)
