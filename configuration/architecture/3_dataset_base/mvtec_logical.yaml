@@ -1,0 +1,8 @@
+dataset: mvtec2d
+data_path: '/disk4/xgy/mvtec_logical'
+ignore_anomaly_type: 'logical_anomalies'
+num_task: 5 
+data_size: 256
+data_crop_size: 256
+mask_size: 256
+mask_crop_size: 256
