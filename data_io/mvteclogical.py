@@ -46,8 +46,7 @@ class MVTecLogical(Dataset):
         self.imge_transform = T.Compose([T.Resize((self.data_transform['data_size'], self.data_transform['data_size'])),
                                         T.CenterCrop(self.data_transform['data_crop_size']),
                                         T.ToTensor(),
-                                        T.Normalize(mean=[0.485, 0.456, 0.406],
-                                                    std=[0.229, 0.224, 0.225])
+                                        T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
                                         ])
         self.mask_transform = T.Compose([T.Resize(self.data_transform['mask_size']),
                                         T.CenterCrop(self.data_transform['mask_crop_size']),
