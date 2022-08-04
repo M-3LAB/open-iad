@@ -90,9 +90,16 @@ class PatchCore2D():
     def feature_augmentation(self):
         assert len(self.features) > 0, 'Feature Augmentation should be done in Original Features'
         #angles_list = [45, 90, 135, 180, 225, 270, 315, 360]
-        angle = torch.tensor([90.]).to(self.device)
-        rot_feat_1 = kt.rotate(self.features[0], angle) 
-        rot_feat_2 = kt.rotate(self.features[1], angle) 
+        angles_list = [45.0, 135.0, 225.0]
+
+        rot_feat_1 = self.features[0]
+        rot_feat_2 = self.features[1]
+
+        for angle in angles_list:
+            angle = torch.tensor(angle).to(self.device)
+            rot_feat_1 = torch.cat((rot_feat_1, kt.rotate(self.features[0], angle)), dim=0)
+            rot_feat_2 = torch.cat((rot_feat_2, kt.rotate(self.features[1], angle)), dim=0)
+        
         feature_rot = [rot_feat_1, rot_feat_2]
 
         return feature_rot
@@ -119,6 +126,14 @@ class PatchCore2D():
         z = F.fold(z, kernel_size=s, output_size=(H1, W1), stride=s)
 
         return z
+    
+    #def for_loop_embedding_concate(self, new_embed):
+    #    embedding = PatchCore2D.embedding_concate(new_embed[0], new_embed[1])
+    #    for i in range(2, len(new_embed)):
+    #        embedding = PatchCore2D.embedding_concate(embedding, new_embed[i])
+    #    
+    #    return embedding
+
 
     @staticmethod 
     def reshape_embedding(embedding):
@@ -192,14 +207,15 @@ class PatchCore2D():
                     if self.config['feat_aug']:
                         self.embed_rot = self.feature_augmentation()
 
-                    for feat in self.embed_rot:
-                        # Pooling for layer 2 and layer 3 features
-                        pooling = torch.nn.AvgPool2d(3, 1, 1)
-                        embeddings_rot.append(pooling(feat))
+                        for feat in self.embed_rot:
+                            # Pooling for layer 2 and layer 3 features
+                            pooling = torch.nn.AvgPool2d(3, 1, 1)
+                            embeddings_rot.append(pooling(feat))
 
-                    embedding_rot = PatchCore2D.embedding_concate(embeddings_rot[0], embeddings_rot[1])
-                    embedding_rot = PatchCore2D.reshape_embedding(embedding_rot.detach().numpy())
-                    self.embeddings_list.extend(embedding_rot)
+                        embedding_rot = PatchCore2D.embedding_concate(embeddings_rot[0], embeddings_rot[1])
+                        #embedding_rot = self.for_loop_embedding_concate(embeddings_rot)
+                        embedding_rot = PatchCore2D.reshape_embedding(embedding_rot.detach().numpy())
+                        self.embeddings_list.extend(embedding_rot)
 
         # Sparse random projection from high-dimensional space into low-dimensional euclidean space
         total_embeddings = np.array(self.embeddings_list).astype(np.float32)
