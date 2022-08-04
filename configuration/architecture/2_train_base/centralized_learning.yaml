@@ -1,7 +1,5 @@
 # centralzied learning
 learning_mode: 'centralized'
-# different training
-num_task: 15 
 # continual learning
 continual: false
 # fewshot learning
@@ -12,7 +10,7 @@ fewshot_normal: false
 gpu_id: 0
 gpu_ids:
 - '01234567'
-seed: 66
+seed: 66 
 num_workers: 8
 # work file
 work_dir: ./work_dir

@@ -47,8 +47,7 @@ class MVTec2D(Dataset):
         self.imge_transform = T.Compose([T.Resize((self.data_transform['data_size'], self.data_transform['data_size'])),
                                         T.CenterCrop(self.data_transform['data_crop_size']),
                                         T.ToTensor(),
-                                        T.Normalize(mean=[0.485, 0.456, 0.406],
-                                                    std=[0.229, 0.224, 0.225])
+                                        T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
                                         ])
         self.mask_transform = T.Compose([T.Resize(self.data_transform['mask_size']),
                                         T.CenterCrop(self.data_transform['mask_crop_size']),
@@ -139,7 +138,7 @@ class MVTec2D(Dataset):
 
 class MVTec2DFewShot(MVTec2D):
     def __init__(self, data_path, learning_mode='centralized', phase='train', 
-                 data_transform=None, num_task=15, fewshot_exm=16):
+                 data_transform=None, num_task=15, fewshot_exm=1):
         self.fewshot_exm = fewshot_exm
         super(MVTec2DFewShot, self).__init__(data_path=data_path, learning_mode=learning_mode, phase=phase, 
                  data_transform=data_transform, num_task=num_task)
