@@ -194,7 +194,7 @@ class CentralizedTrain():
             save_path = '{}/result_fewshot_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['fewshot_exm']) 
         if self.para_dict['fewshot_normal']:
             infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])       
-            if self.para_dict['domain_generalization']:
+            if self.para_dict['data_aug']:
                 save_path = '{}/result_fewshot_normal_{}_dg.txt'.format(self.para_dict['work_dir'], self.para_dict['fewshot_exm']) 
             else:
                 save_path = '{}/result_fewshot_normal_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['fewshot_exm']) 
