@@ -1,16 +1,7 @@
 import torch
-import os
-import random
 from PIL import Image
-import numpy as np
-from torchvision import models
 from torchvision import transforms as T
-from data_io.mvtec2d import FewShot
-from torch.utils.data import DataLoader
-from arch_base.patchcore2d import PatchCore2D
-import cv2
-import torchvision
-
+import kornia.geometry.transform as kt
 
 
 def domain_gen(config, data):
@@ -38,3 +29,19 @@ def domain_gen(config, data):
 
     return data_dg            
 
+def feature_augmentation(features, device):
+    assert len(features) > 0, 'Feature Augmentation should be done in Original Features'
+    #angles_list = [45, 90, 135, 180, 225, 270, 315, 360]
+    angles_list = [45.0, 135.0, 225.0]
+
+    rot_feat_1 = features[0]
+    rot_feat_2 = features[1]
+
+    for angle in angles_list:
+        angle = torch.tensor(angle).to(device)
+        rot_feat_1 = torch.cat((rot_feat_1, kt.rotate(features[0], angle)), dim=0)
+        rot_feat_2 = torch.cat((rot_feat_2, kt.rotate(features[1], angle)), dim=0)
+        
+    feature_rot = [rot_feat_1, rot_feat_2]
+
+    return feature_rot

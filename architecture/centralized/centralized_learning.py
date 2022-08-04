@@ -6,9 +6,9 @@ from tools.utilize import *
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 from data_io.mvtec2d import MVTec2D, MVTec2DFewShot, FewShot
-from data_io.mpdd import MPDD, MPDDFewShot
+from data_io.mpdd import MPDD, MPDDFewShot, FewShot
 from data_io.mvtec3d import MVTec3D
-from data_io.domain_generalization import domain_gen
+from memory_augmentation.domain_generalization import domain_gen
 
 from arch_base.patchcore2d import PatchCore2D
 from arch_base.reverse import Reverse 

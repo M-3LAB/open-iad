@@ -16,7 +16,7 @@ import math
 from scipy.ndimage import gaussian_filter
 from metrics.common.np_auc_precision_recall import np_get_auroc
 from tools.visualize import save_anomaly_map, vis_embeddings
-import kornia.geometry.transform as kt
+from memory_augmentation.domain_generalization import feature_augmentation
 
 __all__ = ['PatchCore2D']
 
@@ -87,23 +87,6 @@ class PatchCore2D():
         self.backbone.layer2[-1].register_forward_hook(hook_t)
         self.backbone.layer3[-1].register_forward_hook(hook_t)
 
-    def feature_augmentation(self):
-        assert len(self.features) > 0, 'Feature Augmentation should be done in Original Features'
-        #angles_list = [45, 90, 135, 180, 225, 270, 315, 360]
-        angles_list = [45.0, 135.0, 225.0]
-
-        rot_feat_1 = self.features[0]
-        rot_feat_2 = self.features[1]
-
-        for angle in angles_list:
-            angle = torch.tensor(angle).to(self.device)
-            rot_feat_1 = torch.cat((rot_feat_1, kt.rotate(self.features[0], angle)), dim=0)
-            rot_feat_2 = torch.cat((rot_feat_2, kt.rotate(self.features[1], angle)), dim=0)
-        
-        feature_rot = [rot_feat_1, rot_feat_2]
-
-        return feature_rot
-
     @staticmethod 
     def torch_to_cv(torch_img):
         inverse_normalization = transforms.Normalize(mean=[-0.485/0.229, -0.456/0.224, -0.406/0.255], 
@@ -126,14 +109,6 @@ class PatchCore2D():
         z = F.fold(z, kernel_size=s, output_size=(H1, W1), stride=s)
 
         return z
-    
-    #def for_loop_embedding_concate(self, new_embed):
-    #    embedding = PatchCore2D.embedding_concate(new_embed[0], new_embed[1])
-    #    for i in range(2, len(new_embed)):
-    #        embedding = PatchCore2D.embedding_concate(embedding, new_embed[i])
-    #    
-    #    return embedding
-
 
     @staticmethod 
     def reshape_embedding(embedding):
@@ -205,7 +180,7 @@ class PatchCore2D():
             
                     embeddings_rot = []
                     if self.config['feat_aug']:
-                        self.embed_rot = self.feature_augmentation()
+                        self.embed_rot = feature_augmentation(self.features, self.device)
 
                         for feat in self.embed_rot:
                             # Pooling for layer 2 and layer 3 features
@@ -213,7 +188,6 @@ class PatchCore2D():
                             embeddings_rot.append(pooling(feat))
 
                         embedding_rot = PatchCore2D.embedding_concate(embeddings_rot[0], embeddings_rot[1])
-                        #embedding_rot = self.for_loop_embedding_concate(embeddings_rot)
                         embedding_rot = PatchCore2D.reshape_embedding(embedding_rot.detach().numpy())
                         self.embeddings_list.extend(embedding_rot)
 
