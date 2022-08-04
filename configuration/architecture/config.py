@@ -5,7 +5,7 @@ __all__ = ['parse_arguments_centralized', 'parse_arguments_federated']
 
 def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mtd'])
+    parser.add_argument('--dataset', '-d', type=str, default='mpdd', choices=['mvtec2d', 'mvtec3d', 'mpdd'])
     parser.add_argument('--model', '-m', type=str, default='patchcore2d', choices=['patchcore2d', 'reverse',
                                                                                    'spade', 'padim2d', 'stpm',
                                                                                    'cfa'])
@@ -19,7 +19,6 @@ def parse_arguments_centralized():
     parser.add_argument('--fewshot-normal', action='store_true', default=True)
     parser.add_argument('--domain-generalization', '-dg', action='store_true', default=False)
     parser.add_argument('--num-dg', type=int, default=1)
-    parser.add_argument('--num-task', type=int, default=15)
     parser.add_argument('--fewshot-exm', type=int, default=1)
 
     parser.add_argument('--continual', '-conti', action='store_true', default=False)

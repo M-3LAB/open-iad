@@ -1,4 +1,7 @@
 dataset: mvtec3d
-data_path: '/disk1/mvtec/3D'
-data_size: 224
-mask_size: 224
+data_path: '/disk4/xgy/mvtec/3D'
+num_task: 10
+data_size: 256
+data_crop_size: 256
+mask_size: 256
+mask_crop_size: 256

@@ -22,7 +22,8 @@ def domain_gen(config, data):
         img = Image.open(img_src).convert('RGB')
         mask = d['mask']
         for degree in degrees:
-            t = {'degree': degree, 'translate': [0, 0], 'scale': [1.0, 1.0], 'size': [256, 256], 'crop_size': [224, 224]}
+            t = {'degree': degree, 'translate': [0, 0], 'scale': [1.0, 1.0],
+                'size': [config['data_size'], config['data_size']], 'crop_size': [config['data_crop_size'], config['data_crop_size']]}
             imge_transform = T.Compose([T.Resize(t['size']),
                                         T.CenterCrop(t['crop_size']),
                                         T.RandomAffine(degrees=t['degree']),

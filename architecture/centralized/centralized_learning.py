@@ -6,6 +6,7 @@ from tools.utilize import *
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 from data_io.mvtec2d import MVTec2D, MVTec2DFewShot, FewShot
+from data_io.mpdd import MPDD, MPDDFewShot
 from data_io.mvtec3d import MVTec3D
 from data_io.domain_generalization import domain_gen
 
@@ -54,8 +55,6 @@ class CentralizedTrain():
 
         print('work dir: {}'.format(self.file_path))
 
-
-
     def load_data(self):
         mvtec2d_transform = {'data_size':self.para_dict['data_size'],
                              'data_crop_size': self.para_dict['data_crop_size'],
@@ -65,7 +64,10 @@ class CentralizedTrain():
                              'data_crop_size': self.para_dict['data_crop_size'],
                              'mask_size':self.para_dict['mask_size'],
                              'mask_crop_size': self.para_dict['mask_crop_size']}
-
+        mpdd_transform = {'data_size':self.para_dict['data_size'],
+                             'data_crop_size': self.para_dict['data_crop_size'],
+                             'mask_size':self.para_dict['mask_size'],
+                             'mask_crop_size': self.para_dict['mask_crop_size']}
         if self.para_dict['dataset'] == 'mvtec2d':
             self.train_dataset = MVTec2D(data_path=self.para_dict['data_path'],
                                          learning_mode=self.para_dict['learning_mode'],
@@ -94,8 +96,23 @@ class CentralizedTrain():
                                          learning_mode=self.para_dict['learning_mode'],
                                          phase='test',
                                          data_transform=mvtec3d_transform)
-        elif self.para_dict['dataset'] == 'mtd':
-            pass
+        elif self.para_dict['dataset'] == 'mpdd':
+            self.train_dataset = MPDD(data_path=self.para_dict['data_path'],
+                                         learning_mode=self.para_dict['learning_mode'],
+                                         phase='train',
+                                         data_transform=mpdd_transform,
+                                         num_task=self.para_dict['num_task'])
+            self.valid_dataset = MPDD(data_path=self.para_dict['data_path'],
+                                         learning_mode=self.para_dict['learning_mode'],
+                                         phase='test',
+                                         data_transform=mpdd_transform)
+            if self.para_dict['fewshot'] or self.para_dict['fewshot_normal']:
+                self.train_fewshot_dataset = MPDDFewShot(data_path=self.para_dict['data_path'],
+                                                            learning_mode=self.para_dict['learning_mode'],
+                                                            phase='train',
+                                                            data_transform=mpdd_transform,
+                                                            num_task=self.para_dict['num_task'],
+                                                            fewshot_exm=self.para_dict['fewshot_exm'])
         else:
             raise NotImplemented('Dataset Does Not Exist')
 
