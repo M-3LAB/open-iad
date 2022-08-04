@@ -14,7 +14,7 @@ def assign_service():
     if ip == '127.0.1.1':
         root_path = '/home/robot/data'
 
-    return root_path
+    return ip, root_path
 
 def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
