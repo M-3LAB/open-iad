@@ -36,19 +36,20 @@ python3 mmad_training.py
 | fewshot (id=0) | all data (id=0)  | fewshot-normal |
 | all data (id=0) + fewshot (id=1) | all data (id=1) | fewshot |
 
---domain-generalization / -dg
+--data-augmentation / -da
+--feature-augmentation / -fa
 
 > Normal
 ```bash
-python3 centralized_training.py --model patchcore2d --chosen-train-task-ids 0 --chosen-test-task-id 0 --coreset-sampling-ratio 0.001 -g 1
+python3 centralized_training.py --model patchcore2d --dataset mvtec2d --chosen-train-task-ids 0 --chosen-test-task-id 0 --coreset-sampling-ratio 0.001 -g 1
 ```
 
 > Fewshot-Normal
 ```bash
-python3 centralized_training.py --fewshot-normal --fewshot-exm 5 --model patchcore2d --chosen-train-task-ids 0 --chosen-test-task-id 0 --coreset-sampling-ratio 1 -dg --num-dg 4 -g 1 --vis-em
+python3 centralized_training.py --fewshot-normal --fewshot-exm 5 --model patchcore2d --dataset mvtec2d --chosen-train-task-ids 0 --chosen-test-task-id 0 --coreset-sampling-ratio 1 -da --num-dg 4 -g 1 --vis-em
 ```
 
 <!-- > Fewshot, for changeover
 ```bash
-python3 centralized_training.py --fewshot --fewshot-exm 5 --model patchcore2d --chosen-train-task-ids 0 --chosen-test-task-id 1 --coreset-sampling-ratio 1 -dg --num-dg 4 -g 1
+python3 centralized_training.py --fewshot --fewshot-exm 5 --model patchcore2d --dataset mvtec2d --chosen-train-task-ids 0 --chosen-test-task-id 1 --coreset-sampling-ratio 1 -dg --num-da 4 -g 1
 ``` -->

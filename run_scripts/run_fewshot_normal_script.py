@@ -14,5 +14,5 @@ for fewshot_n in fewshots:
                 script = 'python3 centralized_training.py --fewshot-normal --model patchcore2d --chosen-train-task-ids {} --chosen-test-task-id {} --fewshot-exm {} --coreset-sampling-ratio {} -g {}'.format(
                             train_id, test_id, fewshot_n, sample_ratio, gpu_id)
                 if dg:
-                    script = '{} -dg'.format(script)
+                    script = '{} -da'.format(script)
                 os.system(script)

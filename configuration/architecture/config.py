@@ -17,7 +17,6 @@ def parse_arguments_centralized():
 
     parser.add_argument('--fewshot', action='store_true', default=False)
     parser.add_argument('--fewshot-normal', action='store_true', default=True)
-    parser.add_argument('--domain-generalization', '-dg', action='store_true', default=False)
     parser.add_argument('--num-dg', type=int, default=1)
     parser.add_argument('--fewshot-exm', type=int, default=1)
 
@@ -26,7 +25,9 @@ def parse_arguments_centralized():
     parser.add_argument('--num-epoch', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--vis-em', action='store_true', default=False)
-    parser.add_argument('--feat-aug', '-fg', action='store_true', default=False)
+
+    parser.add_argument('--data-aug', '-da', action='store_true', default=False)
+    parser.add_argument('--feat-aug', '-fa', action='store_true', default=False)
 
     #parser.add_argument('--save-model', action='store_true', default=False)
     #parser.add_argument('--load-model', action='store_true', default=False)
