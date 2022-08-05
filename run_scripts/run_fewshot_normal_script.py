@@ -1,21 +1,28 @@
 from cgi import test
 import os
 
-fewshots = [1]
-train_ids = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-test_ids = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-sample_ratio = 1
+datasets = ['mvtec2d', 'mpdd', 'mvteclogical']
+num_tasks = [15, 6, 5]
+fewshots = [1, 2, 4, 8]
+sample_ratios = [1., 1., 0.1, 0.01]
 gpu_id = 4
-da = True
-fa = True
-for fewshot_n in fewshots:
-    for train_id in train_ids:
-        for test_id in test_ids:
-            if train_id == test_id:
-                script = 'python3 centralized_training.py --fewshot-normal --model patchcore2d --chosen-train-task-ids {} --chosen-test-task-id {} --fewshot-exm {} --coreset-sampling-ratio {} -g {}'.format(
-                            train_id, test_id, fewshot_n, sample_ratio, gpu_id)
-                if da:
-                    script = '{} -da'.format(script)
-                if fa:
-                    script = '{} -fa'.format(script)
-                os.system(script)
+das = [0, 1]
+fas = [0, 1]
+for dataset, n in zip(datasets, num_tasks):
+    for fewshot_n, ratio in zip(fewshots, sample_ratios):
+        train_ids = [i for i in range(n)]
+        test_ids = [i for i in range(n)]
+        sample_ratio = 0.01
+        for train_id in train_ids:
+            for test_id in test_ids:
+                for da in das:
+                    for fa in fas:
+                        if train_id == test_id:
+                            script = 'python3 centralized_training.py --fewshot-normal --model patchcore2d --dataset {} --chosen-train-task-ids {} --chosen-test-task-id {} --fewshot-exm {} --coreset-sampling-ratio {} -g {}'.format(
+                                        dataset, train_id, test_id, fewshot_n, sample_ratio, gpu_id)
+                            if da:
+                                script = '{} -da'.format(script)
+                            if fa:
+                                script = '{} -fa'.format(script)
+                            print(script)
+                            os.system(script)
