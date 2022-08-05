@@ -15,7 +15,7 @@ def mvtec_logical_classes():
 
 
 class MVTecLogical(Dataset):
-    def __init__(self, data_path, ignor_anomaly_type='logical_anomalies', learning_mode='centralized', phase='train', 
+    def __init__(self, data_path, ignore_anomaly_type='logical_anomalies', learning_mode='centralized', phase='train', 
                  data_transform=None, num_task=5):
 
         self.data_path = data_path
@@ -23,7 +23,7 @@ class MVTecLogical(Dataset):
         self.phase = phase
         self.data_transform = data_transform
         self.class_name = mvtec_logical_classes()
-        self.ignor_anomaly_type = ignor_anomaly_type #structural_anomalies logical_anomalies no
+        self.ignor_anomaly_type = ignore_anomaly_type #structural_anomalies logical_anomalies no
         assert set(self.class_name) <= set(mvtec_logical_classes())
         
         self.num_task = num_task 
@@ -137,10 +137,10 @@ class MVTecLogical(Dataset):
         return [arr[i:i + n] for i in range(0, len(arr), n)]
 
 class MVTecLogicalFewShot(MVTecLogical):
-    def __init__(self, data_path, learning_mode='centralized', phase='train', 
+    def __init__(self, data_path, ignore_anomaly_type='logical_anomalies',learning_mode='centralized', phase='train', 
                  data_transform=None, num_task=5, fewshot_exm=16):
         self.fewshot_exm = fewshot_exm
-        super(MVTecLogicalFewShot, self).__init__(data_path=data_path, learning_mode=learning_mode, phase=phase, 
+        super(MVTecLogicalFewShot, self).__init__(data_path=data_path, ignore_anomaly_type=ignore_anomaly_type, learning_mode=learning_mode, phase=phase, 
                  data_transform=data_transform, num_task=num_task)
     
     def allocate_task_data(self):

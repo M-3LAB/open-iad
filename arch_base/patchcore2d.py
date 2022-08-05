@@ -280,6 +280,7 @@ class PatchCore2D():
                 anomaly_map_resized = cv2.resize(anomaly_map, (self.config['data_crop_size'], self.config['data_crop_size']))
                 anomaly_map_cv = gaussian_filter(anomaly_map_resized, sigma=4)
 
+                mask[mask>0] = 1
                 mask_np = mask.cpu().numpy()[0,0].astype(int)
                 self.pixel_gt_list.extend(mask_np.ravel())
                 self.pixel_pred_list.extend(anomaly_map_cv.ravel())
