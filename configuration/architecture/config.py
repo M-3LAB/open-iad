@@ -30,7 +30,7 @@ def parse_arguments_centralized():
     parser.add_argument('--coreset-sampling-ratio', type=float, default=1)
 
     parser.add_argument('--fewshot', action='store_true', default=False)
-    parser.add_argument('--fewshot-normal', action='store_true', default=True)
+    parser.add_argument('--fewshot-normal', action='store_true', default=False)
     parser.add_argument('--num-dg', type=int, default=1)
     parser.add_argument('--fewshot-exm', type=int, default=1)
 
