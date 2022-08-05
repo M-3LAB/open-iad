@@ -11,10 +11,8 @@ def assign_service():
     root_path = None
     if ip == '172.18.36.46':
         root_path = '/disk4/xgy' 
-    elif ip == '192.168.1.104':
+    if ip == '127.0.1.1':
         root_path = '/home/robot/data'
-    else:
-        raise 'Load Dataset Error'
 
     return ip, root_path
 

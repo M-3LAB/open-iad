@@ -40,6 +40,8 @@ class CentralizedTrain():
 
         ip, root_path = assign_service()
         print('local ip: {}, root_path: {}'.format(ip, root_path))
+
+        self.para_dict['root_path'] = root_path
         self.para_dict['data_path'] = '{}{}'.format(root_path, self.para_dict['data_path'])
 
     def preliminary(self):
