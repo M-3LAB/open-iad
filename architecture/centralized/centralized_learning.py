@@ -217,7 +217,7 @@ class CentralizedTrain():
 
         infor = 'train_task_id: {} test_task_id: {}'.format(self.para_dict['chosen_train_task_ids'], self.para_dict['chosen_test_task_id'])
         
-        save_path = '{}/result_normal_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
+        save_path = '{}/result_{}_normal.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
         if self.para_dict['fewshot']:
             infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])       
             save_path = '{}/result_{}_fewshot_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
