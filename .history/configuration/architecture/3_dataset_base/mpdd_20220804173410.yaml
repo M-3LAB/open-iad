@@ -1,0 +1,7 @@
+dataset: mvtec2d
+data_path: '/home/robot/data/mpdd'
+num_task: 6
+data_size: 256
+data_crop_size: 256
+mask_size: 256
+mask_crop_size: 256

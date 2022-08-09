@@ -7,12 +7,14 @@ __all__ = ['parse_arguments_centralized', 'parse_arguments_federated']
 def assign_service():
     host_name = socket.gethostname()
     ip = socket.gethostbyname(host_name)
-    
+    print(ip) 
     root_path = None
     if ip == '172.18.36.46':
         root_path = '/disk4/xgy' 
-    if ip == '127.0.1.1':
+    elif ip == '192.168.1.104':
         root_path = '/home/robot/data'
+    else:
+        raise 'Load Dataset Error'
 
     return ip, root_path
 
@@ -27,10 +29,10 @@ def parse_arguments_centralized():
 
     parser.add_argument('--chosen-train-task-ids', type=int, default=[2], nargs='+')
     parser.add_argument('--chosen-test-task-id', type=int, default=2)
-    parser.add_argument('--coreset-sampling-ratio', type=float, default=0.0001)
+    parser.add_argument('--coreset-sampling-ratio', type=float, default=1)
 
     parser.add_argument('--fewshot', action='store_true', default=False)
-    parser.add_argument('--fewshot-normal', action='store_true', default=False)
+    parser.add_argument('--fewshot-normal', action='store_true', default=True)
     parser.add_argument('--num-dg', type=int, default=1)
     parser.add_argument('--fewshot-exm', type=int, default=1)
 
