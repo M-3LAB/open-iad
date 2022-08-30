@@ -105,27 +105,27 @@ def hgnn():
 
     print('Load datasets: {:.2f} s'.format(time.time() - begin))
 
-    Model = GNN(args.encode_dim, args.hidden_dim, args.n_prop_layer, args.g_repr_dim).to(device)
-    Optimizer = torch.optim.Adam(Model.parameters(), lr=args.lr, weight_decay=args.weight_decay, amsgrad=False)
-    Scheduler = torch.optim.lr_scheduler.StepLR(Optimizer, step_size=args.lr_step, gamma=args.lr_gamma)
+    model = GNN(args.encode_dim, args.hidden_dim, args.n_prop_layer, args.g_repr_dim).to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay, amsgrad=False)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=args.lr_step, gamma=args.lr_gamma)
     mse = torch.nn.MSELoss()
     print('Load model: {:.2f} s'.format(time.time() - begin))
 
 
     if args.load_model != None:
         checkpoint = torch.load(args.load_model)
-        Model.load_state_dict(checkpoint['model_state_dict'])
+        model.load_state_dict(checkpoint['model_state_dict'])
         print('Load model, done')
 
     run = time.time()
     for e in range(init_step, args.n_iteration):
-        Model.train()
-        Optimizer.zero_grad()
+        model.train()
+        optimizer.zero_grad()
 
         data_batch = next(data_train_iter)
         data = fill_data_to_device(data_batch, device)
 
-        vectors = Model(data)
+        vectors = model(data)
 
         graph = torch.norm(vectors, dim=1).mean() / args.n_node
         splits = vectors.view(args.batch_size, 4, args.g_repr_dim).permute(1, 0, 2)
@@ -134,13 +134,13 @@ def hgnn():
         loss = loss_tri + graph * args.graph_coffin
 
         loss.backward()
-        Optimizer.step()
-        Scheduler.step()
+        optimizer.step()
+        scheduler.step()
 
         g12, g13 = compute_distance(splits)
         pos = g12.mean().item()
         neg = g13.mean().item()
-        lr = Scheduler.get_last_lr()
+        lr = scheduler.get_last_lr()
 
         if (e + 1) % 50 == 0:
             print("lr：{:.0e}  loss: {:2.4f}  graph: {: >7.4f}  pos: {: 2.4f}  neg: {: 2.4f}  diff: {: 2.4f}  time: {:.2f}".format(
@@ -149,7 +149,7 @@ def hgnn():
 
         # testing
         if (e + 1) % 200 == 0:
-            Model.eval()
+            model.eval()
             start = time.time()
             
             # triplet acc
@@ -159,7 +159,7 @@ def hgnn():
                 data = fill_data_to_device(trip, device)
 
                 with torch.no_grad():
-                    vectors = Model(data)
+                    vectors = model(data)
 
                 splits = vectors.view(-1, 4, args.g_repr_dim).permute(1, 0, 2)
                 score = compute_similarity(splits)
@@ -175,7 +175,7 @@ def hgnn():
                 data = fill_data_to_device(data_pair, device)
 
                 with torch.no_grad():
-                    vectors = Model(data)
+                    vectors = model(data)
                     
                 splits = vectors.view(-1, 2, args.g_repr_dim).permute(1, 0, 2)
                 score = compute_similarity(splits).cpu().numpy()
@@ -202,7 +202,7 @@ def hgnn():
                 best_triplet_acc = triplet_acc
 
                 model_save_path = '{}/model_{}_{}_{}_{:.4f}_{:.4f}.pth'.format(file_path, args.n_node, args.p_edge, args.g_repr_dim, best_pair_auc, best_triplet_acc)
-                torch.save({'model_state_dict': Model.state_dict()}, model_save_path)
+                torch.save({'model_state_dict': model.state_dict()}, model_save_path)
                                                                                                                                                                                                                                                             
 
 

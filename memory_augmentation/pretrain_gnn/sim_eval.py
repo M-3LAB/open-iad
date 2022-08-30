@@ -57,14 +57,14 @@ if __name__ == "__main__":
     test_trip = [trip for trip in data_test_trip_iter]
     test_pair = [pair for pair in data_test_pair_iter]
 
-    Model = GNN(encode_dim, hidden_dim, n_prop_layer, g_repr_dim).to(device)
+    model = GNN(encode_dim, hidden_dim, n_prop_layer, g_repr_dim).to(device)
 
     checkpoint = torch.load(model_path, map_location=device)
-    Model.load_state_dict(checkpoint['model_state_dict'])
+    model.load_state_dict(checkpoint['model_state_dict'])
     print('Load model, {}'.format(model_path))
 
 
-    Model.eval()
+    model.eval()
 
     # triplet acc
     scores = []
@@ -73,18 +73,14 @@ if __name__ == "__main__":
         data = fill_data_to_device(trip)
 
         with torch.no_grad():
-            vectors = Model(data)
+            vectors = model(data)
 
             if is_print and log:
                 write_log(vectors.view(4 * batch_size, -1).cpu().numpy(), chack_vector)
                 log = False
 
         splits = vectors.view(-1, 4, g_repr_dim).permute(1, 0, 2)
-        if isTestBinary:
-            score = compute_binary_similarity(splits)
-        else:
-            score = compute_similarity(splits)
-        
+        score = compute_similarity(splits)
         tmp = [x.cpu().detach().numpy() for x in score]
         scores.append(tmp)
         
@@ -97,14 +93,10 @@ if __name__ == "__main__":
         data = fill_data_to_device(data_pair)
 
         with torch.no_grad():
-            vectors = Model(data)
+            vectors = model(data)
             
         splits = vectors.view(-1, 2, g_repr_dim).permute(1, 0, 2)
-
-        if isTestBinary:
-            score = compute_binary_similarity(splits).cpu().numpy()
-        else:
-            score = compute_similarity(splits).cpu().numpy()
+        score = compute_similarity(splits).cpu().numpy()
             
         for s, l in zip(score, label):
             scores.append(s)
