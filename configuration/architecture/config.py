@@ -1,20 +1,27 @@
 import argparse
 from logging import root
-import socket
+import socket,fcntl,struct
+
+def get_ip_address(ifname):
+    s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    info = fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15], 'utf-8')))
+
+    return socket.inet_ntoa(info[20:24])
 
 __all__ = ['parse_arguments_centralized', 'parse_arguments_federated']
 
 def assign_service():
-    host_name = socket.gethostname()
-    ip = socket.gethostbyname(host_name)
-    
+    ip = get_ip_address('eno1')
     root_path = None
+
     if ip == '172.18.36.46':
         root_path = '/disk4/xgy' 
     if ip == '127.0.1.1':
         root_path = '/home/robot/data'
     if ip == '172.18.34.25':
         root_path = '/home/zhengf_lab/cse30010351/m3lab/data'
+    if ip == '172.18.36.107':
+        root_path = '/ssd-sata1/wjb/data'
 
     return ip, root_path
 
