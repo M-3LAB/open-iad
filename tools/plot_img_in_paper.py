@@ -76,7 +76,7 @@ def plot_p_n_mvteclogical():
     image_9 = [0.6033, 0.7680, 0.8655, 0.8551]
 
     plt.plot(x, pixel_3[:xtick], color='g', linewidth=2, alpha=0.75, linestyle='-', marker='o', label='Pixel AUROC (N=3)')
-    plt.plot(x, image_3[:xtick], color='g', linewidth=2, alpha=0.75, linestyle='dotted', marker='o', label='Image AUROC (N=3)')
+    plt.plot(x, image_3[:xtick], color='g', linewidth=2, alpha=0.75, linestyle='--', marker='o', label='Image AUROC (N=3)')
     plt.plot(x, pixel_9[:xtick], color='b', linewidth=2, alpha=0.75, linestyle='-', marker='^', label='Pixel AUROC (N=9)')
     plt.plot(x, image_9[:xtick], color='b', linewidth=2, alpha=0.75, linestyle='--', marker='^', label='Image AUROC (N=9)')
 
@@ -93,6 +93,6 @@ def plot_p_n_mvteclogical():
     plt.close()
 
 if __name__ == '__main__':
-    plot_p_n_mpdd()
+    # plot_p_n_mpdd()
     # plot_p_n_mvtec2d()
-    # plot_p_n_mvteclogical()
+    plot_p_n_mvteclogical()
