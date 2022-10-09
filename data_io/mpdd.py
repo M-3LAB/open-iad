@@ -5,7 +5,7 @@ import random
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms as T
-import glob
+
 
 __all__ = ['MPDD', 'mpdd_classes']
 
@@ -133,29 +133,3 @@ class MPDD(Dataset):
     def split_chunks(arr, m):
         n = int(math.ceil(len(arr) / float(m)))
         return [arr[i:i + n] for i in range(0, len(arr), n)]
-
-class MPDDFewShot(MPDD):
-    def __init__(self, data_path, learning_mode='centralized', phase='train', 
-                 data_transform=None, num_task=6, fewshot_exm=1):
-        self.fewshot_exm = fewshot_exm
-        super(MPDDFewShot, self).__init__(data_path=data_path, learning_mode=learning_mode, phase=phase, 
-                 data_transform=data_transform, num_task=num_task)
-    
-    def allocate_task_data(self):
-        start = 0
-        for num in self.sample_num_in_task:
-            end = start + num
-            indice = [i for i in range(start, end)]
-            random.shuffle(indice)
-            self.sample_indices_in_task.append(indice[:self.fewshot_exm])
-            start = end
-
-class FewShot(Dataset):
-    def __init__(self, data) -> None:
-        self.data = data
-
-    def __getitem__(self, idx):
-        return self.data[idx]
-
-    def __len__(self):
-        return len(self.data)

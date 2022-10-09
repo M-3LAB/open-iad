@@ -36,12 +36,19 @@ def parse_arguments_centralized():
 
     parser.add_argument('--chosen-train-task-ids', type=int, default=[2], nargs='+')
     parser.add_argument('--chosen-test-task-id', type=int, default=2)
-    parser.add_argument('--coreset-sampling-ratio', type=float, default=0.0001)
+    parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default=0.001)
 
+    # fewshot learniing
     parser.add_argument('--fewshot', action='store_true', default=False)
     parser.add_argument('--fewshot-normal', action='store_true', default=False)
     parser.add_argument('--num-dg', type=int, default=1)
     parser.add_argument('--fewshot-exm', type=int, default=1)
+    
+    # noisy data
+    parser.add_argument('--noisy', action='store_true', default=False)
+    parser.add_argument('--noisy-overlap', action='store_true', default=False)
+    parser.add_argument('--noise-ratio', type=float, default=0.1)
+
 
     parser.add_argument('--continual', '-conti', action='store_true', default=False)
     parser.add_argument('--gpu-id', '-g', type=str, default=1)

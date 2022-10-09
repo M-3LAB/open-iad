@@ -5,10 +5,12 @@ import yaml
 from tools.utilize import *
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-from data_io.mvtec2d import MVTec2D, MVTec2DFewShot, FewShot
-from data_io.mpdd import MPDD, MPDDFewShot, FewShot
-from data_io.mvteclogical import MVTecLogical, MVTecLogicalFewShot, FewShot
+from data_io.mvtec2d import MVTec2D
+from data_io.mpdd import MPDD
+from data_io.mvteclogical import MVTecLogical
 from data_io.mvtec3d import MVTec3D
+from data_io.fewshot import *
+from data_io.noisy import *
 from memory_augmentation.domain_generalization import domain_gen
 
 from arch_base.patchcore2d import PatchCore2D
@@ -98,6 +100,9 @@ class CentralizedTrain():
                                                             data_transform=mvtec2d_transform,
                                                             num_task=self.para_dict['num_task'],
                                                             fewshot_exm=self.para_dict['fewshot_exm'])
+            if self.para_dict['noisy']:
+                self.train_dataset = MVTec2DNoisy(noisy_ratio=self.para_dict['noisy_ratio'],
+                                               noisy_overlap=self.para_dict['noisy_overlap'])     
         elif self.para_dict['dataset'] == 'mvtec3d':
             self.train_dataset = MVTec3D(data_path=self.para_dict['data_path'],
                                          learning_mode=self.para_dict['learning_mode'],

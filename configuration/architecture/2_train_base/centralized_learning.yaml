@@ -6,6 +6,10 @@ continual: false
 fewshot: false 
 fewshot_exm: 5 
 fewshot_normal: false
+# noisy data
+noisy: false
+noise_ratio: 0.1
+noise_overlap: false
 #batch_limit: 2
 gpu_id: 0
 gpu_ids:
