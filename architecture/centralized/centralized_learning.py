@@ -170,7 +170,7 @@ class CentralizedTrain():
         self.valid_loaders = []
 
         # normal training
-        if self.para_dict['vanilla']:
+        if self.para_dict['vanilla'] or self.para_dict['fewshot']:
             train_task_data_list = self.train_dataset.sample_indices_in_task
             valid_task_data_list = self.valid_dataset.sample_indices_in_task
 
@@ -190,28 +190,29 @@ class CentralizedTrain():
 
         if self.para_dict['fewshot']:
             # capture few-shot images
-            self.fewshot_images = []
+            fewshot_images = []
             fewshot_task_data_list = self.train_fewshot_dataset.sample_indices_in_task
             for i in range(self.para_dict['num_task']):
                 img_list = []
                 for idx in fewshot_task_data_list[i]:
                     img_list.append(self.train_fewshot_dataset[idx])
-                self.fewshot_images.append(img_list)
+                fewshot_images.append(img_list)
             # data augumentation
             if self.para_dict['fewshot_data_aug']:
-                self.fewshot_images_dg = []
+                fewshot_images_dg = []
                 for i in range(self.para_dict['num_task']):
-                    data_gen_dataset = domain_gen(self.para_dict, self.fewshot_images[i])
-                    self.fewshot_images_dg.append(data_gen_dataset)
-                self.fewshot_images = self.fewshot_images_dg
+                    data_gen_dataset = domain_gen(self.para_dict, fewshot_images[i])
+                    fewshot_images_dg.append(data_gen_dataset)
+                fewshot_images = fewshot_images_dg
             # back to normal training
-            self.train_fewshot_loaders = []
+            train_fewshot_loaders = []
             for i in range(self.para_dict['num_task']):
-                fewshot_dg_datset = FewShot(self.fewshot_images[i])
+                fewshot_dg_datset = FewShot(fewshot_images[i])
                 train_fewshot_loader = DataLoader(fewshot_dg_datset,
                                         batch_size=self.para_dict['batch_size'],
                                         num_workers=self.para_dict['num_workers'])
-                self.train_fewshot_loaders.append(train_fewshot_loader)
+                train_fewshot_loaders.append(train_fewshot_loader)
+            self.train_loaders = train_fewshot_loaders
                 
         if self.para_dict['noisy']:
             train_task_data_list = self.train_noisy_dataset.sample_indices_in_task
@@ -233,12 +234,7 @@ class CentralizedTrain():
 
     def init_model(self):
         if self.para_dict['model'] == 'patchcore2d':
-            if self.para_dict['fewshot']:
-                self.trainer = PatchCore2D(self.para_dict, self.train_loaders,  
-                                           self.valid_loaders, self.device, self.file_path, 
-                                           train_fewshot_loaders=self.train_fewshot_loaders)
-            else:
-                self.trainer = PatchCore2D(self.para_dict, self.train_loaders, self.valid_loaders, 
+            self.trainer = PatchCore2D(self.para_dict, self.train_loaders, self.valid_loaders, 
                                            self.device, self.file_path)
         elif self.para_dict['model'] == 'reverse':
             self.trainer = Reverse(self.para_dict, self.train_loaders, 

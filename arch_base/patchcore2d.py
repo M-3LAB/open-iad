@@ -21,14 +21,13 @@ from memory_augmentation.domain_generalization import feature_augmentation
 __all__ = ['PatchCore2D']
 
 class PatchCore2D():
-    def __init__(self, config, train_loaders, valid_loaders, device, file_path, train_fewshot_loaders=None):
+    def __init__(self, config, train_loaders, valid_loaders, device, file_path):
         
         self.config = config
         self.train_loaders = train_loaders
         self.valid_loaders = valid_loaders
         self.device = device
         self.file_path = file_path
-        self.train_fewshot_loaders = train_fewshot_loaders
 
         self.chosen_train_loaders = [] 
         if self.config['chosen_train_task_ids'] is not None:
@@ -38,14 +37,7 @@ class PatchCore2D():
             self.chosen_train_loaders = self.train_loaders
 
         self.chosen_valid_loader = self.valid_loaders[self.config['chosen_test_task_id']] 
-
-        if self.config['fewshot']:
-        #     assert self.train_fewshot_loaders is not None
-            self.chosen_fewshot_loader = self.train_fewshot_loaders[self.config['chosen_test_task_id']]
         
-        # if self.config['chosen_test_task_id'] in self.config['chosen_train_task_ids']:
-        #     assert self.config['fewshot'] is False, 'Changeover: test task id should not be the same as train task id'
-
         # Backbone model
         if config['backbone'] == 'resnet18':
             self.backbone = models.resnet18(pretrained=True, progress=True).to(self.device)
@@ -121,9 +113,9 @@ class PatchCore2D():
         return embedding_list
         
     def train_epoch(self, inf=''):
-        
-        self.backbone.eval()
+        # for vanilla, fewshot, noisy
 
+        self.backbone.eval()
         # When num_task is 15, per task means per class
         for task_idx, train_loader in enumerate(self.chosen_train_loaders):
             print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
