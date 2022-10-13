@@ -87,7 +87,7 @@ class CentralizedTrain():
                              'mask_crop_size': self.para_dict['mask_crop_size']}
 
         if self.para_dict['dataset'] == 'mvtec2d':
-            if self.para_dict['vanilla'] or self.para_dict['noisy']:
+            if self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['noisy']:
                 self.train_dataset = MVTec2D(data_path=self.para_dict['data_path'],
                                             learning_mode=self.para_dict['learning_mode'],
                                             phase='train',
@@ -255,6 +255,7 @@ class CentralizedTrain():
 
         if self.para_dict['fewshot']:
             infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])          
+            save_path = '{}/result_{}_fewshot_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
             if self.para_dict['fewshot_data_aug']:
                 save_path = '{}/result_{}_fewshot_{}_da.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
             if self.para_dict['fewshot_feat_aug']:
