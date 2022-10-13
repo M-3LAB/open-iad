@@ -21,16 +21,14 @@ def assign_service():
     if ip == '172.18.34.25':
         root_path = '/home/zhengf_lab/cse30010351/m3lab/data'
     if ip == '172.18.36.107':
-        root_path = '/ssd-sata1/wjb/data'
+        root_path = '/ssd-sata1/wjb/data/open-ad'
 
     return ip, root_path
 
 def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvteclogical'])
-    parser.add_argument('--model', '-m', type=str, default='patchcore2d', choices=['patchcore2d', 'reverse',
-                                                                                   'spade', 'padim2d', 'stpm',
-                                                                                   'cfa'])
+    parser.add_argument('--model', '-m', type=str, default='patchcore2d', choices=['patchcore2d'])
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
@@ -38,26 +36,27 @@ def parse_arguments_centralized():
     parser.add_argument('--chosen-test-task-id', type=int, default=2)
     parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default=0.001)
 
+    # vanilla learning
+    parser.add_argument('--vanilla', action='store_true', default=False)
+    
     # fewshot learniing
     parser.add_argument('--fewshot', action='store_true', default=False)
-    parser.add_argument('--fewshot-normal', action='store_true', default=False)
-    parser.add_argument('--num-dg', type=int, default=1)
-    parser.add_argument('--fewshot-exm', type=int, default=1)
-    
+    parser.add_argument('--fewshot-exm', '-fe', type=int, default=1)
+    parser.add_argument('--fewshot-data-aug', '-fda', action='store_true', default=False)
+    parser.add_argument('--fewshot-feat-aug', '-ffa', action='store_true', default=False)
+    parser.add_argument('--fewshot-num-dg', '-fnd', type=int, default=1)
+
     # noisy data
-    parser.add_argument('--noisy', action='store_true', default=False)
-    parser.add_argument('--noisy-overlap', action='store_true', default=False)
-    parser.add_argument('--noise-ratio', type=float, default=0.1)
+    parser.add_argument('--noisy', action='store_true', default=True)
+    parser.add_argument('--noisy-overlap', '-no', action='store_true', default=False)
+    parser.add_argument('--noise-ratio', '-nr', type=float, default=0.1)
 
 
     parser.add_argument('--continual', '-conti', action='store_true', default=False)
-    parser.add_argument('--gpu-id', '-g', type=str, default=1)
+    parser.add_argument('--gpu-id', '-g', type=str, default=2)
     parser.add_argument('--num-epoch', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--vis-em', action='store_true', default=False)
-
-    parser.add_argument('--data-aug', '-da', action='store_true', default=False)
-    parser.add_argument('--feat-aug', '-fa', action='store_true', default=False)
 
     #parser.add_argument('--save-model', action='store_true', default=False)
     #parser.add_argument('--load-model', action='store_true', default=False)

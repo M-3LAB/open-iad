@@ -2,6 +2,7 @@ from re import I
 from xml.dom.minidom import DOMImplementation
 import torch
 import yaml
+from data_io.noisy import extract_noisy_data
 from tools.utilize import *
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
@@ -46,6 +47,8 @@ class CentralizedTrain():
         self.para_dict['root_path'] = root_path
         self.para_dict['data_path'] = '{}{}'.format(root_path, self.para_dict['data_path'])
 
+        assert self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['noisy'], 'Please assign learning paradigm, --vanilla, --noisy, --fewshot' 
+
     def preliminary(self):
         print('---------------------')
         print(self.args)
@@ -82,18 +85,20 @@ class CentralizedTrain():
                              'data_crop_size': self.para_dict['data_crop_size'],
                              'mask_size':self.para_dict['mask_size'],
                              'mask_crop_size': self.para_dict['mask_crop_size']}
+
         if self.para_dict['dataset'] == 'mvtec2d':
-            self.train_dataset = MVTec2D(data_path=self.para_dict['data_path'],
-                                         learning_mode=self.para_dict['learning_mode'],
-                                         phase='train',
-                                         data_transform=mvtec2d_transform,
-                                         num_task=self.para_dict['num_task'])
-            self.valid_dataset = MVTec2D(data_path=self.para_dict['data_path'],
-                                         learning_mode=self.para_dict['learning_mode'],
-                                         phase='test',
-                                         data_transform=mvtec2d_transform,
-                                         num_task=self.para_dict['num_task'])
-            if self.para_dict['fewshot'] or self.para_dict['fewshot_normal']:
+            if self.para_dict['vanilla'] or self.para_dict['noisy']:
+                self.train_dataset = MVTec2D(data_path=self.para_dict['data_path'],
+                                            learning_mode=self.para_dict['learning_mode'],
+                                            phase='train',
+                                            data_transform=mvtec2d_transform,
+                                            num_task=self.para_dict['num_task'])
+                self.valid_dataset = MVTec2D(data_path=self.para_dict['data_path'],
+                                            learning_mode=self.para_dict['learning_mode'],
+                                            phase='test',
+                                            data_transform=mvtec2d_transform,
+                                            num_task=self.para_dict['num_task'])
+            if self.para_dict['fewshot']:
                 self.train_fewshot_dataset = MVTec2DFewShot(data_path=self.para_dict['data_path'],
                                                             learning_mode=self.para_dict['learning_mode'],
                                                             phase='train',
@@ -101,29 +106,34 @@ class CentralizedTrain():
                                                             num_task=self.para_dict['num_task'],
                                                             fewshot_exm=self.para_dict['fewshot_exm'])
             if self.para_dict['noisy']:
-                self.train_dataset = MVTec2DNoisy(noisy_ratio=self.para_dict['noisy_ratio'],
-                                               noisy_overlap=self.para_dict['noisy_overlap'])     
+                self.train_noisy_dataset, self.valid_noisy_dataset, self.noisy_dataset = extract_noisy_data(self.train_dataset, 
+                                                        self.valid_dataset, 
+                                                        noisy_ratio=self.para_dict['noisy_ratio'], 
+                                                        noisy_overlap=self.para_dict['noisy_overlap'])
+ 
         elif self.para_dict['dataset'] == 'mvtec3d':
-            self.train_dataset = MVTec3D(data_path=self.para_dict['data_path'],
-                                         learning_mode=self.para_dict['learning_mode'],
-                                         phase='train',
-                                         data_transform=mvtec3d_transform,
-                                         num_task=self.para_dict['num_task'])
-            self.valid_dataset = MVTec3D(data_path=self.para_dict['data_path'],
-                                         learning_mode=self.para_dict['learning_mode'],
-                                         phase='test',
-                                         data_transform=mvtec3d_transform)
+            if self.para_dict['vanilla']:
+                self.train_dataset = MVTec3D(data_path=self.para_dict['data_path'],
+                                            learning_mode=self.para_dict['learning_mode'],
+                                            phase='train',
+                                            data_transform=mvtec3d_transform,
+                                            num_task=self.para_dict['num_task'])
+                self.valid_dataset = MVTec3D(data_path=self.para_dict['data_path'],
+                                            learning_mode=self.para_dict['learning_mode'],
+                                            phase='test',
+                                            data_transform=mvtec3d_transform)
         elif self.para_dict['dataset'] == 'mpdd':
-            self.train_dataset = MPDD(data_path=self.para_dict['data_path'],
-                                         learning_mode=self.para_dict['learning_mode'],
-                                         phase='train',
-                                         data_transform=mpdd_transform,
-                                         num_task=self.para_dict['num_task'])
-            self.valid_dataset = MPDD(data_path=self.para_dict['data_path'],
-                                         learning_mode=self.para_dict['learning_mode'],
-                                         phase='test',
-                                         data_transform=mpdd_transform)
-            if self.para_dict['fewshot'] or self.para_dict['fewshot_normal']:
+            if self.para_dict['vanilla']:
+                self.train_dataset = MPDD(data_path=self.para_dict['data_path'],
+                                            learning_mode=self.para_dict['learning_mode'],
+                                            phase='train',
+                                            data_transform=mpdd_transform,
+                                            num_task=self.para_dict['num_task'])
+                self.valid_dataset = MPDD(data_path=self.para_dict['data_path'],
+                                            learning_mode=self.para_dict['learning_mode'],
+                                            phase='test',
+                                            data_transform=mpdd_transform)
+            if self.para_dict['fewshot']:
                 self.train_fewshot_dataset = MPDDFewShot(data_path=self.para_dict['data_path'],
                                                             learning_mode=self.para_dict['learning_mode'],
                                                             phase='train',
@@ -131,16 +141,17 @@ class CentralizedTrain():
                                                             num_task=self.para_dict['num_task'],
                                                             fewshot_exm=self.para_dict['fewshot_exm'])
         elif self.para_dict['dataset'] == 'mvteclogical':
-            self.train_dataset = MVTecLogical(data_path=self.para_dict['data_path'],
-                                         learning_mode=self.para_dict['learning_mode'],
-                                         phase='train',
-                                         data_transform=mvteclg_transform,
-                                         num_task=self.para_dict['num_task'])
-            self.valid_dataset = MVTecLogical(data_path=self.para_dict['data_path'],
-                                         learning_mode=self.para_dict['learning_mode'],
-                                         phase='test',
-                                         data_transform=mvteclg_transform)
-            if self.para_dict['fewshot'] or self.para_dict['fewshot_normal']:
+            if self.para_dict['vanilla']:
+                self.train_dataset = MVTecLogical(data_path=self.para_dict['data_path'],
+                                            learning_mode=self.para_dict['learning_mode'],
+                                            phase='train',
+                                            data_transform=mvteclg_transform,
+                                            num_task=self.para_dict['num_task'])
+                self.valid_dataset = MVTecLogical(data_path=self.para_dict['data_path'],
+                                            learning_mode=self.para_dict['learning_mode'],
+                                            phase='test',
+                                            data_transform=mvteclg_transform)
+            if self.para_dict['fewshot']:
                 self.train_fewshot_dataset = MVTecLogicalFewShot(data_path=self.para_dict['data_path'],
                                                             learning_mode=self.para_dict['learning_mode'],
                                                             phase='train',
@@ -150,32 +161,34 @@ class CentralizedTrain():
         else:
             raise NotImplemented('Dataset Does Not Exist')
 
-        self.train_loaders = []
-        self.valid_loaders = []
-
-        train_task_data_list = self.train_dataset.sample_indices_in_task
-        valid_task_data_list = self.valid_dataset.sample_indices_in_task
-
         if self.para_dict['model'] == 'patchcore2d':
             test_batch_size = 1
         else:
             test_batch_size = self.para_dict['batch_size']
 
-        for i in range(self.para_dict['num_task']):
-            train_loader = DataLoader(self.train_dataset,
-                                      batch_size=self.para_dict['batch_size'],
-                                      num_workers=self.para_dict['num_workers'],
-                                      sampler=SubsetRandomSampler(train_task_data_list[i]))
-            self.train_loaders.append(train_loader)
+        self.train_loaders = []
+        self.valid_loaders = []
 
-            valid_loader = DataLoader(self.valid_dataset, 
-                                      num_workers=self.para_dict['num_workers'],
-                                      batch_size=test_batch_size, 
-                                      shuffle=False,
-                                      sampler=SubsetRandomSampler(valid_task_data_list[i]))
-            self.valid_loaders.append(valid_loader)
+        # normal training
+        if self.para_dict['vanilla']:
+            train_task_data_list = self.train_dataset.sample_indices_in_task
+            valid_task_data_list = self.valid_dataset.sample_indices_in_task
 
-        if self.para_dict['fewshot'] or self.para_dict['fewshot_normal']:
+            for i in range(self.para_dict['num_task']):
+                train_loader = DataLoader(self.train_dataset,
+                                        batch_size=self.para_dict['batch_size'],
+                                        num_workers=self.para_dict['num_workers'],
+                                        sampler=SubsetRandomSampler(train_task_data_list[i]))
+                self.train_loaders.append(train_loader)
+
+                valid_loader = DataLoader(self.valid_dataset, 
+                                        num_workers=self.para_dict['num_workers'],
+                                        batch_size=test_batch_size, 
+                                        shuffle=False,
+                                        sampler=SubsetRandomSampler(valid_task_data_list[i]))
+                self.valid_loaders.append(valid_loader)
+
+        if self.para_dict['fewshot']:
             # capture few-shot images
             self.fewshot_images = []
             fewshot_task_data_list = self.train_fewshot_dataset.sample_indices_in_task
@@ -185,7 +198,7 @@ class CentralizedTrain():
                     img_list.append(self.train_fewshot_dataset[idx])
                 self.fewshot_images.append(img_list)
             # data augumentation
-            if self.para_dict['data_aug']:
+            if self.para_dict['fewshot_data_aug']:
                 self.fewshot_images_dg = []
                 for i in range(self.para_dict['num_task']):
                     data_gen_dataset = domain_gen(self.para_dict, self.fewshot_images[i])
@@ -199,10 +212,28 @@ class CentralizedTrain():
                                         batch_size=self.para_dict['batch_size'],
                                         num_workers=self.para_dict['num_workers'])
                 self.train_fewshot_loaders.append(train_fewshot_loader)
+                
+        if self.para_dict['noisy']:
+            train_task_data_list = self.train_noisy_dataset.sample_indices_in_task
+            valid_task_data_list = self.valid_noisy_dataset.sample_indices_in_task 
+            for i in range(self.para_dict['num_task']):
+                train_loader = DataLoader(self.train_noisy_dataset,
+                                        batch_size=self.para_dict['batch_size'],
+                                        num_workers=self.para_dict['num_workers'],
+                                        sampler=SubsetRandomSampler(train_task_data_list[i]))
+                self.train_loaders.append(train_loader)
+
+                valid_loader = DataLoader(self.valid_noisy_dataset, 
+                                        num_workers=self.para_dict['num_workers'],
+                                        batch_size=test_batch_size, 
+                                        shuffle=False,
+                                        sampler=SubsetRandomSampler(valid_task_data_list[i]))
+                self.valid_loaders.append(valid_loader)
+
 
     def init_model(self):
         if self.para_dict['model'] == 'patchcore2d':
-            if self.para_dict['fewshot'] or self.para_dict['fewshot_normal']:
+            if self.para_dict['fewshot']:
                 self.trainer = PatchCore2D(self.para_dict, self.train_loaders,  
                                            self.valid_loaders, self.device, self.file_path, 
                                            train_fewshot_loaders=self.train_fewshot_loaders)
@@ -221,22 +252,25 @@ class CentralizedTrain():
         pixel_auroc, img_auroc = self.trainer.prediction()
 
         infor = 'train_task_id: {} test_task_id: {}'.format(self.para_dict['chosen_train_task_ids'], self.para_dict['chosen_test_task_id'])
-        
-        save_path = '{}/result_{}_normal.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
+
+        save_path = None 
+        if self.para_dict['vanilla']:
+            save_path = '{}/result_{}_vanilla.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
+
         if self.para_dict['fewshot']:
-            infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])       
-            save_path = '{}/result_{}_fewshot_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
-        if self.para_dict['fewshot_normal']:
-            infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])       
-            if self.para_dict['data_aug']:
-                save_path = '{}/result_{}_fewshot_normal_{}_da.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
-            if self.para_dict['feat_aug']:
-                save_path = '{}/result_{}_fewshot_normal_{}_fa.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
-            if self.para_dict['data_aug'] and self.para_dict['feat_aug']:
-                save_path = '{}/result_{}_fewshot_normal_{}_ma.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
+            infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])          
+            if self.para_dict['fewshot_data_aug']:
+                save_path = '{}/result_{}_fewshot_{}_da.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
+            if self.para_dict['fewshot_feat_aug']:
+                save_path = '{}/result_{}_fewshot_{}_fa.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
+            if self.para_dict['fewshot_data_aug'] and self.para_dict['fewshot_feat_aug']:
+                save_path = '{}/result_{}_fewshot_{}_ma.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
+
+        if self.para_dict['noisy']:
+            save_path = '{}/result_{}_noisy.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
+            infor = '{} noisy_ratio: {}'.format(infor, self.para_dict['noisy_ratio'])          
 
         infor = '{} pixel_auroc: {:.4f} img_auroc: {:.4f}'.format(infor, pixel_auroc, img_auroc)
-
         print(infor)
 
         with open(save_path, 'a') as f:

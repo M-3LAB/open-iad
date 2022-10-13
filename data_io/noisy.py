@@ -1,41 +1,53 @@
-from torch.utils.data import Dataset
 from torchvision import transforms as T
 
 
-from data_io.mvtec2d import MVTec2D
-from data_io.mpdd import MPDD
-from data_io.mvteclogical import MVTecLogical
+import copy
+import random
+import os
+from torchvision import transforms
+from pathlib import Path
+from torch.utils.data import Subset, ConcatDataset, DataLoader
 
 
-__all__ = ['MVTec2DNoisy', 'MPDDNoisy', 'MVTecLogicalNoisy']
+__all__ = ['extract_noisy_data']
 
-class MVTec2DNoisy(MVTec2D):
-    def __init__(self, noisy_ratio=0.1, noisy_overlap=False, ):
-        super().__init__()
-    
-    def __getitem__(self, idx):
-        return self.data[idx]
+def extract_noisy_data(train_dataset, valid_dataset, noisy_ratio=0.1, noisy_overlap=False):
+    valid_sample_nums = [0] + valid_dataset.sample_num_in_task
+    valid_sample_indice = valid_dataset.sample_indices_in_task
 
-    def __len__(self):
-        return len(self.data)
+    # obtain noisy label in validation set
+    noisy_indices = []
+    for i in range(valid_dataset.num_task):
+        anomaly_index = []
+        for k, j in enumerate(range(valid_sample_nums[i], valid_sample_nums[i] + valid_sample_nums[i+1])):
+            z = sum(valid_sample_nums[:i+1]) + k
+            label = valid_dataset.labels_list[z]
+            if label == 1:
+                anomaly_index.append(valid_sample_indice[i][k])
 
-class MPDDNoisy(MPDD):
-    def __init__(self, noisy_ratio=0.1, noisy_overlap=False, ):
-        super().__init__()
-    
-    def __getitem__(self, idx):
-        return self.data[idx]
+        noise_num = int(noisy_ratio * train_dataset.sample_num_in_task[i])
+        noise_index = random.sample(anomaly_index, noise_num)
 
-    def __len__(self):
-        return len(self.data)
+        noisy_indices.append(noise_index)
+
+    # construct train_noisy_dataset
+    train_noisy_dataset = copy.deepcopy(train_dataset)
+    for i in range(valid_dataset.num_task):
+        train_noisy_dataset.sample_indices_in_task[i] = train_dataset.sample_indices_in_task[i] + noisy_indices[i]
+        train_noisy_dataset.sample_num_in_task[i] = len(train_noisy_dataset.sample_indices_in_task[i])
+
+    # construct valid_noisy_dataset 
+    valid_noisy_dataset = copy.deepcopy(valid_dataset)
+    if not noisy_overlap:
+        for i in range(valid_dataset.num_task):
+            valid_noisy_dataset.sample_indices_in_task[i] = list(set(valid_sample_indice[i]) - set(noisy_indices[i]))
+            valid_noisy_dataset.sample_num_in_task[i] = len(valid_noisy_dataset.sample_indices_in_task[i])
+
+    # construct noisy_dataset 
+    noisy_dataset = copy.deepcopy(valid_dataset)
+    noisy_dataset.sample_indices_in_task = noisy_indices 
+    for i in range(valid_dataset.num_task):
+        noisy_dataset.sample_num_in_task[i] = len(noisy_dataset.sample_indices_in_task[i])
 
 
-class MVTecLogicalNoisy(MVTecLogical):
-    def __init__(self, noisy_ratio=0.1, noisy_overlap=False, ):
-        super().__init__()
-    
-    def __getitem__(self, idx):
-        return self.data[idx]
-
-    def __len__(self):
-        return len(self.data)
+    return train_noisy_dataset, valid_noisy_dataset, noisy_dataset

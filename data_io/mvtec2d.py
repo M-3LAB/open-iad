@@ -65,7 +65,7 @@ class MVTec2D(Dataset):
             mask = self.mask_transform(mask)
 
         return {
-            'img': img, 'label':label, 'mask':mask, 'task_id':task_id, 'img_src': img_src,
+            'img': img, 'label': label, 'mask': mask, 'task_id': task_id, 'img_src': img_src,
         }
 
     def __len__(self):

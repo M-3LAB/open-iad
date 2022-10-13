@@ -1,15 +1,19 @@
 # centralzied learning
 learning_mode: 'centralized'
+# vanilla learning
+vanilla: false
 # continual learning
 continual: false
 # fewshot learning
 fewshot: false 
 fewshot_exm: 5 
-fewshot_normal: false
+fewshot_num_dg: 5
+fewshot_data_aug: false
+fewshot_feat_aug: false
 # noisy data
 noisy: false
-noise_ratio: 0.1
-noise_overlap: false
+noisy_ratio: 0.1
+noisy_overlap: false
 #batch_limit: 2
 gpu_id: 0
 gpu_ids:
@@ -27,10 +31,5 @@ beta2: 0.999
 chosen_train_task_ids:
   - 0
 chosen_test_task_id: 0
-num_dg: 5
 # vis embedding
 vis_em: false
-# domain augumentation
-data_aug: false
-# feature augmentation
-feat_aug: false

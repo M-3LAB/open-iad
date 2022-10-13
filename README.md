@@ -9,10 +9,6 @@ opencv, pip install opencv-python
 ```bash
 pip3 install -r requirements.txt
 ```
-## Normal AD 
-```bash
-python3 centralized_training.py --model 'patchcore2d' --data-path '/disk2/mvtec/2D' 
-```
 
 ## Install Third Party Library
 ```bash
@@ -29,27 +25,26 @@ python3 data_io/preprocessing.py --dataset-path '/disk/mvtec/3D'
 python3 mmad_training.py
 ```
 
-## Fewshot AD
-| Train | Test | Prototypes |
+## Learning Paradigm
+| Prototypes | Train | Test |
 | ------ | -------|------ |
-| all data (id=0) | all data (id=0) | normal |
-| fewshot (id=0) | all data (id=0)  | fewshot-normal |
-| all data (id=0) + fewshot (id=1) | all data (id=1) | fewshot |
+| vanilla |all data (id=0) | all data (id=0) 
+| fewshot | fewshot (id=0) | all data (id=0) |
+| noisy | all data (id=0) + noisy data (id=0) | all data (id=0)|
 
---data-augmentation / -da
---feature-augmentation / -fa
 
-> Normal
+
+> Vanilla
 ```bash
-python3 centralized_training.py --model patchcore2d --dataset mvtec2d --chosen-train-task-ids 0 --chosen-test-task-id 0 --coreset-sampling-ratio 0.0001 -g 1
+python3 centralized_training.py --vanilla --model patchcore2d --dataset mvtec2d --chosen-train-task-ids 0 --chosen-test-task-id 0 --coreset-sampling-ratio 0.001 -g 1
 ```
 
-> Fewshot-Normal
+> Fewshot
 ```bash
-python3 centralized_training.py --fewshot-normal --fewshot-exm 5 --model patchcore2d --dataset mvtec2d --chosen-train-task-ids 0 --chosen-test-task-id 0 --coreset-sampling-ratio 1 -da --num-dg 4 -g 1 --vis-em
+python3 centralized_training.py --fewshot --fewshot-exm 2 --fewshot-num-dg 4 --model patchcore2d --dataset mvtec2d --chosen-train-task-ids 0 --chosen-test-task-id 0 --coreset-sampling-ratio 1 -g 1
 ```
 
-<!-- > Fewshot, for changeover
+> Noisy
 ```bash
-python3 centralized_training.py --fewshot --fewshot-exm 5 --model patchcore2d --dataset mvtec2d --chosen-train-task-ids 0 --chosen-test-task-id 1 --coreset-sampling-ratio 1 -dg --num-da 4 -g 1
-``` -->
+python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model patchcore2d --dataset mvtec2d --chosen-train-task-ids 0 --chosen-test-task-id 1 --coreset-sampling-ratio 0.001 -g 1
+```
