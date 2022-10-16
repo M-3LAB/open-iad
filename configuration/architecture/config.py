@@ -46,13 +46,14 @@ def parse_arguments_centralized():
     parser.add_argument('--fewshot-feat-aug', '-ffa', action='store_true', default=False)
     parser.add_argument('--fewshot-num-dg', '-fnd', type=int, default=1)
 
-    # noisy data
-    parser.add_argument('--noisy', action='store_true', default=False)
+    # noisy label
+    parser.add_argument('--noisy', action='store_true', default=True)
     parser.add_argument('--noisy-overlap', '-no', action='store_true', default=False)
     parser.add_argument('--noise-ratio', '-nr', type=float, default=0.1)
 
-
+    # continual learning
     parser.add_argument('--continual', '-conti', action='store_true', default=False)
+
     parser.add_argument('--gpu-id', '-g', type=str, default=2)
     parser.add_argument('--num-epoch', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)

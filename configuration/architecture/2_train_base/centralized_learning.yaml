@@ -10,7 +10,7 @@ fewshot_exm: 5
 fewshot_num_dg: 5
 fewshot_data_aug: false
 fewshot_feat_aug: false
-# noisy data
+# noisy label
 noisy: false
 noisy_ratio: 0.1
 noisy_overlap: false

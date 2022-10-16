@@ -4,7 +4,7 @@ import random
 
 __all__ = ['extract_noisy_data']
 
-def extract_noisy_data(train_dataset, valid_dataset, noisy_ratio=0.1, noisy_overlap=False):
+def extract_noisy_data(train_dataset, valid_dataset, noisy_ratio=0.1, noisy_overlap=False, upper_ratio=0.5):
     valid_sample_nums = [0] + valid_dataset.sample_num_in_task
     valid_sample_indice = valid_dataset.sample_indices_in_task
 
@@ -19,6 +19,9 @@ def extract_noisy_data(train_dataset, valid_dataset, noisy_ratio=0.1, noisy_over
                 anomaly_index.append(valid_sample_indice[i][k])
 
         noise_num = int(noisy_ratio * train_dataset.sample_num_in_task[i])
+        anomaly_num_max = int(len(anomaly_index) * upper_ratio)
+        if noise_num >= anomaly_num_max:
+            noise_num = anomaly_num_max
         noise_index = random.sample(anomaly_index, noise_num)
 
         noisy_indices.append(noise_index)
