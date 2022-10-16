@@ -21,23 +21,12 @@ from memory_augmentation.domain_generalization import feature_augmentation
 __all__ = ['PatchCore2D']
 
 class PatchCore2D():
-    def __init__(self, config, train_loaders, valid_loaders, device, file_path):
+    def __init__(self, config, device, file_path):
         
         self.config = config
-        self.train_loaders = train_loaders
-        self.valid_loaders = valid_loaders
         self.device = device
         self.file_path = file_path
 
-        self.chosen_train_loaders = [] 
-        if self.config['chosen_train_task_ids'] is not None:
-            for idx in range(len(self.config['chosen_train_task_ids'])):
-                self.chosen_train_loaders.append(self.train_loaders[self.config['chosen_train_task_ids'][idx]])
-        else:
-            self.chosen_train_loaders = self.train_loaders
-
-        self.chosen_valid_loader = self.valid_loaders[self.config['chosen_test_task_id']] 
-        
         # Backbone model
         if config['backbone'] == 'resnet18':
             self.backbone = models.resnet18(pretrained=True, progress=True).to(self.device)
@@ -59,15 +48,11 @@ class PatchCore2D():
 
         self.embeddings_list = []
 
-        for i in range(len(self.config['chosen_train_task_ids'])):
-            if i == 0:
-                source_domain = str(self.config['chosen_train_task_ids'][0])
-            else:
-                source_domain = source_domain + str(self.config['chosen_train_task_ids'][i])
+        source_domain = ''
+        for i in self.config['train_task_id']:  
+            source_domain = source_domain + str(self.config['train_task_id'][i])
 
-        #target_domain = str(self.config['chosen_test_task_id'])
-        self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', 
-                                          source_domain)
+        self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', source_domain)
         create_folders(self.embedding_dir_path)
     
     def get_layer_features(self):
@@ -112,13 +97,13 @@ class PatchCore2D():
         
         return embedding_list
         
-    def train_epoch(self, inf=''):
+    def train_epoch(self, train_loaders, inf=''):
         # for vanilla, fewshot, noisy
 
         self.backbone.eval()
         # When num_task is 15, per task means per class
-        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
-            print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
+        for task_idx, train_loader in enumerate(train_loaders):
+            print('run task: {}'.format(self.config['train_task_id'][task_idx]))
             for _ in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(train_loader):
                     # print(f'batch id: {batch_id}')
@@ -185,7 +170,7 @@ class PatchCore2D():
             vis_embeddings(embedding_data, embedding_label, self.config['fewshot_exm'], '{}/vis_embedding.png'.format(self.file_path))
 
 
-    def prediction(self):
+    def prediction(self, valid_loader):
 
         self.backbone.eval()
 
@@ -200,14 +185,14 @@ class PatchCore2D():
         self.pixel_pred_list.clear()
         self.img_pred_list.clear()
 
-        sampling_dir_path = os.path.join(self.file_path, 'samples', str(self.config['chosen_test_task_id']))
+        sampling_dir_path = os.path.join(self.file_path, 'samples', str(self.config['valid_task_id']))
         create_folders(sampling_dir_path)
 
-        if self.chosen_valid_loader.batch_size != 1:
+        if valid_loader.batch_size != 1:
             assert 'PatchCore Evaluation, Batch Size should be Equal to 1'
 
         with torch.no_grad():
-            for batch_id, batch in enumerate(self.chosen_valid_loader):
+            for batch_id, batch in enumerate(valid_loader):
                 img = batch['img'].to(self.device)
                 mask = batch['mask'].to(self.device)
                 label = batch['label'].to(self.device)

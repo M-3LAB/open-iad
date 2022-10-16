@@ -47,7 +47,8 @@ class CentralizedTrain():
         self.para_dict['root_path'] = root_path
         self.para_dict['data_path'] = '{}{}'.format(root_path, self.para_dict['data_path'])
 
-        assert self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['noisy'], 'Please assign learning paradigm, --vanilla, --noisy, --fewshot' 
+        if self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['noisy'] or self.para_dict['continual']:
+            assert 'Please Assign Learning Paradigm, --vanilla, --noisy, --fewshot, --continual'
 
     def preliminary(self):
         print('---------------------')
@@ -87,7 +88,7 @@ class CentralizedTrain():
                              'mask_crop_size': self.para_dict['mask_crop_size']}
 
         if self.para_dict['dataset'] == 'mvtec2d':
-            if self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['noisy']:
+            if self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['noisy'] or self.para_dict['continual']:
                 self.train_dataset = MVTec2D(data_path=self.para_dict['data_path'],
                                             learning_mode=self.para_dict['learning_mode'],
                                             phase='train',
@@ -170,7 +171,7 @@ class CentralizedTrain():
         self.valid_loaders = []
 
         # normal training
-        if self.para_dict['vanilla'] or self.para_dict['fewshot']:
+        if self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['continual']:
             train_task_data_list = self.train_dataset.sample_indices_in_task
             valid_task_data_list = self.valid_dataset.sample_indices_in_task
 
@@ -232,46 +233,69 @@ class CentralizedTrain():
                 self.valid_loaders.append(valid_loader)
 
 
+        self.chosen_train_loaders = []
+        self.chosen_valid_loaders = []
+
+        if self.para_dict['train_task_id'] == None or self.para_dict['valid_task_id'] == None:
+            raise ValueError('Plase Assign Train Task Id!')
+
+        for idx in self.para_dict['train_task_id']:
+            self.chosen_train_loaders.append(self.train_loaders[idx])
+        for idx in self.para_dict['valid_task_id']:
+            self.chosen_valid_loaders.append(self.valid_loaders[idx])
+
     def init_model(self):
         if self.para_dict['model'] == 'patchcore2d':
-            self.trainer = PatchCore2D(self.para_dict, self.train_loaders, self.valid_loaders, 
-                                           self.device, self.file_path)
+            self.trainer = PatchCore2D(self.para_dict, self.device, self.file_path)
         elif self.para_dict['model'] == 'reverse':
-            self.trainer = Reverse(self.para_dict, self.train_loaders, 
-                                   self.valid_loaders, self.device, self.file_path) 
+            self.trainer = Reverse(self.para_dict, self.chosen_train_loaders, 
+                                   self.chosen_valid_loaders, self.device, self.file_path) 
         else:
             raise ValueError('Model is invalid!')
 
        
     def work_flow(self):
-        self.trainer.train_epoch()
-        pixel_auroc, img_auroc = self.trainer.prediction()
+        # train all task in one time
+        train_loaders = self.chosen_train_loaders
+        self.trainer.train_epoch(train_loaders)
 
-        infor = 'train_task_id: {} test_task_id: {}'.format(self.para_dict['chosen_train_task_ids'], self.para_dict['chosen_test_task_id'])
+        # test each task individually
+        for task_id, valid_loader in enumerate(self.chosen_valid_loaders):
+            pixel_auroc, img_auroc = self.trainer.prediction(valid_loader=valid_loader)
 
-        save_path = None 
-        if self.para_dict['vanilla']:
-            save_path = '{}/result_{}_vanilla.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
+            infor = 'train_task_id: {} valid_task_id: {}'.format(self.para_dict['train_task_id'], self.para_dict['valid_task_id'][task_id])
 
-        if self.para_dict['fewshot']:
-            infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])          
-            save_path = '{}/result_{}_fewshot_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
-            if self.para_dict['fewshot_data_aug']:
-                save_path = '{}/result_{}_fewshot_{}_da.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
-            if self.para_dict['fewshot_feat_aug']:
-                save_path = '{}/result_{}_fewshot_{}_fa.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
-            if self.para_dict['fewshot_data_aug'] and self.para_dict['fewshot_feat_aug']:
-                save_path = '{}/result_{}_fewshot_{}_ma.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
+            save_path = None 
+            if self.para_dict['vanilla']:
+                save_path = '{}/result_{}_vanilla.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
 
-        if self.para_dict['noisy']:
-            save_path = '{}/result_{}_noisy.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
-            infor = '{} noisy_ratio: {}'.format(infor, self.para_dict['noisy_ratio'])          
+            if self.para_dict['fewshot']:
+                infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])          
+                save_path = '{}/result_{}_fewshot_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
+                if self.para_dict['fewshot_data_aug']:
+                    save_path = '{}/result_{}_fewshot_{}_da.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
+                if self.para_dict['fewshot_feat_aug']:
+                    save_path = '{}/result_{}_fewshot_{}_fa.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
+                if self.para_dict['fewshot_data_aug'] and self.para_dict['fewshot_feat_aug']:
+                    save_path = '{}/result_{}_fewshot_{}_ma.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
 
-        infor = '{} pixel_auroc: {:.4f} img_auroc: {:.4f}'.format(infor, pixel_auroc, img_auroc)
-        print(infor)
+            if self.para_dict['noisy']:
+                infor = '{} noisy_ratio: {}'.format(infor, self.para_dict['noisy_ratio'])          
+                save_path = '{}/result_{}_noisy.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
 
-        with open(save_path, 'a') as f:
-            print(infor, file=f)
+            if self.para_dict['continual']:
+                source_domain = ''
+                for i in self.para_dict['train_task_id']:  
+                    source_domain = source_domain + str(self.para_dict['train_task_id'][i])
+                save_path = '{}/result_{}_continual_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], source_domain) 
+            
+            infor = '{} pixel_auroc: {:.4f} img_auroc: {:.4f}'.format(infor, pixel_auroc, img_auroc)
+            print(infor)
+
+            with open(save_path, 'a') as f:
+                print(infor, file=f)
+
+
 
     def run_work_flow(self):
         self.load_config()

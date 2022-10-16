@@ -28,8 +28,9 @@ debug: false
 beta1: 0.5
 beta2: 0.999
 # chosen task ids
-chosen_train_task_ids:
+train_task_id:
   - 0
-chosen_test_task_id: 0
+valid_task_id: 
+  - 0
 # vis embedding
 vis_em: false

@@ -17,7 +17,7 @@ def extract_noisy_data(train_dataset, valid_dataset, noisy_ratio=0.1, noisy_over
             label = valid_dataset.labels_list[z]
             if label == 1:
                 anomaly_index.append(valid_sample_indice[i][k])
-
+        # set noisy data to be less than 50 percent of these in test set
         noise_num = int(noisy_ratio * train_dataset.sample_num_in_task[i])
         anomaly_num_max = int(len(anomaly_index) * upper_ratio)
         if noise_num >= anomaly_num_max:

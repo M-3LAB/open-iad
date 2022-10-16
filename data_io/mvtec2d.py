@@ -34,7 +34,7 @@ class MVTec2D(Dataset):
         self.masks_list = []
         self.task_ids_list = []
         
-        # continual
+        # mark each sample task id
         self.sample_num_in_task = []
         self.sample_indices_in_task = []
 
@@ -111,7 +111,7 @@ class MVTec2D(Dataset):
                         gt_path_list = [os.path.join(gt_type_dir, img_fname + '_mask.png')
                                         for img_fname in img_name_list]
                         mask.extend(gt_path_list)
-            # continual
+            
             task_id = [id for i in range(len(x))]
             self.sample_num_in_task.append(len(x))
 
