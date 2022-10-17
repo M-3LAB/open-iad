@@ -7,13 +7,13 @@ from torch.utils.data import Dataset
 from torchvision import transforms as T
 
 
-__all__ = ['MVTecLogical', 'mvtec_logical_classes']
+__all__ = ['MVTecLoco', 'mvtec_loco_classes']
 
-def mvtec_logical_classes():
+def mvtec_loco_classes():
     return ["breakfast_box", "juice_bottle", "pushpins", "screw_bag", "splicing_connectors"]
 
 
-class MVTecLogical(Dataset):
+class MVTecLoco(Dataset):
     def __init__(self, data_path, ignore_anomaly_type='logical_anomalies', learning_mode='centralized', phase='train', 
                  data_transform=None, num_task=5):
 
@@ -21,9 +21,9 @@ class MVTecLogical(Dataset):
         self.learning_mode = learning_mode
         self.phase = phase
         self.data_transform = data_transform
-        self.class_name = mvtec_logical_classes()
+        self.class_name = mvtec_loco_classes()
         self.ignor_anomaly_type = ignore_anomaly_type #structural_anomalies logical_anomalies no
-        assert set(self.class_name) <= set(mvtec_logical_classes())
+        assert set(self.class_name) <= set(mvtec_loco_classes())
         
         self.num_task = num_task 
         self.class_in_task = []

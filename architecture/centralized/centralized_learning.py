@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 from data_io.mvtec2d import MVTec2D
 from data_io.mpdd import MPDD
-from data_io.mvteclogical import MVTecLogical
+from data_io.mvteclogical import MVTecLoco
 from data_io.mvtec3d import MVTec3D
 from data_io.fewshot import *
 from data_io.noisy import *
@@ -47,8 +47,8 @@ class CentralizedTrain():
         self.para_dict['root_path'] = root_path
         self.para_dict['data_path'] = '{}{}'.format(root_path, self.para_dict['data_path'])
 
-        if self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['noisy'] or self.para_dict['continual']:
-            assert 'Please Assign Learning Paradigm, --vanilla, --noisy, --fewshot, --continual'
+        if not (self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['noisy'] or self.para_dict['continual']):
+            raise ValueError('Please Assign Learning Paradigm, --vanilla, --noisy, --fewshot, --continual')
 
     def preliminary(self):
         print('---------------------')
@@ -141,19 +141,19 @@ class CentralizedTrain():
                                                             data_transform=mpdd_transform,
                                                             num_task=self.para_dict['num_task'],
                                                             fewshot_exm=self.para_dict['fewshot_exm'])
-        elif self.para_dict['dataset'] == 'mvteclogical':
+        elif self.para_dict['dataset'] == 'mvtecloco':
             if self.para_dict['vanilla']:
-                self.train_dataset = MVTecLogical(data_path=self.para_dict['data_path'],
+                self.train_dataset = MVTecLoco(data_path=self.para_dict['data_path'],
                                             learning_mode=self.para_dict['learning_mode'],
                                             phase='train',
                                             data_transform=mvteclg_transform,
                                             num_task=self.para_dict['num_task'])
-                self.valid_dataset = MVTecLogical(data_path=self.para_dict['data_path'],
+                self.valid_dataset = MVTecLoco(data_path=self.para_dict['data_path'],
                                             learning_mode=self.para_dict['learning_mode'],
                                             phase='test',
                                             data_transform=mvteclg_transform)
             if self.para_dict['fewshot']:
-                self.train_fewshot_dataset = MVTecLogicalFewShot(data_path=self.para_dict['data_path'],
+                self.train_fewshot_dataset = MVTecLocoFewShot(data_path=self.para_dict['data_path'],
                                                             learning_mode=self.para_dict['learning_mode'],
                                                             phase='train',
                                                             data_transform=mvteclg_transform,
