@@ -17,7 +17,7 @@ bash setup.sh
 
 ## MVTec3D Preprocessing (Denoise Data)
 ```bash
-python3 data_io/preprocessing.py --dataset-path '/disk/mvtec/3D'
+python3 data_io/preprocessing.py --dataset-path '/disk/mvtec3d'
 ```
 
 ## Train MMAD
