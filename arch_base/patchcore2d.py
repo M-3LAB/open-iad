@@ -49,8 +49,11 @@ class PatchCore2D():
         self.embeddings_list = []
 
         source_domain = ''
-        for i in self.config['train_task_id']:  
-            source_domain = source_domain + str(self.config['train_task_id'][i])
+        if self.config['continual']:
+            for i in self.config['train_task_id']:  
+                source_domain = source_domain + str(self.config['train_task_id'][i])
+        else:
+            source_domain = str(self.config['train_task_id'][0])
 
         self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', source_domain)
         create_folders(self.embedding_dir_path)

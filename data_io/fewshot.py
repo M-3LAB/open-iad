@@ -5,9 +5,10 @@ from data_io.mvtec2d import MVTec2D
 from data_io.mpdd import MPDD
 from data_io.mvtecloco import MVTecLoco
 from data_io.mtd import MTD
+from data_io.btad import BTAD
 
 
-__all__ = ['FewShot', 'MVTec2DFewShot', 'MPDDFewShot', 'MVTecLocoFewShot', 'MTDFewShot']
+__all__ = ['FewShot', 'MVTec2DFewShot', 'MPDDFewShot', 'MVTecLocoFewShot', 'MTDFewShot', 'BTADFewShot']
 
 class FewShot(Dataset):
     def __init__(self, data) -> None:
@@ -74,6 +75,22 @@ class MTDFewShot(MTD):
                  data_transform=None, num_task=1, fewshot_exm=1):
         self.fewshot_exm = fewshot_exm
         super(MTDFewShot, self).__init__(data_path=data_path, learning_mode=learning_mode, phase=phase, 
+                 data_transform=data_transform, num_task=num_task)
+    
+    def allocate_task_data(self):
+        start = 0
+        for num in self.sample_num_in_task:
+            end = start + num
+            indice = [i for i in range(start, end)]
+            random.shuffle(indice)
+            self.sample_indices_in_task.append(indice[:self.fewshot_exm])
+            start = end
+
+class BTADFewShot(BTAD):
+    def __init__(self, data_path, learning_mode='centralized', phase='train', 
+                 data_transform=None, num_task=1, fewshot_exm=1):
+        self.fewshot_exm = fewshot_exm
+        super(BTADFewShot, self).__init__(data_path=data_path, learning_mode=learning_mode, phase=phase, 
                  data_transform=data_transform, num_task=num_task)
     
     def allocate_task_data(self):

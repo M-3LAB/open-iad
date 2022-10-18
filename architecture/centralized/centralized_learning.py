@@ -9,6 +9,7 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from data_io.mvtec2d import MVTec2D
 from data_io.mpdd import MPDD
 from data_io.mtd import MTD
+from data_io.btad import BTAD
 from data_io.mvtecloco import MVTecLoco
 from data_io.mvtec3d import MVTec3D
 from data_io.fewshot import *
@@ -106,11 +107,6 @@ class CentralizedTrain():
                                                             data_transform=mvtec2d_transform,
                                                             num_task=self.para_dict['num_task'],
                                                             fewshot_exm=self.para_dict['fewshot_exm'])
-            if self.para_dict['noisy']:
-                self.train_noisy_dataset, self.valid_noisy_dataset, self.noisy_dataset = extract_noisy_data(self.train_dataset, 
-                                                        self.valid_dataset, 
-                                                        noisy_ratio=self.para_dict['noisy_ratio'], 
-                                                        noisy_overlap=self.para_dict['noisy_overlap'])
  
         elif self.para_dict['dataset'] == 'mvtec3d':
             self.train_dataset = MVTec3D(data_path=self.para_dict['data_path'],
@@ -173,13 +169,35 @@ class CentralizedTrain():
                                                             data_transform=mpdd_transform,
                                                             num_task=self.para_dict['num_task'],
                                                             fewshot_exm=self.para_dict['fewshot_exm'])
+        elif self.para_dict['dataset'] == 'btad':
+            self.train_dataset = BTAD(data_path=self.para_dict['data_path'],
+                                        learning_mode=self.para_dict['learning_mode'],
+                                        phase='train',
+                                        data_transform=mvteclg_transform,
+                                        num_task=self.para_dict['num_task'])
+            self.valid_dataset = BTAD(data_path=self.para_dict['data_path'],
+                                        learning_mode=self.para_dict['learning_mode'],
+                                        phase='test',
+                                        data_transform=mvteclg_transform)
+            if self.para_dict['fewshot']:
+                self.train_fewshot_dataset = BTADFewShot(data_path=self.para_dict['data_path'],
+                                                        learning_mode=self.para_dict['learning_mode'],
+                                                        phase='train',
+                                                        data_transform=mpdd_transform,
+                                                        num_task=self.para_dict['num_task'],
+                                                        fewshot_exm=self.para_dict['fewshot_exm'])
         else:
             raise NotImplemented('Dataset Does Not Exist')
 
+        if self.para_dict['noisy']:
+            self.train_noisy_dataset, self.valid_noisy_dataset, self.noisy_dataset = extract_noisy_data(self.train_dataset, 
+                                                    self.valid_dataset, 
+                                                    noisy_ratio=self.para_dict['noisy_ratio'], 
+                                                    noisy_overlap=self.para_dict['noisy_overlap'])
+                                                    
+        test_batch_size = self.para_dict['batch_size']
         if self.para_dict['model'] == 'patchcore2d':
             test_batch_size = 1
-        else:
-            test_batch_size = self.para_dict['batch_size']
 
         self.train_loaders = []
         self.valid_loaders = []
