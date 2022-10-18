@@ -1,4 +1,5 @@
 import argparse
+from asyncio import FastChildWatcher
 from logging import root
 import socket,fcntl,struct
 
@@ -27,14 +28,14 @@ def assign_service():
 
 def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco'])
+    parser.add_argument('--dataset', '-d', type=str, default='mtad', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad'])
     parser.add_argument('--model', '-m', type=str, default='patchcore2d', choices=['patchcore2d'])
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
     parser.add_argument('--train-task-id', '-tid', type=int, default=[0], nargs='+')
     parser.add_argument('--valid-task-id', '-vid', type=int, default=[0], nargs='+')
-    parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default= 0.001)
+    parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default= 0.0001)
 
     # vanilla learning
     parser.add_argument('--vanilla', '-v', action='store_true', default=False)
@@ -43,7 +44,7 @@ def parse_arguments_centralized():
     parser.add_argument('--continual', '-c', action='store_true', default=False)
 
     # fewshot learniing
-    parser.add_argument('--fewshot', '-f', action='store_true', default=False)
+    parser.add_argument('--fewshot', '-f', action='store_true', default=True)
     parser.add_argument('--fewshot-exm', '-fe', type=int, default=1)
     parser.add_argument('--fewshot-data-aug', '-fda', action='store_true', default=False)
     parser.add_argument('--fewshot-feat-aug', '-ffa', action='store_true', default=False)
@@ -54,7 +55,7 @@ def parse_arguments_centralized():
     parser.add_argument('--noisy-overlap', '-no', action='store_true', default=False)
     parser.add_argument('--noisy-ratio', '-nr', type=float, default=0.1)
 
-    parser.add_argument('--gpu-id', '-g', type=str, default=0)
+    parser.add_argument('--gpu-id', '-g', type=str, default=2)
     parser.add_argument('--num-epoch', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--vis-em', action='store_true', default=False)

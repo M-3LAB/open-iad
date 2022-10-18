@@ -1,0 +1,9 @@
+
+dataset: mtd
+root_path: '/disk4/xgy'
+data_path: '/mtd'
+num_task: 1
+data_size: 256
+data_crop_size: 256
+mask_size: 256
+mask_crop_size: 256
