@@ -28,13 +28,13 @@ def assign_service():
 
 def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', '-d', type=str, default='btad', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad'])
+    parser.add_argument('--dataset', '-d', type=str, default='mvtec2df3d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad', 'mvtec2df3d'])
     parser.add_argument('--model', '-m', type=str, default='patchcore2d', choices=['patchcore2d'])
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
-    parser.add_argument('--train-task-id', '-tid', type=int, default=[1], nargs='+')
-    parser.add_argument('--valid-task-id', '-vid', type=int, default=[1], nargs='+')
+    parser.add_argument('--train-task-id', '-tid', type=int, default=[0], nargs='+')
+    parser.add_argument('--valid-task-id', '-vid', type=int, default=[0], nargs='+')
     parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default= 0.0001)
 
     # vanilla learning

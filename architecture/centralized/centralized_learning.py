@@ -7,6 +7,7 @@ from tools.utilize import *
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 from data_io.mvtec2d import MVTec2D
+from data_io.mvtec2df3d import MVTec2DF3D
 from data_io.mpdd import MPDD
 from data_io.mtd import MTD
 from data_io.btad import BTAD
@@ -186,6 +187,24 @@ class CentralizedTrain():
                                                         data_transform=mpdd_transform,
                                                         num_task=self.para_dict['num_task'],
                                                         fewshot_exm=self.para_dict['fewshot_exm'])
+        if self.para_dict['dataset'] == 'mvtec2df3d':
+            self.train_dataset = MVTec2DF3D(data_path=self.para_dict['data_path'],
+                                        learning_mode=self.para_dict['learning_mode'],
+                                        phase='train',
+                                        data_transform=mvtec2d_transform,
+                                        num_task=self.para_dict['num_task'])
+            self.valid_dataset = MVTec2DF3D(data_path=self.para_dict['data_path'],
+                                        learning_mode=self.para_dict['learning_mode'],
+                                        phase='test',
+                                        data_transform=mvtec2d_transform,
+                                        num_task=self.para_dict['num_task'])
+            if self.para_dict['fewshot']:
+                self.train_fewshot_dataset = MVTec2DF3DFewShot(data_path=self.para_dict['data_path'],
+                                                            learning_mode=self.para_dict['learning_mode'],
+                                                            phase='train',
+                                                            data_transform=mvtec2d_transform,
+                                                            num_task=self.para_dict['num_task'],
+                                                            fewshot_exm=self.para_dict['fewshot_exm'])                                                    
         else:
             raise NotImplemented('Dataset Does Not Exist')
 
