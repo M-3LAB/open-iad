@@ -6,3 +6,4 @@ data_size: 256
 data_crop_size: 256
 mask_size: 256
 mask_crop_size: 256
+seed: 66 
