@@ -1,0 +1,11 @@
+dataset:
+    name: 'mvtec'
+    object: 'hazelnut'
+    data_dir_lf_net: '/media/SSD2/DATA/ammar/Industrial_image_anomaly/lf-net-release/out_desc/mvtec_dataset/hazelnut/'
+    data_dir_d2_net: '/media/SSD2/DATA/ammar/Industrial_image_anomaly/d2-net-features/hazelnut/'
+    data_dir_r2d2: '/media/SSD2/DATA/ammar/Industrial_image_anomaly/r2d2/out_desc/hazelnut/'
+    img_dir: '/media/SSD2/DATA/ammar/Industrial_image_anomaly/Dataset/hazelnut/'
+    sp:
+        #data_dir_sp: '/media/SSD2/DATA/ammar/Industrial_image_anomaly/pytorch-superpoint/logs/magicpoint_hazelnut_mvtec_desc/checkpoints/desc/'
+        data_dir_sp: '/media/SSD2/DATA/ammar/Industrial_image_anomaly/pytorch-superpoint/logs/magicpoint_hazelnut_mvtec_desc/checkpoints/desc_2/'
+        data_dir_sift_desc: "/media/SSD2/DATA/ammar/Industrial_image_anomaly/Deep_RFS/image_datasets/sp_sift/hazelnut/"
