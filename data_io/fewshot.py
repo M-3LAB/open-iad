@@ -1,4 +1,6 @@
+from pyclbr import readmodule
 import random
+import copy
 from torch.utils.data import Dataset
 
 from data_io.mvtec2d import MVTec2D
@@ -9,7 +11,7 @@ from data_io.mtd import MTD
 from data_io.btad import BTAD
 
 
-__all__ = ['FewShot', 'MVTec2DFewShot', 'MPDDFewShot', 'MVTecLocoFewShot',
+__all__ = ['FewShot', 'extract_fewshot_data', 'MVTec2DFewShot', 'MPDDFewShot', 'MVTecLocoFewShot',
            'MTDFewShot', 'BTADFewShot', 'MVTec2DF3DFewShot']
 
 class FewShot(Dataset):
@@ -21,6 +23,18 @@ class FewShot(Dataset):
 
     def __len__(self):
         return len(self.data)
+
+def extract_fewshot_data(train_dataset, fewshot_exm=1):
+    # construct train_fewshot_dataset
+    train_fewshot_dataset = copy.deepcopy(train_dataset)
+    for i, num in enumerate(train_dataset.sample_num_in_task):
+        if fewshot_exm > num:
+            fewshot_exm = num
+        chosen_samples = random.sample(train_fewshot_dataset.sample_indices_in_task[i], fewshot_exm)
+        train_fewshot_dataset.sample_indices_in_task[i] = chosen_samples
+        train_fewshot_dataset.sample_num_in_task[i] = fewshot_exm
+
+    return train_fewshot_dataset
 
 
 class MVTec2DFewShot(MVTec2D):
