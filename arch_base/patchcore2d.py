@@ -5,7 +5,7 @@ from models.patchcore.kcenter_greedy import KCenterGreedy
 from torchvision import transforms
 import cv2
 from typing import List
-from tools.utilize import *
+from tools.utils import *
 import os
 import torch.nn.functional as F
 import numpy as np

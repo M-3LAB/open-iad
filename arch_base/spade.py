@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 from torchvision import models
 from collections import OrderedDict
-from tools.utilize import *
+from tools.utils import *
 import os
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter

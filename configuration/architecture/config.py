@@ -29,7 +29,7 @@ def assign_service():
 def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad', 'mvtec2df3d'])
-    parser.add_argument('--model', '-m', type=str, default='patchcore2d', choices=['patchcore2d', 'csflow'])
+    parser.add_argument('--model', '-m', type=str, default='csflow', choices=['patchcore2d', 'csflow'])
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 

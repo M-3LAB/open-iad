@@ -23,9 +23,6 @@ num_workers: 8
 work_dir: ./work_dir
 save_log: true
 debug: false 
-# optimizer
-beta1: 0.5
-beta2: 0.999
 # chosen task ids
 train_task_id:
   - 0

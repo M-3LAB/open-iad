@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import cv2
 import numpy as np
 import os
-from tools.utilize import create_folders
+from tools.utils import create_folders
 from sklearn.manifold import TSNE
 from time import time
 

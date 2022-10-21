@@ -5,7 +5,7 @@ from models.patchcore.kcenter_greedy import KCenterGreedy
 from torchvision import transforms
 import cv2
 from typing import List
-from tools.utilize import *
+from tools.utils import *
 import os
 import torch.nn.functional as F
 import numpy as np
@@ -18,6 +18,8 @@ from metrics.common.np_auc_precision_recall import np_get_auroc
 from tools.visualize import save_anomaly_map, vis_embeddings
 from memory_augmentation.domain_generalization import feature_augmentation
 
+from models.csflow.csflow import NetCSFlow, CSFlow
+from models.optimizer import get_optimizer
 __all__ = ['PatchCore2D']
 
 class CSFlow():
@@ -27,13 +29,12 @@ class CSFlow():
         self.device = device
         self.file_path = file_path
 
-        # Backbone model
-        if config['backbone'] == 'resnet18':
-            self.backbone = models.resnet18(pretrained=True, progress=True).to(self.device)
-        elif config['backbone'] == 'wide_resnet50':
-            self.backbone = models.wide_resnet50_2(pretrained=True, progress=True).to(self.device)
-        else:
-            raise NotImplementedError('This Pretrained Model Not Implemented Error')
+        args = self.config
+        net = NetCSFlow(args)
+        params = net.density_estimator.parameters()
+        optimizer = get_optimizer(args, params)
+        scheduler = None
+        self.backbone = CSFlow(net, net, optimizer, scheduler)
 
         self.features = [] 
 
