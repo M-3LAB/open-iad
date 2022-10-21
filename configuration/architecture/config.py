@@ -23,6 +23,8 @@ def assign_service():
         root_path = '/home/zhengf_lab/cse30010351/m3lab/data'
     if ip == '172.18.36.107':
         root_path = '/ssd-sata1/wjb/data/open-ad'
+    if ip == '192.168.1.104':
+        root_path = '/home/robot/data'
 
     return ip, root_path
 
