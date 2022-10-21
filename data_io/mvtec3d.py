@@ -5,7 +5,7 @@ import random
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms as T
-from data_io.augmentation.augmentation import read_tiff, tiff_to_depth_torch, aug_draem_3d_train, aug_draem_3d_test
+from data_io.augmentation.draem_augmentation import read_tiff, tiff_to_depth_torch, aug_draem_3d_train, aug_draem_3d_test
 
 __all__ = ['MVTec3D', 'mvtec3d_classes', 'MVTecCL3D']
 
