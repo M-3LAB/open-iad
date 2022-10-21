@@ -22,7 +22,19 @@ def total_aug(args):
                                               T.Normalize(mean=[0.485, 0.456, 0.406],
                                                           std=[0.229, 0.224, 0.225])
                                             ])
-        pass
+        
+        img_transform = T.Compose([T.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1, hue=0.1),
+                                   T.Resize((args.dataset.image_size, args.dataset.image_size)),
+                                   T.RandomChoice([CutPasteNormal(transform=after_cutpaste_transform),
+                                                   CutPasteScar(transform=after_cutpaste_transform)])
+            
+        ])
+
+        mask_transform = T.Compose([T.Resize(args['mask_size']),
+                                    T.CenterCrop(args['mask_crop_size']),
+                                    T.ToTensor(),
+                                    ])
+
     
     
     return img_transform, mask_transform
