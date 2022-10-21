@@ -9,8 +9,8 @@ from data_io.fewshot import FewShot, extract_fewshot_data
 from data_io.noisy import extract_noisy_data
 from memory_augmentation.domain_generalization import domain_gen
 
-from arch_base.patchcore2d import PatchCore2D
-from arch_base.reverse import Reverse 
+# from arch_base.patchcore2d import PatchCore2D
+# from arch_base.reverse import Reverse 
 from configuration.architecture.config import assign_service
 
 from rich import print
@@ -65,7 +65,7 @@ class CentralizedTrain():
 
     def load_data(self):
 
-        dataset_name = {'mvtec2d': ('data_io', 'mvtec2d', 'MVTec2D'),
+        dataset_name = {'mvtec2d': ('data_io.mvtec2d', 'mvtec2d', 'MVTec2D'),
                         'mvtec2df3d': ('data_io', 'mvtec2df3d', 'MVTec2DF3D'),
                         'mvtecloco': ('data_io', 'mvtecloco', 'MVTecLoco'),
                         'mpdd': ('data_io', 'mpdd', 'MPDD'),
@@ -184,13 +184,24 @@ class CentralizedTrain():
             self.chosen_valid_loaders.append(self.valid_loaders[idx])
 
     def init_model(self):
-        if self.para_dict['model'] == 'patchcore2d':
-            self.trainer = PatchCore2D(self.para_dict, self.device, self.file_path)
-        elif self.para_dict['model'] == 'reverse':
-            self.trainer = Reverse(self.para_dict, self.chosen_train_loaders, 
-                                   self.chosen_valid_loaders, self.device, self.file_path) 
-        else:
-            raise ValueError('Model is invalid!')
+        model_name = {'patchcore2d': ('arch_base.patchcore2d', 'patchcore2d', 'PatchCore2D'),
+                      'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
+                     }
+
+        model_package = __import__(model_name[self.para_dict['model']][0])
+        model_module = getattr(model_package, model_name[self.para_dict['model']][1])
+        model_class = getattr(model_module, model_name[self.para_dict['model']][2])
+
+        self.trainer = model_class(self.para_dict, self.device, self.file_path)
+
+
+        # if self.para_dict['model'] == 'patchcore2d':
+        #     self.trainer = PatchCore2D(self.para_dict, self.device, self.file_path)
+        # elif self.para_dict['model'] == 'reverse':
+        #     self.trainer = Reverse(self.para_dict, self.chosen_train_loaders, 
+        #                            self.chosen_valid_loaders, self.device, self.file_path) 
+        # else:
+        #     raise ValueError('Model is Invalid!')
 
        
     def work_flow(self):

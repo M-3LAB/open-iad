@@ -17,3 +17,5 @@ imgaug==0.4.0
 kornia==0.6.5
 torchmetrics==0.9.1
 faiss-gpu==1.7.2
+
+efficientnet_pytorch==0.7.1
