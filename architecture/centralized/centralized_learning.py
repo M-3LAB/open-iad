@@ -66,6 +66,9 @@ class CentralizedTrain():
 
     def load_data(self):
 
+
+
+
         dataset_name = {'mvtec2d': ('data_io.mvtec2d', 'mvtec2d', 'MVTec2D'),
                         'mvtec2df3d': ('data_io', 'mvtec2df3d', 'MVTec2DF3D'),
                         'mvtecloco': ('data_io', 'mvtecloco', 'MVTecLoco'),
@@ -74,11 +77,16 @@ class CentralizedTrain():
                         'mtd': ('data_io', 'mtd', 'MTD'),
                         'mvtec3d': ('data_io', 'mvtec3d', 'MVTec3D'), }
 
-        img_transform = {'data_size':self.para_dict['data_size'],
+        train_img_transform = {'aug_name': self.para_dict['dataset'],
+                         'data_size':self.para_dict['data_size'],
                          'data_crop_size': self.para_dict['data_crop_size'],
                          'mask_size':self.para_dict['mask_size'],
                          'mask_crop_size': self.para_dict['mask_crop_size']}
-
+        valid_img_transform = {'aug_name': 'normal',
+                         'data_size':self.para_dict['data_size'],
+                         'data_crop_size': self.para_dict['data_crop_size'],
+                         'mask_size':self.para_dict['mask_size'],
+                         'mask_crop_size': self.para_dict['mask_crop_size']}
         dataset_package = __import__(dataset_name[self.para_dict['dataset']][0])
         dataset_module = getattr(dataset_package, dataset_name[self.para_dict['dataset']][1])
         dataset_class = getattr(dataset_module, dataset_name[self.para_dict['dataset']][2])
@@ -86,12 +94,12 @@ class CentralizedTrain():
         self.train_dataset = dataset_class(data_path=self.para_dict['data_path'],
                                         learning_mode=self.para_dict['learning_mode'],
                                         phase='train',
-                                        data_transform=img_transform,
+                                        data_transform=train_img_transform,
                                         num_task=self.para_dict['num_task'])
         self.valid_dataset = dataset_class(data_path=self.para_dict['data_path'],
                                         learning_mode=self.para_dict['learning_mode'],
                                         phase='test',
-                                        data_transform=img_transform,
+                                        data_transform=valid_img_transform,
                                         num_task=self.para_dict['num_task'])
 
         if self.para_dict['fewshot']:

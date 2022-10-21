@@ -52,6 +52,11 @@ class MVTec2D(Dataset):
                                         T.CenterCrop(self.data_transform['mask_crop_size']),
                                         T.ToTensor(),
                                         ])
+        
+        cutpaste_transform = None
+        if self.data_transform['aug_name'] == 'cutpaste':
+            self.imge_transform = cutpaste_transform
+            
     def __getitem__(self, idx):
         img_src, label, mask, task_id = self.imgs_list[idx], self.labels_list[idx], self.masks_list[idx], self.task_ids_list[idx]
 

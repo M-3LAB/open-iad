@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torchvision import transforms
 import random
+import math
 
 __all__ = ['CutPaste', 'CutPasteNormal', 'CutPasteScar', 'CutPasteUnion']
 
