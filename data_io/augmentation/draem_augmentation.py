@@ -12,24 +12,23 @@ import glob
 from data_io.augmentation.perlin import rand_perlin_2d_np
 import os
 
-__all__ =  ['mvtec_2d_resize', 'mvtec_2d_image_transform', 'mvtec_2d_mask_transform', 
-            'aug_draem_3d_train', 'aug_draem_3d_test', 'ImageToPatch']
+__all__ =  ['aug_draem_3d_train', 'aug_draem_3d_test', 'ImageToPatch']
 
 # 2D 
 
-mvtec_2d_resize = T.Compose([T.Resize(size=1000)])
-
-mvtec_2d_image_transform = T.Compose([T.Resize(224),
-                                      T.CenterCrop(224),
-                                      T.ToTensor(),
-                                      T.Normalize(mean=[0.485, 0.456, 0.406],
-                                                  std=[0.229, 0.224, 0.225])
-                                      ])
-
-mvtec_2d_mask_transform = T.Compose([T.Resize(224),
-                                     T.CenterCrop(224),
-                                     T.ToTensor()
-                                     ])
+#mvtec_2d_resize = T.Compose([T.Resize(size=1000)])
+#
+#mvtec_2d_image_transform = T.Compose([T.Resize(224),
+#                                      T.CenterCrop(224),
+#                                      T.ToTensor(),
+#                                      T.Normalize(mean=[0.485, 0.456, 0.406],
+#                                                  std=[0.229, 0.224, 0.225])
+#                                      ])
+#
+#mvtec_2d_mask_transform = T.Compose([T.Resize(224),
+#                                     T.CenterCrop(224),
+#                                     T.ToTensor()
+#                                     ])
 
 augmenters_DREAM = [iaa.GammaContrast((0.5,2.0),per_channel=True),
                     iaa.MultiplyAndAddToBrightness(mul=(0.8,1.2),add=(-30,30)),
