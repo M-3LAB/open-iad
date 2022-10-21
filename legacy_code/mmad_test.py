@@ -7,7 +7,7 @@ from models.mmad.reconstruction_network.rgb import RGBRecons
 from models.mmad.seg_network.depth import DepthSeg
 from models.mmad.seg_network.rgb import RGBSeg
 from configuration.mmad.config import parse_arguments_mmad 
-from tools.utilize import * 
+from tools.utils import * 
 from data_io.mvtec3d import MVTec3D, MVTecCL3D, mvtec3d_classes
 import yaml
 import numpy as np

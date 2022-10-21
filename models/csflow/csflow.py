@@ -3,7 +3,7 @@ import torch.nn.functional as F
 from torch import nn
 from efficientnet_pytorch import EfficientNet
 import numpy as np
-from utils.freia_funcs import *
+from freia_funcs import *
 
 class NetCSFlow(nn.Module):
     def __init__(self, args):

@@ -2,7 +2,7 @@ from re import I
 from xml.dom.minidom import DOMImplementation
 import torch
 import yaml
-from tools.utilize import *
+from tools.utils import *
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 from data_io.fewshot import FewShot, extract_fewshot_data
@@ -102,9 +102,6 @@ class CentralizedTrain():
                                                     noisy_ratio=self.para_dict['noisy_ratio'], 
                                                     noisy_overlap=self.para_dict['noisy_overlap'])
                                                     
-        test_batch_size = self.para_dict['batch_size']
-        if self.para_dict['model'] == 'patchcore2d':
-            test_batch_size = 1
 
         self.train_loaders = []
         self.valid_loaders = []
@@ -116,14 +113,14 @@ class CentralizedTrain():
 
             for i in range(self.para_dict['num_task']):
                 train_loader = DataLoader(self.train_dataset,
-                                        batch_size=self.para_dict['batch_size'],
+                                        batch_size=self.para_dict['train_batch_size'],
                                         num_workers=self.para_dict['num_workers'],
                                         sampler=SubsetRandomSampler(train_task_data_list[i]))
                 self.train_loaders.append(train_loader)
 
                 valid_loader = DataLoader(self.valid_dataset, 
                                         num_workers=self.para_dict['num_workers'],
-                                        batch_size=test_batch_size, 
+                                        batch_size=self.para_dict['valid_batch_size'], 
                                         shuffle=False,
                                         sampler=SubsetRandomSampler(valid_task_data_list[i]))
                 self.valid_loaders.append(valid_loader)
@@ -149,7 +146,7 @@ class CentralizedTrain():
             for i in range(self.para_dict['num_task']):
                 fewshot_dg_datset = FewShot(fewshot_images[i])
                 train_fewshot_loader = DataLoader(fewshot_dg_datset,
-                                        batch_size=self.para_dict['batch_size'],
+                                        batch_size=self.para_dict['train_batch_size'],
                                         num_workers=self.para_dict['num_workers'])
                 train_fewshot_loaders.append(train_fewshot_loader)
             self.train_loaders = train_fewshot_loaders
@@ -159,14 +156,14 @@ class CentralizedTrain():
             valid_task_data_list = self.valid_noisy_dataset.sample_indices_in_task 
             for i in range(self.para_dict['num_task']):
                 train_loader = DataLoader(self.train_noisy_dataset,
-                                        batch_size=self.para_dict['batch_size'],
+                                        batch_size=self.para_dict['train_batch_size'],
                                         num_workers=self.para_dict['num_workers'],
                                         sampler=SubsetRandomSampler(train_task_data_list[i]))
                 self.train_loaders.append(train_loader)
 
                 valid_loader = DataLoader(self.valid_noisy_dataset, 
                                         num_workers=self.para_dict['num_workers'],
-                                        batch_size=test_batch_size, 
+                                        batch_size=self.para_dict['valid_batch_size'], 
                                         shuffle=False,
                                         sampler=SubsetRandomSampler(valid_task_data_list[i]))
                 self.valid_loaders.append(valid_loader)

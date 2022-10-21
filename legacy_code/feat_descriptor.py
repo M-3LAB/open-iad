@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from configuration.feat_descriptor.config import parser_arguments_feat_descriptor
-from tools.utilize import *
+from tools.utils import *
 import yaml
 from models.pointcore.descriptor.neural_point.neural_point import NeuralPoint
 

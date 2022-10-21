@@ -1,4 +1,4 @@
-from tools.utilize import save_feat_pickle
+from tools.utils import save_feat_pickle
 import torch
 import torch.nn as nn
 from torchvision import models
@@ -7,7 +7,7 @@ from random import sample
 import torch.nn.functional as F
 import numpy as np
 import os
-from tools.utilize import *
+from tools.utils import *
 from scipy.spatial.distance import mahalanobis
 from scipy.ndimage import gaussian_filter
 from metrics.common.np_auc_precision_recall import np_get_auroc
