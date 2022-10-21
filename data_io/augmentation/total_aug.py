@@ -17,7 +17,11 @@ def total_aug(args):
                                     ])
     
     elif args['augment_type'] == 'cutpaste':
-        #after_cutpaste_transform = 
+        after_cutpaste_transform = T.Compose([T.RandomRotation(90),
+                                              T.ToTensor(),
+                                              T.Normalize(mean=[0.485, 0.456, 0.406],
+                                                          std=[0.229, 0.224, 0.225])
+                                            ])
         pass
     
     
