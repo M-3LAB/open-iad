@@ -11,13 +11,18 @@ def get_ip_address(ifname):
 
 __all__ = ['parse_arguments_centralized', 'parse_arguments_federated']
 
-def assign_service():
-    ip = get_ip_address('eno1')
+def assign_service(guoyang):
+    
+    if guoyang:
+        ip = get_ip_address('lo')
+    else:
+        ip = get_ip_address('eno1')
+
     root_path = None
 
     if ip == '172.18.36.46':
         root_path = '/disk4/xgy' 
-    if ip == '127.0.1.1':
+    if ip == '127.0.0.1':
         root_path = '/home/robot/data'
     if ip == '172.18.34.25':
         root_path = '/home/zhengf_lab/cse30010351/m3lab/data'
@@ -59,6 +64,7 @@ def parse_arguments_centralized():
     parser.add_argument('--num-epoch', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--vis-em', action='store_true', default=False)
+    parser.add_argument('--guoyang', '-gy', action='store_true', default=False)
 
     #parser.add_argument('--save-model', action='store_true', default=False)
     #parser.add_argument('--load-model', action='store_true', default=False)

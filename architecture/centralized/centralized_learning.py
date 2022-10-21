@@ -35,7 +35,10 @@ class CentralizedTrain():
         self.para_dict = merge_config(config, self.args)
         self.args = extract_config(self.args)
 
-        ip, root_path = assign_service()
+        ip, root_path = assign_service(self.para_dict['guoyang'])
+        #ip = None
+        #root_path = '/home/robot/data'
+        print(root_path)
         print('local ip: {}, root_path: {}'.format(ip, root_path))
 
         self.para_dict['root_path'] = root_path
