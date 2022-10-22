@@ -27,7 +27,6 @@ def aug_type(augment_type, args):
                                    T.Resize((args.dataset.image_size, args.dataset.image_size)),
                                    T.RandomChoice([CutPasteNormal(transform=after_cutpaste_transform),
                                                    CutPasteScar(transform=after_cutpaste_transform)])
-            
         ])
 
         mask_transform = T.Compose([T.Resize(args['mask_size']),
