@@ -2,6 +2,7 @@ from re import I
 from xml.dom.minidom import DOMImplementation
 import torch
 import yaml
+import argparse
 from tools.utils import *
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
@@ -9,6 +10,11 @@ from data_io.fewshot import FewShot, extract_fewshot_data
 from data_io.noisy import extract_noisy_data
 from memory_augmentation.domain_generalization import domain_gen
 from data_io.augmentation.type import aug_type 
+
+from models.resnet.resnet import ResNetModel
+from models.net_csflow.net_csflow import NetCSFlow
+from models.optimizer import get_optimizer
+from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 
 # from arch_base.patchcore2d import PatchCore2D
 # from arch_base.reverse import Reverse 
@@ -181,6 +187,33 @@ class CentralizedTrain():
             self.chosen_valid_loaders.append(self.valid_loaders[idx])
 
     def init_model(self):
+        # net_name = {
+        #     'resnet': ('models.resnet', 'resnet', 'ResNetModel'),
+        #     'net_csflow': ('models.csflow', 'csflow', 'NetCSFlow'),
+        # }
+        
+        # net_package = __import__(net_name[self.para_dict['net']][0])
+        # net_module = getattr(net_package, net_name[self.para_dict['net']][1])
+        # net_class = getattr(net_module, net_name[self.para_dict['net']][2])
+
+        self.net = None
+        self.optimizer = None
+        self.scheduler = None
+
+        args = argparse.Namespace(**self.para_dict)
+        if self.para_dict['net'] == 'resnet':
+            head_layers = [512] * 2 + [128]
+            self.net = ResNetModel(pretrained=self.para_dict['_pretrained'], head_layers=head_layers, num_classes=self.para_dict['_num_classes'])
+            self.optimizer = get_optimizer(args, self.net)
+            self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, self.para_dict['_num_epochs'])
+        elif self.para_dict['net'] == 'net_csflow':
+            self.net = NetCSFlow(args)
+            self.optimizer = get_optimizer(args, self.net)
+            self.scheduler = None
+
+
+        self.trainer = None
+
         model_name = {'patchcore2d': ('arch_base.patchcore2d', 'patchcore2d', 'PatchCore2D'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
                      }
@@ -189,7 +222,10 @@ class CentralizedTrain():
         model_module = getattr(model_package, model_name[self.para_dict['model']][1])
         model_class = getattr(model_module, model_name[self.para_dict['model']][2])
 
-        self.trainer = model_class(self.para_dict, self.device, self.file_path)
+        if self.para_dict['model'] == 'patchcore2d':
+            self.trainer = model_class(self.para_dict, self.device, self.file_path)
+        else:
+            self.trainer = model_class(self.para_dict, self.device, self.file_path, self.net, self.optimizer, self.scheduler)
 
 
         # if self.para_dict['model'] == 'patchcore2d':
