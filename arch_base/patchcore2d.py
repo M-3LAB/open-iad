@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-from torchvision import models
 from models.patchcore.kcenter_greedy import KCenterGreedy 
 from torchvision import transforms
 import cv2
@@ -21,20 +20,14 @@ from memory_augmentation.domain_generalization import feature_augmentation
 __all__ = ['PatchCore2D']
 
 class PatchCore2D():
-    def __init__(self, config, device, file_path):
+    def __init__(self, config, device, file_path, net, optimizer, scheduler):
         
         self.config = config
         self.device = device
         self.file_path = file_path
+        self.backbone = net
 
-        # Backbone model
-        if config['backbone'] == 'resnet18':
-            self.backbone = models.resnet18(pretrained=True, progress=True).to(self.device)
-        elif config['backbone'] == 'wide_resnet50':
-            self.backbone = models.wide_resnet50_2(pretrained=True, progress=True).to(self.device)
-        else:
-            raise NotImplementedError('This Pretrained Model Not Implemented Error')
-
+        self.backbone.to(self.device)
         self.features = [] 
         self.get_layer_features()
 
@@ -100,7 +93,7 @@ class PatchCore2D():
         
         return embedding_list
         
-    def train_epoch(self, train_loaders, inf=''):
+    def train_model(self, train_loaders, inf=''):
         # for vanilla, fewshot, noisy
 
         self.backbone.eval()
@@ -174,7 +167,6 @@ class PatchCore2D():
 
 
     def prediction(self, valid_loader):
-
         self.backbone.eval()
 
         self.index = faiss.read_index(os.path.join(self.embedding_dir_path, 'index.faiss')) 

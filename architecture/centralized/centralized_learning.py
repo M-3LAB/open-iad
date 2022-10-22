@@ -15,6 +15,7 @@ from models.resnet.resnet import ResNetModel
 from models.net_csflow.net_csflow import NetCSFlow
 from models.optimizer import get_optimizer
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
+from torchvision import models
 
 # from arch_base.patchcore2d import PatchCore2D
 # from arch_base.reverse import Reverse 
@@ -196,9 +197,7 @@ class CentralizedTrain():
         # net_module = getattr(net_package, net_name[self.para_dict['net']][1])
         # net_class = getattr(net_module, net_name[self.para_dict['net']][2])
 
-        self.net = None
-        self.optimizer = None
-        self.scheduler = None
+        self.net, self.optimizer, self.scheduler = None, None, None
 
         args = argparse.Namespace(**self.para_dict)
         if self.para_dict['net'] == 'resnet':
@@ -209,10 +208,13 @@ class CentralizedTrain():
         elif self.para_dict['net'] == 'net_csflow':
             self.net = NetCSFlow(args)
             self.optimizer = get_optimizer(args, self.net)
-            self.scheduler = None
+        elif self.para_dict['net'] == 'resnet18': # patchcore
+            self.net = models.resnet18(pretrained=True, progress=True)
+        elif self.para_dict['net'] == 'wide_resnet50': # patchcore
+            self.net = models.wide_resnet50_2(pretrained=True, progress=True)
+        else:
+            raise NotImplementedError('This Pretrained Model is Not Implemented Error')
 
-
-        self.trainer = None
 
         model_name = {'patchcore2d': ('arch_base.patchcore2d', 'patchcore2d', 'PatchCore2D'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
@@ -222,26 +224,16 @@ class CentralizedTrain():
         model_module = getattr(model_package, model_name[self.para_dict['model']][1])
         model_class = getattr(model_module, model_name[self.para_dict['model']][2])
 
-        if self.para_dict['model'] == 'patchcore2d':
-            self.trainer = model_class(self.para_dict, self.device, self.file_path)
-        else:
-            self.trainer = model_class(self.para_dict, self.device, self.file_path, self.net, self.optimizer, self.scheduler)
-
-
-        # if self.para_dict['model'] == 'patchcore2d':
-        #     self.trainer = PatchCore2D(self.para_dict, self.device, self.file_path)
-        # elif self.para_dict['model'] == 'reverse':
-        #     self.trainer = Reverse(self.para_dict, self.chosen_train_loaders, 
-        #                            self.chosen_valid_loaders, self.device, self.file_path) 
-        # else:
-        #     raise ValueError('Model is Invalid!')
-
+        self.trainer = model_class(self.para_dict, self.device, self.file_path, self.net, self.optimizer, self.scheduler)
        
+
     def work_flow(self):
+        print('-> train...')
         # train all task in one time
         train_loaders = self.chosen_train_loaders
-        # self.trainer.train_epoch(train_loaders)
+        self.trainer.train_model(train_loaders)
 
+        print('-> test...')
         # test each task individually
         for task_id, valid_loader in enumerate(self.chosen_valid_loaders):
             pixel_auroc, img_auroc = self.trainer.prediction(valid_loader=valid_loader)
@@ -287,9 +279,7 @@ class CentralizedTrain():
         self.init_model()
         print('---------------------')
 
-        for epoch in range(self.para_dict['num_epochs']):
-            self.epoch = epoch
-            self.work_flow()
+        self.work_flow()
             
         print('work dir: {}'.format(self.file_path))
         with open('{}/log_finished.txt'.format(self.para_dict['work_dir']), 'a') as f:

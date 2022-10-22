@@ -28,43 +28,25 @@ class _CSFlow(nn.Module):
             self.scheduler.step(epoch)
 
 
-
 class CSFlow():
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        
         self.config = config
         self.device = device
         self.file_path = file_path
         self.net = net
 
-        self.backbone = _CSFlow(config, self.net, optimizer, scheduler).to(self.device)
-
-        self.features = [] 
-
-        source_domain = ''
-        if self.config['continual']:
-            for i in self.config['train_task_id']:  
-                source_domain = source_domain + str(self.config['train_task_id'][i])
-        else:
-            source_domain = str(self.config['train_task_id'][0])
-
-    
-
+        self.backbone = _CSFlow(self.config, self.net, optimizer, scheduler).to(self.device)
         
-    def train_epoch(self, train_loaders, inf=''):
-        epoch = 1
-        one_epoch_embeds = []
-        task_wise_mean, task_wise_cov = [], []
+    def train_model(self, train_loaders, inf=''):
         self.backbone.train()
-        # When num_task is 15, per task means per class
+
         for task_idx, train_loader in enumerate(train_loaders):
             print('run task: {}'.format(self.config['train_task_id'][task_idx]))
-            for _ in range(self.config['num_epochs']):
+
+            for epoch in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(train_loader):
                     inputs = batch['img'].to(self.device)
 
-                    # Extract features from backbone
-                    self.features.clear()
                     self.backbone(epoch, inputs)
 
 
@@ -78,8 +60,6 @@ class CSFlow():
                 inputs = batch['img'].to(self.device)
                 labels = batch['label'].to(self.device)
 
-                # Extract features from backbone
-                self.features.clear()
                 _, z, jac = self.net(inputs)
                 z = z[..., None].cpu().data.numpy()
                 score = np.mean(z ** 2, axis=(1, 2))
@@ -88,14 +68,7 @@ class CSFlow():
 
             test_labels = np.concatenate(test_labels)
             is_anomaly = np.array([0 if l == 0 else 1 for l in test_labels])
-
             anomaly_score = np.concatenate(test_z, axis=0)
             img_auroc = np_get_auroc(is_anomaly, anomaly_score)
 
         return pixel_auroc, img_auroc
-
-
-
-        
-      
-
