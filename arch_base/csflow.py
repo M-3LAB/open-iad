@@ -15,7 +15,9 @@ class _CSFlow(nn.Module):
         self.optimizer = optimizer
         self.scheduler = scheduler
         self.net = net
-
+        self.net.feature_extractor.eval()
+        self.net.density_estimator.train()
+        
     def forward(self, epoch, inputs):
         self.optimizer.zero_grad()
         embeds, z, log_jac_det = self.net(inputs)

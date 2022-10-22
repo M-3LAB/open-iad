@@ -73,7 +73,6 @@ class CentralizedTrain():
         print('work dir: {}'.format(self.file_path))
 
     def load_data(self):
-
         dataset_name = {'mvtec2d': ('data_io.mvtec2d', 'mvtec2d', 'MVTec2D'),
                         'mvtec2df3d': ('data_io', 'mvtec2df3d', 'MVTec2DF3D'),
                         'mvtecloco': ('data_io', 'mvtecloco', 'MVTecLoco'),
@@ -82,12 +81,12 @@ class CentralizedTrain():
                         'mtd': ('data_io', 'mtd', 'MTD'),
                         'mvtec3d': ('data_io', 'mvtec3d', 'MVTec3D'), }
 
-        train_data_transform =  aug_type(self.para_dict['train_aug_type'], self.para_dict)
-        valid_data_transform =  aug_type(self.para_dict['valid_aug_type'], self.para_dict)
-
         dataset_package = __import__(dataset_name[self.para_dict['dataset']][0])
         dataset_module = getattr(dataset_package, dataset_name[self.para_dict['dataset']][1])
         dataset_class = getattr(dataset_module, dataset_name[self.para_dict['dataset']][2])
+
+        train_data_transform =  aug_type(self.para_dict['train_aug_type'], self.para_dict)
+        valid_data_transform =  aug_type(self.para_dict['valid_aug_type'], self.para_dict)
 
         self.train_dataset = dataset_class(data_path=self.para_dict['data_path'],
                                            learning_mode=self.para_dict['learning_mode'],
@@ -109,10 +108,8 @@ class CentralizedTrain():
                                                     noisy_ratio=self.para_dict['noisy_ratio'], 
                                                     noisy_overlap=self.para_dict['noisy_overlap'])
                                                     
-
-        self.train_loaders = []
-        self.valid_loaders = []
-
+        self.train_loaders, self.valid_loaders = [], []
+        
         # vanilla training
         if self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['continual']:
             train_task_data_list = self.train_dataset.sample_indices_in_task
@@ -176,8 +173,7 @@ class CentralizedTrain():
                 self.valid_loaders.append(valid_loader)
 
 
-        self.chosen_train_loaders = []
-        self.chosen_valid_loaders = []
+        self.chosen_train_loaders, self.chosen_valid_loaders = [], []
 
         if self.para_dict['train_task_id'] == None or self.para_dict['valid_task_id'] == None:
             raise ValueError('Plase Assign Train Task Id!')
@@ -188,30 +184,18 @@ class CentralizedTrain():
             self.chosen_valid_loaders.append(self.valid_loaders[idx])
 
     def init_model(self):
-        # net_name = {
-        #     'resnet': ('models.resnet', 'resnet', 'ResNetModel'),
-        #     'net_csflow': ('models.csflow', 'csflow', 'NetCSFlow'),
-        # }
-        
-        # net_package = __import__(net_name[self.para_dict['net']][0])
-        # net_module = getattr(net_package, net_name[self.para_dict['net']][1])
-        # net_class = getattr(net_module, net_name[self.para_dict['net']][2])
-
         self.net, self.optimizer, self.scheduler = None, None, None
 
         args = argparse.Namespace(**self.para_dict)
-        if self.para_dict['net'] == 'resnet':
-            head_layers = [512] * 2 + [128]
-            self.net = ResNetModel(pretrained=self.para_dict['_pretrained'], head_layers=head_layers, num_classes=self.para_dict['_num_classes'])
-            self.optimizer = get_optimizer(args, self.net)
-            self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, self.para_dict['_num_epochs'])
-        elif self.para_dict['net'] == 'net_csflow':
-            self.net = NetCSFlow(args)
-            self.optimizer = get_optimizer(args, self.net)
-        elif self.para_dict['net'] == 'resnet18': # patchcore
+        if self.para_dict['net'] == 'resnet18': # patchcore
             self.net = models.resnet18(pretrained=True, progress=True)
+            self.optimizer = get_optimizer(args, self.net)
         elif self.para_dict['net'] == 'wide_resnet50': # patchcore
             self.net = models.wide_resnet50_2(pretrained=True, progress=True)
+            self.optimizer = get_optimizer(args, self.net)
+        elif self.para_dict['net'] == 'net_csflow': # csflow
+            self.net = NetCSFlow(args)
+            self.optimizer = get_optimizer(args, self.net)
         else:
             raise NotImplementedError('This Pretrained Model is Not Implemented Error')
 
