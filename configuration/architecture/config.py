@@ -66,6 +66,10 @@ def parse_arguments_centralized():
     parser.add_argument('--vis-em', action='store_true', default=False)
     parser.add_argument('--guoyang', '-gy', action='store_true', default=False)
 
+    # data augmentation type
+    parser.add_argument('--train-aug-type', '-tag', choices=['normal', 'cutpaste'], help='data augmentation type')
+    parser.add_argument('--valid-aug-type', '-vag', choices=['normal', 'cutpaste'], help='data augmentation type')
+
     #parser.add_argument('--save-model', action='store_true', default=False)
     #parser.add_argument('--load-model', action='store_true', default=False)
     #parser.add_argument('--load-model-dir', type=str, default=None)

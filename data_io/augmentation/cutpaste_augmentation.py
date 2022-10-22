@@ -2,8 +2,9 @@ import torch
 import torch.nn as nn
 from torchvision import transforms
 import random
+import math
 
-__all__ = ['CutPaste', 'CutPasteNormal', 'CutPasteScar']
+__all__ = ['CutPaste', 'CutPasteNormal', 'CutPasteScar', 'CutPasteUnion']
 
 class CutPaste(object):
     """Base class for both cutpaste variants with common operations"""
@@ -126,3 +127,15 @@ class CutPasteScar(CutPaste):
         augmented.paste(patch, (to_location_w, to_location_h), mask=mask)
         
         return super().__call__(img, augmented)
+
+class CutPasteUnion(object):
+    def __init__(self, **kwags):
+        self.normal = CutPasteNormal(**kwags)
+        self.scar = CutPasteScar(**kwags)
+    
+    def __call__(self, img):
+        r = random.uniform(0, 1)
+        if r < 0.5:
+            return self.normal(img)
+        else:
+            return self.scar(img)

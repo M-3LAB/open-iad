@@ -10,4 +10,6 @@ valid_batch_size: 1
 # optimizer
 beta1: 0.5
 beta2: 0.999
+train_aug_type: normal
+valid_aug_type: normal
 

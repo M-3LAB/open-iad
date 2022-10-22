@@ -8,6 +8,7 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from data_io.fewshot import FewShot, extract_fewshot_data
 from data_io.noisy import extract_noisy_data
 from memory_augmentation.domain_generalization import domain_gen
+from data_io.augmentation.type import aug_type 
 
 # from arch_base.patchcore2d import PatchCore2D
 # from arch_base.reverse import Reverse 
@@ -36,9 +37,7 @@ class CentralizedTrain():
         self.args = extract_config(self.args)
 
         ip, root_path = assign_service(self.para_dict['guoyang'])
-        #ip = None
-        #root_path = '/home/robot/data'
-        print(root_path)
+
         print('local ip: {}, root_path: {}'.format(ip, root_path))
 
         self.para_dict['root_path'] = root_path
@@ -76,25 +75,23 @@ class CentralizedTrain():
                         'mtd': ('data_io', 'mtd', 'MTD'),
                         'mvtec3d': ('data_io', 'mvtec3d', 'MVTec3D'), }
 
-        img_transform = {'data_size':self.para_dict['data_size'],
-                         'data_crop_size': self.para_dict['data_crop_size'],
-                         'mask_size':self.para_dict['mask_size'],
-                         'mask_crop_size': self.para_dict['mask_crop_size']}
+        train_data_transform =  aug_type(self.para_dict['train_aug_type'], self.para_dict)
+        valid_data_transform =  aug_type(self.para_dict['valid_aug_type'], self.para_dict)
 
         dataset_package = __import__(dataset_name[self.para_dict['dataset']][0])
         dataset_module = getattr(dataset_package, dataset_name[self.para_dict['dataset']][1])
         dataset_class = getattr(dataset_module, dataset_name[self.para_dict['dataset']][2])
 
         self.train_dataset = dataset_class(data_path=self.para_dict['data_path'],
-                                        learning_mode=self.para_dict['learning_mode'],
-                                        phase='train',
-                                        data_transform=img_transform,
-                                        num_task=self.para_dict['num_task'])
+                                           learning_mode=self.para_dict['learning_mode'],
+                                           phase='train',
+                                           data_transform=train_data_transform,
+                                           num_task=self.para_dict['num_task'])
         self.valid_dataset = dataset_class(data_path=self.para_dict['data_path'],
-                                        learning_mode=self.para_dict['learning_mode'],
-                                        phase='test',
-                                        data_transform=img_transform,
-                                        num_task=self.para_dict['num_task'])
+                                           learning_mode=self.para_dict['learning_mode'],
+                                           phase='test',
+                                           data_transform=valid_data_transform,
+                                           num_task=self.para_dict['num_task'])
 
         if self.para_dict['fewshot']:
             self.train_fewshot_dataset = extract_fewshot_data(self.train_dataset, self.para_dict['fewshot_exm'])
