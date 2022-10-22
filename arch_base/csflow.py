@@ -1,49 +1,41 @@
+from __future__ import nested_scopes
 import torch
-import torch.nn as nn
-from torchvision import models
-from models.patchcore.kcenter_greedy import KCenterGreedy 
-from torchvision import transforms
-import cv2
-from typing import List
-from tools.utils import *
-import os
-import torch.nn.functional as F
-import numpy as np
-from sklearn.random_projection import SparseRandomProjection
-import faiss
-#import tqdm
-import math
-from scipy.ndimage import gaussian_filter
-from metrics.common.np_auc_precision_recall import np_get_auroc
-from tools.visualize import save_anomaly_map, vis_embeddings
-from memory_augmentation.domain_generalization import feature_augmentation
+from torch import nn
 
-from models.csflow.csflow import NetCSFlow, CSFlow
-from models.optimizer import get_optimizer
 __all__ = ['PatchCore2D']
 
+class _CSFlow(nn.Module):
+    def __init__(self, args, net, optimizer, scheduler):
+        super(_CSFlow, self).__init__()
+        self.args = args
+        self.optimizer = optimizer
+        self.scheduler = scheduler
+        self.net = net
+
+    def forward(self, epoch, inputs, labels, one_epoch_embeds, task_wise_mean, task_wise_cov, t):
+        self.optimizer.zero_grad()
+        embeds, z, log_jac_det = self.net(inputs)
+        # yy, rev_y, zz = self.net.revward(inputs)
+        loss = torch.mean(0.5 * torch.sum(z ** 2, dim=(1,)) - log_jac_det) / z.shape[1]
+
+        loss.backward()
+        self.optimizer.step()
+        if self.scheduler is not None:
+            self.scheduler.step(epoch)
+
+
+
 class CSFlow():
-    def __init__(self, config, device, file_path):
+    def __init__(self, config, device, file_path, net, optimizer, scheduler):
         
         self.config = config
         self.device = device
         self.file_path = file_path
+        self.net = net
 
-        args = self.config
-        net = NetCSFlow(args)
-        params = net.density_estimator.parameters()
-        optimizer = get_optimizer(args, params)
-        scheduler = None
-        self.backbone = CSFlow(net, net, optimizer, scheduler)
+        self.backbone = _CSFlow(config, self.net, optimizer, scheduler)
 
         self.features = [] 
-
-        self.pixel_gt_list = []
-        self.img_gt_list = []
-        self.pixel_pred_list = []
-        self.img_pred_list = []
-
-        self.embeddings_list = []
 
         source_domain = ''
         if self.config['continual']:
@@ -56,23 +48,21 @@ class CSFlow():
 
         
     def train_epoch(self, train_loaders, inf=''):
-        # for vanilla, fewshot, noisy
-
-        self.backbone.eval()
+        epoch = 1
+        one_epoch_embeds = []
+        task_wise_mean, task_wise_cov = [], []
+        self.backbone.train()
         # When num_task is 15, per task means per class
         for task_idx, train_loader in enumerate(train_loaders):
             print('run task: {}'.format(self.config['train_task_id'][task_idx]))
             for _ in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(train_loader):
-                    # print(f'batch id: {batch_id}')
-                    #if self.config['debug'] and batch_id > self.config['batch_limit']:
-                    #    break
-                    img = batch['img'].to(self.device)
-                    #mask = batch['mask'].to(self.device)
+                    inputs = batch['img'].to(self.device)
+                    labels = batch['label'].to(self.device)
 
                     # Extract features from backbone
                     self.features.clear()
-                    _ = self.backbone(img)
+                    self.backbone(epoch, inputs, labels, one_epoch_embeds, task_wise_mean, task_wise_cov, task_idx)
 
 
     def prediction(self, valid_loader):
