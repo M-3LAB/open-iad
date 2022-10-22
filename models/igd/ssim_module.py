@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.nn.init as init
+import os
 
 DIM = 32
 OUTPUT_DIM = 32 * 32 * 3
@@ -395,3 +397,50 @@ class VisualDiscriminator(nn.Module):
         # output = output.view(-1, 1)
         # output = self.sigmoid(output)
         return output
+
+def create_dir(dir):
+    if not os.path.exists(dir):
+            os.mkdir(path=dir)
+
+
+def weights_init(m):
+    if isinstance(m, MyConvo2d):
+        if m.conv.weight is not None:
+            if m.he_init:
+                init.kaiming_uniform_(m.conv.weight)
+            else:
+                init.xavier_uniform_(m.conv.weight)
+        if m.conv.bias is not None:
+            init.constant_(m.conv.bias, 0.0)
+    if isinstance(m, torch.nn.Linear):
+        if m.weight is not None:
+            init.xavier_uniform_(m.weight)
+        if m.bias is not None:
+            init.constant_(m.bias, 0.0)
+
+def poly_lr_scheduler(optimizer, init_lr, iter, lr_decay_iter=1,
+                      max_iter=0, power=0.9):
+    """Polynomial decay of learning rate
+        :param init_lr is base learning rate
+        :param iter is a current iteration
+        :param lr_decay_iter how frequently decay occurs, default is 1
+        :param max_iter is number of maximum iterations
+        :param power is a polymomial power
+    """
+    if max_iter == 0:
+        raise Exception("MAX ITERATION CANNOT BE ZERO!")
+    if iter % lr_decay_iter or iter > max_iter:
+        return optimizer
+    lr = init_lr * (1 - iter / max_iter) ** power
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+    return lr
+
+def extract_patch(data_tmp):
+    tmp = None
+    _, _, a, b, _, _ = data_tmp.shape
+    for i in range(a):
+        for j in range(b):
+            tmp = data_tmp[:, :, i, j, :, :] if i == 0 and j == 0 \
+                else torch.cat((tmp, data_tmp[:, :, i, j, :, :]), dim=0)
+    return tmp
