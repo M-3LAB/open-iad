@@ -26,12 +26,18 @@ python3 mmad_training.py
 ```
 
 ## Learning Paradigm
-| Prototypes | Train | Test |
-| ------ | -------|------ |
-| vanilla |all data (id=0) | all data (id=0) 
-| continual | all data (id=0 and 1)| all data (id=0 or 1)|
-| fewshot | fewshot (id=0) | all data (id=0) |
-| noisy | all data (id=0) + noisy data (id=0) | all data (id=0)|
+| Prototypes | Marker | Train | Test |
+| ------ | ---| -------|------ |
+| vanilla | -v |all data (id=0) | all data (id=0) 
+| continual | -c| all data (id=0 and 1)| all data (id=0 or 1)|
+| fewshot | -f | fewshot (id=0) | all data (id=0) |
+| noisy | -n | all data (id=0) + noisy data (id=0) | all data (id=0)|
+
+
+| Method / -m | Net /-n |
+| ------ | ------ |
+| patchcore2d  | resnet18, wide_resnet50 |
+| csflow | net_csflow|
 
 
 
@@ -54,3 +60,5 @@ python3 centralized_training.py --fewshot --fewshot-exm 1 --fewshot-num-dg 4 --m
 ```bash
 python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model patchcore2d --dataset mvtec2d --train-task-id 0 --valid-task-id 1 --coreset-sampling-ratio 0.001 -g 1
 ```
+
+

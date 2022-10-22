@@ -35,7 +35,7 @@ def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad', 'mvtec2df3d'])
     parser.add_argument('--model', '-m', type=str, default='csflow', choices=['patchcore2d', 'csflow'])
-    parser.add_argument('--net', '-n', type=str, default='net_csflow', choices=['wide_resnet50', 'resnet', 'net_csflow'])
+    parser.add_argument('--net', '-n', type=str, default='net_csflow', choices=['wide_resnet50', 'resnet18', 'net_csflow'])
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
@@ -62,7 +62,7 @@ def parse_arguments_centralized():
     parser.add_argument('--noisy-ratio', '-nr', type=float, default=0.1)
 
     parser.add_argument('--gpu-id', '-g', type=str, default=2)
-    parser.add_argument('--num-epoch', type=int, default=None)
+    parser.add_argument('--num-epoch', '-ne', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--vis-em', action='store_true', default=False)
     parser.add_argument('--guoyang', '-gy', action='store_true', default=False)

@@ -146,6 +146,7 @@ def get_optimizer(args, net):
     else:
         params = net.parameters()
 
+    params = net.parameters()
     if args._optimizer_name == 'lars':
         optimizer = LARS(params, lr=args._base_lr, momentum=args._momentum, weight_decay=args._weight_decay)
     elif args._optimizer_name == 'sgd':
