@@ -49,21 +49,20 @@ class CSFlow():
         
     def train_epoch(self, train_loaders, inf=''):
         epoch = 1
+        one_epoch_embeds = []
+        task_wise_mean, task_wise_cov = [], []
         self.backbone.train()
         # When num_task is 15, per task means per class
         for task_idx, train_loader in enumerate(train_loaders):
             print('run task: {}'.format(self.config['train_task_id'][task_idx]))
             for _ in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(train_loader):
-                    # print(f'batch id: {batch_id}')
-                    #if self.config['debug'] and batch_id > self.config['batch_limit']:
-                    #    break
-                    img = batch['img'].to(self.device)
-                    label = batch['label'].to(self.device)
+                    inputs = batch['img'].to(self.device)
+                    labels = batch['label'].to(self.device)
 
                     # Extract features from backbone
                     self.features.clear()
-                    _ = self.backbone(epoch, img, label, _, _, _, _)
+                    self.backbone(epoch, inputs, labels, one_epoch_embeds, task_wise_mean, task_wise_cov, task_idx)
 
 
     def prediction(self, valid_loader):
