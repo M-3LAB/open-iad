@@ -79,9 +79,4 @@ class NetCSFlow(nn.Module):
         yy = self.density_estimator(zz, rev=True)
         return y, z, log_jac_det
 
-    # def revward(self, x):
-    #     y = self.eff_ext(x)
-    #     z = self.density_estimator(y)
-    #     rev_y = self.density_estimator(z, rev=True)
-    #     return y, rev_y, z
 

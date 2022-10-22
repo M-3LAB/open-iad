@@ -240,7 +240,7 @@ class CentralizedTrain():
     def work_flow(self):
         # train all task in one time
         train_loaders = self.chosen_train_loaders
-        self.trainer.train_epoch(train_loaders)
+        # self.trainer.train_epoch(train_loaders)
 
         # test each task individually
         for task_id, valid_loader in enumerate(self.chosen_valid_loaders):

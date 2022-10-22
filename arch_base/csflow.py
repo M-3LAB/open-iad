@@ -1,6 +1,10 @@
 from __future__ import nested_scopes
 import torch
 from torch import nn
+import numpy as np
+
+from metrics.common.np_auc_precision_recall import np_get_auroc
+
 
 __all__ = ['PatchCore2D']
 
@@ -12,7 +16,7 @@ class _CSFlow(nn.Module):
         self.scheduler = scheduler
         self.net = net
 
-    def forward(self, epoch, inputs, labels, one_epoch_embeds, task_wise_mean, task_wise_cov, t):
+    def forward(self, epoch, inputs):
         self.optimizer.zero_grad()
         embeds, z, log_jac_det = self.net(inputs)
         # yy, rev_y, zz = self.net.revward(inputs)
@@ -33,7 +37,7 @@ class CSFlow():
         self.file_path = file_path
         self.net = net
 
-        self.backbone = _CSFlow(config, self.net, optimizer, scheduler)
+        self.backbone = _CSFlow(config, self.net, optimizer, scheduler).to(self.device)
 
         self.features = [] 
 
@@ -58,18 +62,35 @@ class CSFlow():
             for _ in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(train_loader):
                     inputs = batch['img'].to(self.device)
-                    labels = batch['label'].to(self.device)
 
                     # Extract features from backbone
                     self.features.clear()
-                    self.backbone(epoch, inputs, labels, one_epoch_embeds, task_wise_mean, task_wise_cov, task_idx)
+                    self.backbone(epoch, inputs)
 
 
     def prediction(self, valid_loader):
+        pixel_auroc = 0.
+        img_auroc = 0.
 
-        self.backbone.eval()
+        test_z, test_labels = [], []
+        with torch.no_grad():
+            for batch_id, batch in enumerate(valid_loader):
+                inputs = batch['img'].to(self.device)
+                labels = batch['label'].to(self.device)
 
+                # Extract features from backbone
+                self.features.clear()
+                _, z, jac = self.net(inputs)
+                z = z[..., None].cpu().data.numpy()
+                score = np.mean(z ** 2, axis=(1, 2))
+                test_z.append(score)
+                test_labels.append(labels.cpu().data.numpy())
 
+            test_labels = np.concatenate(test_labels)
+            is_anomaly = np.array([0 if l == 0 else 1 for l in test_labels])
+
+            anomaly_score = np.concatenate(test_z, axis=0)
+            img_auroc = np_get_auroc(is_anomaly, anomaly_score)
 
         return pixel_auroc, img_auroc
 

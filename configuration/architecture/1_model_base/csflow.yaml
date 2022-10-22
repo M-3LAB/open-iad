@@ -5,7 +5,10 @@ net: net_csflow # resnet, vit, net_csflow, net_draem, net_revdis
 num_epochs: 50
 train_aug_type: normal
 valid_aug_type: normal
-
+data_size: 768
+data_crop_size: 768
+mask_size: 768
+mask_crop_size: 768
 
 _name: seq-mvtec  # seq-mvtec or seq-mtd-mvtec
 _image_size: 768  # 224; draem, revdis: 256; csflow: 768;
