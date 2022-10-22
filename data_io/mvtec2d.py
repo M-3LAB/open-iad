@@ -22,8 +22,9 @@ class MVTec2D(Dataset):
         self.data_path = data_path
         self.learning_mode = learning_mode
         self.phase = phase
-        self.data_transform = data_transform
         self.class_name = mvtec2d_classes()
+        self.img_transform = data_transform[0]
+        self.mask_transform = data_transform[1] 
         assert set(self.class_name) <= set(mvtec2d_classes())
         
         self.num_task = num_task 
@@ -42,20 +43,6 @@ class MVTec2D(Dataset):
         self.load_dataset()
         self.allocate_task_data()
 
-        # data preprocessing 
-        self.imge_transform = T.Compose([T.Resize((self.data_transform['data_size'], self.data_transform['data_size'])),
-                                        T.CenterCrop(self.data_transform['data_crop_size']),
-                                        T.ToTensor(),
-                                        T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-                                        ])
-        self.mask_transform = T.Compose([T.Resize(self.data_transform['mask_size']),
-                                        T.CenterCrop(self.data_transform['mask_crop_size']),
-                                        T.ToTensor(),
-                                        ])
-        
-        cutpaste_transform = None
-        if self.data_transform['aug_name'] == 'cutpaste':
-            self.imge_transform = cutpaste_transform
             
     def __getitem__(self, idx):
         img_src, label, mask, task_id = self.imgs_list[idx], self.labels_list[idx], self.masks_list[idx], self.task_ids_list[idx]

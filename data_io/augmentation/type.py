@@ -1,9 +1,9 @@
 from torchvision import transforms as T
 from cutpaste_augmentation import *
 
-__all__ = ['total_aug']
+__all__ = ['aug_type']
 
-def total_aug(args):
+def aug_type(args):
     if args['augment_type'] == 'normal':
         img_transform = T.Compose([T.Resize((args['data_size'], args['data_size'])),
                                     T.CenterCrop(args['data_crop_size']),
@@ -34,6 +34,8 @@ def total_aug(args):
                                     T.CenterCrop(args['mask_crop_size']),
                                     T.ToTensor(),
                                     ])
+    else:
+        raise NotImplementedError('The Augmentation Type Has Not Been Implemented Yet')
 
     
     
