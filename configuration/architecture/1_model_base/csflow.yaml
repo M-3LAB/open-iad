@@ -1,57 +1,55 @@
-name: continual anomaly detection
-dataset:
-  name: seq-mvtec  # seq-mvtec or seq-mtd-mvtec
-  image_size: 768  # 224; draem, revdis: 256; csflow: 768;
-  num_workers: 4
-  data_incre_setting: mul # one: 10+1+1+1+1+1 mul: 3+3+3+3+3
-  n_classes_per_task: 3  # one_class_incre:1 mul_class_incre: 3
-  n_tasks: 5  # seq-mtd-mvtec, one_class_incre：6, mul_class_incre: 5
-  dataset_order: 1 # 1, 2, 3
-  strong_augmentation: True # strong augmentation: cutpaste, maskimg, etc.; weak augmentation: ColorJitter, RandomRotation, etc.
-  random_aug: False
+model: csflow
+train_batch_size: 16
+valid_batch_size: 16
+net: net_csflow # resnet, vit, net_csflow, net_draem, net_revdis
+num_epochs: 50
 
 
-model:
-  name: csflow # panda, dis, cutpaste, csflow, draem, revdis,  upper
-  net: net_csflow # resnet, vit, net_csflow, net_draem, net_revdis
-  pretrained: True
-  # panda
-  use_dis: False
-  # dis, discat
-  fix_head: True
-  save_anormal : True
-  # cflow
-  n_feat: 304
-  fc_internal: 1024
-  n_coupling_blocks: 4
-  clamp: 3
-  n_scales: 3
 
-train:
-  optimizer:
-    name: adam
-    weight_decay: 0.00001 # 0.00003; csflow: 0.00001
-    momentum: 0.9
-  warmup_epochs: 10
-  warmup_lr: 0
-  base_lr: 0.0002 # 0.0001; csflow: 0.0002; revdis:0.005
-  final_lr: 0
-  num_epochs: 50
-  batch_size: 16 # 32, csflow, draem:16
-  test_epochs: 10
-  alpha: 0.4
-  beta: 0.5
-  num_classes: 2
+_name: seq-mvtec  # seq-mvtec or seq-mtd-mvtec
+_image_size: 768  # 224; draem, revdis: 256; csflow: 768;
+_data_incre_setting: mul # one: 10+1+1+1+1+1 mul: 3+3+3+3+3
+_n_classes_per_task: 3  # one_class_incre:1 mul_class_incre: 3
+_n_tasks: 5  # seq-mtd-mvtec, one_class_incre：6, mul_class_incre: 5
+_dataset_order: 1 # 1, 2, 3
+_strong_augmentation: True # strong augmentation: cutpaste, maskimg, etc.; weak augmentation: ColorJitter, RandomRotation, etc.
+_random_aug: False
 
-eval:
-  eval_classifier: density # head, density
-  batch_size: 16 # 32, revdis,draem:1, csflow:16
-  visualization: False
+_name: csflow # panda, dis, cutpaste, csflow, draem, revdis,  upper
+# _net: net_csflow # resnet, vit, net_csflow, net_draem, net_revdis
+_pretrained: True
+# panda
+_use_dis: False
+# dis, discat
+_fix_head: True
+_save_anormal : True
+# cflow
+_n_feat: 304
+_fc_internal: 1024
+_n_coupling_blocks: 4
+_clamp: 3
+_n_scales: 3
+
+_optimizer_name: adam
+_weight_decay: 0.00001 # 0.00003; csflow: 0.00001
+_momentum: 0.9
+_warmup_epochs: 10
+_warmup_lr: 0
+_base_lr: 0.0002 # 0.0001; csflow: 0.0002; revdis:0.005
+_final_lr: 0
+# _num_epochs: 50
+_test_epochs: 10
+_alpha: 0.4
+_beta: 0.5
+_num_classes: 2
+
+_eval_classifier: density # head, density
+# _batch_size: 16 # 32, revdis,draem:1, csflow:16
+_visualization: False
 
 # two things might lead to stochastic behavior other than seed:
 # worker_init_fn from dataloader and torch.nn.functional.interpolate
 # (keep this in mind if you want to achieve 100% deterministic)
-
 
 
 

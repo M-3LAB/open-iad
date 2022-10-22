@@ -30,6 +30,7 @@ def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad', 'mvtec2df3d'])
     parser.add_argument('--model', '-m', type=str, default='csflow', choices=['patchcore2d', 'csflow'])
+    parser.add_argument('--net', '-n', type=str, default='net_csflow', choices=['resnet', 'net_csflow'])
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
@@ -51,7 +52,7 @@ def parse_arguments_centralized():
     parser.add_argument('--fewshot-num-dg', '-fnd', type=int, default=1)
 
     # noisy label
-    parser.add_argument('--noisy', '-n', action='store_true', default=False)
+    parser.add_argument('--noisy', '-ny', action='store_true', default=False)
     parser.add_argument('--noisy-overlap', '-no', action='store_true', default=False)
     parser.add_argument('--noisy-ratio', '-nr', type=float, default=0.1)
 

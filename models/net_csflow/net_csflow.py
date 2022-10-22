@@ -3,7 +3,7 @@ import torch.nn.functional as F
 from torch import nn
 from efficientnet_pytorch import EfficientNet
 import numpy as np
-from freia_funcs import *
+from models.net_csflow.freia_funcs import *
 
 class NetCSFlow(nn.Module):
     def __init__(self, args):
@@ -12,9 +12,9 @@ class NetCSFlow(nn.Module):
         self.feature_extractor = EfficientNet.from_pretrained('efficientnet-b5')
         for param in self.feature_extractor.parameters():
             param.requires_grad = False
-        self.map_size = (self.args.dataset.image_size // 12, self.args.dataset.image_size // 12)
-        self.kernel_sizes = [3] * (self.args.model.n_coupling_blocks - 1) + [5]
-        self.density_estimator = self.get_cs_flow_model(input_dim=self.args.model.n_feat)
+        self.map_size = (self.args._image_size // 12, self.args._image_size // 12)
+        self.kernel_sizes = [3] * (self.args._n_coupling_blocks - 1) + [5]
+        self.density_estimator = self.get_cs_flow_model(input_dim=self.args._n_feat)
 
     def get_cs_flow_model(self, input_dim):
         nodes = list()
@@ -22,7 +22,7 @@ class NetCSFlow(nn.Module):
         nodes.append(InputNode(input_dim, self.map_size[0] // 2, self.map_size[1] // 2, name='input2'))
         nodes.append(InputNode(input_dim, self.map_size[0] // 4, self.map_size[1] // 4, name='input3'))
 
-        for k in range(self.args.model.n_coupling_blocks):
+        for k in range(self.args._n_coupling_blocks):
             if k == 0:
                 node_to_permute = [nodes[-3].out0, nodes[-2].out0, nodes[-1].out0]
             else:
@@ -30,8 +30,8 @@ class NetCSFlow(nn.Module):
 
             nodes.append(Node(node_to_permute, ParallelPermute, {'seed': k}, name=F'permute_{k}'))
             nodes.append(Node([nodes[-1].out0, nodes[-1].out1, nodes[-1].out2], parallel_glow_coupling_layer,
-                              {'clamp': self.args.model.clamp, 'F_class': CrossConvolutions,
-                               'F_args': {'channels_hidden': self.args.model.fc_internal,
+                              {'clamp': self.args._clamp, 'F_class': CrossConvolutions,
+                               'F_args': {'channels_hidden': self.args._fc_internal,
                                           'kernel_size': self.kernel_sizes[k], 'block_no': k}},
                               name=F'fc1_{k}'))
 
@@ -54,9 +54,9 @@ class NetCSFlow(nn.Module):
 
     def forward_features(self, x):
         y = list()
-        for s in range(self.args.model.n_scales):
+        for s in range(self.args._n_scales):
             feat_s = F.interpolate(x, size=(
-            self.args.dataset.image_size // (2 ** s), self.args.dataset.image_size // (2 ** s))) if s > 0 else x
+            self.args._image_size // (2 ** s), self.args._image_size // (2 ** s))) if s > 0 else x
             feat_s = self.eff_ext(feat_s)
             y.append(feat_s)
         return y
@@ -85,24 +85,3 @@ class NetCSFlow(nn.Module):
     #     rev_y = self.density_estimator(z, rev=True)
     #     return y, rev_y, z
 
-class CSFlow(nn.Module):
-    def __init__(self, args, net, optimizer, scheduler):
-        super(CSFlow, self).__init__()
-        self.args = args
-        self.optimizer = optimizer
-        self.scheduler = scheduler
-        self.net = net
-
-    def forward(self, epoch, inputs, labels, one_epoch_embeds, task_wise_mean, task_wise_cov, t):
-        self.optimizer.zero_grad()
-        embeds, z, log_jac_det = self.net(inputs)
-        # yy, rev_y, zz = self.net.revward(inputs)
-        loss = torch.mean(0.5 * torch.sum(z ** 2, dim=(1,)) - log_jac_det) / z.shape[1]
-
-        loss.backward()
-        self.optimizer.step()
-        if self.scheduler is not None:
-            self.scheduler.step(epoch)
-
-    def training_epoch(self, density, one_epoch_embeds, task_wise_mean, task_wise_cov, task_wise_train_data_nums, t):
-        pass
