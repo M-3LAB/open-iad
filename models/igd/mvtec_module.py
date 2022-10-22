@@ -1,16 +1,17 @@
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
+from torch import nn
+import torchvision
+#import torchvision.models as models
 
-DIM = 32
-OUTPUT_DIM = 32 * 32 * 3
+DIM = 256
+OUTPUT_DIM = 256 * 256 * 3
 
 class MyConvo2d(torch.nn.Module):
     def __init__(self, input_dim, output_dim, kernel_size, he_init=True, stride=1, bias=True):
         super(MyConvo2d, self).__init__()
         self.he_init = he_init
         self.padding = int((kernel_size - 1) / 2)
-        self.conv = torch.nn.Conv2d(input_dim, output_dim, kernel_size, stride=1, padding=self.padding, bias=bias)
+        self.conv = torch.nn.Conv2d(input_dim, output_dim, kernel_size, stride=stride, padding=self.padding, bias=bias)
 
     def forward(self, x):
         output = self.conv(x)
@@ -143,204 +144,7 @@ class ResidualBlock(torch.nn.Module):
         return shortcut + output
 
 
-class Self_Attn(nn.Module):
-    """ Self attention Layer"""
-
-    def __init__(self, in_dim, activation):
-        super(Self_Attn, self).__init__()
-        self.chanel_in = in_dim
-        self.activation = activation
-
-        self.query_conv = nn.Conv2d(in_channels=in_dim, out_channels=in_dim // 8, kernel_size=1)
-        self.key_conv = nn.Conv2d(in_channels=in_dim, out_channels=in_dim // 8, kernel_size=1)
-        self.value_conv = nn.Conv2d(in_channels=in_dim, out_channels=in_dim, kernel_size=1)
-        self.gamma = nn.Parameter(torch.zeros(1))
-
-        self.softmax = nn.Softmax(dim=-1)  #
-
-    def forward(self, x):
-        """
-            inputs :
-                x : input feature maps( B X C X W X H)
-            returns :
-                out : self attention value + input feature
-                attention: B X N X N (N is Width*Height)
-        """
-        m_batchsize, C, width, height = x.size()
-        proj_query = self.query_conv(x).view(m_batchsize, -1, width * height).permute(0, 2, 1)  # B X C X(N)
-        proj_key = self.key_conv(x).view(m_batchsize, -1, width * height)  # B X C x (*W*H)
-        energy = torch.bmm(proj_query, proj_key)  # transpose check
-        attention = self.softmax(energy)  # BX (N) X (N)
-        proj_value = self.value_conv(x).view(m_batchsize, -1, width * height)  # B X C X N
-
-        out = torch.bmm(proj_value, attention.permute(0, 2, 1))
-        out = out.view(m_batchsize, C, width, height)
-        feature_map = out
-        output = self.gamma * out + x
-        return output, attention, feature_map
-
-
-class Encoder(torch.nn.Module):
-    def __init__(self, z_dim=512):
-        super(Encoder, self).__init__()
-        self.dim = 64
-        self.conv1 = MyConvo2d(3, self.dim, 3, he_init=False)    # 3
-        self.rb1 = ResidualBlock(    self.dim, 2 * self.dim, 3, resample='down', hw=DIM         , encoder=True)
-        self.rb2 = ResidualBlock(2 * self.dim, 4 * self.dim, 3, resample='down', hw=int(DIM / 2), encoder=True)
-        self.rb3 = ResidualBlock(4 * self.dim, 8 * self.dim, 3, resample='down', hw=int(DIM / 4), encoder=True)
-        self.ln1 = nn.Linear(4 * 4 * 8 * self.dim, z_dim)
-
-    def forward(self, x):
-        output = x.contiguous()
-        output = output.view(-1, 3, 32, 32)
-        output = self.conv1(output)
-        output = self.rb1(output)
-        output = self.rb2(output)
-        output = self.rb3(output)
-        output = output.view(-1, 4 * 4 * 8 * self.dim)
-        output = self.ln1(output)
-        # output = self.tanh(output)
-        return output
-
-
-class DSVDDEncoder(torch.nn.Module):
-    def __init__(self, z_dim=128):
-        super(DSVDDEncoder, self).__init__()
-        self.pretrain = Encoder(z_dim=512)
-        self.pretrain.load_state_dict(torch.load('./check_points/teacher_En'))
-        # for param in self.pretrain.parameters():
-        #     param.requires_grad = False
-        self.ln11 = nn.Linear(512, 128)
-
-        self.R = 0.0
-        self.c = None
-
-    def forward(self, x):
-        z = self.pretrain(x).view(-1, 512)
-        output = F.relu(self.ln11(z))
-        return output
-
-
 # ok
-class DSVDDGenerator(torch.nn.Module):
-    def __init__(self, dim=DIM, latent_dimension=250):
-        super(DSVDDGenerator, self).__init__()
-
-        self.dim = dim
-        self.ln1 = torch.nn.Linear(latent_dimension, 4 * 4 * (8 * self.dim))
-        self.rb1 = ResidualBlock(8 * self.dim, 4 * self.dim, 3, resample='up')
-        self.rb2 = ResidualBlock(4 * self.dim, 2 * self.dim, 3, resample='up')
-        self.rb3 = ResidualBlock(2 * self.dim, 1 * self.dim, 3, resample='up')
-        self.bn = torch.nn.BatchNorm2d(self.dim)
-        self.conv1 = MyConvo2d(1 * self.dim, 3, 3)
-        self.relu = torch.nn.ReLU()
-
-    def forward(self, x):
-        output = self.ln1(x.contiguous())
-        output = output.view(-1, 8 * self.dim, 4, 4)
-        output = self.rb1(output)
-        output = self.rb2(output)
-        output = self.rb3(output)
-
-        output = self.bn(output)
-        output = self.relu(output)
-        output = self.conv1(output)
-        return output
-
-
-import torch.nn.functional as F
-class CIFAR10_LeNet_ELU(nn.Module):
-    def __init__(self, z_dim = 128):
-        super().__init__()
-
-        self.rep_dim = z_dim
-        self.pool = nn.MaxPool2d(2, 2)
-
-        self.conv1 = nn.Conv2d(3, 32, 5, bias=False, padding=2)
-        self.bn2d1 = nn.BatchNorm2d(32, eps=1e-04, affine=False)
-        self.conv2 = nn.Conv2d(32, 64, 5, bias=False, padding=2)
-        self.bn2d2 = nn.BatchNorm2d(64, eps=1e-04, affine=False)
-        self.conv3 = nn.Conv2d(64, 128, 5, bias=False, padding=2)
-        self.bn2d3 = nn.BatchNorm2d(128, eps=1e-04, affine=False)
-        self.fc1 = nn.Linear(128 * 4 * 4, self.rep_dim, bias=False)
-
-    def forward(self, x):
-        x = self.conv1(x)
-        x = self.pool(F.elu(self.bn2d1(x)))
-        x = self.conv2(x)
-        x = self.pool(F.elu(self.bn2d2(x)))
-        x = self.conv3(x)
-        x = self.pool(F.elu(self.bn2d3(x)))
-        x = x.view(x.size(0), -1)
-        x = self.fc1(x)
-        return x
-
-
-# ok
-class twoin1Generator(torch.nn.Module):
-    def __init__(self, dim=DIM, latent_dimension=250):
-        super(twoin1Generator, self).__init__()
-
-        self.pretrain = Encoder(z_dim=512)
-
-        # path = '/home/user/Desktop/user/cifar10_exp/EN500000/EN500000_ckpt'
-        # path = './check_points/teacher_En'
-        # self.pretrain.load_state_dict(torch.load(path))
-        # for param in self.pretrain.parameters():
-        #     param.requires_grad = False
-
-        # self.encoder = torchvision.models.resnet18(pretrained=True)
-        # self.encoder = nn.Sequential(*list(self.encoder.children())[:-1])
-        # for param in self.encoder.parameters():
-        #     param.requires_grad = False
-
-        self.ln11 = nn.Linear(512, latent_dimension)
-
-        self.R = 0.0
-        self.c = None
-        # self.sigma = nn.Parameter(100*torch.ones(1))
-
-        ############################################################################################################################################
-
-        self.dim = dim
-        self.ln1 = torch.nn.Linear(latent_dimension, 4 * 4 * (8 * self.dim))
-        self.rb1 = ResidualBlock(8 * self.dim, 4 * self.dim, 3, resample='up')
-        self.rb2 = ResidualBlock(4 * self.dim, 2 * self.dim, 3, resample='up')
-        self.rb3 = ResidualBlock(2 * self.dim, 1 * self.dim, 3, resample='up')
-        self.bn = torch.nn.BatchNorm2d(self.dim)
-
-        self.conv1 = MyConvo2d(1 * self.dim, 3, 3)
-        self.relu = torch.nn.ReLU()
-        self.tanh = torch.nn.Tanh()
-        # self.attn1 = Self_Attn(128, 'relu')
-
-
-    def encoder(self, x):
-        z = self.pretrain(x)#.view(-1, 512)
-        output = self.ln11(z)
-        return output
-
-    def generate(self, x):
-        # output = self.encoder(x)
-
-        output = self.ln1(x)
-        output = output.view(-1, 8 * self.dim, 4, 4)
-        output = self.rb1(output)
-        output = self.rb2(output)
-        # output, attention, feature_map = self.attn1(output)
-        output = self.rb3(output)
-
-        output = self.bn(output)
-        output = self.relu(output)
-        output = self.conv1(output)
-        return output
-
-    def forward(self, x):
-        output = self.encoder(x)
-        output = self.generate(output.clone())
-        return output
-
-
 class VisualGenerator(torch.nn.Module):
     def __init__(self, dim=DIM, latent_dimension=250):
         super(VisualGenerator, self).__init__()
@@ -354,7 +158,7 @@ class VisualGenerator(torch.nn.Module):
 
         self.conv1 = MyConvo2d(1 * self.dim, 3, 3)
         self.relu = torch.nn.ReLU()
-        # self.tanh = torch.nn.Tanh()
+        self.tanh = torch.nn.Tanh()
 
     def forward(self, x):
         output = self.ln1(x.contiguous())
@@ -366,32 +170,176 @@ class VisualGenerator(torch.nn.Module):
         output = self.bn(output)
         output = self.relu(output)
         output = self.conv1(output)
+        output = self.tanh(output)
         return output
 
 
+# ok
 class VisualDiscriminator(nn.Module):
     def __init__(self, dim=DIM):
         super(VisualDiscriminator, self).__init__()
-
         self.dim = dim
         self.conv1 = MyConvo2d(3, self.dim, 3, he_init=False)    # 3
         self.rb1 = ResidualBlock(1 * self.dim, 2 * self.dim, 3, resample='down', hw=DIM)
         self.rb2 = ResidualBlock(2 * self.dim, 4 * self.dim, 3, resample='down', hw=int(DIM / 2))
         self.rb3 = ResidualBlock(4 * self.dim, 8 * self.dim, 3, resample='down', hw=int(DIM / 4))
-        # self.rb4 = ResidualBlock(8 * self.dim, 8 * self.dim, 3, resample='down', hw=int(DIM / 8))
         self.ln1 = nn.Linear(4 * 4 * 8 * self.dim, 1)
-        self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
-        # output = x.contiguous()
-        # output = output.view(-1, 3, DIM, DIM)
-        output = self.conv1(x)
+        output = x.contiguous()
+        output = output.view(-1, 3, DIM, DIM)
+        output = self.conv1(output)
         output = self.rb1(output)
         output = self.rb2(output)
         output = self.rb3(output)
-        # output = self.rb4(output)
         output = output.view(-1, 4 * 4 * 8 * self.dim)
         output = self.ln1(output)
-        # output = output.view(-1, 1)
-        # output = self.sigmoid(output)
+        output = output.view(-1)
+        return output
+
+
+class Encoder_256(torch.nn.Module):
+    def __init__(self, z_dim=128):
+        super(Encoder_256, self).__init__()
+        self.dim = 64
+        self.conv1 = MyConvo2d(3, self.dim, kernel_size=5, stride=2, he_init=False)    # 3
+        self.rb1 = ResidualBlock(1 * self.dim, 2 * self.dim, 3, resample='down', hw=int(DIM / 1), encoder=True)
+        self.rb2 = ResidualBlock(2 * self.dim, 4 * self.dim, 3, resample='down', hw=int(DIM / 2), encoder=True)
+        self.rb3 = ResidualBlock(4 * self.dim, 8 * self.dim, 3, resample='down', hw=int(DIM / 4), encoder=True)
+        self.rb4 = ResidualBlock(8 * self.dim, 8 * self.dim, 3, resample='down', hw=int(DIM / 8), encoder=True)
+        self.conv2 = MyConvo2d(8 * self.dim, 8 * self.dim, kernel_size=3, stride=2, he_init=False)
+        self.ln1 = nn.Linear(4 * 4 * 8 * self.dim, z_dim)
+
+#
+    def forward(self, x):
+        output = x.contiguous()
+        output = output.view(-1, 3, 256, 256)
+        output = self.conv1(output)
+        output = self.rb1(output)
+        output = self.rb2(output)
+        output = self.rb3(output)
+        output = self.rb4(output)
+        output = self.conv2(output)
+        output = output.view(-1, 4 * 4 * 8 * self.dim)
+        output = self.ln1(output)
+        return output
+
+
+# ok
+class twoin1Generator256(torch.nn.Module):
+    def __init__(self, dim=DIM, latent_dimension=250):
+        super(twoin1Generator256, self).__init__()
+
+        # self.pretrain = Encoder_256(z_dim=512)
+
+        # path = 'Encoder_256_ckpt'
+        # self.pretrain.load_state_dict(torch.load(path))
+        # for param in self.pretrain.parameters():
+        #     param.requires_grad = False
+        # self.z_dim = latent_dimension
+
+        self.pretrain = torchvision.models.resnet18(pretrained=True)
+        self.pretrain = nn.Sequential(*list(self.pretrain.children())[:-1])
+        for param in self.pretrain.parameters():
+            param.requires_grad = False
+
+        # self.pretrain.fc = nn.Linear(512, latent_dimension)
+        self.ln11 = nn.Linear(512, latent_dimension)
+
+        self.R = 0.0
+        self.c = None
+        self.sigma = None
+        ############################################################################################################################################
+
+        self.dim = dim
+        self.ln1 = torch.nn.Linear(latent_dimension, 4 * 4 * (8 * self.dim))
+        self.up1 = UpSampleConv(8 * self.dim, 8 * self.dim, kernel_size=3)
+        self.rb1 = ResidualBlock(8 * self.dim, 8 * self.dim, 3, resample='up')
+        self.rb2 = ResidualBlock(8 * self.dim, 4 * self.dim, 3, resample='up')
+        self.rb3 = ResidualBlock(4 * self.dim, 2 * self.dim, 3, resample='up')
+        self.rb4 = ResidualBlock(2 * self.dim, 1 * self.dim, 3, resample='up')
+        self.bn = torch.nn.BatchNorm2d(self.dim)
+        # self.conv1 = MyConvo2d(1 * self.dim, 3, 3)
+        self.relu = torch.nn.ReLU()
+        self.up2 = UpSampleConv(self.dim, 3, kernel_size=5)
+
+    def encoder(self, x):
+        output = self.pretrain(x).view(-1, 512)
+        output = self.ln11(output)
+        return output
+
+    def generate(self, x):
+        output = self.ln1(x)
+        output = output.view(-1, 8 * self.dim, 4, 4)
+
+        output = self.up1(output)
+        output = self.rb1(output)
+        output = self.rb2(output)
+        output = self.rb3(output)
+        output = self.rb4(output)
+        output = self.bn(output)
+        output = self.relu(output)
+        output = self.up2(output)
+        # output = self.conv1(output)
+        return output
+
+    def forward(self, x):
+        output = self.encoder(x)
+        output = self.generate(output)
+        return output
+
+
+# ok
+class VisualDiscriminator256(nn.Module):
+    def __init__(self, dim=DIM):
+        super(VisualDiscriminator256, self).__init__()
+        self.dim = dim
+        self.conv1 = MyConvo2d(3, self.dim, kernel_size=5, stride=2, he_init=False)  # 3
+        self.rb1 = ResidualBlock(1 * self.dim, 2 * self.dim, 3, resample='down', hw=int(DIM / 2))
+        self.rb2 = ResidualBlock(2 * self.dim, 4 * self.dim, 3, resample='down', hw=int(DIM / 4))
+        self.rb3 = ResidualBlock(4 * self.dim, 8 * self.dim, 3, resample='down', hw=int(DIM / 8))
+        self.rb4 = ResidualBlock(8 * self.dim, 8 * self.dim, 3, resample='down', hw=int(DIM / 16))
+        # self.rb5 = ResidualBlock(8 * self.dim, 8 * self.dim, 3, resample='down', hw=int(DIM / 32))
+        self.conv2 = MyConvo2d(8 * self.dim, 8 * self.dim, kernel_size=3, stride=2, he_init=False)
+        self.ln1 = nn.Linear(4 * 4 * 8 * self.dim, 1)
+
+    def forward(self, x):
+        output = x.contiguous()
+        output = output.view(-1, 3, DIM, DIM)
+        output = self.conv1(output)
+        output = self.rb1(output)
+        output = self.rb2(output)
+        output = self.rb3(output)
+        output = self.rb4(output)
+        output = self.conv2(output)
+        output = output.view(-1, 4 * 4 * 8 * self.dim)
+        output = self.ln1(output)
+        output = output.view(-1)
+        return output
+
+
+# ok
+class DSVDD256(torch.nn.Module):
+    def __init__(self, dim=DIM, latent_dimension=250):
+        super(DSVDD256, self).__init__()
+
+        self.pretrain = torchvision.models.resnet18(pretrained=True)
+        self.pretrain = nn.Sequential(*list(self.pretrain.children())[:-1])
+
+        # self.pretrain.fc = nn.Linear(512, latent_dimension)
+        self.ln11 = nn.Linear(512, latent_dimension)
+
+        self.R = 0.0
+        self.c = None
+        ############################################################################################################################################
+
+    
+    def encoder(self, x):
+        output = self.pretrain(x).view(-1, 512)
+        output = self.ln11(output)
+        return output
+
+
+    def forward(self, x):
+        output = self.encoder(x)
         return output
