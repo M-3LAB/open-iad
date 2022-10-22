@@ -75,23 +75,23 @@ class CentralizedTrain():
                         'mtd': ('data_io', 'mtd', 'MTD'),
                         'mvtec3d': ('data_io', 'mvtec3d', 'MVTec3D'), }
 
-        train_data_transform =  aug_type(self.para_dict['train_augment_type'])
-        valid_data_transform =  aug_type(self.para_dict['valid_augment_type'])
+        train_data_transform =  aug_type(self.para_dict['train_aug_type'], self.para_dict)
+        valid_data_transform =  aug_type(self.para_dict['valid_aug_type'], self.para_dict)
 
         dataset_package = __import__(dataset_name[self.para_dict['dataset']][0])
         dataset_module = getattr(dataset_package, dataset_name[self.para_dict['dataset']][1])
         dataset_class = getattr(dataset_module, dataset_name[self.para_dict['dataset']][2])
 
         self.train_dataset = dataset_class(data_path=self.para_dict['data_path'],
-                                        learning_mode=self.para_dict['learning_mode'],
-                                        phase='train',
-                                        data_transform=train_data_transform,
-                                        num_task=self.para_dict['num_task'])
+                                           learning_mode=self.para_dict['learning_mode'],
+                                           phase='train',
+                                           data_transform=train_data_transform,
+                                           num_task=self.para_dict['num_task'])
         self.valid_dataset = dataset_class(data_path=self.para_dict['data_path'],
-                                        learning_mode=self.para_dict['learning_mode'],
-                                        phase='test',
-                                        data_transform=valid_data_transform,
-                                        num_task=self.para_dict['num_task'])
+                                           learning_mode=self.para_dict['learning_mode'],
+                                           phase='test',
+                                           data_transform=valid_data_transform,
+                                           num_task=self.para_dict['num_task'])
 
         if self.para_dict['fewshot']:
             self.train_fewshot_dataset = extract_fewshot_data(self.train_dataset, self.para_dict['fewshot_exm'])

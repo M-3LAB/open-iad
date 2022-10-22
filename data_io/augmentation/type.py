@@ -1,10 +1,10 @@
 from torchvision import transforms as T
-from cutpaste_augmentation import *
+from data_io.augmentation.cutpaste_augmentation import *
 
 __all__ = ['aug_type']
 
-def aug_type(args):
-    if args['augment_type'] == 'normal':
+def aug_type(augment_type, args):
+    if augment_type == 'normal':
         img_transform = T.Compose([T.Resize((args['data_size'], args['data_size'])),
                                     T.CenterCrop(args['data_crop_size']),
                                     T.ToTensor(),
@@ -16,7 +16,7 @@ def aug_type(args):
                                     T.ToTensor(),
                                     ])
     
-    elif args['augment_type'] == 'cutpaste':
+    elif augment_type == 'cutpaste':
         after_cutpaste_transform = T.Compose([T.RandomRotation(90),
                                               T.ToTensor(),
                                               T.Normalize(mean=[0.485, 0.456, 0.406],

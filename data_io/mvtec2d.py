@@ -48,7 +48,7 @@ class MVTec2D(Dataset):
         img_src, label, mask, task_id = self.imgs_list[idx], self.labels_list[idx], self.masks_list[idx], self.task_ids_list[idx]
 
         img = Image.open(img_src).convert('RGB')
-        img = self.imge_transform(img)
+        img = self.img_transform(img)
 
         if label == 0:
             mask = torch.zeros([1, img.shape[1], img.shape[2]])
