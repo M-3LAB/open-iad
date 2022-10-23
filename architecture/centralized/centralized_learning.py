@@ -201,6 +201,7 @@ class CentralizedTrain():
             # g: Generator, d: Discriminator
             self.net = {'g': twoin1Generator256(64, latent_dimension=self.para_dict['latent_dimension']),
                         'd': VisualDiscriminator256(64)}   
+            self.optimizer = get_multiple_optimizers(args, self.net)
         else:
             raise NotImplementedError('This Pretrained Model is Not Implemented Error')
 
