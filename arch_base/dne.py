@@ -8,17 +8,7 @@ from metrics.common.np_auc_precision_recall import np_get_auroc
 from tools.density import GaussianDensityTorch
 from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 
-__all__ = ['DNE', 'CompactnessLoss']
-
-class CompactnessLoss(nn.Module):
-    def __init__(self, center):
-        super(CompactnessLoss, self).__init__()
-        self.center = center
-
-    def forward(self, inputs):
-        m = inputs.size(1)
-        variances = (inputs - self.center).norm(dim=1).pow(2) / m
-        return variances.mean()
+__all__ = ['DNE']
 
 # contastive svdd
 class _DNE(nn.Module):
@@ -108,7 +98,7 @@ class DNE(ModelBase):
 
     def prediction(self, valid_loader, task_id):
         self.model.eval()
-        pixel_auroc, img_auroc = 0., 0
+        pixel_auroc, img_auroc = 0, 0
 
         density = self.model.training_epoch(self.density, self.one_epoch_embeds, self.task_wise_mean, 
                                           self.task_wise_cov, self.task_wise_train_data_nums, task_id)

@@ -52,7 +52,7 @@ class CSFlow(ModelBase):
 
     def prediction(self, valid_loader, task_id=None):
         self.net.eval()
-        pixel_auroc, img_auroc = 0., 0
+        pixel_auroc, img_auroc = 0, 0
 
         test_z, test_labels = [], []
         with torch.no_grad():

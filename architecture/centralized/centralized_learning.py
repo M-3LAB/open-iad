@@ -1,3 +1,4 @@
+import imp
 from re import I
 from xml.dom.minidom import DOMImplementation
 import torch
@@ -15,6 +16,9 @@ from data_io.augmentation.type import aug_type
 from models.resnet.resnet import ResNetModel
 from models.net_csflow.net_csflow import NetCSFlow
 from models.vit.vit import ViT
+from models.dream.draem import NetDRAEM
+from arch_base.draem import weights_init
+ 
 from models.optimizer import get_optimizer
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
@@ -199,13 +203,17 @@ class CentralizedTrain():
         elif self.para_dict['net'] == 'vit_b_16':
             self.net = ViT(num_classes=args._num_classes)
             if args._pretrained:
-                # self.net = models.vit_b_16(pretrained=True, progress=True)
-                checkpoint_path = './checkpoints/vit/vit_b_16.pth'
+                checkpoint_path = './checkpoints/vit/vit_b_16.npz'
                 if not os.path.exists(checkpoint_path):
-                    os.system('wget https://storage.googleapis.com/vit_models/imagenet21k/ViT-B_16.npz -o ./checkpoints/vit/vit_b_16.npz')
+                    os.system('wget https://storage.googleapis.com/vit_models/sam/ViT-B_16.npz -O ./checkpoints/vit/vit_b_16.npz')
                 self.net.load_pretrained(checkpoint_path)
             self.optimizer = get_optimizer(args, self.net)
             self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs)
+        elif self.para_dict['net'] == 'net_draem':
+            self.net = NetDRAEM(args)
+            self.net.apply(weights_init)
+            self.optimizer = get_optimizer(args, self.net)
+            self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, [args._num_epochs * 0.8, args._num_epochs * 0.9], gamma=0.2, last_epoch=-1)
         else:
             raise NotImplementedError('This Pretrained Model is Not Implemented Error')
         
@@ -213,6 +221,7 @@ class CentralizedTrain():
         model_name = {'patchcore2d': ('arch_base.patchcore2d', 'patchcore2d', 'PatchCore2D'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
                       'dne': ('arch_base.dne', 'dne', 'DNE'),
+                      'draem': ('arch_base.draem', 'draem', 'DRAEM'),
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])

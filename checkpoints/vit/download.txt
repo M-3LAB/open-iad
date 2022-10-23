@@ -1,1 +1,1 @@
-wget https://storage.googleapis.com/vit_models/imagenet21k/ViT-B_16.npz -o ./checkpoints/vit/ViT-B_16.npz
+https://console.cloud.google.com/storage/browser/_details/vit_models/sam/ViT-B_16.npz
