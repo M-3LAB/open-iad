@@ -35,18 +35,33 @@ class IGD():
         c[(abs(c) < eps) & (c > 0)] = eps
         return c
 
-    def init_sigma(self, data_loader):
+    def init_sigma(self, data_loader, sig_f=1):
         self.generator.sigma = None
         self.generator.eval()
-        pass
+        tmp_sigma = torch.tensor(0.0, dtype=torch.float).to(self.device)
+        n_samples = 0
+        with torch.no_grad():
+            for index, (images, label) in enumerate(data_loader):
+                img = images.to(self.device)
+                latent_z = self.generator.encoder(img)
+                diff = (latent_z - self.generator.c) ** 2
+                tmp = torch.sum(diff.detach(), dim=1)
+                if (tmp.mean().detach() / sig_f) < 1:
+                    tmp_sigma += 1
+                else:
+                    tmp_sigma += tmp.mean().detach() / sig_f
+                n_samples += 1
+        tmp_sigma /= n_samples
+        return tmp_sigma
     
     def train_model(self, train_loaders, inf=''):
+        AUC_LIST = [] 
         self.generator.train()
         self.discriminator.train()
-        tmp_sigma = torch.tensor(0.0, dtype=torch.float).to(self.device)
 
         for param in self.generator.pretrain.parameters():
             param.requires_grad = False
+        
         
         
             
