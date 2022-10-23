@@ -3,6 +3,7 @@ from xml.dom.minidom import DOMImplementation
 import torch
 import yaml
 import argparse
+import os
 from tools.utils import *
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
@@ -13,6 +14,7 @@ from data_io.augmentation.type import aug_type
 
 from models.resnet.resnet import ResNetModel
 from models.net_csflow.net_csflow import NetCSFlow
+from models.vit.vit import ViT
 from models.optimizer import get_optimizer
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
@@ -189,19 +191,27 @@ class CentralizedTrain():
         args = argparse.Namespace(**self.para_dict)
         if self.para_dict['net'] == 'resnet18': # patchcore
             self.net = models.resnet18(pretrained=True, progress=True)
-            self.optimizer = get_optimizer(args, self.net)
         elif self.para_dict['net'] == 'wide_resnet50': # patchcore
             self.net = models.wide_resnet50_2(pretrained=True, progress=True)
-            self.optimizer = get_optimizer(args, self.net)
         elif self.para_dict['net'] == 'net_csflow': # csflow
             self.net = NetCSFlow(args)
             self.optimizer = get_optimizer(args, self.net)
+        elif self.para_dict['net'] == 'vit_b16':
+            self.net = ViT(num_classes=args._num_classes)
+            if args._pretrained:
+                checkpoint_path = './checkpoints/vit/ViT-B_16.npz'
+                if not os.path.exists(checkpoint_path):
+                    os.system('wget https://storage.googleapis.com/vit_models/imagenet21k/ViT-B_16.npz -o ./checkpoints/vit/ViT-B_16.npz')
+                self.net.load_pretrained(checkpoint_path)
+            self.optimizer = get_optimizer(args, self.net)
+            self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs)
         else:
             raise NotImplementedError('This Pretrained Model is Not Implemented Error')
 
 
         model_name = {'patchcore2d': ('arch_base.patchcore2d', 'patchcore2d', 'PatchCore2D'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
+                      'dne': ('arch_base.dne', 'dne', 'DNE'),
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])
@@ -212,15 +222,15 @@ class CentralizedTrain():
        
 
     def work_flow(self):
-        print('-> train...')
+        print('-> train ...')
         # train all task in one time
         train_loaders = self.chosen_train_loaders
         self.trainer.train_model(train_loaders)
 
-        print('-> test...')
+        print('-> test ...')
         # test each task individually
         for task_id, valid_loader in enumerate(self.chosen_valid_loaders):
-            pixel_auroc, img_auroc = self.trainer.prediction(valid_loader=valid_loader)
+            pixel_auroc, img_auroc = self.trainer.prediction(valid_loader=valid_loader, task_id=task_id)
 
             infor = 'train_task_id: {} valid_task_id: {}'.format(self.para_dict['train_task_id'], self.para_dict['valid_task_id'][task_id])
 

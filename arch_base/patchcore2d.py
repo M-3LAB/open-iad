@@ -10,16 +10,16 @@ import torch.nn.functional as F
 import numpy as np
 from sklearn.random_projection import SparseRandomProjection
 import faiss
-#import tqdm
 import math
 from scipy.ndimage import gaussian_filter
 from metrics.common.np_auc_precision_recall import np_get_auroc
 from tools.visualize import save_anomaly_map, vis_embeddings
 from memory_augmentation.domain_generalization import feature_augmentation
+from arch_base.base import ModelBase
 
 __all__ = ['PatchCore2D']
 
-class PatchCore2D():
+class PatchCore2D(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
         
         self.config = config
@@ -166,7 +166,7 @@ class PatchCore2D():
             vis_embeddings(embedding_data, embedding_label, self.config['fewshot_exm'], '{}/vis_embedding.png'.format(self.file_path))
 
 
-    def prediction(self, valid_loader):
+    def prediction(self, valid_loader, task_id=None):
         self.backbone.eval()
 
         self.index = faiss.read_index(os.path.join(self.embedding_dir_path, 'index.faiss')) 

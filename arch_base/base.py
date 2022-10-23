@@ -1,4 +1,4 @@
-class Base():
+class ModelBase():
     def __init__(self, config, device, file_path):
         self.config = config
         self.device = device
@@ -8,5 +8,5 @@ class Base():
         pass
 
 
-    def prediction(self, valid_loader):
+    def prediction(self, valid_loader, task_id=None):
         pass
