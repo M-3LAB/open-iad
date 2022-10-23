@@ -250,7 +250,7 @@ class DSVDDGenerator(torch.nn.Module):
         return output
 
 
-import torch.nn.functional as F
+
 class CIFAR10_LeNet_ELU(nn.Module):
     def __init__(self, z_dim = 128):
         super().__init__()
