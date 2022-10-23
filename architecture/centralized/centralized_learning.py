@@ -196,18 +196,19 @@ class CentralizedTrain():
         elif self.para_dict['net'] == 'net_csflow': # csflow
             self.net = NetCSFlow(args)
             self.optimizer = get_optimizer(args, self.net)
-        elif self.para_dict['net'] == 'vit_b16':
+        elif self.para_dict['net'] == 'vit_b_16':
             self.net = ViT(num_classes=args._num_classes)
             if args._pretrained:
-                checkpoint_path = './checkpoints/vit/ViT-B_16.npz'
+                # self.net = models.vit_b_16(pretrained=True, progress=True)
+                checkpoint_path = './checkpoints/vit/vit_b_16.pth'
                 if not os.path.exists(checkpoint_path):
-                    os.system('wget https://storage.googleapis.com/vit_models/imagenet21k/ViT-B_16.npz -o ./checkpoints/vit/ViT-B_16.npz')
+                    os.system('wget https://storage.googleapis.com/vit_models/imagenet21k/ViT-B_16.npz -o ./checkpoints/vit/vit_b_16.npz')
                 self.net.load_pretrained(checkpoint_path)
             self.optimizer = get_optimizer(args, self.net)
             self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs)
         else:
             raise NotImplementedError('This Pretrained Model is Not Implemented Error')
-
+        
 
         model_name = {'patchcore2d': ('arch_base.patchcore2d', 'patchcore2d', 'PatchCore2D'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
