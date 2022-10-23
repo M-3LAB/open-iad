@@ -1,5 +1,9 @@
 import torch
 import torch.nn as nn
+from models.igd.ssim_module import *
+from models.igd.mvtec_module import *
+
+__all__ = ['IGD']
 
 class IGD():
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
