@@ -14,7 +14,6 @@ class IGD():
         self.optimizer = optimizer
         self.scheduler = scheduler
     
-    
     def train_model(self, train_loaders, inf=''):
         pass
 

@@ -1,1 +1,4 @@
+model: igd
 latent_dimension: 128
+lr: 1e-4
+weight_decay: 1e-6

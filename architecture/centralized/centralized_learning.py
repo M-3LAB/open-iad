@@ -13,7 +13,8 @@ from data_io.augmentation.type import aug_type
 
 from models.resnet.resnet import ResNetModel
 from models.net_csflow.net_csflow import NetCSFlow
-from models.optimizer import get_optimizer
+from models.optimizer import get_optimizer, get_multiple_optimizers
+from models.igd.mvtec_module import twoin1Generator256, VisualDiscriminator256
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
 
@@ -196,12 +197,17 @@ class CentralizedTrain():
         elif self.para_dict['net'] == 'net_csflow': # csflow
             self.net = NetCSFlow(args)
             self.optimizer = get_optimizer(args, self.net)
+        elif self.para_dict['model'] == 'igd':
+            # g: Generator, d: Discriminator
+            self.net = {'g': twoin1Generator256(64, latent_dimension=self.para_dict['latent_dimension']),
+                        'd': VisualDiscriminator256(64)}   
         else:
             raise NotImplementedError('This Pretrained Model is Not Implemented Error')
 
 
         model_name = {'patchcore2d': ('arch_base.patchcore2d', 'patchcore2d', 'PatchCore2D'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
+                      'igd': ('arch_base.igd', 'igd', 'IGD')
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])
