@@ -15,16 +15,16 @@ class IGD():
         self.generator = self.net['g'].to(self.device)
         self.discriminator = self.net['d'].to(self.device)
 
-    def init_c(self, data_loader, generator, eps=0.1):
-        generator.c = None
+    def init_c(self, data_loader, eps=0.1):
+        self.generator.c = None
         c = torch.zeros(1, self.config['latent_dimension']).to(self.device)
-        generator.eval()
+        self.generator.eval()
         n_samples = 0
         with torch.no_grad():
             for index, (images, label) in enumerate(data_loader):
                 # get the inputs of the batch
                 img = images.to(self.device)
-                outputs = generator.encoder(img)
+                outputs = self.generator.encoder(img)
                 n_samples += outputs.shape[0]
                 c += torch.sum(outputs, dim=0)
         
@@ -35,13 +35,15 @@ class IGD():
         c[(abs(c) < eps) & (c > 0)] = eps
         return c
 
-
-    def init_sigma(self):
+    def init_sigma(self, data_loader):
+        self.generator.sigma = None
+        self.generator.eval()
         pass
     
     def train_model(self, train_loaders, inf=''):
         self.generator.train()
         self.discriminator.train()
+        tmp_sigma = torch.tensor(0.0, dtype=torch.float).to(self.device)
 
         for param in self.generator.pretrain.parameters():
             param.requires_grad = False
