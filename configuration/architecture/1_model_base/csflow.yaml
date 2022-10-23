@@ -10,7 +10,7 @@ data_crop_size: 768
 mask_size: 768
 mask_crop_size: 768
 
-_name: seq-mvtec  # seq-mvtec or seq-mtd-mvtec
+# _name: seq-mvtec  # seq-mvtec or seq-mtd-mvtec
 _image_size: 768  # 224; draem, revdis: 256; csflow: 768;
 _data_incre_setting: mul # one: 10+1+1+1+1+1 mul: 3+3+3+3+3
 _n_classes_per_task: 3  # one_class_incre:1 mul_class_incre: 3
@@ -50,10 +50,5 @@ _num_classes: 2
 _eval_classifier: density # head, density
 # _batch_size: 16 # 32, revdis,draem:1, csflow:16
 _visualization: False
-
-# two things might lead to stochastic behavior other than seed:
-# worker_init_fn from dataloader and torch.nn.functional.interpolate
-# (keep this in mind if you want to achieve 100% deterministic)
-
 
 

@@ -3,6 +3,7 @@ import torch
 from torch import nn
 import numpy as np
 
+from arch_base.base import ModelBase
 from metrics.common.np_auc_precision_recall import np_get_auroc
 
 
@@ -16,7 +17,6 @@ class _CSFlow(nn.Module):
         self.scheduler = scheduler
         self.net = net
         self.net.feature_extractor.eval()
-        self.net.density_estimator.train()
         
     def forward(self, epoch, inputs):
         self.optimizer.zero_grad()
@@ -30,17 +30,16 @@ class _CSFlow(nn.Module):
             self.scheduler.step(epoch)
 
 
-class CSFlow():
+class CSFlow(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
         self.config = config
         self.device = device
         self.file_path = file_path
         self.net = net
-
-        self.backbone = _CSFlow(self.config, self.net, optimizer, scheduler).to(self.device)
+        self.model = _CSFlow(self.config, self.net, optimizer, scheduler).to(self.device)
         
     def train_model(self, train_loaders, inf=''):
-        self.backbone.train()
+        self.net.density_estimator.train()
 
         for task_idx, train_loader in enumerate(train_loaders):
             print('run task: {}'.format(self.config['train_task_id'][task_idx]))
@@ -48,13 +47,12 @@ class CSFlow():
             for epoch in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(train_loader):
                     inputs = batch['img'].to(self.device)
+                    self.model(epoch, inputs)
 
-                    self.backbone(epoch, inputs)
 
-
-    def prediction(self, valid_loader):
-        pixel_auroc = 0.
-        img_auroc = 0.
+    def prediction(self, valid_loader, task_id=None):
+        self.net.eval()
+        pixel_auroc, img_auroc = 0., 0
 
         test_z, test_labels = [], []
         with torch.no_grad():

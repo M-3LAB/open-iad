@@ -10,24 +10,24 @@ import torch.nn.functional as F
 import numpy as np
 from sklearn.random_projection import SparseRandomProjection
 import faiss
-#import tqdm
 import math
 from scipy.ndimage import gaussian_filter
 from metrics.common.np_auc_precision_recall import np_get_auroc
 from tools.visualize import save_anomaly_map, vis_embeddings
 from memory_augmentation.domain_generalization import feature_augmentation
+from arch_base.base import ModelBase
 
 __all__ = ['PatchCore2D']
 
-class PatchCore2D():
+class PatchCore2D(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
         
         self.config = config
         self.device = device
         self.file_path = file_path
-        self.backbone = net
+        self.net = net
 
-        self.backbone.to(self.device)
+        self.net.to(self.device)
         self.features = [] 
         self.get_layer_features()
 
@@ -56,9 +56,9 @@ class PatchCore2D():
         def hook_t(module, input, output):
             self.features.append(output)
         
-        #self.backbone.layer1[-1].register_forward_hook(hook_t)
-        self.backbone.layer2[-1].register_forward_hook(hook_t)
-        self.backbone.layer3[-1].register_forward_hook(hook_t)
+        #self.net.layer1[-1].register_forward_hook(hook_t)
+        self.net.layer2[-1].register_forward_hook(hook_t)
+        self.net.layer3[-1].register_forward_hook(hook_t)
 
     @staticmethod 
     def torch_to_cv(torch_img):
@@ -96,7 +96,7 @@ class PatchCore2D():
     def train_model(self, train_loaders, inf=''):
         # for vanilla, fewshot, noisy
 
-        self.backbone.eval()
+        self.net.eval()
         # When num_task is 15, per task means per class
         for task_idx, train_loader in enumerate(train_loaders):
             print('run task: {}'.format(self.config['train_task_id'][task_idx]))
@@ -110,7 +110,7 @@ class PatchCore2D():
 
                     # Extract features from backbone
                     self.features.clear()
-                    _ = self.backbone(img)
+                    _ = self.net(img)
 
                     embeddings = []
                     for feat in self.features:
@@ -166,8 +166,8 @@ class PatchCore2D():
             vis_embeddings(embedding_data, embedding_label, self.config['fewshot_exm'], '{}/vis_embedding.png'.format(self.file_path))
 
 
-    def prediction(self, valid_loader):
-        self.backbone.eval()
+    def prediction(self, valid_loader, task_id=None):
+        self.net.eval()
 
         self.index = faiss.read_index(os.path.join(self.embedding_dir_path, 'index.faiss')) 
         
@@ -193,7 +193,7 @@ class PatchCore2D():
                 label = batch['label'].to(self.device)
                 # Extract features from backbone
                 self.features.clear()
-                _ = self.backbone(img)
+                _ = self.net(img)
 
                 # Pooling for layer 2 and layer 3 features
                 embeddings = []

@@ -34,10 +34,11 @@ python3 mmad_training.py
 | noisy | -n | all data (id=0) + noisy data (id=0) | all data (id=0)|
 
 
-| Method / -m | Net /-n |
+| Method / -m | Net / -n |
 | ------ | ------ |
 | patchcore2d  | resnet18, wide_resnet50 |
-| csflow | net_csflow|
+| csflow | net_csflow |
+| dne | vit_b_16 |
 
 
 
