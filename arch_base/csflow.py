@@ -16,7 +16,6 @@ class _CSFlow(nn.Module):
         self.scheduler = scheduler
         self.net = net
         self.net.feature_extractor.eval()
-        self.net.density_estimator.train()
         
     def forward(self, epoch, inputs):
         self.optimizer.zero_grad()
@@ -40,7 +39,7 @@ class CSFlow():
         self.backbone = _CSFlow(self.config, self.net, optimizer, scheduler).to(self.device)
         
     def train_model(self, train_loaders, inf=''):
-        self.backbone.train()
+        self.net.density_estimator.train()
 
         for task_idx, train_loader in enumerate(train_loaders):
             print('run task: {}'.format(self.config['train_task_id'][task_idx]))
