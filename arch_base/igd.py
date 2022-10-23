@@ -7,7 +7,12 @@ class IGD():
         self.device = device
         self.file_path = file_path
         self.net = net
+        self.optimizer = optimizer
+        self.scheduler = scheduler
     
     
     def train_model(self, train_loaders, inf=''):
+        pass
+
+    def prediction(self, valid_loader):
         pass
