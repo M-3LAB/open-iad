@@ -15,16 +15,16 @@ class IGD():
         self.generator = self.net['g'].to(self.device)
         self.discriminator = self.net['d'].to(self.device)
 
-    def init_c(self, data_loader, eps=0.1):
-        self.generator.c = None
+    def init_c(self, data_loader, generator, eps=0.1):
+        generator.c = None
         c = torch.zeros(1, self.config['latent_dimension']).to(self.device)
-        self.generator.eval()
+        generator.eval()
         n_samples = 0
         with torch.no_grad():
             for index, (images, label) in enumerate(data_loader):
                 # get the inputs of the batch
                 img = images.to(self.device)
-                outputs = self.generator.encoder(img)
+                outputs = generator.encoder(img)
                 n_samples += outputs.shape[0]
                 c += torch.sum(outputs, dim=0)
         
@@ -35,9 +35,9 @@ class IGD():
         c[(abs(c) < eps) & (c > 0)] = eps
         return c
 
-    def init_sigma(self, data_loader, sig_f=1):
-        self.generator.sigma = None
-        self.generator.eval()
+    def init_sigma(self, data_loader, generator, sig_f=1):
+        generator.sigma = None
+        generator.eval()
         tmp_sigma = torch.tensor(0.0, dtype=torch.float).to(self.device)
         n_samples = 0
         with torch.no_grad():
@@ -55,21 +55,33 @@ class IGD():
         return tmp_sigma
     
     def train_model(self, train_loaders, inf=''):
-        AUC_LIST = [] 
-        global test_auc
-        test_auc = 0
-        self.generator.c = None
-        self.generator.sigma = None
+        for task_idx, train_loader in enumerate(train_loaders):
 
-        BEST_AUC = 0
+            print('run task: {}'.format(self.config['train_task_id'][task_idx]))
+            AUC_LIST = [] 
+            global test_auc
+            test_auc = 0
+            self.generator.c = None
+            self.generator.sigma = None
 
-        self.generator.train()
-        self.discriminator.train()
+            BEST_AUC = 0
 
-        for param in self.generator.pretrain.parameters():
-            param.requires_grad = False
+            self.generator.train()
+            self.discriminator.train()
+
+            for param in self.generator.pretrain.parameters():
+                param.requires_grad = False
         
-        START_ITER = 0
+            START_ITER = 0
+            for _ in range(self.config['num_epochs']):
+                for batch_id, batch in enumerate(train_loader):
+                    train_size = len(train_loader)
+                    END_ITER = int(train_size / self.config['batch_size'] * self.config['max_epoch']) 
+
+                    self.generator.c = self.init_c(train_loader, self.generator)
+                    self.generaotr.c.requries_grad = False
+                    self.generator.sigma = self.init_sigma(train_loader, self.generator)
+
 
         
         
