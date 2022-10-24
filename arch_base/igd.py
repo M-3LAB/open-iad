@@ -4,6 +4,7 @@ from models.igd.ssim_module import *
 from models.igd.mvtec_module import *
 from pytorch_msssim import ms_ssim, ssim
 from tools.utils import create_folders
+from sklearn.metrics import roc_curve, auc
 
 __all__ = ['IGD']
 
@@ -21,6 +22,8 @@ class IGD():
         self.l1_criterion = torch.nn.L1Loss()
         self.bce_criterion = torch.nn.BCELoss()
         self.sigbce_criterion = torch.nn.BCEWithLogitsLoss()
+        self.img_gt_list = []
+        self.img_pred_list = []
 
     def init_c(self, data_loader, generator, eps=0.1):
         generator.c = None
@@ -166,8 +169,9 @@ class IGD():
     def prediction(self, valid_loader):
         self.generator.eval()
         self.discriminator.eval()
-        y = []
-        score = []
+        self.img_gt_list.clear()
+        self.img_pred_list.clear()
+         
         normal_gsvdd = []
         abnormal_gsvdd = []
         normal_recon = []
@@ -200,7 +204,16 @@ class IGD():
                     dist = -1 * torch.sum(diff, dim=1) / self.generator.sigma
                     guass_svdd_loss = 1 - torch.exp(dist)
                     anomaly_score = (0.5 * ms_ssim_l1 + 0.5 * guass_svdd_loss).cpu().detach().numpy()
-                    score.append(anomaly_score)
+
+                    self.img_pred_list.append(anomaly_score)
+                    
+                    la = label[visual_index]
+
+                    if la == 'good':
+                        self.img_gt_list.append(0)
+                    else:
+                        self.img_gt_list.append(1)
+
 
                     
                     
