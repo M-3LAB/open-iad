@@ -14,6 +14,8 @@ class IGD():
         self.scheduler = scheduler
         self.generator = self.net['g'].to(self.device)
         self.discriminator = self.net['d'].to(self.device)
+        self.optimizer_g = optimizer[0]
+        self.optimizer_d = optimizer[1]
 
     def init_c(self, data_loader, generator, eps=0.1):
         generator.c = None
@@ -85,6 +87,14 @@ class IGD():
 
                     poly_lr_scheduler(self.optimizer_d, init_lr=self.config['lr'], iter=epoch, max_iter=END_ITER)
                     poly_lr_scheduler(self.optimizer_g, init_lr=self.config['lr'], iter=epoch, max_iter=END_ITER)
+                    
+                    real_data = batch['img'].to(self.device)
+                    b, c, _, _ = real_data.shape()
+
+                    # Train E
+                    self.optimizer_g.zero_grad()
+                    latent_z = self.generator.encoder(real_data)
+                    
                     
 
 
