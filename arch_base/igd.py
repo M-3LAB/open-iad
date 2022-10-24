@@ -166,3 +166,5 @@ class IGD():
     def prediction(self, valid_loader):
         self.generator.eval()
         self.discriminator.eval()
+        y = []
+        score = []
