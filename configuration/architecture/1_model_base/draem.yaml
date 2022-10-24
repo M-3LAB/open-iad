@@ -1,5 +1,5 @@
 model: draem
-train_batch_size: 16
+train_batch_size: 8 # 16
 valid_batch_size: 1
 net: vit_b16  # resnet, vit, net_csflow, net_draem, net_revdis
 num_epochs: 1 # 50
@@ -42,7 +42,7 @@ _warmup_epochs: 10
 _warmup_lr: 0
 _base_lr: 0.0001 # 0.0001; csflow: 0.0002; revdis:0.005
 _final_lr: 0
-_num_epochs: 50
+# _num_epochs: 50
 # _batch_size: 16 # 32， csflow, draem:16
 _test_epochs: 10
 _alpha: 0.4

@@ -126,14 +126,16 @@ class CentralizedTrain():
                 train_loader = DataLoader(self.train_dataset,
                                         batch_size=self.para_dict['train_batch_size'],
                                         num_workers=self.para_dict['num_workers'],
-                                        sampler=SubsetRandomSampler(train_task_data_list[i]))
+                                        sampler=SubsetRandomSampler(train_task_data_list[i]),
+                                        drop_last=True)
                 self.train_loaders.append(train_loader)
 
                 valid_loader = DataLoader(self.valid_dataset, 
                                         num_workers=self.para_dict['num_workers'],
                                         batch_size=self.para_dict['valid_batch_size'], 
                                         shuffle=False,
-                                        sampler=SubsetRandomSampler(valid_task_data_list[i]))
+                                        sampler=SubsetRandomSampler(valid_task_data_list[i]),
+                                        drop_last=True)
                 self.valid_loaders.append(valid_loader)
 
         if self.para_dict['fewshot']:
@@ -221,7 +223,7 @@ class CentralizedTrain():
                         'd': VisualDiscriminator256(64)}   
             self.optimizer = get_multiple_optimizers(args, self.net)
         else:
-            raise NotImplementedError('This Pretrained Model is Not Implemented Error')
+            raise NotImplementedError('This Pretrained Model Not Implemented Error')
         
 
         model_name = {'patchcore2d': ('arch_base.patchcore2d', 'patchcore2d', 'PatchCore2D'),
