@@ -39,6 +39,7 @@ python3 mmad_training.py
 | patchcore2d  | resnet18, wide_resnet50 |
 | csflow | net_csflow |
 | dne | vit_b_16 |
+| draem | net_draem |
 
 
 
