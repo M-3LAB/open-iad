@@ -33,13 +33,13 @@ class _DRAEM(nn.Module):
 
     def forward(self,epoch, inputs, labels, masks):
         # augmented_images, anomaly_masks, has_anomaly = self.simulated_anomaly_generation.augment_image(inputs)
-        num = int(len(inputs) / 2)
+        num = int(len(inputs) / 1)
         augmented_images = inputs[num:]
         rec_imgs, out_masks = self.net(augmented_images)
         out_masks_sm = torch.softmax(out_masks, dim=1)
         l2_loss = self.loss_l2(rec_imgs, inputs[:num])
         ssim_loss = self.loss_ssim(rec_imgs, inputs[:num])
-        segment_loss = self.loss_focal(out_masks_sm, masks)
+        segment_loss = self.loss_focal(out_masks_sm, masks[:num])
         loss = l2_loss + ssim_loss + segment_loss
         loss.backward()
         self.optimizer.step()
@@ -50,10 +50,11 @@ class DRAEM(ModelBase):
         self.config = config
         self.device = device
         self.file_path = file_path
-        self.net = net 
+        self.net = net
+        self.scheduler = scheduler
 
         self.args = argparse.Namespace(**self.config)
-        self.model = _DRAEM(self.args, self.net, optimizer, scheduler).to(self.device)
+        self.model = _DRAEM(self.args, self.net, optimizer, self.scheduler).to(self.device)
     
     def train_model(self, train_loaders, inf=''):
         self.net.train()
@@ -65,10 +66,11 @@ class DRAEM(ModelBase):
                 for batch_id, batch in enumerate(train_loader):
                     inputs = batch['img'].to(self.device)
                     labels = batch['label'].to(self.device)
-                    masks = batch['label'].to(self.device)
-
+                    masks = batch['mask'].to(self.device)
+                    
                     self.model(epoch, inputs, labels, masks)
 
+                self.scheduler.step()
 
     def prediction(self, valid_loader, task_id):
         self.net.eval()
@@ -77,7 +79,7 @@ class DRAEM(ModelBase):
         with torch.no_grad():
             for batch_id, batch in enumerate(valid_loader):
                 inputs = batch['img'].to(self.device)
-                labels = batch['label'].to(self.device)
+                labels = batch['label']
 
                 seg_score_gt.append(labels)
                 _, out_masks = self.net(inputs)
