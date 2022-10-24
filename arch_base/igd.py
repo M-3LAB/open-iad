@@ -168,3 +168,13 @@ class IGD():
         self.discriminator.eval()
         y = []
         score = []
+        normal_gsvdd = []
+        abnormal_gsvdd = []
+        normal_recon = []
+        abnormal_recon = []
+
+        with torch.no_grad():
+            for batch_id, batch in enumerate(valid_loader):
+                img = batch['img'].to(self.device)
+                mask = batch['mask'].to(self.device)
+                label = batch['label'].to(self.device)
