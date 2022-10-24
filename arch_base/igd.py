@@ -73,7 +73,7 @@ class IGD():
                 param.requires_grad = False
         
             START_ITER = 0
-            for _ in range(self.config['num_epochs']):
+            for epoch in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(train_loader):
                     train_size = len(train_loader)
                     END_ITER = int(train_size / self.config['batch_size'] * self.config['max_epoch']) 
@@ -81,6 +81,12 @@ class IGD():
                     self.generator.c = self.init_c(train_loader, self.generator)
                     self.generaotr.c.requries_grad = False
                     self.generator.sigma = self.init_sigma(train_loader, self.generator)
+                    self.generator.requires_grad = False
+
+                    poly_lr_scheduler(self.optimizer_d, init_lr=self.config['lr'], iter=epoch, max_iter=END_ITER)
+                    poly_lr_scheduler(self.optimizer_g, init_lr=self.config['lr'], iter=epoch, max_iter=END_ITER)
+                    
+
 
 
         
