@@ -195,5 +195,12 @@ class IGD():
                     
                     l1_loss = self.l1_criterion(img[visual_index], generate_result[visual_index]) / self.config['data_range']
                     ms_ssim_l1 = weight * ms_ssim_batch_wise + (1 - weight) * l1_loss
+
+                    diff = (latent_z[visual_index] - self.generator.c) ** 2
+                    dist = -1 * torch.sum(diff, dim=1) / self.generator.sigma
+                    guass_svdd_loss = 1 - torch.exp(dist)
+                    anomaly_score = (0.5 * ms_ssim_l1 + 0.5 * guass_svdd_loss).cpu().detach().numpy()
+                    score.append(anomaly_score)
+
                     
                     
