@@ -5,6 +5,7 @@ from models.igd.mvtec_module import *
 from pytorch_msssim import ms_ssim, ssim
 from tools.utils import create_folders
 from sklearn.metrics import roc_curve, auc
+from sklearn import metrics
 
 __all__ = ['IGD']
 
@@ -193,9 +194,9 @@ class IGD():
                     tmp_org_unsq = img[visual_index].unsqueeze(0)
                     tmp_rec_unsq = generate_result[visual_index].unsqueeze(0)
                     ms_ssim_batch_wise = 1 - ms_ssim(tmp_org_unsq, tmp_rec_unsq, 
-                                                    data_range=self.config['data_range'],
-                                                    size_average=True, win_size=11, 
-                                                    weights=[0.0448, 0.2856, 0.3001, 0.2363, 0.1333])
+                                                     data_range=self.config['data_range'],
+                                                     size_average=True, win_size=11, 
+                                                     weights=[0.0448, 0.2856, 0.3001, 0.2363, 0.1333])
                     
                     l1_loss = self.l1_criterion(img[visual_index], generate_result[visual_index]) / self.config['data_range']
                     ms_ssim_l1 = weight * ms_ssim_batch_wise + (1 - weight) * l1_loss
@@ -213,6 +214,10 @@ class IGD():
                         self.img_gt_list.append(0)
                     else:
                         self.img_gt_list.append(1)
+        
+        fpr, tpr, thresholds = metrics.roc_curve(self.img_label_list, self.img_pred_list, pos_label=1)
+        img_auroc = auc(fpr, tpr)
+        return img_auroc
 
 
                     
