@@ -173,10 +173,10 @@ class IGD():
         self.img_gt_list.clear()
         self.img_pred_list.clear()
          
-        normal_gsvdd = []
-        abnormal_gsvdd = []
-        normal_recon = []
-        abnormal_recon = []
+        #normal_gsvdd = []
+        #abnormal_gsvdd = []
+        #normal_recon = []
+        #abnormal_recon = []
 
         with torch.no_grad():
             for batch_id, batch in enumerate(valid_loader):
