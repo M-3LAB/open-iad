@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from models.igd.ssim_module import *
 from models.igd.mvtec_module import *
+from pytorch_msssim import ms_ssim, ssim
 
 
 __all__ = ['IGD']
@@ -101,6 +102,11 @@ class IGD():
                     fake_data = self.generator.generate(latent_z)
 
                     # Reconstruction Loss
+                    weight = 0.85
+                    ms_ssim_batch_wise = 1 - ms_ssim(real_data, fake_data, data_range=self.config['data_range'],
+                                                     size_average=True, win_size=11, 
+                                                     weights=[0.0448, 0.2856, 0.3001, 0.2363, 0.1333])
+                    
                     
                     
 
