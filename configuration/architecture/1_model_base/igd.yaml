@@ -4,3 +4,5 @@ lr: 1e-4
 weight_decay: 1e-6
 num_epochs: 256
 train_batch_size: 16 
+valid_batch_size: 16
+data_range: 4.7579
