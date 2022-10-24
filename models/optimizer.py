@@ -157,3 +157,15 @@ def get_optimizer(args, net):
         raise NotImplementedError
     return optimizer
 
+def get_multiple_optimizers(args, net):
+    optimizers = []
+    if args.model == 'igd':
+        generator_params = net['g'].parameters()
+        discriminator_params = net['d'].parameters()
+        optimizer_g = torch.optim.Adam(generator_params, lr=args.lr, betas=(0, 0.9), weight_decay=args.weight_decay)
+        optimizer_d = torch.optim.Adam(discriminator_params, lr=args.lr, betas=(0, 0.9))
+
+        optimizers.append(optimizer_g)
+        optimizers.append(optimizer_d)
+
+    return optimizers

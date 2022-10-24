@@ -7,7 +7,7 @@ from arch_base.base import ModelBase
 from metrics.common.np_auc_precision_recall import np_get_auroc
 
 
-__all__ = ['PatchCore2D']
+__all__ = ['CSFlow']
 
 class _CSFlow(nn.Module):
     def __init__(self, args, net, optimizer, scheduler):

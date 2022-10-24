@@ -19,7 +19,8 @@ from models.vit.vit import ViT
 from models.dream.draem import NetDRAEM
 from arch_base.draem import weights_init
  
-from models.optimizer import get_optimizer
+from models.optimizer import get_optimizer, get_multiple_optimizers
+from models.igd.mvtec_module import twoin1Generator256, VisualDiscriminator256
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
 
@@ -214,6 +215,11 @@ class CentralizedTrain():
             self.net.apply(weights_init)
             self.optimizer = get_optimizer(args, self.net)
             self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, [args._num_epochs * 0.8, args._num_epochs * 0.9], gamma=0.2, last_epoch=-1)
+        elif self.para_dict['model'] == 'igd':
+            # g: Generator, d: Discriminator
+            self.net = {'g': twoin1Generator256(64, latent_dimension=self.para_dict['latent_dimension']),
+                        'd': VisualDiscriminator256(64)}   
+            self.optimizer = get_multiple_optimizers(args, self.net)
         else:
             raise NotImplementedError('This Pretrained Model is Not Implemented Error')
         
@@ -222,6 +228,7 @@ class CentralizedTrain():
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
                       'dne': ('arch_base.dne', 'dne', 'DNE'),
                       'draem': ('arch_base.draem', 'draem', 'DRAEM'),
+                      'igd': ('arch_base.igd', 'igd', 'IGD')
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])

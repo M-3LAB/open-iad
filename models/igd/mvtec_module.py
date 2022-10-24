@@ -6,6 +6,8 @@ import torchvision
 DIM = 256
 OUTPUT_DIM = 256 * 256 * 3
 
+__all__ = ['twoin1Generator256', 'VisualDiscriminator256', 'Encoder_256']
+
 class MyConvo2d(torch.nn.Module):
     def __init__(self, input_dim, output_dim, kernel_size, he_init=True, stride=1, bias=True):
         super(MyConvo2d, self).__init__()
