@@ -178,3 +178,5 @@ class IGD():
                 img = batch['img'].to(self.device)
                 mask = batch['mask'].to(self.device)
                 label = batch['label'].to(self.device)
+
+                latent_z = self.generator.encoder(img)
