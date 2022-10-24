@@ -62,12 +62,16 @@ class IGD():
         return tmp_sigma
     
     def train_model(self, train_loaders, inf=''):
-        ck_path = 'checkpoint'
+        ck_path = 'checkpoints'
+        create_folders(ck_path)
+        ck_path = ck_path + 'igd' 
         create_folders(ck_path)
         
         for task_idx, train_loader in enumerate(train_loaders):
 
             print('run task: {}'.format(self.config['train_task_id'][task_idx]))
+            task_ck_path = ck_path + str(task_idx)
+            create_folders(task_ck_path)
             #AUC_LIST = [] 
             #global test_auc
             #BEST_AUC = 0
@@ -148,23 +152,16 @@ class IGD():
                         self.generator.c = self.init_c(self.train_loader, self.generator)
                     
                     if iteration % int((train_size / self.config['train_batch_size']) * 5) == 0 and iteration == END_ITER:
-                        torch.save(self.generator.state_dict())
-                        torch.save(self.discriminator.state_dict())
-                        torch.save(self.optimizer_g.state_dict())
-                        torch.save(self.optimizer_d.state_dict())
-                    
-                    
-                    
-                    
-                    
+                        
+                        g_ck = task_ck_path + 'g' 
+                        create_folders(g_ck)
+                        d_ck  = task_ck_path + 'd'
+                        create_folders(d_ck)
 
-
-
-        
-        
-        
-        
-            
+                        torch.save(self.generator.state_dict(), g_ck)
+                        torch.save(self.discriminator.state_dict(), d_ck)
+                        #torch.save(self.optimizer_g.state_dict())
+                        #torch.save(self.optimizer_d.state_dict())
 
     def prediction(self, valid_loader):
         self.generator.eval()
