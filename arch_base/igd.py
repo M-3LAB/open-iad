@@ -56,11 +56,22 @@ class IGD():
     
     def train_model(self, train_loaders, inf=''):
         AUC_LIST = [] 
+        global test_auc
+        test_auc = 0
+        self.generator.c = None
+        self.generator.sigma = None
+
+        BEST_AUC = 0
+
         self.generator.train()
         self.discriminator.train()
 
         for param in self.generator.pretrain.parameters():
             param.requires_grad = False
+        
+        START_ITER = 0
+
+        
         
         
         
