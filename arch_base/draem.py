@@ -33,13 +33,14 @@ class _DRAEM(nn.Module):
 
     def forward(self,epoch, inputs, labels, masks):
         # augmented_images, anomaly_masks, has_anomaly = self.simulated_anomaly_generation.augment_image(inputs)
-        num = int(len(inputs) / 1)
+        num = int(len(inputs) / 2)
         augmented_images = inputs[num:]
         rec_imgs, out_masks = self.net(augmented_images)
         out_masks_sm = torch.softmax(out_masks, dim=1)
         l2_loss = self.loss_l2(rec_imgs, inputs[:num])
         ssim_loss = self.loss_ssim(rec_imgs, inputs[:num])
-        segment_loss = self.loss_focal(out_masks_sm, masks[:num])
+        #segment_loss = self.loss_focal(out_masks_sm, masks[:num])
+        segment_loss = self.loss_focal(out_masks_sm, masks)
         loss = l2_loss + ssim_loss + segment_loss
         loss.backward()
         self.optimizer.step()

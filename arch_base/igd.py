@@ -180,3 +180,20 @@ class IGD():
                 label = batch['label'].to(self.device)
 
                 latent_z = self.generator.encoder(img)
+                generate_result = self.generator(img)
+
+                ################ Normal ##############
+
+                for visual_index in range(latent_z.shape[0]):
+                    weight = 0.85
+                    tmp_org_unsq = img[visual_index].unsqueeze(0)
+                    tmp_rec_unsq = generate_result[visual_index].unsqueeze(0)
+                    ms_ssim_batch_wise = 1 - ms_ssim(tmp_org_unsq, tmp_rec_unsq, 
+                                                    data_range=self.config['data_range'],
+                                                    size_average=True, win_size=11, 
+                                                    weights=[0.0448, 0.2856, 0.3001, 0.2363, 0.1333])
+                    
+                    l1_loss = self.l1_criterion(img[visual_index], generate_result[visual_index]) / self.config['data_range']
+                    ms_ssim_l1 = weight * ms_ssim_batch_wise + (1 - weight) * l1_loss
+                    
+                    
