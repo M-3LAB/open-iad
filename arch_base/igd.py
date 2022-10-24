@@ -84,14 +84,15 @@ class IGD():
                 for batch_id, batch in enumerate(train_loader):
                     train_size = len(train_loader)
                     END_ITER = int(train_size / self.config['batch_size'] * self.config['max_epoch']) 
+                    iteration = int(train_size / self.config['batch_size'] * epoch)
 
                     self.generator.c = self.init_c(train_loader, self.generator)
                     self.generaotr.c.requries_grad = False
                     self.generator.sigma = self.init_sigma(train_loader, self.generator)
                     self.generator.requires_grad = False
 
-                    poly_lr_scheduler(self.optimizer_d, init_lr=self.config['lr'], iter=epoch, max_iter=END_ITER)
-                    poly_lr_scheduler(self.optimizer_g, init_lr=self.config['lr'], iter=epoch, max_iter=END_ITER)
+                    poly_lr_scheduler(self.optimizer_d, init_lr=self.config['lr'], iter=iteration, max_iter=END_ITER)
+                    poly_lr_scheduler(self.optimizer_g, init_lr=self.config['lr'], iter=iteration, max_iter=END_ITER)
                     
                     real_data = batch['img'].to(self.device)
                     b, c, _, _ = real_data.shape()
@@ -106,6 +107,39 @@ class IGD():
                     ms_ssim_batch_wise = 1 - ms_ssim(real_data, fake_data, data_range=self.config['data_range'],
                                                      size_average=True, win_size=11, 
                                                      weights=[0.0448, 0.2856, 0.3001, 0.2363, 0.1333])
+                    
+                    l1_batch_wise = self.l1_criterion(real_data, fake_data) / self.config['data_range']
+                    ms_ssim_l1 = weight * ms_ssim_batch_wise + (1 - weight) * l1_batch_wise
+
+                    ####### Interpolate ###########
+                    e1 = torch.flip(latent_z, dims=[0])
+                    alpha = torch.FloatTensor(b, 1).uniform_(0, 0.5).to(self.device)
+                    e2 = alpha * latent_z + (1 - alpha) * e1
+                    g2 = self.generator.generate(e2)
+                    reg_inter = torch.mean(self.discriminator(g2) ** 2)
+
+                    ############ GAC ############
+                    diff = (latent_z - self.generator.c) ** 2
+                    dist = -1 * (torch.sum(diff, dim=1) / self.generator.sigma)
+                    svdd_loss = torch.mean(1 - torch.exp(dist))
+
+                    encoder_loss = ms_ssim_l1 + svdd_loss + 0.1 * reg_inter
+                    encoder_loss.backward()
+                    self.optimizer_g.step()
+
+                    ############ Discriminator ############
+                    self.optimizer_d.zero_grad()
+                    g2 = self.generator.generate(e2).detach()
+                    fake_data = self.generator(real_data).detach()
+                    d_loss_front = torch.mean((self.discriminator(g2) - alpha) ** 2)
+                    gamma = 0.2
+                    tmp = fake_data + gamma * (real_data - fake_data)
+                    d_loss_back = torch.mean(self.discriminator(tmp) ** 2)
+                    d_loss = d_loss_front + d_loss_back
+                    d_loss.backward()
+                    self.optimizer_d.step()
+                    
+                    
                     
                     
                     
