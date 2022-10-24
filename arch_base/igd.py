@@ -3,7 +3,7 @@ import torch.nn as nn
 from models.igd.ssim_module import *
 from models.igd.mvtec_module import *
 from pytorch_msssim import ms_ssim, ssim
-
+from tools.utils import create_folders
 
 __all__ = ['IGD']
 
@@ -62,16 +62,20 @@ class IGD():
         return tmp_sigma
     
     def train_model(self, train_loaders, inf=''):
+        ck_path = 'checkpoint'
+        create_folders(ck_path)
+        
         for task_idx, train_loader in enumerate(train_loaders):
 
             print('run task: {}'.format(self.config['train_task_id'][task_idx]))
-            AUC_LIST = [] 
-            global test_auc
-            test_auc = 0
+            #AUC_LIST = [] 
+            #global test_auc
+            #BEST_AUC = 0
+            #test_auc = 0
+
             self.generator.c = None
             self.generator.sigma = None
 
-            BEST_AUC = 0
 
             self.generator.train()
             self.discriminator.train()
@@ -80,11 +84,11 @@ class IGD():
                 param.requires_grad = False
         
             START_ITER = 0
+            END_ITER = int(train_size / self.config['train_batch_size'] * self.config['max_epoch']) 
             for epoch in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(train_loader):
                     train_size = len(train_loader)
-                    END_ITER = int(train_size / self.config['batch_size'] * self.config['max_epoch']) 
-                    iteration = int(train_size / self.config['batch_size'] * epoch)
+                    iteration = int(train_size / self.config['train_batch_size'] * epoch)
 
                     self.generator.c = self.init_c(train_loader, self.generator)
                     self.generaotr.c.requries_grad = False
@@ -138,6 +142,16 @@ class IGD():
                     d_loss = d_loss_front + d_loss_back
                     d_loss.backward()
                     self.optimizer_d.step()
+
+                    if iteration % int((train_size / self.config['train_batch_size']) * 10) == 0 and iteration != 0:
+                        self.generator.sigma = self.init_sigma(self.train_loader, self.generator)
+                        self.generator.c = self.init_c(self.train_loader, self.generator)
+                    
+                    if iteration % int((train_size / self.config['train_batch_size']) * 5) == 0 and iteration == END_ITER:
+                        torch.save(self.generator.state_dict())
+                        torch.save(self.discriminator.state_dict())
+                        torch.save(self.optimizer_g.state_dict())
+                        torch.save(self.optimizer_d.state_dict())
                     
                     
                     
