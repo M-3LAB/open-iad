@@ -340,33 +340,3 @@ class NetDRAEM(nn.Module):
         joint = torch.cat((rec_img, aug_img), dim=1)
         out_mask = self.discriminative_subnetwork(joint)
         return rec_img, out_mask
-
-class DRAEM(nn.Module):
-    def __init__(self, args, net, optimizer, scheduler):
-        super(DRAEM, self).__init__()
-        self.args = args
-        self.net = net
-        self.optimizer = optimizer
-        self.scheduler = scheduler
-        # self.simulated_anomaly_generation = SimulatedAnomalyGeneration(self.args)
-        self.loss_l2 = nn.modules.loss.MSELoss()
-        self.loss_ssim = SSIM()
-        self.loss_focal = FocalLoss()
-
-
-    def forward(self,epoch, inputs, labels, masks):
-        # augmented_images, anomaly_masks, has_anomaly = self.simulated_anomaly_generation.augment_image(inputs)
-        num = int(len(inputs) / 2)
-        augmented_images = inputs[num:]
-        rec_imgs, out_masks = self.net(augmented_images)
-        out_masks_sm = torch.softmax(out_masks, dim=1)
-        l2_loss = self.loss_l2(rec_imgs, inputs[:num])
-        ssim_loss = self.loss_ssim(rec_imgs, inputs[:num])
-        segment_loss = self.loss_focal(out_masks_sm, masks)
-        loss = l2_loss + ssim_loss + segment_loss
-        loss.backward()
-        self.optimizer.step()
-        # self.scheduler.step()
-
-    def training_epoch(self, *args):
-        pass
