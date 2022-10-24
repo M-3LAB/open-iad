@@ -16,6 +16,10 @@ class IGD():
         self.discriminator = self.net['d'].to(self.device)
         self.optimizer_g = optimizer[0]
         self.optimizer_d = optimizer[1]
+        self.mse_criterion = torch.nn.MSELoss()
+        self.l1_criterion = torch.nn.L1Loss()
+        self.bce_criterion = torch.nn.BCELoss()
+        self.sigbce_criterion = torch.nn.BCEWithLogitsLoss()
 
     def init_c(self, data_loader, generator, eps=0.1):
         generator.c = None
@@ -94,6 +98,9 @@ class IGD():
                     # Train E
                     self.optimizer_g.zero_grad()
                     latent_z = self.generator.encoder(real_data)
+                    fake_data = self.generator.generate(latent_z)
+
+                    # Reconstruction Loss
                     
                     
 
