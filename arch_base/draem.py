@@ -5,7 +5,8 @@ import argparse
 import torch.nn.functional as F
 from arch_base.base import ModelBase
 from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
-from loss_function.loss import SSIM, FocalLoss
+from loss_function.focal_loss import FocalLoss
+from loss_function.loss import SSIMLoss
 import imgaug.augmenters as iaa
 from data_io.augmentation.draem_aug import DraemAugData
 
@@ -28,7 +29,7 @@ class _DRAEM(nn.Module):
         self.optimizer = optimizer
         self.scheduler = scheduler
         self.loss_l2 = nn.modules.loss.MSELoss()
-        self.loss_ssim = SSIM()
+        self.loss_ssim = SSIMLoss()
         self.loss_focal = FocalLoss()
 
     def forward(self, epoch, inputs, labels, masks):
