@@ -52,19 +52,34 @@ class CutPaste(ModelBase):
         self.density = GaussianDensityTorch()
     
     def train_model(self, train_loaders, inf=''):
-        self.net.train()
 
         for task_idx, train_loader in enumerate(train_loaders):
             print('run task: {}'.format(self.config['train_task_id'][task_idx]))
 
             for epoch in range(self.config['num_epochs']):
                 for batch_id, batch in enumerate(train_loader):
+                    self.net.train()
                     inputs = batch['img'].to(self.device)
                     labels = batch['label'].to(self.device)
                     self.model(epoch, inputs, labels, self.one_epoch_embeds)
-                    self.density = self.model.training_epoch(self.density)
+
+                    self.net.eval()
+                    self.density = self.model.training_epoch(self.density, self.one_epoch_embeds)
             
         
     def prediction(self, valid_loader, task_id=None):
         self.net.eval()
         img_auroc = 0
+        labels = []
+        embeds = []
+        with torch.no_grad():
+            for batch_id, batch in enumerate(valid_loader):
+                input = batch['img'].to(self.device)
+                label = batch['label'].to(self.device)
+
+                embed = self.net.forward_features(input)
+                embeds.append(embed.cpu())
+                labels.append(label.cpu())
+            
+            labels = torch.cat(labels)
+            embeds = torch.cat(embeds)
