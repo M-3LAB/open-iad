@@ -1,4 +1,7 @@
 import torch
+import torch.nn as nn
+
+
 __all__ = ['FocalLoss']
 
 class FocalLoss(nn.Module):

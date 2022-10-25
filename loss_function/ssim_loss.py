@@ -1,95 +1,93 @@
 import torch
 import torch.nn as nn
-from math import exp
 import torch.nn.functional as F
+from math import exp
+
 
 __all__ = ['SSIMLoss']
 
 class SSIMLoss(nn.Module):
-    def __init__(self, window_size, sigma, size_average=True, full=False, 
-                 channel_number=1, device=None):
-
+    def __init__(self, window_size=11, size_average=True, val_range=None):
         super(SSIMLoss, self).__init__()
-
         self.window_size = window_size
         self.size_average = size_average
-        self.sigma = sigma
-        self.channel_number = channel_number
-        self.window = self.create_window().to(device)
-        self.full = full
-        
-    def create_window(self):
-        window_1d = self.gaussian(self.window_size, 1.5).unsqueeze(1)
-        window_2d = window_1d.mm(window_1d.t()).float().unsqueeze(0).unsqueeze(0)
-        window = window_2d.expand(self.channel_number, 1, self.window_size, self.window_size).contiguous()
-        return window
+        self.val_range = val_range
 
-    def gaussian(self):
-        """
-        Generates a list of Tensor values drawn from a gaussian distribution with standard
-        diviation = sigma and sum of all elements = 1.
+        # Assume 1 channel for SSIM
+        self.channel = 1
+        self.window = create_window(window_size).cuda()
 
-        Length of list = window_size
-        """    
-        gauss = torch.Tensor([exp(-(x - self.window_size//2)**2/float(2* self.sigma**2)) for x in range(self.window_size)])
-        return gauss/gauss.sum()
+    def forward(self, img1, img2):
+        (_, channel, _, _) = img1.size()
 
-    def define_val_range(self, img, predefined_value_range=None):
-        if predefined_value_range is None: 
-            if torch.max(img) > 128:
-                max_value = 255
-            else: 
-                max_value = 1
-            
-            if torch.min(img) < -0.5:
-                min_value = -1
-            else:
-                min_value = 0
-
-            value_range = max_value - min_value
-
+        if channel == self.channel and self.window.dtype == img1.dtype:
+            window = self.window
         else:
-            value_range = predefined_value_range
+            window = create_window(self.window_size, channel).to(img1.device).type(img1.dtype)
+            self.window = window
+            self.channel = channel
 
-        return value_range
-
-    def calculate_ssim(self, img_a, img_b, window, config_value_range=None):
-        padding = self.window_size // 2
-
-        mu1 = F.conv2d(img_a, window, padding=padding, groups=self.channel)
-        mu2 = F.conv2d(img_b, window, padding=padding, groups=self.channel)
-
-        mu1_sq = mu1.pow(2)
-        mu2_sq = mu2.pow(2)
-        mu1_mu2 = mu1 * mu2
-
-        sigma1_sq = F.conv2d(img_a * img_b, window, padding=padding, groups=self.channel) - mu1_sq
-        sigma2_sq = F.conv2d(img_a * img_b, window, padding=padding, groups=self.channel) - mu2_sq
-        sigma12 = F.conv2d(img_a * img_b, window, padding=padding, groups=self.channel) - mu1_mu2
-
-        value_range = self.define_val_range(img=img_a, predefined_value_range=config_value_range)
-
-        c1 = (0.01 * value_range) ** 2
-        c2 = (0.03 * value_range) ** 2
-
-        v1 = 2.0 * sigma12 + c2
-        v2 = sigma1_sq + sigma2_sq + c2
-        cs = torch.mean(v1 / v2)  # contrast sensitivity
-
-        ssim_map = ((2 * mu1_mu2 + c1) * v1) / ((mu1_sq + mu2_sq + c1) * v2)
-
-        if self.size_average:
-            ret = ssim_map.mean()
-        else:
-            ret = ssim_map.mean(1).mean(1).mean(1)
-
-        if self.full:
-            return ret, cs
-        else:
-            return ret, ssim_map
-
-
-    def forward(self, img_a, img_b, value_range=None):
-        #_, channel, _, _ = img_a.size()
-        s_score, ssim_map = self.calculate_ssim(img_a=img_a, img_b=img_b, window=self.window, config_value_range=value_range)
+        s_score, ssim_map = ssim(img1, img2, window=window, window_size=self.window_size,
+                                 size_average=self.size_average)
         return 1.0 - s_score
+
+def gaussian(window_size, sigma):
+    gauss = torch.Tensor([exp(-(x - window_size//2)**2/float(2*sigma**2)) for x in range(window_size)])
+    return gauss/gauss.sum()
+
+def create_window(window_size, channel=1):
+    _1D_window = gaussian(window_size, 1.5).unsqueeze(1)
+    _2D_window = _1D_window.mm(_1D_window.t()).float().unsqueeze(0).unsqueeze(0)
+    window = _2D_window.expand(channel, 1, window_size, window_size).contiguous()
+    return window
+
+def ssim(img1, img2, window_size=11, window=None, size_average=True, full=False, val_range=None):
+    if val_range is None:
+        if torch.max(img1) > 128:
+            max_val = 255
+        else:
+            max_val = 1
+
+        if torch.min(img1) < -0.5:
+            min_val = -1
+        else:
+            min_val = 0
+        l = max_val - min_val
+    else:
+        l = val_range
+
+    padd = window_size//2
+    (_, channel, height, width) = img1.size()
+    if window is None:
+        real_size = min(window_size, height, width)
+        window = create_window(real_size, channel=channel).to(img1.device)
+
+    mu1 = F.conv2d(img1, window, padding=padd, groups=channel)
+    mu2 = F.conv2d(img2, window, padding=padd, groups=channel)
+
+    mu1_sq = mu1.pow(2)
+    mu2_sq = mu2.pow(2)
+    mu1_mu2 = mu1 * mu2
+
+    sigma1_sq = F.conv2d(img1 * img1, window, padding=padd, groups=channel) - mu1_sq
+    sigma2_sq = F.conv2d(img2 * img2, window, padding=padd, groups=channel) - mu2_sq
+    sigma12 = F.conv2d(img1 * img2, window, padding=padd, groups=channel) - mu1_mu2
+
+    c1 = (0.01 * l) ** 2
+    c2 = (0.03 * l) ** 2
+
+    v1 = 2.0 * sigma12 + c2
+    v2 = sigma1_sq + sigma2_sq + c2
+    cs = torch.mean(v1 / v2)  # contrast sensitivity
+
+    ssim_map = ((2 * mu1_mu2 + c1) * v1) / ((mu1_sq + mu2_sq + c1) * v2)
+
+    if size_average:
+        ret = ssim_map.mean()
+    else:
+        ret = ssim_map.mean(1).mean(1).mean(1)
+
+    if full:
+        return ret, cs
+    return ret, ssim_map
+
