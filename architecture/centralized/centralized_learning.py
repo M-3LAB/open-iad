@@ -115,7 +115,7 @@ class CentralizedTrain():
                                                     noisy_overlap=self.para_dict['noisy_overlap'])
                                                     
         self.train_loaders, self.valid_loaders = [], []
-        
+        self.refer_loaders = []
         # vanilla training
         if self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['continual']:
             train_task_data_list = self.train_dataset.sample_indices_in_task
@@ -136,6 +136,16 @@ class CentralizedTrain():
                                         sampler=SubsetRandomSampler(valid_task_data_list[i]),
                                         drop_last=True)
                 self.valid_loaders.append(valid_loader)
+
+                if self.para_dict['model'] == 'dra':
+                    refer_loader = DataLoader(self.train_dataset, 
+                                        batch_size=self.para_dict['_nRef'], 
+                                        num_workers=self.para_dict['num_workers'],
+                                        sampler=SubsetRandomSampler(train_task_data_list[i]),
+                                        drop_last=True)
+                    self.refer_loaders.append(refer_loader) 
+                    self.train_loaders = [self.train_loaders, self.refer_loaders]
+                    self.valid_loaders = [self.valid_loaders, self.refer_loaders]
 
         if self.para_dict['fewshot']:
             # capture few-shot images
@@ -215,7 +225,10 @@ class CentralizedTrain():
             self.net = NetDRAEM(args)
             self.net.apply(weights_init)
             self.optimizer = get_optimizer(args, self.net)
-            self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=0.2, last_epoch=-1)
+            self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
+        elif self.para_dict['model'] == 'dra':
+            self.optimizer = get_optimizer(args, self.net)
+            self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=self.args._step_size, gamma=args._gamma)
         else:
             raise NotImplementedError('This Pretrained Model Not Implemented Error')
         
@@ -224,6 +237,7 @@ class CentralizedTrain():
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
                       'dne': ('arch_base.dne', 'dne', 'DNE'),
                       'draem': ('arch_base.draem', 'draem', 'DRAEM'),
+                      'dra': ('arch_base.dra', 'dra', 'DRA'),
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])
@@ -236,8 +250,9 @@ class CentralizedTrain():
     def work_flow(self):
         print('-> train ...')
         # train all task in one time
-        train_loaders = self.chosen_train_loaders
-        self.trainer.train_model(train_loaders)
+        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
+            print('run task: {}'.format(self.para_dict['train_task_id'][task_idx]))
+            self.trainer.train_model(train_loader)
 
         print('-> test ...')
         # test each task individually
