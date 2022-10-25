@@ -37,6 +37,7 @@ class _CutPaste(nn.Module):
         one_epoch_embeds = F.normalize(one_epoch_embeds, p=2, dim=1)
         _, _ = density.fit(one_epoch_embeds)
         return density
+
 class CutPaste(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
         super().__init__()
@@ -46,9 +47,12 @@ class CutPaste(ModelBase):
         self.net = net
         self.optimizer = optimizer
         self.scheduler = scheduler
+        self.model = _CutPaste(self.config, self.net, optimizer, scheduler).to(self.device)
     
     def train_model(self, train_loaders, inf=''):
-        pass
+        one_epoch_embeds = []
+        self.net.train()
+        
 
     def prediction(self, valid_loader, task_id=None):
         pass
