@@ -48,10 +48,20 @@ class CutPaste(ModelBase):
         self.optimizer = optimizer
         self.scheduler = scheduler
         self.model = _CutPaste(self.config, self.net, optimizer, scheduler).to(self.device)
+        self.one_epoch_embeds = []
     
     def train_model(self, train_loaders, inf=''):
-        one_epoch_embeds = []
         self.net.train()
+
+        for task_idx, train_loader in enumerate(train_loaders):
+            print('run task: {}'.format(self.config['train_task_id'][task_idx]))
+
+            for epoch in range(self.config['num_epochs']):
+                for batch_id, batch in enumerate(train_loader):
+                    inputs = batch['img'].to(self.device)
+                    labels = batch['label'].to(self.device)
+                    self.model(epoch, inputs, labels, self.one_epoch_embeds)
+        
         
 
     def prediction(self, valid_loader, task_id=None):
