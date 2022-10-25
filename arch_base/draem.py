@@ -2,12 +2,10 @@ import torch
 from torch import nn
 import numpy as np
 import argparse
-import torch.nn.functional as F
 from arch_base.base import ModelBase
 from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 from loss_function.focal_loss import FocalLoss
-from loss_function.loss import SSIMLoss
-import imgaug.augmenters as iaa
+from loss_function.ssim_loss import SSIMLoss
 from data_io.augmentation.draem_aug import DraemAugData
 
 __all__ = ['DNE', 'weights_init']
