@@ -39,10 +39,8 @@ class _DRAEM(nn.Module):
         segment_loss = self.loss_focal(out_masks_sm, masks)
         loss = l2_loss + ssim_loss + segment_loss
 
-        self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-        # self.scheduler.step()
 
 class DRAEM(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
