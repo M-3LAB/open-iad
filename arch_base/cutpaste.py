@@ -49,6 +49,7 @@ class CutPaste(ModelBase):
         self.scheduler = scheduler
         self.model = _CutPaste(self.config, self.net, optimizer, scheduler).to(self.device)
         self.one_epoch_embeds = []
+        self.density = GaussianDensityTorch()
     
     def train_model(self, train_loaders, inf=''):
         self.net.train()
@@ -61,8 +62,9 @@ class CutPaste(ModelBase):
                     inputs = batch['img'].to(self.device)
                     labels = batch['label'].to(self.device)
                     self.model(epoch, inputs, labels, self.one_epoch_embeds)
+                    self.density = self.model.training_epoch(self.density)
+            
         
-        
-
     def prediction(self, valid_loader, task_id=None):
-        pass
+        self.net.eval()
+        img_auroc = 0
