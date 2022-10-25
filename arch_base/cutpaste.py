@@ -4,6 +4,8 @@ import torch.nn.functional as F
 
 from arch_base.base import ModelBase
 from models.cutpaste.density import GaussianDensityTorch
+from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
+
 
 __all__ = ['CutPaste']
 
@@ -63,8 +65,8 @@ class CutPaste(ModelBase):
                     labels = batch['label'].to(self.device)
                     self.model(epoch, inputs, labels, self.one_epoch_embeds)
 
-                    self.net.eval()
-                    self.density = self.model.training_epoch(self.density, self.one_epoch_embeds)
+            self.net.eval()
+            self.density = self.model.training_epoch(self.density, self.one_epoch_embeds)
             
         
     def prediction(self, valid_loader, task_id=None):
@@ -83,3 +85,12 @@ class CutPaste(ModelBase):
             
             labels = torch.cat(labels)
             embeds = torch.cat(embeds)
+            embeds = F.normalize(embeds, p=2, dim=1)
+
+            distances = self.density.predict(embeds)
+
+            roc_auc = roc_auc_score(labels, distances)
+            fpr, tpr, _ = roc_curve(labels, distances)
+            img_auroc = auc(fpr, tpr)
+        
+        return img_auroc
