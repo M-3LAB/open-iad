@@ -10,6 +10,7 @@ data_crop_size: 448
 mask_size: 448
 mask_crop_size: 448
 
+_name: dra
 _batch_size: 48
 _steps_per_epoch: 20
 _cont_rate: 0
@@ -28,8 +29,8 @@ _pretrain_dir: None
 _total_heads: 4
 _nRef: 5
 _outlier_root: None
-
+_optimizer_name: adam
 _base_lr: 0.0002
-_weight_decay: 1e-5
+_weight_decay: 0.00001
 _step_size: 10
 _gamma: 0.1
