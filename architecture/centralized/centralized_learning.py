@@ -257,7 +257,8 @@ class CentralizedTrain():
             self.optimizer = get_optimizer(args, self.net)
             self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)       
         if self.para_dict['model'] == 'favae':
-            self.net = VAE(input_channel=self.para_dict['input_channel']) 
+            self.net = VAE(input_channel=self.para_dict['input_channel'], z_dim=100) 
+            self.opimizer =  get_optimizer(args.self.net)
 
         model_name = {'patchcore2d': ('arch_base.patchcore2d', 'patchcore2d', 'PatchCore2D'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
