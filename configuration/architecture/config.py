@@ -49,6 +49,7 @@ def parse_arguments_centralized():
     # semi-supervised learning
     parser.add_argument('--semi', '-s', action='store_true', default=True)
     parser.add_argument('--semi-anomaly-num', '-san', type=int, default=5)
+    parser.add_argument('--semi-overlap', '-so', action='store_true', default=False)
     
     # continual learning
     parser.add_argument('--continual', '-c', action='store_true', default=False)
