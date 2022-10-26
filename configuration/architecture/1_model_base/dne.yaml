@@ -2,7 +2,7 @@ model: dne
 train_batch_size: 32
 valid_batch_size: 32
 net: vit_b16  # resnet, vit, net_csflow, net_draem, net_revdis
-num_epochs: 50 # 50
+num_epochs: 1 # 50
 train_aug_type: normal
 valid_aug_type: normal
 data_size: 224

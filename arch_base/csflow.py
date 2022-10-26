@@ -38,19 +38,16 @@ class CSFlow(ModelBase):
         self.net = net
         self.model = _CSFlow(self.config, self.net, optimizer, scheduler).to(self.device)
         
-    def train_model(self, train_loaders, inf=''):
+    def train_model(self, train_loader, task_id, inf=''):
         self.net.density_estimator.train()
 
-        for task_idx, train_loader in enumerate(train_loaders):
-            print('run task: {}'.format(self.config['train_task_id'][task_idx]))
-
-            for epoch in range(self.config['num_epochs']):
-                for batch_id, batch in enumerate(train_loader):
-                    inputs = batch['img'].to(self.device)
-                    self.model(epoch, inputs)
+        for epoch in range(self.config['num_epochs']):
+            for batch_id, batch in enumerate(train_loader):
+                inputs = batch['img'].to(self.device)
+                self.model(epoch, inputs)
 
 
-    def prediction(self, valid_loader, task_id=None):
+    def prediction(self, valid_loader, task_id):
         self.net.eval()
         pixel_auroc, img_auroc =0, 0
 

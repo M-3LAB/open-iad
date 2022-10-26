@@ -100,7 +100,7 @@ class DRA(ModelBase):
     def normalization(self, data):
         return data
 
-    def train_model(self, train_ref_loader, inf=''):
+    def train_model(self, train_ref_loader, task_id, inf=''):
         train_loader, refer_loader = train_ref_loader
         ref = iter(refer_loader)
         self.model.train()

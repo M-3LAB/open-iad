@@ -30,6 +30,8 @@ class _DRAEM(nn.Module):
         self.loss_ssim = SSIMLoss()
         self.loss_focal = FocalLoss()
 
+        self.net.apply(weights_init)
+        
     def forward(self, epoch, inputs, labels, masks):
         rec_imgs, out_masks = self.net(inputs)
         out_masks_sm = torch.softmax(out_masks, dim=1)
@@ -53,18 +55,15 @@ class DRAEM(ModelBase):
         self.model = _DRAEM(self.args, self.net, optimizer, self.scheduler).to(self.device)
         self.dream_aug = DraemAugData(self.args.root_path + '/dtd/images', [self.args.data_size, self.args.data_size])
 
-    def train_model(self, train_loaders, inf=''):
+    def train_model(self, train_loader, task_id, inf=''):
         self.net.train()
 
-        for task_idx, train_loader in enumerate(train_loaders):
-            print('run task: {}'.format(self.config['train_task_id'][task_idx]))
+        for epoch in range(self.config['num_epochs']):
+            for batch_id, batch in enumerate(train_loader):
+                inputs, masks, labels = self.dream_aug.transform_batch(batch['img'], batch['label'], batch['mask'])
+                self.model(epoch, inputs.to(self.device), labels.to(self.device), masks.to(self.device))
 
-            for epoch in range(self.config['num_epochs']):
-                for batch_id, batch in enumerate(train_loader):
-                    inputs, masks, labels = self.dream_aug.transform_batch(batch['img'], batch['label'], batch['mask'])
-                    self.model(epoch, inputs.to(self.device), labels.to(self.device), masks.to(self.device))
-
-                self.scheduler.step()
+            self.scheduler.step()
 
     def prediction(self, valid_loader, task_id):
         self.net.eval()

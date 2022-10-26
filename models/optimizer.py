@@ -139,10 +139,7 @@ class LR_Scheduler(object):
 
 
 def get_optimizer(args, net):
-    if args._name == 'csflow':
-        params = net.density_estimator.parameters()
-    else:
-        params = net.parameters()
+    params = net.parameters()
 
     if args._optimizer_name == 'lars':
         optimizer = LARS(params, lr=args._base_lr, momentum=args._momentum, weight_decay=args._weight_decay)
@@ -152,17 +149,7 @@ def get_optimizer(args, net):
         optimizer = torch.optim.Adam(params, lr=args._base_lr, eps=0.0004, weight_decay=args._weight_decay)
     else:
         raise NotImplementedError
+        
     return optimizer
 
-def get_multiple_optimizers(args, net):
-    optimizers = []
-    if args.model == 'igd':
-        generator_params = net['g'].parameters()
-        discriminator_params = net['d'].parameters()
-        optimizer_g = torch.optim.Adam(generator_params, lr=args.lr, betas=(0, 0.9), weight_decay=args.weight_decay)
-        optimizer_d = torch.optim.Adam(discriminator_params, lr=args.lr, betas=(0, 0.9))
 
-        optimizers.append(optimizer_g)
-        optimizers.append(optimizer_d)
-
-    return optimizers
