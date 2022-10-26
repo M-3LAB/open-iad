@@ -4,7 +4,8 @@ learning_mode: 'centralized'
 vanilla: false
 # semi-supervised learning
 semi: false
-nAnomaly: 1
+semi_anomaly_num: 5
+semi_overlap: false
 # continual learning
 continual: false
 # fewshot learning
