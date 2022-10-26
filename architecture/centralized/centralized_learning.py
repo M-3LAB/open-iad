@@ -24,6 +24,7 @@ from arch_base.draem import weights_init
  
 from models.optimizer import get_optimizer, get_multiple_optimizers
 from models.igd.mvtec_module import twoin1Generator256, VisualDiscriminator256
+from models.favae.vae import VAE
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
 
@@ -255,6 +256,8 @@ class CentralizedTrain():
             self.net = DevNetResNet18()
             self.optimizer = get_optimizer(args, self.net)
             self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)       
+        if self.para_dict['model'] == 'favae':
+            self.net = VAE(input_channel=self.para_dict['input_channel']) 
 
         model_name = {'patchcore2d': ('arch_base.patchcore2d', 'patchcore2d', 'PatchCore2D'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),

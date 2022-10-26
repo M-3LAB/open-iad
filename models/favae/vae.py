@@ -1,7 +1,8 @@
 import torch
 from torch import nn
-from torchsummary import summary
+#from torchsummary import summary
 
+__all__ = ['VAE']
 
 class VAE(nn.Module):
     def __init__(self, input_channel=3, z_dim=100):
