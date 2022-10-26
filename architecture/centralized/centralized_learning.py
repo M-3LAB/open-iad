@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 from data_io.fewshot import FewShot, extract_fewshot_data
 from data_io.noisy import extract_noisy_data
+from data_io.semi import extract_semi_data
 from memory_augmentation.domain_generalization import domain_gen
 from data_io.augmentation.type import aug_type 
 
@@ -18,6 +19,7 @@ from models.net_csflow.net_csflow import NetCSFlow
 from models.vit.vit import ViT
 from models.dream.draem import NetDRAEM
 from models.dra.dra_resnet18 import DraResNet18
+from models.devnet.devnet_resnet18 import DevNetResNet18
 from arch_base.draem import weights_init
  
 from models.optimizer import get_optimizer, get_multiple_optimizers
@@ -110,42 +112,50 @@ class CentralizedTrain():
         if self.para_dict['fewshot']:
             self.train_fewshot_dataset = extract_fewshot_data(self.train_dataset, self.para_dict['fewshot_exm'])
 
-        if self.para_dict['noisy'] or self.para_dict['semi']:
+        if self.para_dict['noisy']:
             self.train_noisy_dataset, self.valid_noisy_dataset, self.noisy_dataset = extract_noisy_data(self.train_dataset, 
                                                     self.valid_dataset, 
                                                     noisy_ratio=self.para_dict['noisy_ratio'], 
                                                     noisy_overlap=self.para_dict['noisy_overlap'])
-                                                    
+
+        if self.para_dict['semi']:
+            self.train_semi_dataset, self.valid_semi_dataset, self.semi_dataset = extract_semi_data(self.train_dataset, 
+                                                    self.valid_dataset, 
+                                                    anomaly_num=self.para_dict['semi_anomaly_num'], 
+                                                    anomaly_overlap=self.para_dict['semi_overlap'])                                                    
+        if self.para_dict['model'] == 'devnet':
+            self.train_dataset = self.train_semi_dataset
+
         self.train_loaders, self.valid_loaders = [], []
         self.refer_loaders = []
+        
         # vanilla training
-        if self.para_dict['vanilla'] or self.para_dict['semi'] or self.para_dict['fewshot'] or self.para_dict['continual']:
-            train_task_data_list = self.train_dataset.sample_indices_in_task
-            valid_task_data_list = self.valid_dataset.sample_indices_in_task
+        train_task_data_list = self.train_dataset.sample_indices_in_task
+        valid_task_data_list = self.valid_dataset.sample_indices_in_task
+        semi_task_data_list = self.semi_dataset.sample_indices_in_task
 
-            for i in range(self.para_dict['num_task']):
-                train_loader = DataLoader(self.train_dataset,
-                                        batch_size=self.para_dict['train_batch_size'],
-                                        num_workers=self.para_dict['num_workers'],
-                                        sampler=SubsetRandomSampler(train_task_data_list[i]),
-                                        drop_last=True)
-                self.train_loaders.append(train_loader)
+        for i in range(self.para_dict['num_task']):
+            train_loader = DataLoader(self.train_dataset,
+                                    batch_size=self.para_dict['train_batch_size'],
+                                    num_workers=self.para_dict['num_workers'],
+                                    sampler=SubsetRandomSampler(train_task_data_list[i]),
+                                    drop_last=True)
+            self.train_loaders.append(train_loader)
 
-                valid_loader = DataLoader(self.valid_dataset, 
-                                        num_workers=self.para_dict['num_workers'],
-                                        batch_size=self.para_dict['valid_batch_size'], 
-                                        shuffle=False,
-                                        sampler=SubsetRandomSampler(valid_task_data_list[i]),
-                                        drop_last=True)
-                self.valid_loaders.append(valid_loader)
+            valid_loader = DataLoader(self.valid_dataset, 
+                                    num_workers=self.para_dict['num_workers'],
+                                    batch_size=self.para_dict['valid_batch_size'], 
+                                    shuffle=False,
+                                    sampler=SubsetRandomSampler(valid_task_data_list[i]),
+                                    drop_last=True)
+            self.valid_loaders.append(valid_loader)
 
-                if self.para_dict['semi']:
-                    noisy_loader = DataLoader(self.noisy_dataset, 
-                                        batch_size=self.para_dict['semi_anomaly_num'], 
-                                        num_workers=self.para_dict['num_workers'],
-                                        sampler=SubsetRandomSampler(train_task_data_list[i]),
-                                        drop_last=True)
-                    self.refer_loaders.append(noisy_loader) 
+            semi_loader = DataLoader(self.semi_dataset, 
+                                batch_size=self.para_dict['semi_anomaly_num'], 
+                                num_workers=self.para_dict['num_workers'],
+                                sampler=SubsetRandomSampler(semi_task_data_list[i]),
+                                drop_last=True)
+            self.refer_loaders.append(semi_loader) 
 
         if self.para_dict['fewshot']:
             # capture few-shot images
@@ -241,7 +251,10 @@ class CentralizedTrain():
             self.net = DraResNet18()
             self.optimizer = get_optimizer(args, self.net)
             self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)
-        
+        if self.para_dict['net'] == 'net_devnet':
+            self.net = DevNetResNet18()
+            self.optimizer = get_optimizer(args, self.net)
+            self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)       
 
         model_name = {'patchcore2d': ('arch_base.patchcore2d', 'patchcore2d', 'PatchCore2D'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
