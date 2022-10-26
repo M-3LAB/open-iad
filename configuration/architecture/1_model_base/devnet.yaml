@@ -1,2 +1,32 @@
 model: devnet
-num_epochs: 50
+net: resnet18
+semi: false
+semi_anomaly_num: 10 # _n_anomaly
+semi_overlap: false
+num_epochs: 1 # 50 
+train_batch_size: 48
+valid_batch_size: 1
+train_aug_type: normal
+valid_aug_type: normal
+data_size: 448
+data_crop_size: 448
+mask_size: 448
+mask_crop_size: 448
+
+_name: devnet
+_batch_size: 48
+_steps_per_epoch: 20
+_ramdn_seed: 42
+_no-cuda: True
+_classname: 'capsule'
+_img_size: 448
+_nAnomaly: 10
+_n_scales: 2
+_criterion: 'deviation'
+_topk: 0.1
+_n_anomaly: 10
+_optimizer_name: adam
+_base_lr: 0.0002
+_weight_decay: 0.00001
+_step_size: 100
+_gamma: 0.1

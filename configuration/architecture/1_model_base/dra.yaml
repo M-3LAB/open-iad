@@ -1,5 +1,8 @@
 model: dra
 net: resnet18
+semi: True
+semi_anomaly_num: 5 # _nRef fixed 5
+semi_overlap: false
 num_epochs: 1 # 30 
 train_batch_size: 48
 valid_batch_size: 1
@@ -9,7 +12,6 @@ data_size: 448
 data_crop_size: 448
 mask_size: 448
 mask_crop_size: 448
-semi_anomaly_num: 5 # _nRef fixed 5
 
 _name: dra
 _batch_size: 48
