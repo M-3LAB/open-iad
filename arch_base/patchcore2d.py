@@ -93,48 +93,45 @@ class PatchCore2D(ModelBase):
         
         return embedding_list
         
-    def train_model(self, train_loaders, inf=''):
+    def train_model(self, train_loader, task_id, inf=''):
         # for vanilla, fewshot, noisy
 
         self.net.eval()
-        # When num_task is 15, per task means per class
-        for task_idx, train_loader in enumerate(train_loaders):
-            print('run task: {}'.format(self.config['train_task_id'][task_idx]))
-            for _ in range(self.config['num_epochs']):
-                for batch_id, batch in enumerate(train_loader):
-                    # print(f'batch id: {batch_id}')
-                    #if self.config['debug'] and batch_id > self.config['batch_limit']:
-                    #    break
-                    img = batch['img'].to(self.device)
-                    #mask = batch['mask'].to(self.device)
+        for _ in range(self.config['num_epochs']):
+            for batch_id, batch in enumerate(train_loader):
+                # print(f'batch id: {batch_id}')
+                #if self.config['debug'] and batch_id > self.config['batch_limit']:
+                #    break
+                img = batch['img'].to(self.device)
+                #mask = batch['mask'].to(self.device)
 
-                    # Extract features from backbone
-                    self.features.clear()
-                    _ = self.net(img)
+                # Extract features from backbone
+                self.features.clear()
+                _ = self.net(img)
 
-                    embeddings = []
-                    for feat in self.features:
-                        # Pooling for layer 2 and layer 3 features
-                        pooling = torch.nn.AvgPool2d(3, 1, 1)
-                        embeddings.append(pooling(feat))
+                embeddings = []
+                for feat in self.features:
+                    # Pooling for layer 2 and layer 3 features
+                    pooling = torch.nn.AvgPool2d(3, 1, 1)
+                    embeddings.append(pooling(feat))
 
-                    embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
-                    embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
-                    self.embeddings_list.extend(embedding)
+                embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
+                embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
+                self.embeddings_list.extend(embedding)
 
-                    if self.config['fewshot']:
-                        embeddings_rot = []
-                        if self.config['fewshot_feat_aug']:
-                            self.embed_rot = feature_augmentation(self.features, self.device)
+                if self.config['fewshot']:
+                    embeddings_rot = []
+                    if self.config['fewshot_feat_aug']:
+                        self.embed_rot = feature_augmentation(self.features, self.device)
 
-                            for feat in self.embed_rot:
-                                # Pooling for layer 2 and layer 3 features
-                                pooling = torch.nn.AvgPool2d(3, 1, 1)
-                                embeddings_rot.append(pooling(feat))
+                        for feat in self.embed_rot:
+                            # Pooling for layer 2 and layer 3 features
+                            pooling = torch.nn.AvgPool2d(3, 1, 1)
+                            embeddings_rot.append(pooling(feat))
 
-                            embedding_rot = PatchCore2D.embedding_concate(embeddings_rot[0], embeddings_rot[1])
-                            embedding_rot = PatchCore2D.reshape_embedding(embedding_rot.detach().numpy())
-                            self.embeddings_list.extend(embedding_rot)
+                        embedding_rot = PatchCore2D.embedding_concate(embeddings_rot[0], embeddings_rot[1])
+                        embedding_rot = PatchCore2D.reshape_embedding(embedding_rot.detach().numpy())
+                        self.embeddings_list.extend(embedding_rot)
 
         # Sparse random projection from high-dimensional space into low-dimensional euclidean space
         total_embeddings = np.array(self.embeddings_list).astype(np.float32)

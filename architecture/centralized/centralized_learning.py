@@ -20,10 +20,10 @@ from models.vit.vit import ViT
 from models.dream.draem import NetDRAEM
 from models.dra.dra_resnet18 import DraResNet18
 from models.devnet.devnet_resnet18 import DevNetResNet18
+from models.igd.net_igd import NetIGD
 from arch_base.draem import weights_init
  
-from models.optimizer import get_optimizer, get_multiple_optimizers
-from models.igd.mvtec_module import twoin1Generator256, VisualDiscriminator256
+from models.optimizer import get_optimizer
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
 
@@ -109,6 +109,11 @@ class CentralizedTrain():
                                            data_transform=valid_data_transform,
                                            num_task=self.para_dict['num_task'])
 
+        self.train_semi_dataset, self.valid_semi_dataset, self.semi_dataset = extract_semi_data(self.train_dataset, 
+                                                self.valid_dataset, 
+                                                anomaly_num=self.para_dict['semi_anomaly_num'], 
+                                                anomaly_overlap=self.para_dict['semi_overlap'])                                                    
+
         if self.para_dict['fewshot']:
             self.train_fewshot_dataset = extract_fewshot_data(self.train_dataset, self.para_dict['fewshot_exm'])
 
@@ -118,11 +123,6 @@ class CentralizedTrain():
                                                     noisy_ratio=self.para_dict['noisy_ratio'], 
                                                     noisy_overlap=self.para_dict['noisy_overlap'])
 
-        if self.para_dict['semi']:
-            self.train_semi_dataset, self.valid_semi_dataset, self.semi_dataset = extract_semi_data(self.train_dataset, 
-                                                    self.valid_dataset, 
-                                                    anomaly_num=self.para_dict['semi_anomaly_num'], 
-                                                    anomaly_overlap=self.para_dict['semi_overlap'])                                                    
         if self.para_dict['model'] == 'devnet':
             self.train_dataset = self.train_semi_dataset
 
@@ -227,26 +227,23 @@ class CentralizedTrain():
             self.net = models.wide_resnet50_2(pretrained=True, progress=True)
         if self.para_dict['net'] == 'net_csflow': # csflow
             self.net = NetCSFlow(args)
-            self.optimizer = get_optimizer(args, self.net)
+            self.optimizer = get_optimizer(args, self.net.density_estimator)
         if self.para_dict['net'] == 'vit_b_16':
-            self.net = ViT(num_classes=args._num_classes)
-            if args._pretrained:
-                checkpoint_path = './checkpoints/vit/vit_b_16.npz'
-                if not os.path.exists(checkpoint_path):
-                    os.system('wget https://storage.googleapis.com/vit_models/sam/ViT-B_16.npz -O ./checkpoints/vit/vit_b_16.npz')
-                self.net.load_pretrained(checkpoint_path)
+            self.net = ViT(num_classes=args._num_classes, pretrained=args._pretrained, checkpoint_path='./checkpoints/vit/vit_b_16.npz')
             self.optimizer = get_optimizer(args, self.net)
             self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs)
         if self.para_dict['net'] == 'net_draem':
             self.net = NetDRAEM(args)
-            self.net.apply(weights_init)
             self.optimizer = get_optimizer(args, self.net)
-            self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, [args._num_epochs * 0.8, args._num_epochs * 0.9], gamma=0.2, last_epoch=-1)
-        if self.para_dict['model'] == 'igd':
-            self.net = {'g': twoin1Generator256(64, latent_dimension=self.para_dict['latent_dimension']),
-                        'd': VisualDiscriminator256(64)}   
-            self.optimizer = get_multiple_optimizers(args, self.net)
             self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
+        if self.para_dict['net'] == 'net_igd':
+            self.net = NetIGD(args)
+            self.optimizer_g = get_optimizer(args, self.net.g)
+            self.optimizer_d = get_optimizer(args, self.net.d)
+            self.scheduler_g = torch.optim.lr_scheduler.MultiStepLR(self.optimizer_g, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
+            self.scheduler_d = torch.optim.lr_scheduler.MultiStepLR(self.optimizer_d, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
+            self.optimizer = [self.optimizer_g, self.optimizer_d]
+            self.scheduler = [self.scheduler_g, self.scheduler_d]
         if self.para_dict['net'] == 'net_dra':
             self.net = DraResNet18()
             self.optimizer = get_optimizer(args, self.net)
@@ -277,7 +274,7 @@ class CentralizedTrain():
         # train all task in one time
         for task_idx, train_loader in enumerate(self.chosen_train_loaders):
             print('run task: {}'.format(self.para_dict['train_task_id'][task_idx]))
-            self.trainer.train_model(train_loader)
+            self.trainer.train_model(train_loader, task_idx)
 
         print('-> test ...')
         # test each task individually

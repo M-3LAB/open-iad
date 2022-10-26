@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
+import os
 from timm.models.layers import PatchEmbed, Mlp, DropPath, trunc_normal_, lecun_normal_
 from timm.models.helpers import build_model_with_cfg, named_apply, adapt_input_conv
 
@@ -72,7 +73,7 @@ class ViT(nn.Module):
     def __init__(self, img_size=224, patch_size=16, in_chans=3, num_classes=2, embed_dim=768, depth=12,
                  num_heads=12, mlp_ratio=4., qkv_bias=True, representation_size=None, distilled=False,
                  drop_rate=0., attn_drop_rate=0., drop_path_rate=0., embed_layer=PatchEmbed, norm_layer=None,
-                 act_layer=None, weight_init=''):
+                 act_layer=None, weight_init='', pretrained=True, checkpoint_path='./checkpoints/vit/vit_b_16.npz'):
         """
         Args:
             img_size (int, tuple): input image size
@@ -137,6 +138,11 @@ class ViT(nn.Module):
             self.head_dist = nn.Linear(self.embed_dim, self.num_classes) if num_classes > 0 else nn.Identity()
 
         self.init_weights(weight_init)
+        
+        if pretrained:
+            if not os.path.exists(checkpoint_path):
+                os.system('wget https://storage.googleapis.com/vit_models/sam/ViT-B_16.npz -O {}'.format(checkpoint_path))
+            self.load_pretrained(checkpoint_path)
 
     def init_weights(self, mode=''):
         assert mode in ('jax', 'jax_nlhb', 'nlhb', '')

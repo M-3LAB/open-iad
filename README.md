@@ -42,6 +42,7 @@ python3 mmad_training.py
 | dne | vit_b_16 |
 | draem | net_draem |
 | dra | net_dra |
+| igd | net_igd |
 
 
 

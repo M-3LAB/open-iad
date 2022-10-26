@@ -1,8 +1,18 @@
 model: igd
-latent_dimension: 128
-lr: 1e-4
-weight_decay: 1e-6
-num_epochs: 256
+net: net_igd
+num_epochs: 1 # 256
 train_batch_size: 16 
 valid_batch_size: 16
-data_range: 4.7579
+train_aug_type: normal
+valid_aug_type: normal
+
+_name: igd
+_latent_dimension: 128
+_data_range: 4.7579
+_max_epoch: 256
+_optimizer_name: adam
+_base_lr: 0.0001
+_gamma: 0.2
+_beta1: 0
+_beta2: 0.9
+_weight_decay: 0.000001

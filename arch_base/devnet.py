@@ -71,7 +71,7 @@ class DevNet(ModelBase):
         self.optimizer = optimizer
         self.scheduler = scheduler
 
-    def train_model(self, train_loader, inf=''):
+    def train_model(self, train_loader, task_id, inf=''):
         self.model.train()
         self.scheduler.step()
 
