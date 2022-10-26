@@ -58,8 +58,8 @@ class CentralizedTrain():
         self.para_dict['root_path'] = root_path
         self.para_dict['data_path'] = '{}{}'.format(root_path, self.para_dict['data_path'])
 
-        if not (self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['noisy'] or self.para_dict['continual']):
-            raise ValueError('Please Assign Learning Paradigm, --vanilla, --noisy, --fewshot, --continual')
+        if not (self.para_dict['vanilla'] or self.para_dict['semi'] or self.para_dict['fewshot'] or self.para_dict['noisy'] or self.para_dict['continual']):
+            raise ValueError('Please Assign Learning Paradigm, --vanilla, --semi, --noisy, --fewshot, --continual')
 
     def preliminary(self):
         print('---------------------')
@@ -110,7 +110,7 @@ class CentralizedTrain():
         if self.para_dict['fewshot']:
             self.train_fewshot_dataset = extract_fewshot_data(self.train_dataset, self.para_dict['fewshot_exm'])
 
-        if self.para_dict['noisy']:
+        if self.para_dict['noisy'] or self.para_dict['semi']:
             self.train_noisy_dataset, self.valid_noisy_dataset, self.noisy_dataset = extract_noisy_data(self.train_dataset, 
                                                     self.valid_dataset, 
                                                     noisy_ratio=self.para_dict['noisy_ratio'], 
@@ -119,7 +119,7 @@ class CentralizedTrain():
         self.train_loaders, self.valid_loaders = [], []
         self.refer_loaders = []
         # vanilla training
-        if self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['continual']:
+        if self.para_dict['vanilla'] or self.para_dict['semi'] or self.para_dict['fewshot'] or self.para_dict['continual']:
             train_task_data_list = self.train_dataset.sample_indices_in_task
             valid_task_data_list = self.valid_dataset.sample_indices_in_task
 
@@ -139,13 +139,13 @@ class CentralizedTrain():
                                         drop_last=True)
                 self.valid_loaders.append(valid_loader)
 
-                if self.para_dict['model'] == 'dra':
-                    refer_loader = DataLoader(self.train_dataset, 
-                                        batch_size=self.para_dict['_nRef'], 
+                if self.para_dict['semi']:
+                    noisy_loader = DataLoader(self.noisy_dataset, 
+                                        batch_size=self.para_dict['semi_anomaly_num'], 
                                         num_workers=self.para_dict['num_workers'],
                                         sampler=SubsetRandomSampler(train_task_data_list[i]),
                                         drop_last=True)
-                    self.refer_loaders.append(refer_loader) 
+                    self.refer_loaders.append(noisy_loader) 
 
         if self.para_dict['fewshot']:
             # capture few-shot images
@@ -237,7 +237,7 @@ class CentralizedTrain():
                         'd': VisualDiscriminator256(64)}   
             self.optimizer = get_multiple_optimizers(args, self.net)
             self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
-        if self.para_dict['model'] == 'dra':
+        if self.para_dict['net'] == 'net_dra':
             self.net = DraResNet18()
             self.optimizer = get_optimizer(args, self.net)
             self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)
@@ -275,6 +275,9 @@ class CentralizedTrain():
             save_path = None 
             if self.para_dict['vanilla']:
                 save_path = '{}/result_{}_vanilla.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
+
+            if self.para_dict['semi']:
+                save_path = '{}/result_{}_semi.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
 
             if self.para_dict['fewshot']:
                 infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])          

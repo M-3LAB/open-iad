@@ -2,6 +2,9 @@
 learning_mode: 'centralized'
 # vanilla learning
 vanilla: false
+# semi-supervised learning
+semi: false
+nAnomaly: 1
 # continual learning
 continual: false
 # fewshot learning

@@ -28,10 +28,11 @@ python3 mmad_training.py
 ## Learning Paradigm
 | Prototypes | Marker | Train | Test |
 | ------ | ---| -------|------ |
-| vanilla | -v |all data (id=0) | all data (id=0) 
+| vanilla | -v |all data (id=0) | all data (id=0) |
+| semi | -s | all data (id=0) + anomaly data (id=0) | all data (id=0) - anomaly data (id=0)|
 | continual | -c| all data (id=0 and 1)| all data (id=0 or 1)|
 | fewshot | -f | fewshot (id=0) | all data (id=0) |
-| noisy | -n | all data (id=0) + noisy data (id=0) | all data (id=0)|
+| noisy | -n | all data (id=0) + noisy data (id=0) | all data (id=0) - noisy data (id=0)|
 
 
 | Method / -m | Net / -n |
@@ -40,6 +41,7 @@ python3 mmad_training.py
 | csflow | net_csflow |
 | dne | vit_b_16 |
 | draem | net_draem |
+| dra | net_dra |
 
 
 

@@ -66,7 +66,6 @@ class _DRA(nn.Module):
         return image_pyramid
 
 
-
 class DRA(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
         self.config = config
