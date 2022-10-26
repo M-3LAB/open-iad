@@ -1,0 +1,8 @@
+model: favae
+num_epochs: 50
+train_batch_size: 64
+valid_batch_size: 64
+data_size: 128
+data_crop_size: 128
+mask_size: 128
+mask_crop_size: 128
