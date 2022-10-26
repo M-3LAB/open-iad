@@ -206,7 +206,7 @@ class CentralizedTrain():
         if self.para_dict['train_task_id'] == None or self.para_dict['valid_task_id'] == None:
             raise ValueError('Plase Assign Train Task Id!')
 
-        if self.para_dict['semi'] and self.para_dict['model'] == 'dra':
+        if self.para_dict['model'] == 'dra':
             for idx in self.para_dict['train_task_id']:
                 self.chosen_train_loaders.append([self.train_loaders[idx], self.refer_loaders[idx]])
             for idx in self.para_dict['valid_task_id']:
