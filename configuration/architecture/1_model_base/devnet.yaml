@@ -1,0 +1,2 @@
+model: devnet
+num_epochs: 50

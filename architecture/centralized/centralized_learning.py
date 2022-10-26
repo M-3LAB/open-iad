@@ -13,7 +13,7 @@ from data_io.noisy import extract_noisy_data
 from memory_augmentation.domain_generalization import domain_gen
 from data_io.augmentation.type import aug_type 
 
-from models.resnet.resnet import ResNetModel
+#from models.resnet.resnet import ResNetModel
 from models.net_csflow.net_csflow import NetCSFlow
 from models.vit.vit import ViT
 from models.dream.draem import NetDRAEM
@@ -246,6 +246,7 @@ class CentralizedTrain():
                       'draem': ('arch_base.draem', 'draem', 'DRAEM'),
                       'igd': ('arch_base.igd', 'igd', 'IGD'),
                       'dra': ('arch_base.dra', 'dra', 'DRA'),
+                      'devnet': ('arch_base.devnet', 'devnet', 'DevNet')
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])
