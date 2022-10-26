@@ -34,13 +34,8 @@ def assign_service(guoyang):
 def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad', 'mvtec2df3d'])
-<<<<<<< HEAD
-    parser.add_argument('--model', '-m', type=str, default='draem', choices=['patchcore2d', 'csflow', 'dne', 'draem', 'igd', 'cutpaste'])
-    parser.add_argument('--net', '-n', type=str, default='net_draem', choices=['wide_resnet50', 'resnet18', 'net_csflow', 'vit_b_16', 'net_draem'])
-=======
-    parser.add_argument('--model', '-m', type=str, default='dra', choices=['patchcore2d', 'csflow', 'dne', 'draem'])
-    parser.add_argument('--net', '-n', type=str, default='resnet18', choices=['wide_resnet50', 'resnet18', 'net_csflow', 'vit_b_16', 'net_draem'])
->>>>>>> dev-jbw
+    parser.add_argument('--model', '-m', type=str, default='dra', choices=['patchcore2d', 'csflow', 'dne', 'draem', 'dra'])
+    parser.add_argument('--net', '-n', type=str, default='net_dra', choices=['wide_resnet50', 'resnet18', 'net_csflow', 'vit_b_16', 'net_draem', 'net_dra'])
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
@@ -49,7 +44,11 @@ def parse_arguments_centralized():
     parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default= 0.0001)
 
     # vanilla learning
-    parser.add_argument('--vanilla', '-v', action='store_true', default=True)
+    parser.add_argument('--vanilla', '-v', action='store_true', default=False)
+    
+    # semi-supervised learning
+    parser.add_argument('--semi', '-s', action='store_true', default=True)
+    parser.add_argument('--semi-anomaly-num', '-san', type=int, default=5)
     
     # continual learning
     parser.add_argument('--continual', '-c', action='store_true', default=False)
@@ -66,7 +65,7 @@ def parse_arguments_centralized():
     parser.add_argument('--noisy-overlap', '-no', action='store_true', default=False)
     parser.add_argument('--noisy-ratio', '-nr', type=float, default=0.1)
 
-    parser.add_argument('--gpu-id', '-g', type=str, default=2)
+    parser.add_argument('--gpu-id', '-g', type=str, default=1)
     parser.add_argument('--num-epoch', '-ne', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--vis-em', action='store_true', default=False)

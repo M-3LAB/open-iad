@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torchvision import models
 import torch.nn.functional as F
 
 
@@ -17,7 +18,6 @@ class HolisticHead(nn.Module):
         x = self.fc2(x)
         return torch.abs(x)
 
-
 class PlainHead(nn.Module):
     def __init__(self, in_dim, topk_rate=0.1):
         super(PlainHead, self).__init__()
@@ -32,7 +32,6 @@ class PlainHead(nn.Module):
         x = torch.mean(x, dim=1).view(-1, 1)
         return x
 
-
 class CompositeHead(PlainHead):
     def __init__(self, in_dim, topk=0.1):
         super(CompositeHead, self).__init__(in_dim, topk)
@@ -45,5 +44,21 @@ class CompositeHead(PlainHead):
         x = ref - x
         x = self.conv(x)
         x = super().forward(x)
+        return x
+
+class DraResNet18(nn.Module):
+    def __init__(self):
+        super(DraResNet18, self).__init__()
+        self.net = models.resnet18(pretrained=True)
+
+    def forward(self, x):
+        x = self.net.conv1(x)
+        x = self.net.bn1(x)
+        x = self.net.relu(x)
+        x = self.net.maxpool(x)
+        x = self.net.layer1(x)
+        x = self.net.layer2(x)
+        x = self.net.layer3(x)
+        x = self.net.layer4(x)
         return x
 

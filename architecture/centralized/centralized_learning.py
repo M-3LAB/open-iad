@@ -17,6 +17,7 @@ from models.resnet.resnet import ResNetModel
 from models.net_csflow.net_csflow import NetCSFlow
 from models.vit.vit import ViT
 from models.dream.draem import NetDRAEM
+from models.dra.dra_resnet18 import DraResNet18
 from arch_base.draem import weights_init
  
 from models.optimizer import get_optimizer, get_multiple_optimizers
@@ -57,8 +58,8 @@ class CentralizedTrain():
         self.para_dict['root_path'] = root_path
         self.para_dict['data_path'] = '{}{}'.format(root_path, self.para_dict['data_path'])
 
-        if not (self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['noisy'] or self.para_dict['continual']):
-            raise ValueError('Please Assign Learning Paradigm, --vanilla, --noisy, --fewshot, --continual')
+        if not (self.para_dict['vanilla'] or self.para_dict['semi'] or self.para_dict['fewshot'] or self.para_dict['noisy'] or self.para_dict['continual']):
+            raise ValueError('Please Assign Learning Paradigm, --vanilla, --semi, --noisy, --fewshot, --continual')
 
     def preliminary(self):
         print('---------------------')
@@ -109,7 +110,7 @@ class CentralizedTrain():
         if self.para_dict['fewshot']:
             self.train_fewshot_dataset = extract_fewshot_data(self.train_dataset, self.para_dict['fewshot_exm'])
 
-        if self.para_dict['noisy']:
+        if self.para_dict['noisy'] or self.para_dict['semi']:
             self.train_noisy_dataset, self.valid_noisy_dataset, self.noisy_dataset = extract_noisy_data(self.train_dataset, 
                                                     self.valid_dataset, 
                                                     noisy_ratio=self.para_dict['noisy_ratio'], 
@@ -118,7 +119,7 @@ class CentralizedTrain():
         self.train_loaders, self.valid_loaders = [], []
         self.refer_loaders = []
         # vanilla training
-        if self.para_dict['vanilla'] or self.para_dict['fewshot'] or self.para_dict['continual']:
+        if self.para_dict['vanilla'] or self.para_dict['semi'] or self.para_dict['fewshot'] or self.para_dict['continual']:
             train_task_data_list = self.train_dataset.sample_indices_in_task
             valid_task_data_list = self.valid_dataset.sample_indices_in_task
 
@@ -138,15 +139,13 @@ class CentralizedTrain():
                                         drop_last=True)
                 self.valid_loaders.append(valid_loader)
 
-                if self.para_dict['model'] == 'dra':
-                    refer_loader = DataLoader(self.train_dataset, 
-                                        batch_size=self.para_dict['_nRef'], 
+                if self.para_dict['semi']:
+                    noisy_loader = DataLoader(self.noisy_dataset, 
+                                        batch_size=self.para_dict['semi_anomaly_num'], 
                                         num_workers=self.para_dict['num_workers'],
                                         sampler=SubsetRandomSampler(train_task_data_list[i]),
                                         drop_last=True)
-                    self.refer_loaders.append(refer_loader) 
-                    self.train_loaders = [self.train_loaders, self.refer_loaders]
-                    self.valid_loaders = [self.valid_loaders, self.refer_loaders]
+                    self.refer_loaders.append(noisy_loader) 
 
         if self.para_dict['fewshot']:
             # capture few-shot images
@@ -197,10 +196,16 @@ class CentralizedTrain():
         if self.para_dict['train_task_id'] == None or self.para_dict['valid_task_id'] == None:
             raise ValueError('Plase Assign Train Task Id!')
 
-        for idx in self.para_dict['train_task_id']:
-            self.chosen_train_loaders.append(self.train_loaders[idx])
-        for idx in self.para_dict['valid_task_id']:
-            self.chosen_valid_loaders.append(self.valid_loaders[idx])
+        if self.para_dict['model'] == 'dra':
+            for idx in self.para_dict['train_task_id']:
+                self.chosen_train_loaders.append([self.train_loaders[idx], self.refer_loaders[idx]])
+            for idx in self.para_dict['valid_task_id']:
+                self.chosen_valid_loaders.append([self.valid_loaders[idx], self.refer_loaders[idx]])
+        else:
+            for idx in self.para_dict['train_task_id']:
+                self.chosen_train_loaders.append(self.train_loaders[idx])
+            for idx in self.para_dict['valid_task_id']:
+                self.chosen_valid_loaders.append(self.valid_loaders[idx])
 
     def init_model(self):
         self.net, self.optimizer, self.scheduler = None, None, None
@@ -208,12 +213,12 @@ class CentralizedTrain():
         args = argparse.Namespace(**self.para_dict)
         if self.para_dict['net'] == 'resnet18': # patchcore
             self.net = models.resnet18(pretrained=True, progress=True)
-        elif self.para_dict['net'] == 'wide_resnet50': # patchcore
+        if self.para_dict['net'] == 'wide_resnet50': # patchcore
             self.net = models.wide_resnet50_2(pretrained=True, progress=True)
-        elif self.para_dict['net'] == 'net_csflow': # csflow
+        if self.para_dict['net'] == 'net_csflow': # csflow
             self.net = NetCSFlow(args)
             self.optimizer = get_optimizer(args, self.net)
-        elif self.para_dict['net'] == 'vit_b_16':
+        if self.para_dict['net'] == 'vit_b_16':
             self.net = ViT(num_classes=args._num_classes)
             if args._pretrained:
                 checkpoint_path = './checkpoints/vit/vit_b_16.npz'
@@ -222,22 +227,20 @@ class CentralizedTrain():
                 self.net.load_pretrained(checkpoint_path)
             self.optimizer = get_optimizer(args, self.net)
             self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs)
-        elif self.para_dict['net'] == 'net_draem':
+        if self.para_dict['net'] == 'net_draem':
             self.net = NetDRAEM(args)
             self.net.apply(weights_init)
             self.optimizer = get_optimizer(args, self.net)
             self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, [args._num_epochs * 0.8, args._num_epochs * 0.9], gamma=0.2, last_epoch=-1)
-        elif self.para_dict['model'] == 'igd':
-            # g: Generator, d: Discriminator
+        if self.para_dict['model'] == 'igd':
             self.net = {'g': twoin1Generator256(64, latent_dimension=self.para_dict['latent_dimension']),
                         'd': VisualDiscriminator256(64)}   
             self.optimizer = get_multiple_optimizers(args, self.net)
             self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
-        elif self.para_dict['model'] == 'dra':
+        if self.para_dict['net'] == 'net_dra':
+            self.net = DraResNet18()
             self.optimizer = get_optimizer(args, self.net)
-            self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=self.args._step_size, gamma=args._gamma)
-        else:
-            raise NotImplementedError('This Pretrained Model Not Implemented Error')
+            self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)
         
 
         model_name = {'patchcore2d': ('arch_base.patchcore2d', 'patchcore2d', 'PatchCore2D'),
@@ -265,13 +268,16 @@ class CentralizedTrain():
         print('-> test ...')
         # test each task individually
         for task_id, valid_loader in enumerate(self.chosen_valid_loaders):
-            pixel_auroc, img_auroc = self.trainer.prediction(valid_loader=valid_loader, task_id=task_id)
+            pixel_auroc, img_auroc = self.trainer.prediction(valid_loader, task_id=task_id)
 
             infor = 'train_task_id: {} valid_task_id: {}'.format(self.para_dict['train_task_id'], self.para_dict['valid_task_id'][task_id])
 
             save_path = None 
             if self.para_dict['vanilla']:
                 save_path = '{}/result_{}_vanilla.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
+
+            if self.para_dict['semi']:
+                save_path = '{}/result_{}_semi.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
 
             if self.para_dict['fewshot']:
                 infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])          

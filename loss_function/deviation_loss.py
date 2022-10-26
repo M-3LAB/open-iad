@@ -10,7 +10,7 @@ class DeviationLoss(nn.Module):
 
     def forward(self, y_pred, y_true):
         confidence_margin = 5.
-        ref = torch.normal(mean=0., std=torch.full([5000], 1.)).cuda()
+        ref = torch.normal(mean=0., std=torch.full([5000], 1.)).to(y_pred.device)
         dev = (y_pred - torch.mean(ref)) / torch.std(ref)
         inlier_loss = torch.abs(dev)
         outlier_loss = torch.abs((confidence_margin - dev).clamp_(min=0.))
