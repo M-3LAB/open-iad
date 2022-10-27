@@ -30,7 +30,10 @@ class FAVAE(ModelBase):
                 img = batch['img'].to(self.device)
                 z, output, mu, log_var = self.model(img)
                 # get model's intermediate outputs
-                s_activations, _ = feature_extractor(z, self)
+                s_activations, _ = feature_extractor(z, self.net.decode, target_layers=['10', '16', '22'])
+                t_activations, _ = feature_extractor(z, self.teacher.features, target_layers=['7', '14', '21'])
+                
+                self.optimizer.zero_grad()
 
     def prediction(self, valid_loader, task_id=None):
         pass
