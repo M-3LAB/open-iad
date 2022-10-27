@@ -21,15 +21,12 @@ from models.dream.draem import NetDRAEM
 from models.dra.dra_resnet18 import DraResNet18
 from models.devnet.devnet_resnet18 import DevNetResNet18
 from models.igd.net_igd import NetIGD
-from arch_base.draem import weights_init
  
 from models.optimizer import get_optimizer
 from models.favae.vae import VAE
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
 
-# from arch_base.patchcore2d import PatchCore2D
-# from arch_base.reverse import Reverse 
 from configuration.architecture.config import assign_service
 
 from rich import print
@@ -259,7 +256,7 @@ class CentralizedTrain():
             self.opimizer =  get_optimizer(args, self.net)
             self.scheduler = None
 
-        model_name = {'patchcore2d': ('arch_base.patchcore2d', 'patchcore2d', 'PatchCore2D'),
+        model_name = {'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
                       'padim': ('arch_base.padim', 'padim', 'PaDim'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
                       'dne': ('arch_base.dne', 'dne', 'DNE'),
