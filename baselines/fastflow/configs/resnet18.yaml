@@ -1,0 +1,5 @@
+input_size: 256
+backbone_name: resnet18
+flow_step: 8
+hidden_ratio: 1.0
+conv3x3_only: True

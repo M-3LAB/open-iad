@@ -1,0 +1,7 @@
+timm==0.5.4
+FrEIA @ git+https://github.com/VLL-HD/FrEIA@1779d1fba1e21000fda1927b59eeac0a6fcaa284
+torch==1.9.1
+torchvision==0.10.1
+pyyaml==6.0
+pytorch-ignite==0.2.0
+scikit-learn=0.24.2
