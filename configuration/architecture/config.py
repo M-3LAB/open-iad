@@ -34,8 +34,10 @@ def assign_service(guoyang):
 def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad', 'mvtec2df3d'])
-    parser.add_argument('--model', '-m', type=str, default='dra', choices=['patchcore2d', 'csflow', 'dne', 'draem', 'igd', 'cutpaste', 'devnet', 'dra', 'favae'])
-    parser.add_argument('--net', '-n', type=str, default='net_draem', choices=['wide_resnet50', 'resnet18', 'net_csflow', 'vit_b_16', 'net_draem', 'net_dra', 'net_igd'])
+    parser.add_argument('--model', '-m', type=str, default='patchcore2d', choices=['patchcore2d', 'csflow', 'dne', 'draem', 'igd', 
+                                                                            'cutpaste', 'devnet', 'dra', 'favae', 'padim'])
+    parser.add_argument('--net', '-n', type=str, default='resnet18', choices=['wide_resnet50', 'resnet18', 'net_csflow', 'vit_b_16', 'net_draem', 'net_dra',
+                                                                              'net_igd'])
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
@@ -44,7 +46,7 @@ def parse_arguments_centralized():
     parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default= 0.0001)
 
     # vanilla learning
-    parser.add_argument('--vanilla', '-v', action='store_true', default=True)
+    parser.add_argument('--vanilla', '-v', action='store_true', default=False)
     
     # semi-supervised learning
     parser.add_argument('--semi', '-s', action='store_true', default=False)
@@ -55,7 +57,7 @@ def parse_arguments_centralized():
     parser.add_argument('--continual', '-c', action='store_true', default=False)
 
     # fewshot learniing
-    parser.add_argument('--fewshot', '-f', action='store_true', default=False)
+    parser.add_argument('--fewshot', '-f', action='store_true', default=True)
     parser.add_argument('--fewshot-exm', '-fe', type=int, default=1)
     parser.add_argument('--fewshot-data-aug', '-fda', action='store_true', default=False)
     parser.add_argument('--fewshot-feat-aug', '-ffa', action='store_true', default=False)

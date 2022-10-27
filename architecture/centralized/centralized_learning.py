@@ -221,12 +221,13 @@ class CentralizedTrain():
     def init_model(self):
         self.net, self.optimizer, self.scheduler = None, None, None
 
-        args = argparse.Namespace(**self.para_dict)
-        if self.para_dict['net'] == 'resnet18': # patchcore
+        if self.para_dict['net'] == 'resnet18': 
             self.net = models.resnet18(pretrained=True, progress=True)
-        if self.para_dict['net'] == 'wide_resnet50': # patchcore
+        if self.para_dict['net'] == 'wide_resnet50':
             self.net = models.wide_resnet50_2(pretrained=True, progress=True)
-        if self.para_dict['net'] == 'net_csflow': # csflow
+
+        args = argparse.Namespace(**self.para_dict)
+        if self.para_dict['net'] == 'net_csflow': 
             self.net = NetCSFlow(args)
             self.optimizer = get_optimizer(args, self.net.density_estimator)
         if self.para_dict['net'] == 'vit_b_16':
@@ -259,13 +260,14 @@ class CentralizedTrain():
             self.scheduler = None
 
         model_name = {'patchcore2d': ('arch_base.patchcore2d', 'patchcore2d', 'PatchCore2D'),
+                      'padim': ('arch_base.padim', 'padim', 'PaDim'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
                       'dne': ('arch_base.dne', 'dne', 'DNE'),
                       'draem': ('arch_base.draem', 'draem', 'DRAEM'),
                       'igd': ('arch_base.igd', 'igd', 'IGD'),
                       'dra': ('arch_base.dra', 'dra', 'DRA'),
                       'devnet': ('arch_base.devnet', 'devnet', 'DevNet'),
-                      'favae': ('arch_base.favae', 'favae', 'FAVAE')
+                      'favae': ('arch_base.favae', 'favae', 'FAVAE'),
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])
