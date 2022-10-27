@@ -48,9 +48,23 @@ def _resnet(
 def enc_wide_resnet_50_2(pretrained: bool = False, progress: bool = True, **kwargs: Any):
     kwargs['width_per_group'] = 64 * 2
     return _resnet('wide_resnet50_2', EncBottleneck, [3, 4, 6, 3],
-                   pretrained, progress, phase='encode', **kwargs), BNLayer(AttnBottleneck,3,**kwargs)
+                   pretrained, progress, phase='encode', **kwargs)
 
 def dec_wide_resnet_50_2(pretrained: bool = False, progress: bool = True, **kwargs: Any):
     kwargs['width_per_group'] = 64 * 2
     return _resnet('wide_resnet50_2', DecBottleneck, [3, 4, 6, 3],
                    pretrained, progress, phase='decode', **kwargs)
+
+def bn_layer(**kwargs):
+    return BNLayer(AttnBottleneck, 3, **kwargs) 
+
+class NetReverse(nn.Module):
+    def __init__(self, args):
+        super(NetReverse, self).__init__()
+        self.args = args
+
+        self.encoder = enc_wide_resnet_50_2(pretrained=True)
+        self.decoder = dec_wide_resnet_50_2(pretrained=False)
+        self.bn = bn_layer()
+        
+

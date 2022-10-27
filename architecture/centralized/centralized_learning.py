@@ -14,15 +14,15 @@ from data_io.semi import extract_semi_data
 from memory_augmentation.domain_generalization import domain_gen
 from data_io.augmentation.type import aug_type 
 
-#from models.resnet.resnet import ResNetModel
 from models.net_csflow.net_csflow import NetCSFlow
 from models.vit.vit import ViT
 from models.dream.draem import NetDRAEM
 from models.dra.dra_resnet18 import DraResNet18
 from models.devnet.devnet_resnet18 import DevNetResNet18
 from models.igd.net_igd import NetIGD
+from models.reverse.net_reverse import NetReverse
  
-from models.optimizer import get_optimizer
+from optimizer.optimizer import get_optimizer
 from models.favae.vae import VAE
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
@@ -87,7 +87,8 @@ class CentralizedTrain():
                         'mpdd': ('data_io', 'mpdd', 'MPDD'),
                         'btad': ('data_io', 'btad', 'BTAD'),
                         'mtd': ('data_io', 'mtd', 'MTD'),
-                        'mvtec3d': ('data_io', 'mvtec3d', 'MVTec3D'), }
+                        'mvtec3d': ('data_io', 'mvtec3d', 'MVTec3D'), 
+                        }
 
         dataset_package = __import__(dataset_name[self.para_dict['dataset']][0])
         dataset_module = getattr(dataset_package, dataset_name[self.para_dict['dataset']][1])
@@ -226,36 +227,39 @@ class CentralizedTrain():
         args = argparse.Namespace(**self.para_dict)
         if self.para_dict['net'] == 'net_csflow': 
             self.net = NetCSFlow(args)
-            self.optimizer = get_optimizer(args, self.net.density_estimator)
+            self.optimizer = get_optimizer(args, self.net.density_estimator.parameters())
         if self.para_dict['net'] == 'vit_b_16':
             self.net = ViT(num_classes=args._num_classes, pretrained=args._pretrained, checkpoint_path='./checkpoints/vit/vit_b_16.npz')
-            self.optimizer = get_optimizer(args, self.net)
+            self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs)
         if self.para_dict['net'] == 'net_draem':
             self.net = NetDRAEM(args)
-            self.optimizer = get_optimizer(args, self.net)
+            self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
         if self.para_dict['net'] == 'net_igd':
             self.net = NetIGD(args)
-            self.optimizer_g = get_optimizer(args, self.net.g)
-            self.optimizer_d = get_optimizer(args, self.net.d)
+            self.optimizer_g = get_optimizer(args, self.net.g.parameters())
+            self.optimizer_d = get_optimizer(args, self.net.d.parameters())
             self.scheduler_g = torch.optim.lr_scheduler.MultiStepLR(self.optimizer_g, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
             self.scheduler_d = torch.optim.lr_scheduler.MultiStepLR(self.optimizer_d, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
             self.optimizer = [self.optimizer_g, self.optimizer_d]
             self.scheduler = [self.scheduler_g, self.scheduler_d]
         if self.para_dict['net'] == 'net_dra':
             self.net = DraResNet18()
-            self.optimizer = get_optimizer(args, self.net)
+            self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)
         if self.para_dict['net'] == 'net_devnet':
             self.net = DevNetResNet18()
-            self.optimizer = get_optimizer(args, self.net)
+            self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)       
         if self.para_dict['model'] == 'favae':
             self.net = VAE(input_channel=self.para_dict['input_channel'], z_dim=100) 
-            self.opimizer =  get_optimizer(args, self.net)
+            self.optimizer =  get_optimizer(args, self.net.parameters())
             self.scheduler = None
-
+        if self.para_dict['model'] == 'reverse':
+            self.net = NetReverse(args) 
+            self.optimizer =  get_optimizer(args, list(self.net.decoder.parameters()) + list(self.net.bn.parameters()))
+            self.scheduler = None
         model_name = {'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
                       'padim': ('arch_base.padim', 'padim', 'PaDim'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
@@ -265,6 +269,7 @@ class CentralizedTrain():
                       'dra': ('arch_base.dra', 'dra', 'DRA'),
                       'devnet': ('arch_base.devnet', 'devnet', 'DevNet'),
                       'favae': ('arch_base.favae', 'favae', 'FAVAE'),
+                      'reverse': ('arch_base.reverse', 'reverse', 'Reverse'),
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])

@@ -1,5 +1,20 @@
-model: 'reverse'
-backbone: wide_resnet50
-lr: 0.005
-num_epochs: 200 
-batch_size: 16
+model: reverse
+net: r
+num_epochs: 1 # 200
+train_batch_size: 8 # 32
+valid_batch_size: 1
+train_aug_type: normal
+valid_aug_type: normal
+data_size: 256
+data_crop_size: 256
+mask_size: 256
+mask_crop_size: 256
+
+
+_name: reverse
+_optimizer_name: adam
+_base_lr: 0.005
+_gamma: 0.2
+_beta1: 0.5
+_beta2: 0.999
+_weight_decay: 0.000001
