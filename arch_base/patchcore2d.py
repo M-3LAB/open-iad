@@ -12,7 +12,7 @@ from sklearn.random_projection import SparseRandomProjection
 import faiss
 import math
 from scipy.ndimage import gaussian_filter
-from metrics.common.np_auc_precision_recall import np_get_auroc
+from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 from tools.visualize import save_anomaly_map, vis_embeddings
 from memory_augmentation.domain_generalization import feature_augmentation
 from arch_base.base import ModelBase
@@ -235,8 +235,8 @@ class PatchCore2D(ModelBase):
                                  file_path=os.path.join(sampling_dir_path, defect_type, str(batch_id)))
                 
                 
-        pixel_auroc = np_get_auroc(self.pixel_gt_list, self.pixel_pred_list) 
-        img_auroc = np_get_auroc(self.img_gt_list, self.img_pred_list)
+        pixel_auroc = roc_auc_score(self.pixel_gt_list, self.pixel_pred_list) 
+        img_auroc = roc_auc_score(self.img_gt_list, self.img_pred_list)
 
         return pixel_auroc, img_auroc
 
