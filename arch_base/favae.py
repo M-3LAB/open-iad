@@ -2,7 +2,7 @@ import torch
 import torch.n as nn
 from arch_base.base import ModelBase
 from torchvision import models
-from models.favae.func import EarlyStop,AverageMeter
+from models.favae.func import EarlyStop,AverageMeter, feature_extractor
 
 __all__ = ['FAVAE']
 
@@ -21,10 +21,16 @@ class FAVAE(ModelBase):
         self.early_stop = EarlyStop(patience=20, save_name='favae.pt')
         self.mse_criterion = nn.MSELoss(reduction='sum')
     
-    def train_model(self, train_loaders, inf=''):
+    def train_model(self, train_loader, inf=''):
         self.net.train()
         self.teacher.eval()
         losses = AverageMeter()
+        for _ in range(self.config['num_epochs']):
+            for batch_id, batch in enumerate(train_loader):
+                img = batch['img'].to(self.device)
+                z, output, mu, log_var = self.model(img)
+                # get model's intermediate outputs
+                s_activations, _ = feature_extractor(z, self)
 
     def prediction(self, valid_loader, task_id=None):
         pass
