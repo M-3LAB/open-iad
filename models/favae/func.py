@@ -4,7 +4,7 @@ import time
 import random
 
 __all__ = ['AverageMeter', 'time_string', 'convert_secs2time', 'time_file_str',
-           'print_log', 'feature_extractor', 'Early Stop']
+           'print_log', 'feature_extractor', 'EarlyStop']
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
