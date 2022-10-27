@@ -4,7 +4,6 @@ import numpy as np
 import argparse
 import torch.nn.functional as F
 from arch_base.base import ModelBase
-from metrics.common.np_auc_precision_recall import np_get_auroc
 from tools.density import GaussianDensityTorch
 from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 

@@ -44,6 +44,7 @@ python3 mmad_training.py
 | draem | net_draem |
 | dra | net_dra |
 | igd | net_igd |
+| reverse | net_reverse |
 
 
 
