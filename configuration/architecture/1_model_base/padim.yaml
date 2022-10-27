@@ -1,1 +1,11 @@
-backbone: resnet18
+model: padim
+net: resnet18
+num_epochs: 1
+train_batch_size: 32
+valid_batch_size: 1
+train_aug_type: normal
+valid_aug_type: normal
+data_size: 256
+data_crop_size: 256
+mask_size: 256
+mask_crop_size: 256

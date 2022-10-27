@@ -38,6 +38,7 @@ python3 mmad_training.py
 | Method / -m | Net / -n |
 | ------ | ------ |
 | patchcore2d  | resnet18, wide_resnet50 |
+| padim  | resnet18, wide_resnet50 |
 | csflow | net_csflow |
 | dne | vit_b_16 |
 | draem | net_draem |
