@@ -19,6 +19,7 @@ class FAVAE(ModelBase):
             param.requires_grad = False
         
         self.early_stop = EarlyStop(patience=20, save_name='favae.pt')
+        self.mse_criterion = nn.MSELoss(reduction='sum')
     
     def train_model(self, train_loaders, inf=''):
         self.net.train()
