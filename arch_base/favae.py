@@ -2,7 +2,7 @@ import torch
 import torch.n as nn
 from arch_base.base import ModelBase
 from torchvision import models
-from models.favae.func import EarlyStop
+from models.favae.func import EarlyStop,AverageMeter
 
 __all__ = ['FAVAE']
 
@@ -17,9 +17,13 @@ class FAVAE(ModelBase):
         self.teacher = models.vgg16(pretrained=True).to(self.device)
         for param in self.teacher.parameters():
             param.requires_grad = False
+        
+        self.early_stop = EarlyStop(patience=20, save_name='favae.pt')
     
     def train_model(self, train_loaders, inf=''):
-        pass
+        self.net.train()
+        self.teacher.eval()
+        losses = AverageMeter()
 
     def prediction(self, valid_loader, task_id=None):
         pass
