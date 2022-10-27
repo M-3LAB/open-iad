@@ -94,17 +94,11 @@ class PatchCore2D(ModelBase):
         return embedding_list
         
     def train_model(self, train_loader, task_id, inf=''):
-        # for vanilla, fewshot, noisy
-
         self.net.eval()
+
         for _ in range(self.config['num_epochs']):
             for batch_id, batch in enumerate(train_loader):
-                # print(f'batch id: {batch_id}')
-                #if self.config['debug'] and batch_id > self.config['batch_limit']:
-                #    break
                 img = batch['img'].to(self.device)
-                #mask = batch['mask'].to(self.device)
-
                 # Extract features from backbone
                 self.features.clear()
                 _ = self.net(img)
