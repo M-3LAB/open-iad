@@ -17,9 +17,9 @@ from tools.visualize import save_anomaly_map, vis_embeddings
 from memory_augmentation.domain_generalization import feature_augmentation
 from arch_base.base import ModelBase
 
-__all__ = ['PatchCore2D']
+__all__ = ['PatchCore']
 
-class PatchCore2D(ModelBase):
+class PatchCore(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
         
         self.config = config
@@ -109,8 +109,8 @@ class PatchCore2D(ModelBase):
                     pooling = torch.nn.AvgPool2d(3, 1, 1)
                     embeddings.append(pooling(feat))
 
-                embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
-                embedding = PatchCore2D.reshape_embedding(embedding.detach().numpy())
+                embedding = PatchCore.embedding_concate(embeddings[0], embeddings[1])
+                embedding = PatchCore.reshape_embedding(embedding.detach().numpy())
                 self.embeddings_list.extend(embedding)
 
                 if self.config['fewshot']:
@@ -123,8 +123,8 @@ class PatchCore2D(ModelBase):
                             pooling = torch.nn.AvgPool2d(3, 1, 1)
                             embeddings_rot.append(pooling(feat))
 
-                        embedding_rot = PatchCore2D.embedding_concate(embeddings_rot[0], embeddings_rot[1])
-                        embedding_rot = PatchCore2D.reshape_embedding(embedding_rot.detach().numpy())
+                        embedding_rot = PatchCore.embedding_concate(embeddings_rot[0], embeddings_rot[1])
+                        embedding_rot = PatchCore.reshape_embedding(embedding_rot.detach().numpy())
                         self.embeddings_list.extend(embedding_rot)
 
         # Sparse random projection from high-dimensional space into low-dimensional euclidean space
@@ -194,8 +194,8 @@ class PatchCore2D(ModelBase):
                     pooling = torch.nn.AvgPool2d(3, 1, 1)
                     embeddings.append(pooling(feat))
 
-                embedding = PatchCore2D.embedding_concate(embeddings[0], embeddings[1])
-                embedding_test = PatchCore2D.reshape_embedding(embedding.detach().numpy())
+                embedding = PatchCore.embedding_concate(embeddings[0], embeddings[1])
+                embedding_test = PatchCore.reshape_embedding(embedding.detach().numpy())
                 embedding_test = np.array(embedding_test)
 
                 # Nearest Neighbour Search
@@ -229,7 +229,7 @@ class PatchCore2D(ModelBase):
                 else:
                     defect_type = 'anomaly'
 
-                img_cv = PatchCore2D.torch_to_cv(img)
+                img_cv = PatchCore.torch_to_cv(img)
                 save_anomaly_map(anomaly_map=anomaly_map_cv, input_img=img_cv,
                                  mask=mask_np*255, 
                                  file_path=os.path.join(sampling_dir_path, defect_type, str(batch_id)))
