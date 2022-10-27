@@ -5,7 +5,7 @@ class ModelBase():
         self.file_path = file_path
         self.net = net
     
-    def train_epoch(self, train_loaders, inf=''):
+    def train_epoch(self, train_loader, task_id, inf=''):
         pass
 
 
