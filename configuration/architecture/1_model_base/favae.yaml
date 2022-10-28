@@ -6,6 +6,7 @@ data_size: 128
 data_crop_size: 128
 mask_size: 128
 mask_crop_size: 128
+kld_weight: 1.0
 _optimizer_name: adam
 _weight_decay: 0.00001
 _base_lr: 0.005
