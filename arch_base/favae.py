@@ -6,6 +6,7 @@ from models.favae.func import EarlyStop,AverageMeter, feature_extractor, print_l
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
 import numpy as np
+from sklearn.metrics import precision_recall_curve, roc_auc_score, roc_curve
 
 __all__ = ['FAVAE']
 
@@ -90,3 +91,15 @@ class FAVAE(ModelBase):
         min_anomaly_score = scores.min()
 
         scores = (scores - min_anomaly_score) / (max_anomaly_score - min_anomaly_score)
+
+        gt_mask = np.asarray(gt_mask_list)
+        precision, recall, thresholds = precision_recall_curve(gt_mask.flatten(), scores.flatten()) 
+        a = 2 * precision * recall
+        b = precision + recall
+        f1 = np.divide(a, b, out=np.zeros_like(a), where=b != 0)
+        threshold = thresholds[np.argmax(f1)]
+
+        fpr, tpr, _ = roc_curve(gt_mask.flatten(), scores.flatten())
+        pixel_auroc = roc_auc_score(gt_mask.flatten(), scores.flatten())
+
+        return pixel_auroc, _
