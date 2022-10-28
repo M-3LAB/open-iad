@@ -270,6 +270,7 @@ class CentralizedTrain():
                       'devnet': ('arch_base.devnet', 'devnet', 'DevNet'),
                       'favae': ('arch_base.favae', 'favae', 'FAVAE'),
                       'reverse': ('arch_base.reverse', 'reverse', 'Reverse'),
+                      'spade': ('arch_base.spade', 'spade', 'Spade'),
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])

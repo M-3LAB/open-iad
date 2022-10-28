@@ -1,4 +1,3 @@
-from tools.utils import save_feat_pickle
 import torch
 from collections import OrderedDict
 from random import sample
@@ -10,6 +9,7 @@ from tools.utils import *
 from scipy.spatial.distance import mahalanobis
 from scipy.ndimage import gaussian_filter
 from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
+from tools.utils import save_feat_pickle
 
 
 __all__ = ['PaDim']
@@ -113,7 +113,7 @@ class PaDim(ModelBase):
             
         # save learned distribution
         self.train_outputs = [mean, cov]
-        save_feat_pickle(feat=self.train_outputs, file_path=self.embedding_dir_path + '/feature.npy')
+        # save_feat_pickle(feat=self.train_outputs, file_path=self.embedding_dir_path + '/feature.npy')
                 
 
     def prediction(self, valid_loader, task_id):

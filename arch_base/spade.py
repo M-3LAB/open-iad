@@ -1,71 +1,37 @@
-from metrics.common.np_auc_precision_recall import np_get_auroc
 import torch
-import torch.nn as nn
-from torchvision import models
 from collections import OrderedDict
-from tools.utils import *
+from tools.utils import create_folders
 import os
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
+from arch_base.base import ModelBase
 import numpy as np
+from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 
 
 __all__ = ['Spade']
 
-class Spade():
-    def __init__(self, config, train_loaders, valid_loaders, device, 
-                 file_path, train_fewshot_loaders=None):
-        
+class Spade(ModelBase):
+    def __init__(self, config, device, file_path, net, optimizer, scheduler):
         self.config = config
-        self.train_loaders = train_loaders
-        self.valid_loaders = valid_loaders
         self.device = device
         self.file_path = file_path
-        self.train_fewshot_loaders = train_fewshot_loaders
-
-        self.chosen_train_loaders = [] 
-        if self.config['chosen_train_task_ids'] is not None:
-            for idx in range(len(self.config['chosen_train_task_ids'])):
-                self.chosen_train_loaders.append(self.train_loaders[self.config['chosen_train_task_ids'][idx]])
-        else:
-            self.chosen_train_loaders = self.train_loaders
-
-        self.chosen_valid_loader = self.valid_loaders[self.config['chosen_test_task_id']] 
-
-        if self.config['fewshot']:
-            assert self.train_fewshot_loaders is not None
-            self.chosen_fewshot_loader = self.train_fewshot_loaders[self.config['chosen_test_task_id']]
-        
-        if self.config['chosen_test_task_id'] in self.config['chosen_train_task_ids']:
-            assert self.config['fewshot'] is False, 'Changeover: test task id should not be the same as train task id'
-
-        # Backbone model
-        if config['backbone'] == 'resnet18':
-            self.backbone = models.resnet18(pretrained=True, progress=True).to(self.device)
-        elif config['backbone'] == 'wide_resnet50':
-            self.backbone = models.wide_resnet50_2(pretrained=True, progress=True).to(self.device)
-        else:
-            raise NotImplementedError('This Pretrained Model Not Implemented Error')
-        
+        self.net = net.to(self.device) 
+ 
         self.features = []
+        self.get_layer_features()
 
-        self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
-        self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])]) 
+        self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', []), ('avgpool', [])])
+        self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', []), ('avgpool', [])])
+        
+        if self.config['continual']:
+            for i in self.config['train_task_id']:  
+                source_domain = source_domain + str(self.config['train_task_id'][i])
+        else:
+            source_domain = str(self.config['train_task_id'][0])
 
-        for i in range(len(self.config['chosen_train_task_ids'])):
-            if i == 0:
-                source_domain = str(self.config['chosen_train_task_ids'][0])
-            else:
-                source_domain = source_domain + str(self.config['chosen_train_task_ids'][i])
-
-        #target_domain = str(self.config['chosen_test_task_id'])
-        self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', 
-                                          source_domain)
+        self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', source_domain)
         create_folders(self.embedding_dir_path)
-
-        self.pixel_gt_list = []
-        self.img_gt_list = []
-        self.img_list = []
     
     @staticmethod
     def dict_clear(outputs):
@@ -78,10 +44,10 @@ class Spade():
         def hook_t(module, input, output):
             self.features.append(output)
         
-        self.backbone.layer1[-1].register_forward_hook(hook_t)
-        self.backbone.layer2[-1].register_forward_hook(hook_t)
-        self.backbone.layer3[-1].register_forward_hook(hook_t)
-        self.backbone.avgpool.register_forward_hook(hook_t)
+        self.net.layer1[-1].register_forward_hook(hook_t)
+        self.net.layer2[-1].register_forward_hook(hook_t)
+        self.net.layer3[-1].register_forward_hook(hook_t)
+        self.net.avgpool.register_forward_hook(hook_t)
     
     @staticmethod
     def cal_distance_matrix(x, y):
@@ -94,46 +60,38 @@ class Spade():
         dist_matrix = torch.sqrt(torch.pow(x - y, 2).sum(2))
         return dist_matrix
 
-    def train_epoch(self, inf=''):
+    def train_model(self, train_loader, task_id, inf=''):
+        self.net.eval()
+        Spade.dict_clear(self.train_outputs)
 
-        self.backbone.eval()
-        # When num_task is 15, per task means per class
-        self.get_layer_features(outputs=self.train_outputs)
+        for _ in range(self.config['num_epochs']):
+            for batch_id, batch in enumerate(train_loader):
+                img = batch['img'].to(self.device) 
 
-        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
-            Spade.dict_clear(self.train_outputs)
-            print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
-
-            for _ in range(self.config['num_epoch']):
-                for batch_id, batch in enumerate(train_loader):
-                    #print(f'batch id: {batch_id}')
-                    img = batch['img'].to(self.device) 
-
-                    self.features.clear()
-                    with torch.no_grad():
-                        _ = self.backbone(img)
+                self.features.clear()
+                with torch.no_grad():
+                    _ = self.net(img)
                     
-                    #get the intermediate layer outputs
-                    for k,v in zip(self.train_outputs.keys(), self.features):
-                        self.train_outputs[k].append(v.cpu().detach())
+                #get the intermediate layer outputs
+                for k,v in zip(self.train_outputs.keys(), self.features):
+                    self.train_outputs[k].append(v)
+                # initialize hook outputs
+                self.features = [] 
 
-                for k, v in self.train_outputs.items():
-                    self.train_outputs[k] = torch.cat(v, 0)
+            for k, v in self.train_outputs.items():
+                self.train_outputs[k] = torch.cat(v, 0)
                 
-                save_feat_pickle(feat=self.train_outputs, file_path=self.embedding_dir_path)
-    
-    def prediction(self):
+            # save_feat_pickle(feat=self.train_outputs, file_path=self.embedding_dir_path + '/feature.npy')
 
-        self.backbone.eval()
-        self.pixel_gt_list.clear()
-        self.img_gt_list.clear()
-        self.img_list.clear()
-
+    def prediction(self, valid_loader, task_id):
+        self.net.eval()
         Spade.dict_clear(self.test_outputs)
 
-        self.get_layer_features(outputs=self.test_outputs)
+        self.img_list = []
+        self.pixel_gt_list = []
+        self.img_gt_list = []
 
-        for batch_id, batch in enumerate(self.chosen_valid_loader):
+        for batch_id, batch in enumerate(valid_loader):
             img = batch['img'].to(self.device)
             mask = batch['mask'].to(self.device)
             label = batch['label'].to(self.device)
@@ -142,41 +100,38 @@ class Spade():
             self.img_gt_list.extend(label.cpu().detach().numpy())
             self.pixel_gt_list.extend(mask.cpu().detach().numpy())
 
-            # Extract features from backbone
+            # extract features from backbone
             with torch.no_grad():
                 self.features.clear()
-                _ = self.backbone(img)
+                _ = self.net(img)
 
             for k,v in zip(self.test_outputs.keys(), self.features):
                 self.test_outputs[k].append(v)
+            # initialize hook outputs
+            self.features = [] 
         
-        for k, v in zip(self.test_outputs.keys(), self.features):
+        for k, v in self.test_outputs.items():
             self.test_outputs[k] = torch.cat(v, 0)
         
-        # Load train feature 
-        self.train_outputs = load_feat_pickle(feat=self.train_outputs, 
-                                              file_path=self.embedding_dir_path)
+        # load train feature 
+        # self.train_outputs = load_feat_pickle(feat=self.train_outputs, file_path=self.embedding_dir_path)
 
         # calculate distance matrix
-        dist_matrix = Spade.cal_distance_matrix(torch.flatten(self.test_outputs['avgpool'], 1),
+        dist_matrix = Spade.cal_distance_matrix(torch.flatten(self.test_outputs['avgpool'], 1), 
                                                 torch.flatten(self.train_outputs['avgpool'], 1))
         
         # select K nearest neighbor and take advantage 
-        topk_values, topk_indexes = torch.topk(dist_matrix, k=self.config['top_k'], 
-                                               dim=1, largest=False)
-
+        topk_values, topk_indexes = torch.topk(dist_matrix, k=self.config['_top_k'], dim=1, largest=False)
         scores = torch.mean(topk_values, 1).cpu().detach().numpy()
 
         # calculate image-level AUROC
-        img_auroc = np_get_auroc(self.img_gt_list, scores) 
+        img_auroc = roc_auc_score(self.img_gt_list, scores) 
 
         score_map_list = []
-
-        for t_idx in range(self.test_outputs['avgpol'].shape[0]):
+        for t_idx in range(self.test_outputs['avgpool'].shape[0]):
             score_maps = []
             # for each layer
             for layer_name in ['layer1', 'layer2', 'layer3']:
-
                 # construct a gallery of features at all pixel locations of the K nearest neighbors
                 topk_feat_map = self.train_outputs[layer_name][topk_indexes[t_idx]]
                 test_feat_map = self.test_outputs[layer_name][t_idx:t_idx + 1]
@@ -192,7 +147,7 @@ class Spade():
 
                 # k nearest features from the gallery (k=1)
                 score_map = torch.min(dist_matrix, dim=0)[0]
-                score_map = F.interpolate(score_map.unsqueeze(0).unsqueeze(0), size=224,
+                score_map = F.interpolate(score_map.unsqueeze(0).unsqueeze(0), size=self.config['data_crop_size'],
                                           mode='bilinear', align_corners=False)
                 score_maps.append(score_map)
             
@@ -203,9 +158,13 @@ class Spade():
             score_map = gaussian_filter(score_map.squeeze().cpu().detach().numpy(), sigma=4)
             score_map_list.append(score_map)
 
-        flatten_gt_mask_list = np.concatenate(self.pixel_gt_list).ravel()
-        flatten_score_map_list = np.concatenate(score_map_list).ravel()
-        pixel_auroc = np_get_auroc(flatten_gt_mask_list, flatten_score_map_list)
+        mask = np.concatenate(self.pixel_gt_list).ravel()
+        mask_pred = np.concatenate(score_map_list).ravel()
+        
+        # mask_pred[mask_pred >= 0.5] = 1
+        # mask_pred[mask_pred < 0.5] = 0
+
+        pixel_auroc = roc_auc_score(mask.astype(int), mask_pred.astype(int))
 
         return pixel_auroc, img_auroc
 
