@@ -36,7 +36,7 @@ def nf_fast_flow(input_chw, conv3x3_only, hidden_ratio, flow_steps, clamp=2.0):
     return nodes
 
 
-class FastFlow(nn.Module):
+class NetFastFlow(nn.Module):
     def __init__(
         self,
         backbone_name,
@@ -45,7 +45,7 @@ class FastFlow(nn.Module):
         conv3x3_only=False,
         hidden_ratio=1.0,
     ):
-        super(FastFlow, self).__init__()
+        super(NetFastFlow, self).__init__()
         assert (
             backbone_name in const.SUPPORTED_BACKBONES
         ), "backbone_name must be one of {}".format(const.SUPPORTED_BACKBONES)

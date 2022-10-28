@@ -21,6 +21,7 @@ from models.dra.dra_resnet18 import DraResNet18
 from models.devnet.devnet_resnet18 import DevNetResNet18
 from models.igd.net_igd import NetIGD
 from models.reverse.net_reverse import NetReverse
+from models.fastflow.net import NetFastFlow
  
 from optimizer.optimizer import get_optimizer
 from models.favae.vae import VAE
@@ -260,6 +261,9 @@ class CentralizedTrain():
             self.net = NetReverse(args) 
             self.optimizer =  get_optimizer(args, list(self.net.decoder.parameters()) + list(self.net.bn.parameters()))
             self.scheduler = None
+        if self.para_dict['model'] == 'fastflow':
+            self.net = NetFastFlow(args) 
+            self.optimizer = get_optimizer(args, self.net.parameters())
         model_name = {'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
                       'padim': ('arch_base.padim', 'padim', 'PaDim'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
