@@ -1,0 +1,9 @@
+model: fastflow
+num_epochs: 100
+data_size: 256
+data_crop_size: 256
+backbone_name: 'resnet18'
+flow_step: 8
+hidden_ratio: 1.0
+_base_lr: 1e-3
+_weight_decay: 1e-5

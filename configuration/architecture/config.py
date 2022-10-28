@@ -35,7 +35,7 @@ def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad', 'mvtec2df3d'])
     parser.add_argument('--model', '-m', type=str, default='spade', choices=['patchcore', 'csflow', 'dne', 'draem', 'igd', 'cutpaste', 'devnet', 'dra', 
-                                                                              'favae', 'padim', 'reverse', 'spade'])
+                                                                              'favae', 'padim', 'reverse', 'spade', 'fastflow'])
     parser.add_argument('--net', '-n', type=str, default='resnet18', choices=['wide_resnet50', 'resnet18', 'net_csflow', 'vit_b_16', 'net_draem', 'net_dra',
                                                                               'net_igd', 'net_reverse'])
     parser.add_argument('--root-path', '-rp', type=str, default=None)
