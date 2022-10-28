@@ -275,6 +275,7 @@ class CentralizedTrain():
                       'devnet': ('arch_base.devnet', 'devnet', 'DevNet'),
                       'favae': ('arch_base.favae', 'favae', 'FAVAE'),
                       'reverse': ('arch_base.reverse', 'reverse', 'Reverse'),
+                      'spade': ('arch_base.spade', 'spade', 'Spade'),
                       'fastflow': ('arch_base.fastflow', 'fastflow', 'FastFlow')
                      }
 
