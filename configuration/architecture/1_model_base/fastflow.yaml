@@ -1,0 +1,4 @@
+model: fastflow
+num_epochs: 100
+_base_lr: 1e-3
+_weight_decay: 1e-5
