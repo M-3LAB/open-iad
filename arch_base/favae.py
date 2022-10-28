@@ -4,6 +4,8 @@ from arch_base.base import ModelBase
 from torchvision import models
 from models.favae.func import EarlyStop,AverageMeter, feature_extractor, print_log
 import torch.nn.functional as F
+from scipy.ndimage import gaussian_filter
+import numpy as np
 
 __all__ = ['FAVAE']
 
@@ -74,3 +76,17 @@ class FAVAE(ModelBase):
                     score += F.interpolate(mse_loss, size=img.size(2), mode='bilinear', align_corners=False)
                 
                 score = score.squeeze().cpu().numpy()
+
+                for i in range(score.shape[0]):
+                    score[i] = gaussian_filter(score[i], sigma=4)
+
+                scores.extend(score)
+                recon_imgs.extend(output.cpu().numpy())
+
+        
+        scores = np.asarray(scores)
+
+        max_anomaly_score = scores.max()
+        min_anomaly_score = scores.min()
+
+        scores = (scores - min_anomaly_score) / (max_anomaly_score - min_anomaly_score)
