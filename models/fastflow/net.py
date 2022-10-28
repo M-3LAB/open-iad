@@ -54,12 +54,13 @@ class NetFastFlow(nn.Module):
         self.input_size = self.config['input_size']
         self.conv3x3_only = False
         self.hidden_ratio = self.config['hidden_ratio']
+        self.input_size = self.config['data_crop_size'] 
 
         assert (
-            backbone_name in support_backones 
+            self.backbone_name in support_backones 
         ), "backbone_name must be one of {}".format(support_backones)
 
-        if backbone_name in ['cait_m48_448', 'deit_base_distilled_patch16_384']:
+        if self.backbone_name in ['cait_m48_448', 'deit_base_distilled_patch16_384']:
             self.feature_extractor = timm.create_model(backbone_name, pretrained=True)
             channels = [768]
             scales = [16]
@@ -92,12 +93,11 @@ class NetFastFlow(nn.Module):
             self.nf_flows.append(
                 nf_fast_flow(
                     [in_channels, int(input_size / scale), int(input_size / scale)],
-                    conv3x3_only=conv3x3_only,
-                    hidden_ratio=hidden_ratio,
-                    flow_steps=flow_steps,
+                    conv3x3_only=self.conv3x3_only,
+                    hidden_ratio=self.hidden_ratio,
+                    flow_steps=self.flow_steps,
                 )
             )
-        self.input_size = input_size
 
     def forward(self, x):
         self.feature_extractor.eval()
