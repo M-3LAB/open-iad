@@ -39,6 +39,7 @@ support_backones = ['resnet18', 'wide_resnet50_2', 'cait_m48_448',
 class NetFastFlow(nn.Module):
     def __init__(
         self,
+        config,
         backbone_name,
         flow_steps,
         input_size,
@@ -46,6 +47,14 @@ class NetFastFlow(nn.Module):
         hidden_ratio=1.0,
     ):
         super(NetFastFlow, self).__init__()
+
+        self.config = config 
+        self.backbone_name = self.config['backbone_name'] 
+        self.flow_steps = self.config['flow_steps']
+        self.input_size = self.config['input_size']
+        self.conv3x3_only = False
+        self.hidden_ratio = self.config['hidden_ratio']
+
         assert (
             backbone_name in support_backones 
         ), "backbone_name must be one of {}".format(support_backones)
