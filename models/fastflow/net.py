@@ -4,7 +4,6 @@ import timm
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import constants as const
 
 __all__ = ['FastFlow', 'nf_fast_flow', 'subnet_conv_func']
 
@@ -35,7 +34,8 @@ def nf_fast_flow(input_chw, conv3x3_only, hidden_ratio, flow_steps, clamp=2.0):
         )
     return nodes
 
-
+support_backones = ['resnet18', 'wide_resnet50_2', 'cait_m48_448', 
+                    'deit_base_distilled_patch16_384']
 class NetFastFlow(nn.Module):
     def __init__(
         self,
@@ -47,10 +47,10 @@ class NetFastFlow(nn.Module):
     ):
         super(NetFastFlow, self).__init__()
         assert (
-            backbone_name in const.SUPPORTED_BACKBONES
-        ), "backbone_name must be one of {}".format(const.SUPPORTED_BACKBONES)
+            backbone_name in support_backones 
+        ), "backbone_name must be one of {}".format(support_backones)
 
-        if backbone_name in [const.BACKBONE_CAIT, const.BACKBONE_DEIT]:
+        if backbone_name in ['cait_m48_448', 'deit_base_distilled_patch16_384']:
             self.feature_extractor = timm.create_model(backbone_name, pretrained=True)
             channels = [768]
             scales = [16]

@@ -264,6 +264,7 @@ class CentralizedTrain():
         if self.para_dict['model'] == 'fastflow':
             self.net = NetFastFlow(args) 
             self.optimizer = get_optimizer(args, self.net.parameters())
+            self.scheduler = None
         model_name = {'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
                       'padim': ('arch_base.padim', 'padim', 'PaDim'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
