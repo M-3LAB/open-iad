@@ -3,6 +3,7 @@ import torch.n as nn
 from arch_base.base import ModelBase
 from torchvision import models
 from models.favae.func import EarlyStop,AverageMeter, feature_extractor, print_log
+import torch.nn.functional as F
 
 __all__ = ['FAVAE']
 
@@ -52,4 +53,24 @@ class FAVAE(ModelBase):
     def prediction(self, valid_loader, task_id=None):
         self.net().eval()
         self.teacher.eval()
-        pass
+        scores = []
+        test_imgs = []
+        gt_list = []
+        gt_mask_list = []
+        recon_imgs = []
+
+        with torch.no_grad():
+            for batch_id, batch in enumerate(valid_loader):
+                img = batch['img'].to(self.device)
+                z, output, mu, log_var = self.model(img)
+                s_activations, _ = feature_extractor(z, self.model.decode, target_layers=['10', '16', '22']) 
+                t_activations, _ = feature_extractor(img, self.teacher.features, target_layers=['7', '14', '21'])
+
+                score = self.mse_criterion(output, img).sum(1, keepdim=True)
+
+                for i in range(len(s_activations)):
+                    s_act = self.net.adapter[i](s_activations[-(i + 1)])
+                    mse_loss = self.mse_criterion(s_act, t_activations[i]).sum(1, keepdim=True)
+                    score += F.interpolate(mse_loss, size=img.size(2), mode='bilinear', align_corners=False)
+                
+                score = score.squeeze().cpu().numpy()
