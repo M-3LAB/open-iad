@@ -61,12 +61,12 @@ class NetFastFlow(nn.Module):
         ), "backbone_name must be one of {}".format(support_backones)
 
         if self.backbone_name in ['cait_m48_448', 'deit_base_distilled_patch16_384']:
-            self.feature_extractor = timm.create_model(backbone_name, pretrained=True)
+            self.feature_extractor = timm.create_model(self.backbone_name, pretrained=True)
             channels = [768]
             scales = [16]
         else:
             self.feature_extractor = timm.create_model(
-                backbone_name,
+                self.backbone_name,
                 pretrained=True,
                 features_only=True,
                 out_indices=[1, 2, 3],
