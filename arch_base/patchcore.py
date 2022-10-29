@@ -22,7 +22,7 @@ __all__ = ['PatchCore']
 
 class PatchCore(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        
+        super(PatchCore, self).__init__(config, device, file_path, net, optimizer, scheduler)
         self.config = config
         self.device = device
         self.file_path = file_path

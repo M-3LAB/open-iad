@@ -1,6 +1,8 @@
 from sklearn.metrics import roc_auc_score, average_precision_score
 from metrics.mvtec3d.au_pro import calculate_au_pro
 import numpy as np
+import os
+
 class ModelBase():
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
         self.config = config
@@ -12,8 +14,8 @@ class ModelBase():
         self.pixel_pred_list = [] # list<numpy(m,n)>
         self.pixel_gt_list = [] # list<numpy(m,n)>
         self.img_path_list = [] # list<str>
-        
-        
+        print(os.path.join(self.config['root_path'],self.config['data_path']))
+         
     def train_epoch(self, train_loader, task_id, inf=''):
         pass
 
@@ -50,4 +52,47 @@ class ModelBase():
     def cal_metric_pixel_aupro(self):
         return calculate_au_pro(self.pixel_gt_list, self.pixel_pred_list)
     
+    def save_anomaly_map_tiff(self):
+        img_shape_list = {'breakfast_box': [1600,1280],
+                     'juice_bottle': [800,1600],
+                     'pushpins': [1700,1000],
+                     'screw_bag': [1600,1100],
+                     'splicing_connectors': [1700,850]}
+        if self.config['vanilla']:
+            train_type = 'vanilla'
+        elif self.config['fewshot']:
+            train_type = 'fewshot'
+        elif self.config['continual']:
+            train_type = 'continual'
+        elif self.config['noisy']:
+            train_type = 'noisy'
+        elif self.config['fedrated']:
+            train_type = 'fedrated'
+        else:
+            train_type = 'unknown'
+        path_dir = self.img_path_list[0].split('/')
+        img_shape = img_shape_list[path_dir[-4]]
+        if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+path_dir[-4]+'/'+'structural_anomalies'):
+            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+'structural_anomalies')
+        if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+path_dir[-4]+'/'+'logical_anomalies'):
+            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+'logical_anomalies')
+        for i in range(len(self.img_path_list)):
+            path_dir = self.img_path_list[i].split('/')
+            anomaly_map = cv2.resize(self.pixel_pred_list[i],(img_shape[1],img_shape[0]))
+            cv2.imwrite('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+img_shape_list[path_dir[-4]]+'/'+img_shape_list[path_dir[-2]]+'/'+img_shape_list[path_dir[-1]],anomaly_map)
         
+    #     def save_anomaly_map(anomaly_map, input_img, mask, file_path):
+    #         if anomaly_map.shape != input_img.shape:
+    #             anomaly_map = cv2.resize(anomaly_map, (input_img.shape[0], input_img.shape[1]))
+
+    #         anomaly_map_norm = min_max_norm(anomaly_map) 
+    #         heatmap = cv2heatmap(anomaly_map_norm*255)
+
+    #         heatmap_on_img = heatmap_on_image(heatmap, input_img)
+    #         #TODO: save problems
+    #         create_folders(file_path)
+
+    #         cv2.imwrite(os.path.join(file_path, 'input.jpg'), input_img)
+    #         cv2.imwrite(os.path.join(file_path, 'heatmap.jpg'), heatmap)
+    #         cv2.imwrite(os.path.join(file_path, 'heatmap_on_img.jpg'), heatmap_on_img)
+    #         cv2.imwrite(os.path.join(file_path, 'mask.jpg'), mask)

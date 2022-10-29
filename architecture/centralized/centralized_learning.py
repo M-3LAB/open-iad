@@ -84,7 +84,7 @@ class CentralizedTrain():
     def load_data(self):
         dataset_name = {'mvtec2d': ('data_io.mvtec2d', 'mvtec2d', 'MVTec2D'),
                         'mvtec2df3d': ('data_io', 'mvtec2df3d', 'MVTec2DF3D'),
-                        'mvtecloco': ('data_io', 'mvtecloco', 'MVTecLoco'),
+                        'mvtecloco': ('data_io.mvtecloco', 'mvtecloco', 'MVTecLoco'),
                         'mpdd': ('data_io', 'mpdd', 'MPDD'),
                         'btad': ('data_io', 'btad', 'BTAD'),
                         'mtd': ('data_io', 'mtd', 'MTD'),
