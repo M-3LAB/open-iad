@@ -12,7 +12,7 @@ from sklearn.random_projection import SparseRandomProjection
 import faiss
 import math
 from scipy.ndimage import gaussian_filter
-from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
+from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve, average_precision_score
 from tools.visualize import save_anomaly_map, vis_embeddings
 from memory_augmentation.domain_generalization import feature_augmentation
 from arch_base.base import ModelBase
