@@ -177,4 +177,4 @@ class CFA():
         img_auroc = CFA.cal_img_roc(scores, self.img_gt_list)
         pixel_auroc = CFA.cal_pxl_roc(gt_mask, scores)
 
-        return img_auroc, pixel_auroc
+        return pixel_auroc, img_auroc
