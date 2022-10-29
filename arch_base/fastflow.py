@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 from arch_base.base import ModelBase
 from models.fastflow.func import AverageMeter
 from ignite.contrib import metrics
