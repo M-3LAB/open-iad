@@ -301,9 +301,11 @@ class CentralizedTrain():
         print('-> test ...')
         # test each task individually
         for task_id, valid_loader in enumerate(self.chosen_valid_loaders):
-            pixel_auroc, img_auroc = self.trainer.prediction(valid_loader, task_id=task_id)
+            self.trainer.prediction(valid_loader, task_id=task_id)
+            pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all()
 
-            infor = 'train_task_id: {} valid_task_id: {}'.format(self.para_dict['train_task_id'], self.para_dict['valid_task_id'][task_id])
+            infor = 'dataset_name: {} model_name: {} train_task_id: {} valid_task_id: {}'.format(\
+                self.para_dict['dataset'], self.para_dict['model'], self.para_dict['train_task_id'], self.para_dict['valid_task_id'][task_id])
 
             save_path = None 
             if self.para_dict['vanilla']:
@@ -332,7 +334,8 @@ class CentralizedTrain():
                     source_domain = source_domain + str(self.para_dict['train_task_id'][i])
                 save_path = '{}/result_{}_continual_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], source_domain) 
             
-            infor = '{} pixel_auroc: {:.4f} img_auroc: {:.4f}'.format(infor, pixel_auroc, img_auroc)
+            infor = '{} pixel_auroc: {:.4f} img_auroc: {:.4f} pixel_ap: {:.4f} img_ap: {:.4f} pixel_aupro: {:.4f}'.format(\
+                infor, pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro)
             print(infor)
 
             with open(save_path, 'a') as f:
