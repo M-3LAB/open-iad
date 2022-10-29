@@ -28,13 +28,16 @@ class ModelBase():
         # print(len(self.pixel_pred_list)) # n
         # print(self.pixel_gt_list[0].shape) # 256
         # print(self.pixel_pred_list[0].shape) # 256
-        pixel_pro, pro_curve = self.cal_metric_pixel_aupro()
-        pixel_gt = np.array(self.pixel_gt_list).flatten()
-        pixel_pred = np.array(self.pixel_pred_list).flatten()
-        img_auroc = self.cal_metric_img_auroc()
-        img_ap = self.cal_metric_img_ap()
-        pixel_auroc = self.cal_metric_pixel_auroc(pixel_gt, pixel_pred)
-        pixel_ap = self.cal_metric_pixel_ap(pixel_gt, pixel_pred)
+        if(self.config['dataset']!='mvtecloco'):
+            pixel_pro, pro_curve = self.cal_metric_pixel_aupro()
+            pixel_gt = np.array(self.pixel_gt_list).flatten()
+            pixel_pred = np.array(self.pixel_pred_list).flatten()
+            img_auroc = self.cal_metric_img_auroc()
+            img_ap = self.cal_metric_img_ap()
+            pixel_auroc = self.cal_metric_pixel_auroc(pixel_gt, pixel_pred)
+            pixel_ap = self.cal_metric_pixel_ap(pixel_gt, pixel_pred)
+        else:
+            self.save_anomaly_map_tiff()
         return pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_pro
     
     def cal_metric_img_auroc(self):
@@ -77,7 +80,7 @@ class ModelBase():
         if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+path_dir[-4]+'/'+'logical_anomalies'):
             os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+'logical_anomalies')
         for i in range(len(self.img_path_list)):
-            path_dir = self.img_path_list[i].split('/')
+            path_dir = self.img_path_list[i][0].split('/')
             anomaly_map = cv2.resize(self.pixel_pred_list[i],(img_shape[1],img_shape[0]))
             cv2.imwrite('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+img_shape_list[path_dir[-4]]+'/'+img_shape_list[path_dir[-2]]+'/'+img_shape_list[path_dir[-1]],anomaly_map)
         
