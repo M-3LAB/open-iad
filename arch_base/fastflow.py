@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from arch_base.base import ModelBase
 from models.fastflow.func import AverageMeter
+from ignite.contrib import metrics
 
 __all__ = ['FastFlow']
 
@@ -34,4 +35,4 @@ class FastFlow(ModelBase):
             print(infor, flush=True, end='')
     
     def prediction(self, valid_loader, task_id=None):
-        pass
+        self.net.eval()
