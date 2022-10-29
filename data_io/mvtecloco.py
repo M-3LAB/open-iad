@@ -14,7 +14,7 @@ def mvtec_loco_classes():
 
 
 class MVTecLoco(Dataset):
-    def __init__(self, data_path, ignore_anomaly_type='logical_anomalies', learning_mode='centralized', phase='train', 
+    def __init__(self, data_path, ignore_anomaly_type='no', learning_mode='centralized', phase='train', 
                  data_transform=None, num_task=5):
 
         self.data_path = data_path
