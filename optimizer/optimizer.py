@@ -143,7 +143,7 @@ def get_optimizer(args, params):
     if args._optimizer_name == 'lars':
         optimizer = LARS(params, lr=args._base_lr, momentum=args._momentum, weight_decay=args._weight_decay)
     elif args._optimizer_name == 'sgd':
-        optimizer = torch.optim.SGD(params, lr=args._base_lr, momentum=args.train._momentum, weight_decay=args._weight_decay)
+        optimizer = torch.optim.SGD(params, lr=args._base_lr, momentum=args._momentum, weight_decay=args._weight_decay)
     elif args._optimizer_name == 'adam':
        optimizer = torch.optim.Adam(params, lr=args._base_lr, weight_decay=args._weight_decay)
     else:

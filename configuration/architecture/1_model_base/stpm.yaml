@@ -1,1 +1,20 @@
-backbone: wideresnet_50 
+model: stpm
+net: resnet18
+num_epochs: 1 # 
+train_batch_size: 8 # 32
+valid_batch_size: 1
+train_aug_type: normal
+valid_aug_type: normal
+data_size: 256
+data_crop_size: 256
+mask_size: 256
+mask_crop_size: 256
+
+_name: stpm
+_optimizer_name: sgd
+_weight_decay: 0.00001 # 0.00003; csflow: 0.00001
+_momentum: 0.9
+_warmup_epochs: 10
+_warmup_lr: 0
+_base_lr: 0.4 # 0.0001; csflow: 0.0002; revdis:0.005
+_final_lr: 0
