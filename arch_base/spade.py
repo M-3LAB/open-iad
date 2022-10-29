@@ -9,9 +9,9 @@ import numpy as np
 from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 
 
-__all__ = ['Spade']
+__all__ = ['SPADE']
 
-class Spade(ModelBase):
+class SPADE(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
         self.config = config
         self.device = device
@@ -62,7 +62,7 @@ class Spade(ModelBase):
 
     def train_model(self, train_loader, task_id, inf=''):
         self.net.eval()
-        Spade.dict_clear(self.train_outputs)
+        SPADE.dict_clear(self.train_outputs)
 
         for _ in range(self.config['num_epochs']):
             for batch_id, batch in enumerate(train_loader):
@@ -85,7 +85,7 @@ class Spade(ModelBase):
 
     def prediction(self, valid_loader, task_id):
         self.net.eval()
-        Spade.dict_clear(self.test_outputs)
+        SPADE.dict_clear(self.test_outputs)
 
         self.img_list = []
         self.pixel_gt_list = []
@@ -117,7 +117,7 @@ class Spade(ModelBase):
         # self.train_outputs = load_feat_pickle(feat=self.train_outputs, file_path=self.embedding_dir_path)
 
         # calculate distance matrix
-        dist_matrix = Spade.cal_distance_matrix(torch.flatten(self.test_outputs['avgpool'], 1), 
+        dist_matrix = SPADE.cal_distance_matrix(torch.flatten(self.test_outputs['avgpool'], 1), 
                                                 torch.flatten(self.train_outputs['avgpool'], 1))
         
         # select K nearest neighbor and take advantage 

@@ -6,9 +6,9 @@ from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curv
 from scipy.ndimage import gaussian_filter
 from loss_function.reverse_loss import reverse_loss
 
-__all__ = ['Reverse']
+__all__ = ['REVERSE']
 
-class Reverse(ModelBase):
+class REVERSE(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
         self.config = config
         self.device = device

@@ -255,19 +255,15 @@ class CentralizedTrain():
             self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)       
         if self.para_dict['model'] == 'favae':
             self.net = VAE(input_channel=self.para_dict['input_channel'], z_dim=100) 
-            self.optimizer =  get_optimizer(args, self.net.parameters())
-            self.scheduler = None
+            self.optimizer = get_optimizer(args, self.net.parameters())
         if self.para_dict['model'] == 'reverse':
             self.net = NetReverse(args) 
-            self.optimizer =  get_optimizer(args, list(self.net.decoder.parameters()) + list(self.net.bn.parameters()))
-            self.scheduler = None
+            self.optimizer = get_optimizer(args, list(self.net.decoder.parameters()) + list(self.net.bn.parameters()))
         if self.para_dict['model'] == 'fastflow':
             self.net = NetFastFlow(args) 
             self.optimizer = get_optimizer(args, self.net.parameters())
-            self.scheduler = None
-        if self.para_dict['model'] == 'cfa':
-            self.optimizer = None 
-            self.scheduler = None
+        if self.para_dict['model'] == 'stpm':
+            self.optimizer = get_optimizer(args, self.net.parameters())
 
         model_name = {'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
                       'padim': ('arch_base.padim', 'padim', 'PaDim'),
@@ -278,10 +274,11 @@ class CentralizedTrain():
                       'dra': ('arch_base.dra', 'dra', 'DRA'),
                       'devnet': ('arch_base.devnet', 'devnet', 'DevNet'),
                       'favae': ('arch_base.favae', 'favae', 'FAVAE'),
-                      'reverse': ('arch_base.reverse', 'reverse', 'Reverse'),
-                      'spade': ('arch_base.spade', 'spade', 'Spade'),
                       'fastflow': ('arch_base.fastflow', 'fastflow', 'FastFlow'),
-                      'cfa': ('arch_base.cfa', 'cfa', 'CFA')
+                      'cfa': ('arch_base.cfa', 'cfa', 'CFA'),
+                      'reverse': ('arch_base.reverse', 'reverse', 'REVERSE'),
+                      'spade': ('arch_base.spade', 'spade', 'SPADE'),
+                      'stpm': ('arch_base.stpm', 'stpm', 'STPM'),
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])
