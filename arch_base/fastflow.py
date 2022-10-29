@@ -36,3 +36,20 @@ class FastFlow(ModelBase):
     
     def prediction(self, valid_loader, task_id=None):
         self.net.eval()
+        auroc_metric = metrics.ROC_AUC()
+        with torch.no_grad():
+            for batch_id, batch in enumerate(valid_loader):
+                img = batch['img'].to(self.device)
+                mask = batch['mask']
+                ret = self.net(img)
+                mask = mask.flatten()
+
+                outputs = ret["anamaly_map"].cpu().detach()
+                outputs = outputs.flatten()
+                auroc_metric.update((outputs, mask))
+        
+        pixel_auroc = auroc_metric.compute()
+        img_auroc = None
+        return pixel_auroc, img_auroc 
+        
+    
