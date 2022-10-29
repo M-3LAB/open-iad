@@ -1,0 +1,39 @@
+model: dra
+net: resnet18
+semi: True
+semi_anomaly_num: 5 # _nRef fixed 5
+semi_overlap: false
+num_epochs: 1 # 30 
+train_batch_size: 48
+valid_batch_size: 1
+train_aug_type: normal
+valid_aug_type: normal
+data_size: 448
+data_crop_size: 448
+mask_size: 448
+mask_crop_size: 448
+
+_name: dra
+_batch_size: 48
+_steps_per_epoch: 20
+_cont_rate: 0
+_test_threshold: 0
+_test_rate: 0
+_ramdn_seed: 42
+_no-cuda: True
+_classname: 'capsule'
+_img_size: 448
+_nAnomaly: 10
+_n_scales: 2
+_criterion: 'deviation'
+_topk: 0.1
+_know_class: None
+_pretrain_dir: None
+_total_heads: 4
+_nRef: 5
+_outlier_root: None
+_optimizer_name: adam
+_base_lr: 0.0002
+_weight_decay: 0.00001
+_step_size: 10
+_gamma: 0.1

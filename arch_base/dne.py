@@ -4,7 +4,6 @@ import numpy as np
 import argparse
 import torch.nn.functional as F
 from arch_base.base import ModelBase
-from metrics.common.np_auc_precision_recall import np_get_auroc
 from tools.density import GaussianDensityTorch
 from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 
@@ -82,18 +81,15 @@ class DNE(ModelBase):
         self.task_wise_cov = []
         self.task_wise_train_data_nums = [] 
 
-    def train_model(self, train_loaders, inf=''):
+    def train_model(self, train_loader, task_id, inf=''):
         self.net.train()
 
-        for task_idx, train_loader in enumerate(train_loaders):
-            print('run task: {}'.format(self.config['train_task_id'][task_idx]))
+        for epoch in range(self.config['num_epochs']):
+            for batch_id, batch in enumerate(train_loader):
+                inputs = batch['img'].to(self.device)
+                labels = batch['label'].to(self.device)
 
-            for epoch in range(self.config['num_epochs']):
-                for batch_id, batch in enumerate(train_loader):
-                    inputs = batch['img'].to(self.device)
-                    labels = batch['label'].to(self.device)
-
-                    self.model(epoch, inputs, labels, self.one_epoch_embeds, self.task_wise_mean, self.task_wise_cov, task_idx)
+                self.model(epoch, inputs, labels, self.one_epoch_embeds, self.task_wise_mean, self.task_wise_cov, task_id)
 
 
     def prediction(self, valid_loader, task_id):

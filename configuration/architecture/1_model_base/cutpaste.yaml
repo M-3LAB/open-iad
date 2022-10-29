@@ -1,0 +1,15 @@
+model: cutpaste
+train_batch_size: 32
+valid_batch_size: 32
+net: vit #resnet
+num_epochs: 50
+train_aug_type: cutpaste
+valid_aug_type: cutpaste
+data_size: 224
+data_crop_size: 224
+mask_size: 224
+mask_crop_size: 224
+
+_name: cutpaste 
+_optimizer_name: adam
+_weight_decay: 0.00001

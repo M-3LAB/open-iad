@@ -28,38 +28,45 @@ python3 mmad_training.py
 ## Learning Paradigm
 | Prototypes | Marker | Train | Test |
 | ------ | ---| -------|------ |
-| vanilla | -v |all data (id=0) | all data (id=0) 
+| vanilla | -v |all data (id=0) | all data (id=0) |
+| semi | -s | all data (id=0) + anomaly data (id=0) | all data (id=0) - anomaly data (id=0)|
 | continual | -c| all data (id=0 and 1)| all data (id=0 or 1)|
 | fewshot | -f | fewshot (id=0) | all data (id=0) |
-| noisy | -n | all data (id=0) + noisy data (id=0) | all data (id=0)|
+| noisy | -n | all data (id=0) + noisy data (id=0) | all data (id=0) - noisy data (id=0)|
 
 
 | Method / -m | Net / -n |
 | ------ | ------ |
-| patchcore2d  | resnet18, wide_resnet50 |
+| patchcore  | resnet18, wide_resnet50 |
+| padim  | resnet18, wide_resnet50 |
+| spade  | resnet18, wide_resnet50 |
 | csflow | net_csflow |
 | dne | vit_b_16 |
+| draem | net_draem |
+| dra | net_dra |
+| igd | net_igd |
+| reverse | net_reverse |
 
 
 
 > Vanilla
 ```bash
-python3 centralized_training.py --vanilla --model patchcore2d --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 0.001 -g 1
+python3 centralized_training.py --vanilla --model patchcore --net resent18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 0.001 -g 1
 ```
 
 > Continual
 ```bash
-python3 centralized_training.py --continual --model patchcore2d --dataset mvtec2d --train-task-id 0 1 --valid-task-id 0 1 --coreset-sampling-ratio 0.001 -g 1
+python3 centralized_training.py --continual --model patchcore --net resent18 --dataset mvtec2d --train-task-id 0 1 --valid-task-id 0 1 --coreset-sampling-ratio 0.001 -g 1
 ```
 
 > Fewshot
 ```bash
-python3 centralized_training.py --fewshot --fewshot-exm 1 --fewshot-num-dg 4 --model patchcore2d --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 1 -g 1
+python3 centralized_training.py --fewshot --fewshot-exm 1 --fewshot-num-dg 4 --model patchcore --net resent18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 1 -g 1
 ```
 
 > Noisy
 ```bash
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model patchcore2d --dataset mvtec2d --train-task-id 0 --valid-task-id 1 --coreset-sampling-ratio 0.001 -g 1
+python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model patchcore --net resent18 --dataset mvtec2d --train-task-id 0 --valid-task-id 1 --coreset-sampling-ratio 0.001 -g 1
 ```
 
 

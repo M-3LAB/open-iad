@@ -36,8 +36,10 @@ def assign_service(guoyang):
 def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad', 'mvtec2df3d'])
-    parser.add_argument('--model', '-m', type=str, default='draem', choices=['patchcore2d', 'csflow', 'dne', 'draem', 'igd', 'cutpaste'])
-    parser.add_argument('--net', '-n', type=str, default='net_draem', choices=['wide_resnet50', 'resnet18', 'net_csflow', 'vit_b_16', 'net_draem'])
+    parser.add_argument('--model', '-m', type=str, default='spade', choices=['patchcore', 'csflow', 'dne', 'draem', 'igd', 'cutpaste', 'devnet', 'dra', 
+                                                                              'favae', 'padim', 'reverse', 'spade', 'fastflow', 'softpatch'])
+    parser.add_argument('--net', '-n', type=str, default='resnet18', choices=['wide_resnet50', 'resnet18', 'net_csflow', 'vit_b_16', 'net_draem', 'net_dra',
+                                                                              'net_igd', 'net_reverse'])
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
@@ -47,6 +49,11 @@ def parse_arguments_centralized():
 
     # vanilla learning
     parser.add_argument('--vanilla', '-v', action='store_true', default=True)
+    
+    # semi-supervised learning
+    parser.add_argument('--semi', '-s', action='store_true', default=False)
+    parser.add_argument('--semi-anomaly-num', '-san', type=int, default=5)
+    parser.add_argument('--semi-overlap', '-so', action='store_true', default=False)
     
     # continual learning
     parser.add_argument('--continual', '-c', action='store_true', default=False)
@@ -63,7 +70,7 @@ def parse_arguments_centralized():
     parser.add_argument('--noisy-overlap', '-no', action='store_true', default=False)
     parser.add_argument('--noisy-ratio', '-nr', type=float, default=0.1)
 
-    parser.add_argument('--gpu-id', '-g', type=str, default=0)
+    parser.add_argument('--gpu-id', '-g', type=str, default=2)
     parser.add_argument('--num-epoch', '-ne', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--vis-em', action='store_true', default=False)

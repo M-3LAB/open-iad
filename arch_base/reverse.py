@@ -1,110 +1,59 @@
-from models.reverse.loss import reverse_loss
 import torch
-import torch.nn as nn
-from models.reverse.resnet import * 
-from models.reverse.loss import *
 import numpy as np
 from torch.nn import functional as F
-#from tools.visualize import *
+from arch_base.base import ModelBase
+from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 from scipy.ndimage import gaussian_filter
-from metrics.common.np_auc_precision_recall import *
+from loss_function.reverse_loss import reverse_loss
 
 __all__ = ['Reverse']
 
-class Reverse():
-    def __init__(self, config, train_loaders, valid_loaders,
-                 device, file_path, train_fewshot_loaders=None):
-
+class Reverse(ModelBase):
+    def __init__(self, config, device, file_path, net, optimizer, scheduler):
         self.config = config
-        self.train_loaders = train_loaders
-        self.valid_loaders = valid_loaders
         self.device = device
         self.file_path = file_path
-        self.train_fewshot_loaders = train_fewshot_loaders
+        self.net = net 
 
-        self.chosen_train_loaders = [] 
-        if self.config['chosen_train_task_ids'] is not None:
-            for idx in range(len(self.config['chosen_train_task_ids'])):
-                self.chosen_train_loaders.append(self.train_loaders[self.config['chosen_train_task_ids'][idx]])
-        else:
-            self.chosen_train_loaders = self.train_loaders
-        
-        assert len(self.chosen_train_loaders) == 1, 'Only Support Single Transfer Single'
+        self.encoder = self.net.encoder.to(self.device)
+        self.decoder = self.net.decoder.to(self.device)
+        self.bn = self.net.bn.to(self.device)
 
-        self.chosen_valid_loader = self.valid_loaders[self.config['chosen_test_task_id']] 
+        self.optimizer = optimizer
 
-        if self.config['fewshot']:
-            assert self.train_fewshot_loaders is not None
-            self.chosen_fewshot_loader = self.train_fewshot_loaders[self.config['chosen_test_task_id']]
-        
-        if self.config['chosen_test_task_id'] in self.config['chosen_train_task_ids']:
-            assert self.config['fewshot'] is False, 'Changeover: test task id should not be the same as train task id'
-        
-        if self.config['backbone'] == 'wide_resnet50':
-            self.encoder, self.bn = enc_wide_resnet_50_2(pretrained=True)
-            self.decoder = dec_wide_resnet_50_2(pretrained=False)
-        
-        self.encoder = self.encoder.to(self.device)
-        self.bn = self.bn.to(self.device)
-        self.decoder = self.decoder.to(self.device)
-        self.optimizer = torch.optim.Adam(list(self.decoder.parameters()) + list(self.bn.parameters()),
-                                          lr=self.config['lr'],
-                                          betas=[self.config['beta1'], self.config['beta2']])
-        
-        self.pixel_gt_list = []
-        self.img_gt_list = []
-        self.pixel_pred_list = []
-        self.img_pred_list = []
-        self.aupro_list = []
-
-    def train_epoch(self):
-        #Encoder Do Not Need to Train
-        self.encoder.eval()
-
-        #BN and Decoder
+    def train_model(self, train_loader, task_id, inf=''):
+        self.encoder.eval() 
         self.bn.train()
         self.decoder.train()
         loss_list = []
-        # When num_task is 15, per task means per class
-        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
-            print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
+        
+        for epoch in range(self.config['num_epochs']):
+            for batch_id, batch in enumerate(train_loader):
+                img = batch['img'].to(self.device)
 
-            for epoch in range(self.config['num_epochs']):
-                for batch_id, batch in enumerate(train_loader):
-                    #print(f'batch id: {batch_id}')
-                    img = batch['img'].to(self.device)
-                    #mask = batch['mask'].to(self.device)
+                inputs = self.encoder(img)
+                outputs = self.decoder(self.bn(inputs))
+                loss = reverse_loss(inputs, outputs)
+                loss_list.append(loss.item())
 
-                    inputs = self.encoder(img)
-                    outputs = self.decoder(self.bn(inputs))
-                    loss = reverse_loss(inputs, outputs)
-                    loss_list.append(loss.item())
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
 
 
-                    self.optimizer.zero_grad()
-                    loss.backward()
-                    self.optimizer.step()
-
-                infor = '\r{}[Epoch {} / {}]  [Loss: {:.4f}]'.format(
-                            '', epoch+1, self.config['num_epochs'],  
-                            np.mean(loss_list))
-
-                print(infor, flush=True, end='  ') 
-
-    def prediction(self):
-
+    def prediction(self, valid_loader, task_id):
+        pixel_auroc, img_auroc = 0, 0
         self.encoder.eval()
         self.bn.eval()
         self.decoder.eval()
 
-        self.pixel_gt_list.clear()
-        self.img_gt_list.clear()
-        self.pixel_pred_list.clear()
-        self.img_pred_list.clear()
-        self.aupro_list.clear()
+        self.pixel_gt_list = []
+        self.pixel_pred_list = []
+        self.img_gt_list = []
+        self.img_pred_list = []
 
         with torch.no_grad():
-            for batch_id, batch in enumerate(self.chosen_valid_loader):
+            for batch_id, batch in enumerate(valid_loader):
                 img = batch['img'].to(self.device)
                 mask = batch['mask']
                 label = batch['label']
@@ -114,22 +63,16 @@ class Reverse():
                 anomaly_map, _ = self.cal_anomaly_map(inputs, outputs, img.shape[-1], amap_mode='a')
                 anomaly_map = gaussian_filter(anomaly_map, sigma=4)
 
-                mask[mask>0.5] = 1
-                mask[mask<=0.5] = 0
-
-                if label.item()!= 0:
-                    aupro = np_get_aupro(mask.squeeze(0).cpu().numpy().astype(int),
-                                         anomaly_map[np.newaxis, :, :])
-                    self.aupro_list.append(aupro)
+                mask[mask >= 0.5] = 1
+                mask[mask < 0.5] = 0
 
                 self.pixel_gt_list.extend(mask.cpu().numpy().astype(int).ravel())
                 self.pixel_pred_list.extend(anomaly_map.ravel())
-                self.img_gt_list.extend(np.max(mask.cpu().numpy().astype(int)))
-                self.img_pred_list.extend(np.max(anomaly_map))
+                self.img_gt_list.append(label.numpy())
+                self.img_pred_list.append(np.max(anomaly_map))
         
-        pixel_auroc = np_get_auroc(self.pixel_gt_list, self.pixel_pred_list)
-        img_auroc = np_get_auroc(self.img_gt_list, self.img_pred_list)
-        img_aupro = np.mean(self.aupro_list) 
+        pixel_auroc = roc_auc_score(self.pixel_gt_list, self.pixel_pred_list)
+        img_auroc = roc_auc_score(self.img_gt_list, self.img_pred_list)
         
         return pixel_auroc, img_auroc
 

@@ -10,7 +10,7 @@ data_crop_size: 224
 mask_size: 224
 mask_crop_size: 224
 
-_name: seq-mtd-mvtec  # seq-mvtec or seq-mtd-mvtec
+# _name: seq-mtd-mvtec  # seq-mvtec or seq-mtd-mvtec
 _image_size: 224  # 224; draem, revdis: 256; csflow: 768;
 # _num_workers: 4
 _data_incre_setting: mul # one: 10+1+1+1+1+1 mul: 3+3+3+3+3
@@ -40,17 +40,17 @@ _weight_decay: 0.00003 # 0.00003; csflow: 0.00001
 _momentum: 0.9
 _warmup_epochs: 10
 _warmup_lr: 0
-_base_lr: 0.0001 # 0.0001; csflow: 0.0002; revdis:0.005
+_base_lr: 0.0001 # 0.0001
 _final_lr: 0
 # _num_epochs: 50
-_batch_size: 32 # 32, csflow, draem:16
+_batch_size: 32 # 32
 _test_epochs: 10
 _alpha: 0.4
 _beta: 0.5
 _num_classes: 2
 
 _eval_classifier: density # head, density
-_batch_size: 32 # 32, revdis,draem:1,; csflow:16
+_batch_size: 32 # 32
 _visualization: False
 
 

@@ -1,0 +1,5 @@
+input_size: 448
+backbone_name: cait_m48_448
+flow_step: 20
+hidden_ratio: 0.16
+conv3x3_only: False
