@@ -19,18 +19,18 @@ class CFA():
         self.config = config
         self.device = device
         self.file_path = file_path
-        self.net = net
-        self.net.to(self.device)
-        self.optimizer = optimizer
+        self.backbone = net
+        self.backbone.to(self.device)
+        #self.optimizer = optimizer
 
-        if self.config['backbone'] == 'resnet18':
-            self.backbone = resnet18(pretrained=True, progress=True)
-        elif self.config['backbone'] == 'efficientnet':
-            self.backbone = effnet(pretrained=True, progress=True)
-        elif self.config['backbone'] == 'wide_resnet50':
-            self.backbone = wide_resnet50_2(pretrained=True, progress=True)
-        elif self.config['backbone'] == 'vgg':
-            self.backbone = vgg19(pretrained=True, progress=True)
+        #if self.config['backbone'] == 'resnet18':
+        #    self.backbone = resnet18(pretrained=True, progress=True)
+        #elif self.config['backbone'] == 'efficientnet':
+        #    self.backbone = effnet(pretrained=True, progress=True)
+        #elif self.config['backbone'] == 'wide_resnet50':
+        #    self.backbone = wide_resnet50_2(pretrained=True, progress=True)
+        #elif self.config['backbone'] == 'vgg':
+        #    self.backbone = vgg19(pretrained=True, progress=True)
 
         
         self.pixel_gt_list = []
@@ -88,7 +88,7 @@ class CFA():
     def train_model(self, train_loader, task_id, inf=''):
 
         self.loss_fn = DSVDD(model=self.backbone, data_loader=train_loader,
-                             cnn=self.config['backbone'], gamma_c=self.config['gamma_c'],
+                             cnn=self.config['net'], gamma_c=self.config['gamma_c'],
                              gamma_d=self.config['gamma_d'], device=self.device)
 
         self.loss_fn = self.loss_fn.to(self.device)
@@ -97,55 +97,52 @@ class CFA():
 
         self.loss_fn.train()
 
-        optimizer = torch.optim.AdamW(params=self.backbone.parameters(),
+        optimizer = torch.optim.AdamW(params=self.loss_fn.parameters(),
                                       lr=self.config['lr'],
                                       weight_decay=self.config['weight_decay'],
                                       amsgrad=True)
 
-        # When num_task is 15, per task means per class
-        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
-            print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
-            for epoch in range(self.config['num_epochs']): 
-                for batch_id, batch in enumerate(train_loader):
-                    optimizer.zero_grad()
-                    img = batch['img'].to(self.device)
-                    p = self.backbone(img)
+        for epoch in range(self.config['num_epochs']): 
+            for batch_id, batch in enumerate(train_loader):
+                optimizer.zero_grad()
+                img = batch['img'].to(self.device)
+                p = self.backbone(img)
 
-                    loss, _ = self.loss_fn(p)
-                    loss.backward()
-                    optimizer.step()
-                
-                self.loss_fn.eval()
-                for batch_id, batch in enumerate(self.chosen_valid_loader):
+                loss, _ = self.loss_fn(p)
+                loss.backward()
+                optimizer.step()
+            
+            self.loss_fn.eval()
+            for batch_id, batch in enumerate(self.chosen_valid_loader):
     
-                    img = batch['img'].to(self.device)
-                    label = batch['label'].to(self.device)
-                    mask = batch['mask'].to(self.device)
+                img = batch['img'].to(self.device)
+                label = batch['label'].to(self.device)
+                mask = batch['mask'].to(self.device)
 
-                    self.img_gt_list.append(label.cpu().detach().numpy())
-                    self.pixel_gt_list.append(mask.cpu().detach().numpy())
+                self.img_gt_list.append(label.cpu().detach().numpy())
+                self.pixel_gt_list.append(mask.cpu().detach().numpy())
 
-                    p = self.backbone(img)
+                p = self.backbone(img)
 
-                    _, score = self.loss_fn(p)
-                    heatmap = score.cpu().detach()
-                    heatmap = torch.mean(heatmap, dim=1) 
-                    heatmaps = torch.cat((heatmaps, heatmap), dim=0) if heatmaps != None else heatmap
+                _, score = self.loss_fn(p)
+                heatmap = score.cpu().detach()
+                heatmap = torch.mean(heatmap, dim=1) 
+                heatmaps = torch.cat((heatmaps, heatmap), dim=0) if heatmaps != None else heatmap
        
-                heatmaps = CFA.upsample(heatmaps, size=img.size(2)) 
-                heatmaps = CFA.gaussian_smooth(heatmaps, sigma=4)
+            heatmaps = CFA.upsample(heatmaps, size=img.size(2)) 
+            heatmaps = CFA.gaussian_smooth(heatmaps, sigma=4)
         
-                gt_mask = np.asarray(self.pixel_gt_list)
-                scores = CFA.rescale(heatmaps)
+            gt_mask = np.asarray(self.pixel_gt_list)
+            scores = CFA.rescale(heatmaps)
     
-                img_auroc = CFA.cal_img_roc(scores, self.img_gt_list)
-                pixel_auroc = CFA.cal_pxl_roc(gt_mask, scores)
+            img_auroc = CFA.cal_img_roc(scores, self.img_gt_list)
+            pixel_auroc = CFA.cal_pxl_roc(gt_mask, scores)
 
-                self.best_img_auroc = img_auroc if img_auroc > self.best_img_auroc else self.best_img_auroc
-                self.best_pixel_auroc = pixel_auroc if pixel_auroc > self.best_pixel_auroc else self.best_pixel_auroc
+            self.best_img_auroc = img_auroc if img_auroc > self.best_img_auroc else self.best_img_auroc
+            self.best_pixel_auroc = pixel_auroc if pixel_auroc > self.best_pixel_auroc else self.best_pixel_auroc
 
-                print('[%d / %d]image ROCAUC: %.3f | best: %.3f'% (epoch, self.config['num_epochs'], img_auroc, self.best_img_auroc))
-                print('[%d / %d]pixel ROCAUC: %.3f | best: %.3f'% (epoch, self.config['num_epochs'], pixel_auroc, self.best_pixel_auroc))
+            print('[%d / %d]image ROCAUC: %.3f | best: %.3f'% (epoch, self.config['num_epochs'], img_auroc, self.best_img_auroc))
+            print('[%d / %d]pixel ROCAUC: %.3f | best: %.3f'% (epoch, self.config['num_epochs'], pixel_auroc, self.best_pixel_auroc))
 
     def prediction(self, valid_loader, task_id=None):
         self.loss_fn.eval()
@@ -155,7 +152,7 @@ class CFA():
         self.img_pred_list.clear()
 
         with torch.no_grad():
-            for batch_id, batch in enumerate(self.chosen_valid_loader):
+            for batch_id, batch in enumerate(self.valid_loader):
 
                 img = batch['img'].to(self.device)
                 label = batch['label'].to(self.device)
