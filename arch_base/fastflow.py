@@ -18,7 +18,7 @@ class FastFlow(ModelBase):
     def train_model(self, train_loader, inf=''):
         self.net.train()
         loss_meter = AverageMeter() 
-        for _ in range(self.config['num_epochs']):
+        for epoch in range(self.config['num_epochs']):
             for batch_id, batch in enumerate(train_loader):
                 img = batch['img'].to(self.device)
                 ret = self.net(img)
@@ -27,6 +27,11 @@ class FastFlow(ModelBase):
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
+                loss_meter.update(loss.item())
+
+            infor = '\r{}[Epoch {}/{}] Loss: {:.6f}'.format(inf, epoch, self.config['num_epochs'],
+                                                            loss_meter.avg) 
+            print(infor, flush=True, end='')
     
     def prediction(self, valid_loader, task_id=None):
         pass
