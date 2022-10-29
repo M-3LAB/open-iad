@@ -24,7 +24,7 @@ from models.reverse.net_reverse import NetReverse
 from models.fastflow.net import NetFastFlow
  
 from optimizer.optimizer import get_optimizer
-from models.favae.vae import VAE
+from models.favae.net_favae import NetFAVAE
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
 
@@ -53,7 +53,6 @@ class CentralizedTrain():
         self.args = extract_config(self.args)
 
         ip, root_path = assign_service(self.para_dict['guoyang'])
-
         print('local ip: {}, root_path: {}'.format(ip, root_path))
 
         self.para_dict['root_path'] = root_path
@@ -253,10 +252,11 @@ class CentralizedTrain():
             self.net = DevNetResNet18()
             self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)       
-        if self.para_dict['model'] == 'favae':
-            self.net = VAE(input_channel=self.para_dict['input_channel'], z_dim=100) 
+        if self.para_dict['net'] == 'net_favae':
+            self.net = NetFAVAE() 
             self.optimizer = get_optimizer(args, self.net.parameters())
-        if self.para_dict['model'] == 'reverse':
+            self.scheduler = None
+        if self.para_dict['net'] == 'net_reverse':
             self.net = NetReverse(args) 
             self.optimizer = get_optimizer(args, list(self.net.decoder.parameters()) + list(self.net.bn.parameters()))
         if self.para_dict['model'] == 'fastflow':
