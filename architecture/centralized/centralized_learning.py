@@ -265,6 +265,10 @@ class CentralizedTrain():
             self.net = NetFastFlow(args) 
             self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = None
+        if self.para_dict['model'] == 'cfa':
+            self.optimizer = None 
+            self.scheduler = None
+
         model_name = {'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
                       'padim': ('arch_base.padim', 'padim', 'PaDim'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
@@ -276,7 +280,8 @@ class CentralizedTrain():
                       'favae': ('arch_base.favae', 'favae', 'FAVAE'),
                       'reverse': ('arch_base.reverse', 'reverse', 'Reverse'),
                       'spade': ('arch_base.spade', 'spade', 'Spade'),
-                      'fastflow': ('arch_base.fastflow', 'fastflow', 'FastFlow')
+                      'fastflow': ('arch_base.fastflow', 'fastflow', 'FastFlow'),
+                      'cfa': ('arch_base.cfa', 'cfa', 'CFA')
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])
