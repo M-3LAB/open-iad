@@ -1,1 +1,8 @@
-backbone: resnet18
+model: cfa
+net: resnet18
+data_size: 256
+data_crop_size: 256
+mask_size: 256
+mask_crop_size: 256
+gamma_c: 1
+gamma_d: 1
