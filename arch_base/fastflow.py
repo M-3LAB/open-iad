@@ -11,6 +11,7 @@ class FastFlow(ModelBase):
         self.device = device
         self.file_path = file_path
         self.net = net
+        self.net.to(self.device)
         self.optimizer = optimizer
         self.scheduler = scheduler
 
@@ -20,6 +21,12 @@ class FastFlow(ModelBase):
         for _ in range(self.config['num_epochs']):
             for batch_id, batch in enumerate(train_loader):
                 img = batch['img'].to(self.device)
+                ret = self.net(img)
+                loss = ret['loss']
+                # backward
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
     
     def prediction(self, valid_loader, task_id=None):
         pass
