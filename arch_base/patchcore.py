@@ -16,6 +16,7 @@ from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curv
 from tools.visualize import save_anomaly_map, vis_embeddings
 from memory_augmentation.domain_generalization import feature_augmentation
 from arch_base.base import ModelBase
+from metrics.mvtec3d.au_pro import calculate_au_pro
 
 __all__ = ['PatchCore']
 
@@ -38,6 +39,8 @@ class PatchCore(ModelBase):
         self.img_gt_list = []
         self.pixel_pred_list = []
         self.img_pred_list = []
+        self.pixel_gt_list_2d = []
+        self.pixel_pred_list_2d = []
 
         self.embeddings_list = []
 
@@ -170,6 +173,8 @@ class PatchCore(ModelBase):
         self.img_gt_list.clear()
         self.pixel_pred_list.clear()
         self.img_pred_list.clear()
+        self.pixel_gt_list_2d.clear()
+        self.pixel_pred_list_2d.clear()
 
         sampling_dir_path = os.path.join(self.file_path, 'samples', str(self.config['valid_task_id']))
         create_folders(sampling_dir_path)
@@ -217,8 +222,11 @@ class PatchCore(ModelBase):
 
                 mask[mask>=0.5] = 1
                 mask[mask<0.5] = 0
+                # print(mask.shape) 1 1 256 256
                 mask_np = mask.cpu().numpy()[0,0].astype(int)
+                self.pixel_gt_list_2d.append(mask_np)
                 self.pixel_gt_list.extend(mask_np.ravel())
+                self.pixel_pred_list_2d.append(anomaly_map_cv)
                 self.pixel_pred_list.extend(anomaly_map_cv.ravel())
                 self.img_gt_list.append(label.cpu().numpy()[0])
                 self.img_pred_list.append(img_score)
@@ -237,6 +245,14 @@ class PatchCore(ModelBase):
                 
         pixel_auroc = roc_auc_score(self.pixel_gt_list, self.pixel_pred_list) 
         img_auroc = roc_auc_score(self.img_gt_list, self.img_pred_list)
+        pixel_ap = average_precision_score(self.pixel_gt_list, self.pixel_pred_list)
+        img_ap = average_precision_score(self.img_gt_list, self.img_pred_list)
+        # print(len(self.pixel_gt_list_2d))
+        # print(len(self.pixel_pred_list_2d))
+        # print(self.pixel_gt_list_2d[0].shape)
+        # print(self.pixel_pred_list_2d[0].shape)
+        au_pro, au_pro_curve = calculate_au_pro(self.pixel_gt_list_2d, self.pixel_pred_list_2d)
+        print('pixel_auroc: ', pixel_auroc, 'img_auroc: ', img_auroc, 'pixel_ap: ', pixel_ap, 'img_ap: ', img_ap, 'au_pro: ', au_pro)
 
         return pixel_auroc, img_auroc
 
