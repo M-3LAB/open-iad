@@ -1,12 +1,17 @@
 model: favae
-num_epochs: 50
-train_batch_size: 64
-valid_batch_size: 64
-data_size: 128
+net: net_favae
+num_epochs: 1 # 100
+train_batch_size: 64 # 64
+valid_batch_size: 1
+train_aug_type: normal
+valid_aug_type: normal
+data_size: 256
 data_crop_size: 128
-mask_size: 128
+mask_size: 256
 mask_crop_size: 128
-kld_weight: 1.0
+
+_name: favae
+_kld_weight: 1.0
 _optimizer_name: adam
 _weight_decay: 0.00001
 _base_lr: 0.005
