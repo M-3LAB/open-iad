@@ -80,9 +80,10 @@ class DSVDD(nn.Module):
         return loss 
 
     def _init_centroid(self, model, data_loader):
-        for i, (x, _, _) in enumerate(tqdm(data_loader)):
-            x = x.to(self.device)
-            p = model(x)
+        #for i, (x, _, _) in enumerate(tqdm(data_loader)):
+        for i, batch in enumerate(data_loader): 
+            img = batch['img'].to(self.device)
+            p = model(img)
             self.scale = p[0].size(2)
             phi_p = self.Descriptor(p)
             self.C = ((self.C * i) + torch.mean(phi_p, dim=0, keepdim=True).detach()) / (i+1)
