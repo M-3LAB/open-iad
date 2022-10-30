@@ -35,13 +35,13 @@ class CFA():
         self.backbone.to(self.device)
 
         
-        self.pixel_gt_list = []
-        self.img_gt_list = []
-        self.pixel_pred_list = []
-        self.img_pred_list = []
+        #self.pixel_gt_list = []
+        #self.img_gt_list = []
+        #self.pixel_pred_list = []
+        #self.img_pred_list = []
 
-        self.best_img_auroc = -1
-        self.best_pixel_auroc = -1
+        #self.best_img_auroc = -1
+        #self.best_pixel_auroc = -1
     
     @staticmethod 
     def upsample(x, size, mode):

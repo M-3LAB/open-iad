@@ -5,12 +5,12 @@ import torch
 __all__ = ['CoordConv2d', 'AddCoords']
 
 class CoordConv2d(conv.Conv2d):
-    def __init__(self, in_channels, out_channels, kernel_size, stride=1,
-                padding=0, dilation=1, groups=1, bias=True, with_r=False, use_cuda=True):
+    def __init__(self, in_channels, out_channels, kernel_size, device, stride=1,
+                padding=0, dilation=1, groups=1, bias=True, with_r=False):
         super(CoordConv2d, self).__init__(in_channels, out_channels, kernel_size,
-                                        stride, padding, dilation, groups, bias)
+                                          stride, padding, dilation, groups, bias)
         self.rank = 2
-        self.addcoords = AddCoords(self.rank, with_r, use_cuda=use_cuda)
+        self.addcoords = AddCoords(self.rank, device, with_r)
         self.conv = nn.Conv2d(in_channels + self.rank + int(with_r), out_channels,
                             kernel_size, stride, padding, dilation, groups, bias)
 
@@ -22,11 +22,11 @@ class CoordConv2d(conv.Conv2d):
         return out
 
 class AddCoords(nn.Module):
-    def __init__(self, rank, with_r=False, use_cuda=True):
+    def __init__(self, rank, device, with_r=False): 
         super(AddCoords, self).__init__()
         self.rank = rank
         self.with_r = with_r
-        self.use_cuda = use_cuda
+        self.device = device
 
     def forward(self, input_tensor):
         batch_size_shape, _, dim_y, dim_x = input_tensor.shape
@@ -52,10 +52,10 @@ class AddCoords(nn.Module):
         xx_channel = xx_channel.repeat(batch_size_shape, 1, 1, 1)
         yy_channel = yy_channel.repeat(batch_size_shape, 1, 1, 1)
 
-        if torch.cuda.is_available and self.use_cuda:
-            input_tensor = input_tensor.cuda()
-            xx_channel = xx_channel.cuda()
-            yy_channel = yy_channel.cuda()
+        if torch.cuda.is_available:
+            input_tensor = input_tensor.to(self.device)
+            xx_channel = xx_channel.to(self.device)
+            yy_channel = yy_channel.to(self.device)
         out = torch.cat([input_tensor, xx_channel, yy_channel], dim=1)
 
         if self.with_r:

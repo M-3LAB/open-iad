@@ -25,7 +25,8 @@ class DSVDD(nn.Module):
         self.J = 3
 
         self.r   = nn.Parameter(1e-5*torch.ones(1), requires_grad=True)
-        self.Descriptor = Descriptor(self.gamma_d, cnn, self.device)
+        self.Descriptor = Descriptor(self.gamma_d, cnn, self.device).to(self.device)
+        model.to(self.device)
         self._init_centroid(model, data_loader)
         self.C = rearrange(self.C, 'b c h w -> (b h w) c').detach()
         
@@ -97,16 +98,16 @@ class Descriptor(nn.Module):
 
         if cnn == 'wide_resnet50':
             dim = 1792 
-            self.layer = CoordConv2d(dim, dim//gamma_d, 1).to(self.device)
+            self.layer = CoordConv2d(dim, dim//gamma_d, 1, self.device).to(self.device)
         elif cnn == 'resnet18':
             dim = 448
-            self.layer = CoordConv2d(dim, dim//gamma_d, 1).to(self.device)
+            self.layer = CoordConv2d(dim, dim//gamma_d, 1, self.device).to(self.device)
         elif cnn == 'efficientnet':
             dim = 568
-            self.layer = CoordConv2d(dim, 2*dim//gamma_d, 1).to(self.device)
+            self.layer = CoordConv2d(dim, 2*dim//gamma_d, 1, self.device).to(self.device)
         elif cnn == 'vgg':
             dim = 1280 
-            self.layer = CoordConv2d(dim, dim//gamma_d, 1).to(self.device)
+            self.layer = CoordConv2d(dim, dim//gamma_d, 1, self.device).to(self.device)
         
 
     def forward(self, p):
@@ -115,6 +116,6 @@ class Descriptor(nn.Module):
             o = F.avg_pool2d(o, 3, 1, 1) / o.size(1) if self.cnn == 'effnet-b5' else F.avg_pool2d(o, 3, 1, 1)
             sample = o if sample is None else torch.cat((sample, F.interpolate(o, sample.size(2), mode='bilinear')), dim=1)
         
-        sample.to(self.device) 
+        sample 
         phi_p = self.layer(sample)
         return phi_p
