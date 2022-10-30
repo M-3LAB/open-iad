@@ -1,4 +1,5 @@
 from math import gamma
+from arch_base.base import ModelBase
 from models.cfa.metrics import get_threshold, cal_img_roc, cal_pxl_roc, upsample, rescale, gaussian_smooth
 import torch
 import torch.nn as nn
@@ -13,13 +14,18 @@ from sklearn.metrics import roc_auc_score
 
 __all__ = ['CFA']
 
-class CFA():
+class CFA(ModelBase):
 
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
-    
+        super(CFA, self).__init__(config, device, file_path, net, optimizer, scheduler)
         self.config = config
         self.device = device
         self.file_path = file_path
+        self.pixel_gt_list = []
+        self.img_gt_list = []
+        self.pixel_pred_list = []
+        self.img_pred_list = []
+        self.img_path_list = []
         #self.backbone = net
         #self.optimizer = optimizer
 
@@ -129,15 +135,16 @@ class CFA():
                 mask[mask>=0.5] = 1
                 mask[mask<0.5] = 0
 
-                gt_list.extend(label.cpu().detach().numpy())
-                gt_mask_list.extend(mask.cpu().detach().numpy())
+                self.img_gt_list.append(label.cpu().detach().numpy())
+                self.pixel_gt_list.append(mask.cpu().detach().numpy())
 
                 p = self.backbone(img)
 
                 _, score = self.loss_fn(p)
                 heatmap = score.cpu().detach()
                 heatmap = torch.mean(heatmap, dim=1) 
-                heatmaps = torch.cat((heatmaps, heatmap), dim=0) if heatmaps != None else heatmap
+                self.pixel_pred_list.append(heatmap.squeeze(0).squeeze(0).cpu().numpy())
+                # heatmaps = torch.cat((heatmaps, heatmap), dim=0) if heatmaps != None else heatmap
        
         heatmaps = upsample(heatmaps, size=img.size(2), mode='bilinear') 
         heatmaps = gaussian_smooth(heatmaps, sigma=4)
@@ -145,7 +152,7 @@ class CFA():
         gt_mask = np.asarray(gt_mask_list)
         scores = rescale(heatmaps)
         
-        fpr, tpr, img_auroc = cal_img_roc(scores, gt_list)
-        pixel_auroc = cal_pxl_roc(gt_mask, scores)
+        # fpr, tpr, img_auroc = cal_img_roc(scores, gt_list)
+        # pixel_auroc = cal_pxl_roc(gt_mask, scores)
 
-        return pixel_auroc, img_auroc
+        # return pixel_auroc, img_auroc

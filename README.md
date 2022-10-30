@@ -54,6 +54,8 @@ python3 mmad_training.py
 > Vanilla
 ```bash
 python3 centralized_training.py --vanilla --model patchcore --net resent18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 0.001 -g 1
+python3 centralized_training.py --vanilla --model csflow --net net_csflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --coreset-sampling-ratio 0.001 -g 1
+
 ```
 
 > Continual
