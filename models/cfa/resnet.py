@@ -4,7 +4,7 @@ from torch.hub import load_state_dict_from_url
 from typing import Type, Any, Callable, Union, List, Optional
 import torch.nn.functional as F
 
-__all__ = ['ResNet', 'resnet18', 'wide_resnet50_2']
+__all__ = ['ResNet' 'resnet18', 'wide_resnet50_2']
 
 
 model_urls =   {'resnet18': 'https://download.pytorch.org/models/resnet18-f37072fd.pth',
@@ -121,7 +121,6 @@ class Bottleneck(nn.Module):
 
 
 class ResNet(nn.Module):
-
     def __init__(
         self,
         block: Type[Union[BasicBlock, Bottleneck]],
@@ -220,7 +219,6 @@ class ResNet(nn.Module):
     def forward(self, x: Tensor):
         return self._forward_impl(x)
 
-
 def _resnet(
     arch: str,
     block: Type[Union[BasicBlock, Bottleneck]],
@@ -235,11 +233,9 @@ def _resnet(
         model.load_state_dict(state_dict, strict=False)
     return model
 
-
 def resnet18(pretrained: bool = False, progress: bool = True, **kwargs: Any):
     return _resnet('resnet18', BasicBlock, [2, 2, 2, 2], pretrained, progress, **kwargs)
 
 def wide_resnet50_2(pretrained: bool = False, progress: bool = True, **kwargs: Any):
     kwargs['width_per_group'] = 64 * 2
     return _resnet('wide_resnet50_2', Bottleneck, [3, 4, 6, 3], pretrained, progress, **kwargs)
-

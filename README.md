@@ -48,6 +48,7 @@ python3 mmad_training.py
 | igd | net_igd |
 | reverse | net_reverse |
 | favae | net_favae |
+| cfa | net_cfa |
 
 
 
