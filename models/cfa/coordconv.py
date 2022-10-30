@@ -16,6 +16,7 @@ class CoordConv2d(conv.Conv2d):
 
     def forward(self, input_tensor):
         out = self.addcoords(input_tensor)
+        #self.conv.to(self.device)
         out = self.conv(out)
 
         return out

@@ -264,6 +264,10 @@ class CentralizedTrain():
             self.optimizer = get_optimizer(args, self.net.parameters())
         if self.para_dict['model'] == 'stpm':
             self.optimizer = get_optimizer(args, self.net.parameters())
+        if self.para_dict['model'] == 'cfa':
+            self.net = None
+            self.optimizer = None
+            self.scheduler = None
 
         model_name = {'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
                       'padim': ('arch_base.padim', 'padim', 'PaDim'),

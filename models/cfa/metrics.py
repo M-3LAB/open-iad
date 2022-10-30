@@ -105,10 +105,11 @@ def cal_img_roc(scores, gt_list):
     return fpr, tpr, img_roc_auc
 
 def cal_pxl_roc(gt_mask, scores):
-    fpr, tpr, _ = roc_curve(gt_mask.flatten(), scores.flatten())
+    #fpr, tpr, _ = roc_curve(gt_mask.flatten(), scores.flatten())
     per_pixel_rocauc = roc_auc_pxl(gt_mask.flatten(), scores.flatten())
     
-    return fpr, tpr, per_pixel_rocauc
+    #return fpr, tpr, per_pixel_rocauc
+    return per_pixel_rocauc
 
 def cal_pxl_pro(gt_mask, scores):
     per_pixel_proauc = pro_auc_pxl(gt_mask, scores)
