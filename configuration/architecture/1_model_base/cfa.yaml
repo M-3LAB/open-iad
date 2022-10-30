@@ -11,3 +11,5 @@ weight_decay: 5e-4
 num_epochs: 30
 train_batch_size: 4
 valid_batch_size: 4
+train_aug_type: normal
+valid_aug_type: normal
