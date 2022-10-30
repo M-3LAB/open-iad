@@ -56,9 +56,8 @@ python3 mmad_training.py
 python3 centralized_training.py --vanilla --model patchcore --net resent18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 0.001 -g 1
 python3 centralized_training.py --vanilla --model csflow --net net_csflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 1
 python3 centralized_training.py --vanilla --model cfa --net resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --coreset-sampling-ratio 0.001 -g 7
-python3 centralized_training.py -s --model devnet --net net_devnet --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 python3 centralized_training.py --vanilla --model dne --net vit_b_16 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py -s --model dra --net net_dra --dataset mvtecloco --train-task-id 0 --valid-task-id 0 -g 7
+
 ```
 
 > Continual
@@ -69,6 +68,11 @@ python3 centralized_training.py --continual --model patchcore --net resent18 --d
 > Fewshot
 ```bash
 python3 centralized_training.py --fewshot --fewshot-exm 1 --fewshot-num-dg 4 --model patchcore --net resent18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 1 -g 1
+```
+> Semi
+```bash
+python3 centralized_training.py -s --model devnet --net net_devnet --dataset mvtec2d --train-task-id 0 --valid-task-id 0 -g 1
+python3 centralized_training.py -s --model dra --net net_dra --dataset mvtecloco --train-task-id 0 --valid-task-id 0 -g 1
 ```
 
 > Noisy
