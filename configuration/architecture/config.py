@@ -39,7 +39,7 @@ def parse_arguments_centralized():
     parser.add_argument('--model', '-m', type=str, default='spade', choices=['patchcore', 'csflow', 'dne', 'draem', 'igd', 'cutpaste', 'devnet', 'dra', 
                                                                               'favae', 'padim', 'reverse', 'spade', 'fastflow', 'softpatch', 'cfa', 'stpm'])
     parser.add_argument('--net', '-n', type=str, default='net_cfa', choices=['wide_resnet50', 'resnet18', 'net_csflow', 'vit_b_16', 'net_draem', 'net_dra',
-                                                                              'net_igd', 'net_reverse', 'net_favae', 'net_cfa'])
+                                                                              'net_igd', 'net_reverse', 'net_favae', 'net_cfa', 'net_fastflow'])
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 

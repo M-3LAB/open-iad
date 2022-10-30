@@ -39,19 +39,13 @@ support_backones = ['resnet18', 'wide_resnet50_2', 'cait_m48_448',
 class NetFastFlow(nn.Module):
     def __init__(
         self,
-        config,
-        backbone_name,
-        flow_steps,
-        input_size,
-        conv3x3_only=False,
-        hidden_ratio=1.0,
+        config
     ):
         super(NetFastFlow, self).__init__()
 
         self.config = config 
         self.backbone_name = self.config['backbone_name'] 
         self.flow_steps = self.config['flow_steps']
-        self.input_size = self.config['input_size']
         self.conv3x3_only = False
         self.hidden_ratio = self.config['hidden_ratio']
         self.input_size = self.config['data_crop_size'] 
@@ -80,7 +74,7 @@ class NetFastFlow(nn.Module):
             for in_channels, scale in zip(channels, scales):
                 self.norms.append(
                     nn.LayerNorm(
-                        [in_channels, int(input_size / scale), int(input_size / scale)],
+                        [in_channels, int(self.input_size / scale), int(self.input_size / scale)],
                         elementwise_affine=True,
                     )
                 )
@@ -92,7 +86,7 @@ class NetFastFlow(nn.Module):
         for in_channels, scale in zip(channels, scales):
             self.nf_flows.append(
                 nf_fast_flow(
-                    [in_channels, int(input_size / scale), int(input_size / scale)],
+                    [in_channels, int(self.input_size / scale), int(self.input_size / scale)],
                     conv3x3_only=self.conv3x3_only,
                     hidden_ratio=self.hidden_ratio,
                     flow_steps=self.flow_steps,

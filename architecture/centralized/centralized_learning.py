@@ -260,8 +260,9 @@ class CentralizedTrain():
             self.net = NetReverse(args) 
             self.optimizer = get_optimizer(args, list(self.net.decoder.parameters()) + list(self.net.bn.parameters()))
         if self.para_dict['model'] == 'fastflow':
-            self.net = NetFastFlow(args) 
+            self.net = NetFastFlow(self.para_dict) 
             self.optimizer = get_optimizer(args, self.net.parameters())
+            self.scheduler = None
         if self.para_dict['model'] == 'stpm':
             self.optimizer = get_optimizer(args, self.net.parameters())
         if self.para_dict['model'] == 'cfa':
