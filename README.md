@@ -57,7 +57,8 @@ python3 centralized_training.py --vanilla --model patchcore --net resent18 --dat
 python3 centralized_training.py --vanilla --model csflow --net net_csflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 1
 python3 centralized_training.py --vanilla --model cfa --net resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --coreset-sampling-ratio 0.001 -g 7
 python3 centralized_training.py --vanilla --model dne --net vit_b_16 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-
+python3 centralized_training.py -v --model fastflow  --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --valid-task-id 0 -g 7
+python3 centralized_training.py -v --model cutpaste  --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --valid-task-id 0 -g 7
 ```
 
 > Continual

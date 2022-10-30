@@ -12,6 +12,7 @@ __all__ = ['FAVAE']
 
 class FAVAE(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
+        super(FAVAE, self).__init__(config, device, file_path, net, optimizer, scheduler)
         self.config = config
         self.device = device
         self.file_path = file_path

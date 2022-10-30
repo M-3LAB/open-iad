@@ -55,8 +55,6 @@ class CutPaste(ModelBase):
         for epoch in range(self.config['num_epochs']):
             for batch_id, batch in enumerate(train_loader):
                 self.net.train()
-                #inputs = batch['img'].to(self.device)
-                #labels = batch['label'].to(self.device)
                 imgs = batch['img']
                 inputs = [img.to(self.device) for img in imgs]
                 labels = torch.arange(len(inputs), device=self.device)
@@ -67,14 +65,15 @@ class CutPaste(ModelBase):
     def prediction(self, valid_loader, task_id=None):
         self.net.eval()
         density = self.model.training_epoch(self.density, self.one_epoch_embeds)
-        img_auroc = 0
-        pixel_auroc = 0
+        # img_auroc = 0
+        # pixel_auroc = 0
         labels = []
         embeds = []
         with torch.no_grad():
             for batch_id, batch in enumerate(valid_loader):
                 input = batch['img'].to(self.device)
                 label = batch['label'].to(self.device)
+                self.img_path_list.append(batch['img_src'])
 
                 embed = self.net.forward_features(input)
                 embeds.append(embed.cpu())
@@ -85,9 +84,10 @@ class CutPaste(ModelBase):
             embeds = F.normalize(embeds, p=2, dim=1)
 
             distances = density.predict(embeds)
-
-            roc_auc = roc_auc_score(labels, distances)
-            fpr, tpr, _ = roc_curve(labels, distances)
-            img_auroc = auc(fpr, tpr)
+            self.img_gt_list = labels
+            self.img_pred_list = distances
+            # roc_auc = roc_auc_score(labels, distances)
+            # fpr, tpr, _ = roc_curve(labels, distances)
+            # img_auroc = auc(fpr, tpr)
         
-        return pixel_auroc, img_auroc
+        # return pixel_auroc, img_auroc

@@ -2,7 +2,6 @@ import torch
 from arch_base.base import ModelBase
 from models.fastflow.func import AverageMeter
 import numpy as np
-# from ignite.contrib import metrics
 
 __all__ = ['FastFlow']
 
@@ -39,7 +38,6 @@ class FastFlow(ModelBase):
     def prediction(self, valid_loader, task_id=None):
         self.net.eval()
         self.clear_all_list()
-        # auroc_metric = metrics.ROC_AUC()
         with torch.no_grad():
             for batch_id, batch in enumerate(valid_loader):
                 img = batch['img'].to(self.device)
@@ -52,13 +50,9 @@ class FastFlow(ModelBase):
                 ret = self.net(img)
 
                 outputs = ret["anomaly_map"].cpu().detach().numpy()
-                # outputs = outputs.flatten()
-                # mask = mask.flatten()
-                # auroc_metric.update((outputs, mask))
                 self.pixel_gt_list.append(mask_np)
                 self.pixel_pred_list.append(outputs[0,0,:,:])
                 self.img_gt_list.append(label.numpy()[0])
                 self.img_pred_list.append(np.max(outputs))
                 self.img_path_list.append(batch['img_src'])
         
-    
