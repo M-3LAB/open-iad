@@ -15,7 +15,7 @@ class ModelBase():
         self.pixel_pred_list = [] # list<numpy(m,n)>
         self.pixel_gt_list = [] # list<numpy(m,n)>
         self.img_path_list = [] # list<str>
-        print(os.path.join(self.config['root_path'],self.config['data_path']))
+        # print(os.path.join(self.config['root_path'],self.config['data_path']))
          
     def train_epoch(self, train_loader, task_id, inf=''):
         pass
@@ -29,21 +29,28 @@ class ModelBase():
         # print(len(self.pixel_pred_list)) # n
         # print(self.pixel_gt_list[0].shape) # 256
         # print(self.pixel_pred_list[0].shape) # 256
+        pixel_auroc = 0
+        img_auroc = 0
+        pixel_ap = 0
+        img_ap = 0
+        pixel_pro = 0
         if(self.config['dataset']!='mvtecloco'):
-            pixel_pro, pro_curve = self.cal_metric_pixel_aupro()
-            pixel_gt = np.array(self.pixel_gt_list).flatten()
-            pixel_pred = np.array(self.pixel_pred_list).flatten()
-            img_auroc = self.cal_metric_img_auroc()
-            img_ap = self.cal_metric_img_ap()
-            pixel_auroc = self.cal_metric_pixel_auroc(pixel_gt, pixel_pred)
-            pixel_ap = self.cal_metric_pixel_ap(pixel_gt, pixel_pred)
+            if(len(self.pixel_pred_list)!=0):
+                pixel_pro, pro_curve = self.cal_metric_pixel_aupro()
+                pixel_gt = np.array(self.pixel_gt_list).flatten()
+                pixel_pred = np.array(self.pixel_pred_list).flatten()
+                pixel_auroc = self.cal_metric_pixel_auroc(pixel_gt, pixel_pred)
+                pixel_ap = self.cal_metric_pixel_ap(pixel_gt, pixel_pred)
+            if(len(self.img_pred_list)!=0):
+                img_auroc = self.cal_metric_img_auroc()
+                img_ap = self.cal_metric_img_ap()
         else:
-            self.save_anomaly_map_tiff()
-            pixel_auroc = 0
-            img_auroc = 0
-            pixel_ap = 0
-            img_ap = 0
-            pixel_pro = 0
+            if(len(self.pixel_pred_list)!=0):
+                self.save_anomaly_map_tiff()
+                pixel_pro = 1
+            if(len(self.img_pred_list)!=0):
+                img_auroc = self.cal_metric_img_auroc()
+                img_ap = self.cal_metric_img_ap()
         return pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_pro
     
     def cal_metric_img_auroc(self):
@@ -81,27 +88,13 @@ class ModelBase():
             train_type = 'unknown'
         path_dir = self.img_path_list[0][0].split('/')
         img_shape = img_shape_list[path_dir[-4]]
-        if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+path_dir[-4]+'/'+'structural_anomalies'):
-            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+path_dir[-4]+'/'+'structural_anomalies')
-        if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+path_dir[-4]+'/'+'logical_anomalies'):
-            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+path_dir[-4]+'/'+'logical_anomalies')
+        if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+'structural_anomalies'):
+            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+'structural_anomalies')
+        if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+'logical_anomalies'):
+            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+'logical_anomalies')
+        if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+'good'):
+            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+'good')
         for i in range(len(self.img_path_list)):
             path_dir = self.img_path_list[i][0].split('/')
-            anomaly_map = cv2.resize(self.pixel_pred_list[i],(img_shape[1],img_shape[0]))
-            cv2.imwrite('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+path_dir[-4]+'/'+path_dir[-2]+'/'+path_dir[-1].replace('png','tiff'),anomaly_map)
-        
-    #     def save_anomaly_map(anomaly_map, input_img, mask, file_path):
-    #         if anomaly_map.shape != input_img.shape:
-    #             anomaly_map = cv2.resize(anomaly_map, (input_img.shape[0], input_img.shape[1]))
-
-    #         anomaly_map_norm = min_max_norm(anomaly_map) 
-    #         heatmap = cv2heatmap(anomaly_map_norm*255)
-
-    #         heatmap_on_img = heatmap_on_image(heatmap, input_img)
-    #         #TODO: save problems
-    #         create_folders(file_path)
-
-    #         cv2.imwrite(os.path.join(file_path, 'input.jpg'), input_img)
-    #         cv2.imwrite(os.path.join(file_path, 'heatmap.jpg'), heatmap)
-    #         cv2.imwrite(os.path.join(file_path, 'heatmap_on_img.jpg'), heatmap_on_img)
-    #         cv2.imwrite(os.path.join(file_path, 'mask.jpg'), mask)
+            anomaly_map = cv2.resize(self.pixel_pred_list[i],(img_shape[0],img_shape[1]))
+            cv2.imwrite('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+path_dir[-2]+'/'+path_dir[-1].replace('png','tiff'),anomaly_map)
