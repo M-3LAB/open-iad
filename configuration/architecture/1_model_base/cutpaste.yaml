@@ -1,7 +1,7 @@
 model: cutpaste
 train_batch_size: 32
 valid_batch_size: 32
-net: resnet18
+net: vit 
 num_epochs: 50
 train_aug_type: cutpaste
 valid_aug_type: cutpaste
