@@ -24,9 +24,10 @@ def aug_type(augment_type, args):
                                             ])
         
         img_transform = T.Compose([T.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1, hue=0.1),
-                                   T.Resize((args['data_size'], args['data_size'])),
-                                   T.RandomChoice([CutPasteNormal(transform=after_cutpaste_transform),
-                                                   CutPasteScar(transform=after_cutpaste_transform)])
+                                   T.Resize((args['data_crop_size'], args['data_crop_size'])),
+                                   CutPasteNormal(transform=after_cutpaste_transform)
+                                   #T.RandomChoice([CutPasteNormal(transform=after_cutpaste_transform),
+                                   #                CutPasteScar(transform=after_cutpaste_transform)])
         ])
 
         mask_transform = T.Compose([T.Resize(args['mask_size']),
