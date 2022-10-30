@@ -2,6 +2,7 @@ from sklearn.metrics import roc_auc_score, average_precision_score
 from metrics.mvtec3d.au_pro import calculate_au_pro
 import numpy as np
 import os
+import cv2
 
 class ModelBase():
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
@@ -38,6 +39,11 @@ class ModelBase():
             pixel_ap = self.cal_metric_pixel_ap(pixel_gt, pixel_pred)
         else:
             self.save_anomaly_map_tiff()
+            pixel_auroc = 0
+            img_auroc = 0
+            pixel_ap = 0
+            img_ap = 0
+            pixel_pro = 0
         return pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_pro
     
     def cal_metric_img_auroc(self):
@@ -73,16 +79,16 @@ class ModelBase():
             train_type = 'fedrated'
         else:
             train_type = 'unknown'
-        path_dir = self.img_path_list[0].split('/')
+        path_dir = self.img_path_list[0][0].split('/')
         img_shape = img_shape_list[path_dir[-4]]
         if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+path_dir[-4]+'/'+'structural_anomalies'):
-            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+'structural_anomalies')
+            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+path_dir[-4]+'/'+'structural_anomalies')
         if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+path_dir[-4]+'/'+'logical_anomalies'):
-            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+'logical_anomalies')
+            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+path_dir[-4]+'/'+'logical_anomalies')
         for i in range(len(self.img_path_list)):
             path_dir = self.img_path_list[i][0].split('/')
             anomaly_map = cv2.resize(self.pixel_pred_list[i],(img_shape[1],img_shape[0]))
-            cv2.imwrite('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+img_shape_list[path_dir[-4]]+'/'+img_shape_list[path_dir[-2]]+'/'+img_shape_list[path_dir[-1]],anomaly_map)
+            cv2.imwrite('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+path_dir[-4]+'/'+path_dir[-2]+'/'+path_dir[-1].replace('png','tiff'),anomaly_map)
         
     #     def save_anomaly_map(anomaly_map, input_img, mask, file_path):
     #         if anomaly_map.shape != input_img.shape:
