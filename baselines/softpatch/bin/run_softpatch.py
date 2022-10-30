@@ -11,7 +11,6 @@ sys.path.append('src')
 import patchcore.backbones
 import patchcore.common
 import patchcore.metrics
-import patchcore.patchcore
 import patchcore.sampler
 import patchcore.utils
 import patchcore.datasets
@@ -20,7 +19,7 @@ import random
 from torch.utils.data import Subset, ConcatDataset
 import time
 from pathlib import Path
-import patchcore.softcore
+import patchcore.softpatch
 
 LOGGER = logging.getLogger(__name__)
 
@@ -271,8 +270,7 @@ def run(
 # NN on GPU.
 @click.option("--faiss_on_gpu", is_flag=True)
 @click.option("--faiss_num_workers", type=int, default=4)
-# SoftCore
-@click.option("--softcore_flag", is_flag=True)
+# SoftPatch
 @click.option("--lof_k", type=int, default=6)
 @click.option("--threshold", type=float, default=0.15)
 @click.option("--weight_method", type=str, default="lof")
@@ -292,7 +290,6 @@ def patch_core(
     patchsize_aggregate,
     faiss_on_gpu,
     faiss_num_workers,
-        softcore_flag,
         threshold,
         lof_k,
         weight_method,
@@ -323,8 +320,7 @@ def patch_core(
 
             nn_method = patchcore.common.FaissNN(faiss_on_gpu, faiss_num_workers, device=device.index)
 
-            patchcore_instance = patchcore.softcore.SoftCore(device)
-            # patchcore_instance = patchcore.patchcore.PatchCore(device)
+            patchcore_instance = patchcore.softpatch.SoftPatch(device)
             patchcore_instance.load(
                 backbone=backbone,
                 layers_to_extract_from=layers_to_extract_from,
@@ -336,7 +332,6 @@ def patch_core(
                 featuresampler=sampler,
                 anomaly_scorer_num_nn=anomaly_scorer_num_nn,
                 nn_method=nn_method,
-                softcore_flag=softcore_flag,
                 LOF_k=lof_k,
                 threshold=threshold,
                 weight_method=weight_method,

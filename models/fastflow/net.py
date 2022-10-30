@@ -1,9 +1,9 @@
-import FrEIA.framework as Ff
-import FrEIA.modules as Fm
-import timm
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import timm
+import FrEIA.framework as Ff
+import FrEIA.modules as Fm
 
 __all__ = ['FastFlow', 'nf_fast_flow', 'subnet_conv_func']
 

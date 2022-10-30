@@ -22,13 +22,10 @@ from scipy.optimize import linear_sum_assignment as linear_assignment
 
 LOGGER = logging.getLogger(__name__)
 
-# import time
-# time_A = 0
-# time_B = 0
 
-class SoftCore(torch.nn.Module):
+class SoftPatch(torch.nn.Module):
     def __init__(self, device):
-        super(SoftCore, self).__init__()
+        super(SoftPatch, self).__init__()
         self.device = device
 
     def load(
@@ -44,7 +41,6 @@ class SoftCore(torch.nn.Module):
         anomaly_score_num_nn=1,
         featuresampler=patchcore.sampler.ApproximateGreedyCoresetSampler(percentage=0.1, device=torch.device("cuda")),
         nn_method=patchcore.common.FaissNN(False, 4),
-            softcore_flag=False,
             LOF_k=5,
             threshold=0.2,
             weight_method="lof",
@@ -90,17 +86,14 @@ class SoftCore(torch.nn.Module):
 
         self.featuresampler = featuresampler
 
-        ############softcore ##########
-        self.softcore_flag = softcore_flag
-        if self.softcore_flag:
-            self.patch_weight = None
-            self.feature_shape = []
-            self.LOF_k = LOF_k
-            self.threshold = threshold
-            self.featuresampler = patchcore.sampler.WeightedGreedyCoresetSampler(featuresampler.percentage, featuresampler.device)
-            self.coreset_weight = None
-            self.weight_method = weight_method
-            self.soft_weight_flag = soft_weight_flag
+        ############SoftPatch ##########
+        self.patch_weight = None
+        self.feature_shape = []
+        self.LOF_k = LOF_k
+        self.threshold = threshold
+        self.coreset_weight = None
+        self.weight_method = weight_method
+        self.soft_weight_flag = soft_weight_flag
 
     def embed(self, data):
         if isinstance(data, torch.utils.data.DataLoader):
@@ -197,116 +190,26 @@ class SoftCore(torch.nn.Module):
 
         features = np.concatenate(features, axis=0)
 
-        ########### softcore ########
-        if self.softcore_flag:
-            with torch.no_grad():
-                # pdb.set_trace()
-                self.feature_shape = self._embed(image.to(torch.float).to(self.device), provide_patch_shapes=True)[1][0]
-                # patch_weight = self._compute_patch_weight(features)
-                codebook, popularity_counts = self._compute_codebook(features)
+        ########### SoftPatch ########
+        with torch.no_grad():
+            # pdb.set_trace()
+            self.feature_shape = self._embed(image.to(torch.float).to(self.device), provide_patch_shapes=True)[1][0]
+            patch_weight = self._compute_patch_weight(features)
 
-                popularity_counts = np.array(popularity_counts)
-                weight = np.where(popularity_counts < 2, 0, 1)
-                print(len(weight), weight.sum())
+            # if normalization:
+            #     patch_weight = (patch_weight - patch_weight.quantile(0.5, dim=1, keepdim=True)).reshape(-1) + 1 # normalization
 
-                self.codebook = torch.masked_select(codebook, torch.Tensor(weight).to(self.device).bool().unsqueeze(1)).reshape(-1,codebook.shape[-1])
-                self.codebook = self.codebook.to(self.device)
+            patch_weight = patch_weight.reshape(-1)
+            threshold = torch.quantile(patch_weight, 1 - self.threshold)
+            sampling_weight = torch.where(patch_weight > threshold, 0, 1)
+            self.featuresampler.sampling_weight = sampling_weight
+            self.patch_weight = patch_weight.clamp(min=0)
 
-                # features = codebook.cpu().numpy()
+            sample_features, sample_indices = self.featuresampler.run(features)
+            features = sample_features
+            self.coreset_weight = self.patch_weight[sample_indices].cpu().numpy()
 
-                # patch_weight = (patch_weight - patch_weight.quantile(0.5, dim=1, keepdim=True)).reshape(-1) + 1 # normalization
-                # patch_weight = patch_weight.reshape(-1)
-                # threshold = torch.quantile(patch_weight, 1 - self.threshold)
-                # sampling_weight = torch.where(patch_weight > threshold, 0, 1)
-                # self.featuresampler.sampling_weight = sampling_weight
-                # self.patch_weight = patch_weight.clamp(min=0)
-                # self.patch_weight = 1 / density.reshape(-1)
-
-                # ToDo:delete print
-                # print("\nweight mean and std:", float(self.patch_weight.mean()), float(self.patch_weight.std()), "\nweight_threshold:", float(threshold.mean()))
-
-                # sample_features, sample_indices = self.featuresampler.run(features)
-                # ###### k-means ######
-                # n_clusters = 3
-                # kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(sample_features.astype('double'))
-                # background = kmeans.predict([features[0].astype('double'), ])[0]
-                # self.coreset_weight = np.where(kmeans.labels_ == background, 0.5, 1.0)
-
-                ####### DBSCAN ########
-                # pdb.set_trace()
-                # eps = np.linalg.norm(features[0] - features[self.feature_shape[1]-1])
-                # clustering = DBSCAN(eps=eps, min_samples=5).fit(np.concatenate(([features[0]], sample_features)).astype('double'))
-                # background_class = clustering.labels_[0]
-                # self.coreset_weight = np.where(clustering.labels_[1:] == background_class, 0.1, 1.0)
-
-                # features = sample_features
-                # self.coreset_weight = self.patch_weight[sample_indices].cpu().numpy()
-        else:
-            features = self.featuresampler.run(features)
-
-        # self.anomaly_scorer.fit(detection_features=[features])
-
-    def _compute_codebook(self, features: np.ndarray):
-        if isinstance(features, np.ndarray):
-            features = torch.from_numpy(features).to(self.device)
-
-        # reduced_features = self.featuresampler._reduce_features(features)
-        reduced_features = features
-        patch_features = \
-            reduced_features.reshape(-1, self.feature_shape[0] * self.feature_shape[1], reduced_features.shape[-1])
-
-        # pdb.set_trace()
-        # codebook = patch_features.mean(dim=0)
-        codebook = patch_features[0]
-        # max_row = int(0.1 * patch_features.shape[0] * len(codebook))
-        max_row = 10000
-
-        popularity_counts = torch.ones(len(codebook)).to(self.device)
-        # popularity_counts = [1] * len(codebook)
-        # assign = []
-        for i in tqdm.tqdm(range(1, patch_features.shape[0]), desc="Assigment and update",):
-            codebook, popularity_counts, assignment_j = \
-                self.matching_feature(codebook, patch_features[i], max_row, popularity_counts)
-            # assign.append(assignment_j)
-
-            # dist = torch.cdist(codebook, patch_features[i]).cpu().numpy()
-            # row_ind, col_ind = linear_assignment(dist)
-            # assign.append(col_ind)
-            # patch_features[i] = torch.index_select(patch_features[i], 0, torch.from_numpy(col_ind).to(self.device))
-
-        # import matplotlib.pyplot as plt
-        #
-        # data = popularity_counts.copy()
-        # plt.bar(range(len(data)), data, width=1)
-        # plt.show()
-        # data.sort()
-        # plt.bar(range(len(data)), data, color='darkorange', width=1)
-        # plt.show()
-        # plt.hist(data)
-        # plt.show()
-
-        popularity_counts = torch.zeros(len(codebook)).to(self.device)
-        # popularity_counts = [0] * len(codebook)
-        # assign = []
-        for i in tqdm.tqdm(range(0, patch_features.shape[0]), desc="Statistic"):
-            codebook, popularity_counts, assignment_j = \
-                self.matching_feature(codebook, patch_features[i], max_row, popularity_counts, update_codebook=False)
-            # assign.append(assignment_j)
-
-        popularity_counts = popularity_counts.cpu().numpy()
-        popularity_counts = popularity_counts[:len(codebook)]
-        # import matplotlib.pyplot as plt
-        #
-        # data = popularity_counts
-        # plt.bar(range(len(data)), data, width=1)
-        # plt.show()
-        # data.sort()
-        # plt.bar(range(len(data)), data, color='darkorange', width=1)
-        # plt.show()
-        # plt.hist(data)
-        # plt.show()
-
-        return codebook, popularity_counts
+        self.anomaly_scorer.fit(detection_features=[features])
 
     def _compute_patch_weight(self, features: np.ndarray):
         if isinstance(features, np.ndarray):
@@ -316,24 +219,19 @@ class SoftCore(torch.nn.Module):
         patch_features = \
             reduced_features.reshape(-1, self.feature_shape[0]*self.feature_shape[1], reduced_features.shape[-1])
 
-        # pdb.set_trace()
-        # codebook = patch_features.mean(dim=0)
-        codebook = patch_features[0]
-        assign = []
-        for i in range(1, patch_features.shape[0]):
-
-            dist = torch.cdist(codebook, patch_features[i]).cpu().numpy()
-            row_ind, col_ind = linear_assignment(dist)
-            assign.append(col_ind)
-            patch_features[i] = torch.index_select(patch_features[i], 0, torch.from_numpy(col_ind).to(self.device))
-
+        # if aligned:
+        #     codebook = patch_features[0]
+        #     assign = []
+        #     for i in range(1, patch_features.shape[0]):
+        #         dist = torch.cdist(codebook, patch_features[i]).cpu().numpy()
+        #         row_ind, col_ind = linear_assignment(dist)
+        #         assign.append(col_ind)
+        #         patch_features[i] = torch.index_select(patch_features[i], 0, torch.from_numpy(col_ind).to(self.device))
 
         patch_features = patch_features.permute(1, 0, 2)
 
         if self.weight_method == "lof":
             patch_weight = self._compute_lof(self.LOF_k, patch_features).transpose(-1, -2)
-            # patch_weight, density = self._compute_lof(self.LOF_k, patch_features)
-            # patch_weight, density = patch_weight.transpose(-1, -2), density.transpose(-1, -2)
         elif self.weight_method == "nearest":
             patch_weight = self._compute_nearest_distance(patch_features).transpose(-1, -2)
             patch_weight = patch_weight + 1
@@ -345,64 +243,13 @@ class SoftCore(torch.nn.Module):
         else:
             raise ValueError("Unexpected weight method")
 
-        patch_weight = patch_weight.cpu().numpy()
-        for i in range(0, patch_weight.shape[0]):
-            patch_weight[i][assign[i]] = patch_weight[i]
-        patch_weight = torch.from_numpy(patch_weight).to(self.device)
+        # if aligned:
+        #     patch_weight = patch_weight.cpu().numpy()
+        #     for i in range(0, patch_weight.shape[0]):
+        #         patch_weight[i][assign[i]] = patch_weight[i]
+        #     patch_weight = torch.from_numpy(patch_weight).to(self.device)
 
         return patch_weight
-
-    def compute_cost(self, codebook, patch_feature, max_row):
-
-        param_cost = torch.cdist(codebook, patch_feature).cpu().numpy()
-        # Nonparametric cost
-        L = codebook.shape[0]
-        Lj = patch_feature.shape[0]
-        max_added = min(Lj, max(max_row - L, 1))
-        # nonparam_cost = -np.outer(np.ones(max_added, dtype=np.float32), np.min(param_cost, axis=0))
-        nonparam_cost = np.mean(np.min(param_cost, axis=0))
-
-        cost_pois = 0.5*np.log(np.arange(2, max_added+2))/np.log(max_added+2)
-        nonparam_cost += np.outer(cost_pois, np.ones(Lj, dtype=np.float32))
-        # nonparam_cost += 2 * np.log(gamma)
-        full_cost = np.concatenate((param_cost, nonparam_cost), axis=0)
-        return full_cost
-
-    def matching_feature(self, codebook, patch_feature, max_row, popularity_counts, update_codebook=True):
-        L = codebook.shape[0]
-
-        full_cost = self.compute_cost(codebook, patch_feature, max_row)
-        row_ind, col_ind = linear_assignment(full_cost)
-
-        assignment_j = []
-
-        new_L = L
-
-        # add new neuron
-        delta_L = max(row_ind)+1-L
-        assert row_ind[-delta_L] >= L or delta_L == 0
-        popularity_counts = torch.nn.functional.pad(popularity_counts, [0, delta_L], "constant", 0)
-
-        # update
-        popularity_counts[row_ind] += 1
-        codebook = torch.nn.functional.pad(codebook, [0,0,0, delta_L], "constant", 0)
-        codebook[row_ind] += (patch_feature[col_ind]-codebook[row_ind])/popularity_counts[row_ind].unsqueeze(1)
-
-        # for l, i in zip(row_ind, col_ind):
-        #     if l < L:
-        #         popularity_counts[l] += 1
-        #         assignment_j.append((l, i))
-        #         if update_codebook:
-        #             codebook[l] += (patch_feature[i]-codebook[l])/popularity_counts[l]
-        #     else:  # new neuron
-        #         popularity_counts += [1]
-        #         assignment_j.append((new_L, i))
-        #         new_L += 1
-        #         # if update_codebook:
-        #         codebook = torch.cat((codebook, patch_feature[i].unsqueeze(0)))
-
-        return codebook, popularity_counts, assignment_j
-
 
     def _compute_distance_with_Gaussian(self, embedding: torch.Tensor, stats: [torch.Tensor]) -> torch.Tensor:
         """
@@ -539,24 +386,17 @@ class SoftCore(torch.nn.Module):
 
         batchsize = images.shape[0]
         with torch.no_grad():
-            image_scores = []
-            for image in images:
-                features, patch_shapes = self._embed(image.unsqueeze(0), provide_patch_shapes=True, detach=False)
-                # features = np.asarray(features)
+            features, patch_shapes = self._embed(images, provide_patch_shapes=True)
+            features = np.asarray(features)
 
-                # image_scores, _, indices = self.anomaly_scorer.predict([features])
+            image_scores, _, indices = self.anomaly_scorer.predict([features])
+            if self.soft_weight_flag:
+                indices = indices.squeeze()
+                # indices = torch.tensor(indices).to(self.device)
+                weight = np.take(self.coreset_weight, axis=0, indices=indices)
 
-                cost = torch.cdist(features, self.codebook).cpu().numpy()
-
-                # if self.softcore_flag:
-                #     if self.soft_weight_flag:
-                #         cost = cost*self.coreset_weight
-
-                # row_ind, col_ind = linear_assignment(cost)
-                # image_scores.append(cost[row_ind, col_ind])
-
-                image_scores.append(cost.min(axis=-1))
-            image_scores = np.array(image_scores)
+                image_scores = image_scores * weight
+                # image_scores = weight
 
             patch_scores = image_scores
 
