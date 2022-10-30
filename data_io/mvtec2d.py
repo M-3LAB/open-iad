@@ -51,7 +51,8 @@ class MVTec2D(Dataset):
         img = self.img_transform(img)
 
         if label == 0:
-            mask = torch.zeros([1, img.shape[1], img.shape[2]])
+            #mask = torch.zeros([1, img.shape[1], img.shape[2]])
+            mask = torch.zeros([1, 224, 224])
         else:
             mask = Image.open(mask)
             mask = self.mask_transform(mask)
