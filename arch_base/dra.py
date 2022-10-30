@@ -206,7 +206,7 @@ class DRA(ModelBase):
         total_pred = self.normalization(class_pred[0])
         for i in range(1, self.args._total_heads):
             total_pred = total_pred + self.normalization(class_pred[i])
-        self.img_pred_list = self.normalization
+        self.img_pred_list = total_pred
         print(self.img_pred_list)
         print(type(self.img_pred_list))
 
