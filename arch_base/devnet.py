@@ -58,6 +58,7 @@ class _DevNet(nn.Module):
 
 class DevNet(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
+        super(DevNet, self).__init__(config, device, file_path, net, optimizer, scheduler)
         self.config = config
         self.device = device
         self.file_path = file_path
@@ -92,6 +93,11 @@ class DevNet(ModelBase):
                 train_loss += loss.item()
 
     def prediction(self, valid_loader, task_id):
+        self.pixel_gt_list.clear()
+        self.img_gt_list.clear()
+        self.pixel_pred_list.clear()
+        self.img_pred_list.clear()
+        self.img_path_list.clear()
         self.model.eval()
         pixel_auroc, img_auroc = 0, 0
 
@@ -107,12 +113,16 @@ class DevNet(ModelBase):
                 output = self.model(image.float())
             loss = self.criterion(output, target.unsqueeze(1).float())
             test_loss += loss.item()
+            
+            self.img_gt_list.append(target.cpu().numpy()[0])
+            self.img_pred_list.append(output.data.cpu().numpy()[0])
+            self.img_path_list.append(batch['img_src'])
 
-            total_pred = np.append(total_pred, output.data.cpu().numpy())
-            total_target = np.append(total_target, target.cpu().numpy())
+        #     total_pred = np.append(total_pred, output.data.cpu().numpy())
+        #     total_target = np.append(total_target, target.cpu().numpy())
 
 
-        img_auroc = roc_auc_score(total_target, total_pred)
-        ap = average_precision_score(total_target, total_pred)
+        # img_auroc = roc_auc_score(total_target, total_pred)
+        # ap = average_precision_score(total_target, total_pred)
 
-        return pixel_auroc, img_auroc
+        # return pixel_auroc, img_auroc
