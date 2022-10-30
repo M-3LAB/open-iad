@@ -49,6 +49,7 @@ class ModelBase():
                 self.save_anomaly_map_tiff()
                 pixel_pro = 1
             if(len(self.img_pred_list)!=0):
+                pixel_auroc, pixel_ap = self.cal_logical_img_auc()
                 img_auroc = self.cal_metric_img_auroc()
                 img_ap = self.cal_metric_img_ap()
         return pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_pro
@@ -98,3 +99,23 @@ class ModelBase():
             path_dir = self.img_path_list[i][0].split('/')
             anomaly_map = cv2.resize(self.pixel_pred_list[i],(img_shape[0],img_shape[1]))
             cv2.imwrite('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+path_dir[-2]+'/'+path_dir[-1].replace('png','tiff'),anomaly_map)
+            
+    def cal_logical_img_auc(self):
+        img_pred_logical_list = []
+        img_gt_logical_list = []
+        img_pred_structural_list = []
+        img_gt_structural_list = []
+        for i in range(len(self.img_pred_list)):
+            path_dir = self.img_path_list[i][0].split('/')
+            if(path_dir[-2]=='good'):
+                img_gt_logical_list.append(0)
+                img_gt_structural_list.append(0)
+                img_pred_logical_list.append(self.img_pred_list[i])
+                img_pred_structural_list.append(self.img_pred_list[i])
+            elif(path_dir[-2]=='logical_anomalies'):
+                img_gt_logical_list.append(1)
+                img_pred_logical_list.append(1)
+            else:
+                img_gt_structural_list.append(1)
+                img_pred_structural_list.append(1)
+        return roc_auc_score(img_gt_logical_list, img_pred_logical_list), roc_auc_score(img_gt_structural_list, img_pred_structural_list)
