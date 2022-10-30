@@ -14,7 +14,7 @@ __all__ = ['CFA']
 
 class CFA():
 
-    def __init__(self, config, device, file_path, net, optimizer):
+    def __init__(self, config, device, file_path, net, optimizer, scheduler):
     
         self.config = config
         self.device = device
