@@ -1,10 +1,10 @@
 model: cutpaste
 train_batch_size: 32
 valid_batch_size: 32
-net: vit 
-num_epochs: 50
+net: vit_b_16 
+num_epochs: 1 
 train_aug_type: cutpaste
-valid_aug_type: cutpaste
+valid_aug_type: normal 
 data_size: 224
 data_crop_size: 224
 mask_size: 224
@@ -14,3 +14,5 @@ _name: cutpaste
 _base_lr: 0.0001
 _optimizer_name: adam
 _weight_decay: 0.00001
+_num_classes: 2
+_pretrained: True
