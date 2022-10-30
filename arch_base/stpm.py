@@ -1,65 +1,36 @@
 import torch
-import torch.nn as nn
-from torchvision import models
 import torch.nn.functional as F
+import os
+from tools.utils import create_folders
+from arch_base.base import ModelBase
 import numpy as np
-from metrics.common.np_auc_precision_recall import *
+from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
+import copy
 
 __all__ = ['STPM']
 
-class STPM():
-    def __init__(self, config, train_loaders, valid_loaders, device,
-                 file_path, train_fewshot_loaders=None):
-        
+class STPM(ModelBase):
+    def __init__(self, config, device, file_path, net, optimizer, scheduler):
         self.config = config
-        self.train_loader = train_loaders
-        self.valid_loader = valid_loaders
         self.device = device
         self.file_path = file_path
-        self.train_fewshot_loaders = train_fewshot_loaders
+        self.net_student = net.to(self.device) 
+        self.net_teacher = copy.deepcopy(net).to(self.device) 
 
-        self.chosen_train_loaders = [] 
-        if self.config['chosen_train_task_ids'] is not None:
-            for idx in range(len(self.config['chosen_train_task_ids'])):
-                self.chosen_train_loaders.append(self.train_loaders[self.config['chosen_train_task_ids'][idx]])
+        if self.config['continual']:
+            for i in self.config['train_task_id']:  
+                source_domain = source_domain + str(self.config['train_task_id'][i])
         else:
-            self.chosen_train_loaders = self.train_loaders
-
-        self.chosen_valid_loader = self.valid_loaders[self.config['chosen_test_task_id']] 
-
-        if self.config['fewshot']:
-            assert self.train_fewshot_loaders is not None
-            self.chosen_fewshot_loader = self.train_fewshot_loaders[self.config['chosen_test_task_id']]
-        
-        if self.config['chosen_test_task_id'] in self.config['chosen_train_task_ids']:
-            assert self.config['fewshot'] is False, 'Changeover: test task id should not be the same as train task id'
-        
-        # Backbone model
-        if self.config['backbone'] == 'resnet18':
-            self.backbone_teacher = models.resnet(pretrained=True, progress=True).to(self.device) 
-            self.backbone_students = models.resnet(pretrained=True, progress=True).to(self.device)
-
-        elif self.config['backbone'] == 'wide_resnet50':
-            self.backbone_teacher = models.wide_resnet50_2(pretrained=True, 
-                                                           progress=True).to(self.device) 
-
-            self.backbone_student = models.wide_resnet50_2(pretrained=True, 
-                                                            progress=True).to(self.device)
-        else:
-            raise NotImplementedError('This Pretrained Model Not Implemented Error')
+            source_domain = str(self.config['train_task_id'][0])
+        self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', source_domain)
+        create_folders(self.embedding_dir_path)
 
         self.features_teacher = []
         self.features_student = []
+        self.get_layer_features()
 
         self.criterion = torch.nn.MSELoss(reduction='sum')
-        self.optimizer = torch.optim.SGD(self.backbone_student.parameters(), lr=self.config['lr'], 
-                                         momentum=self.config['momentum'], 
-                                         weight_decay=self.config['weight_decay'])
-        
-        self.pixel_gt_list = []
-        self.img_gt_list = []
-        self.pixel_pred_list = []
-        self.img_pred_list = [] 
+        self.optimizer = optimizer
 
     def cal_anomaly_map(self, feat_teachers, feat_students, out_size=224):
         anomaly_map = np.ones([out_size, out_size])
@@ -75,6 +46,7 @@ class STPM():
             a_map = a_map[0,0,:,:].to('cpu').detach().numpy()
             a_map_list.append(a_map)
             anomaly_map *= a_map
+
         return anomaly_map, a_map_list
         
     def get_layer_features(self):
@@ -85,13 +57,13 @@ class STPM():
         def hook_s(module, input, output):
             self.features_student.append(output)
     
-        self.backbone_teacher.layer1[-1].register_forward_hook(hook_t)
-        self.backbone_teacher.layer2[-1].register_forward_hook(hook_t)
-        self.backbone_teacher.layer3[-1].register_forward_hook(hook_t)
+        self.net_teacher.layer1[-1].register_forward_hook(hook_t)
+        self.net_teacher.layer2[-1].register_forward_hook(hook_t)
+        self.net_teacher.layer3[-1].register_forward_hook(hook_t)
 
-        self.backbone_student.layer1[-1].register_forward_hook(hook_s)
-        self.backbone_student.layer2[-1].register_forward_hook(hook_s)
-        self.backbone_student.layer3[-1].register_forward_hook(hook_s)
+        self.net_student.layer1[-1].register_forward_hook(hook_s)
+        self.net_student.layer2[-1].register_forward_hook(hook_s)
+        self.net_student.layer3[-1].register_forward_hook(hook_s)
     
     def cal_loss(self, feat_teachers, feat_students, criterion):
         total_loss = 0
@@ -106,74 +78,59 @@ class STPM():
         
         return total_loss
     
-    def train_epoch(self, inf=''):
-        self.backbone_teacher.eval()
-        self.backbone_student.train()
+    def train_model(self, train_loader, task_id, inf=''):
+        self.net_teacher.eval()
+        self.net_student.train()
 
-        self.get_layer_features()
+        for epoch in range(self.config['num_epochs']):
+            for batch_id, batch in enumerate(train_loader):
+                img = batch['img'].to(self.device)    
+                self.optimizer.zero_grad()
 
-        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
-            print('run task: {}'.format(self.config['chosen_train_task_ids'][task_idx]))
-            for epoch in range(self.config['num_epochs']):
-                for batch_id, batch in enumerate(train_loader):
-                    img = batch['img'].to(self.device)    
-                    self.optimizer.zero_grad()
+                with torch.set_grad_enabled(True):
+                    self.features_teacher.clear()
+                    self.features_student.clear()
 
-                    with torch.set_grad_enabled(True):
-                        self.features_teacher.clear()
-                        self.features_student.clear()
+                    _  = self.net_teacher(img)
+                    _ = self.net_student(img)
 
-                        _  = self.backbone_teacher(img)
-                        _ = self.backbone_student(img)
-
-                        loss = self.cal_loss(feat_teachers=self.features_teacher,
-                                             feat_students=self.features_student,
-                                             criterion=self.criterion)
+                    loss = self.cal_loss(feat_teachers=self.features_teacher, feat_students=self.features_student,
+                                            criterion=self.criterion)
                         
-                        loss.backward()
+                    loss.backward()
+                    self.optimizer.step()
 
-                        self.optimizer.step()
-                
-                infor = '\r{}[Epoch {} / {}]  [Loss: {:.4f}]'.format(
-                           '', epoch+1, self.config['num_epochs'],  
-                           float(loss.data))
-                
-                print(infor, flush=True, end='  ') 
+    def prediction(self, valid_loader, task_id):
+        self.net_teacher.eval()
+        self.net_student.eval()
 
-    def prediction(self):
+        self.pixel_gt_list = []
+        self.img_gt_list = []
+        self.pixel_pred_list = []
+        self.img_pred_list = []
 
-        self.backbone_teacher.eval()
-        self.backbone_student.eval()
-
-        self.pixel_gt_list.clear()
-        self.img_gt_list.clear()
-        self.pixel_pred_list.clear()
-        self.img_pred_list.clear()
-
-        for batch_id, batch in enumerate(self.chosen_valid_loader):
+        for batch_id, batch in enumerate(valid_loader):
             img = batch['img'].to(self.device)
+            label = batch['label']
             mask = batch['mask']
 
-            mask[mask>0.5] = 1
-            mask[mask<=0.5] = 0
-        
             with torch.set_grad_enabled(False):
                 self.features_teacher.clear()
                 self.features_student.clear()
 
-                _ = self.features_teacher(img)
-                _ = self.features_student(img)
+                _ = self.net_teacher(img)
+                _ = self.net_student(img)
 
-                anomaly_map, _ = self.cal_anomaly_map(feat_teachers=self.features_teacher,
-                                                      feat_students=self.features_students)                 
+                anomaly_map, _ = self.cal_anomaly_map(feat_teachers=self.features_teacher, feat_students=self.features_student,
+                                                      out_size=self.config['data_crop_size'])                 
 
-                self.pixel_pred_list.append(anomaly_map.ravel())
+                self.pixel_pred_list.extend(anomaly_map.ravel())
                 self.pixel_gt_list.extend(mask.cpu().numpy().astype(int).ravel())
-                self.img_gt_list.extend(np.max(mask.cpu().numpy().astype(int)))
-                self.img_gt_list.extend(np.max(anomaly_map))
+                self.img_pred_list.append(np.max(mask.cpu().numpy()).astype(int))
+                self.img_gt_list.append(label.numpy())
         
-        pixel_auroc = np_get_auroc(self.pixel_gt_list, self.pixel_pred_list)
-        img_auroc = np_get_auroc(self.img_gt_list, self.img_pred_list)
+        pixel_auroc = roc_auc_score(self.pixel_gt_list, self.pixel_pred_list)
+        img_auroc = roc_auc_score(self.img_gt_list, self.img_pred_list)
 
         return pixel_auroc, img_auroc
 

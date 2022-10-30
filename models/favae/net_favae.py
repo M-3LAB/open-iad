@@ -2,11 +2,11 @@ import torch
 from torch import nn
 #from torchsummary import summary
 
-__all__ = ['VAE']
+__all__ = ['NetFAVAE']
 
-class VAE(nn.Module):
+class NetFAVAE(nn.Module):
     def __init__(self, input_channel=3, z_dim=100):
-        super(VAE, self).__init__()
+        super(NetFAVAE, self).__init__()
 
         # encode
         self.encode = nn.Sequential(

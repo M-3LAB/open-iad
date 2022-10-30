@@ -1,4 +1,5 @@
 from math import gamma
+from models.cfa.metrics import get_threshold, cal_img_roc, cal_pxl_roc, upsample, rescale, gaussian_smooth
 import torch
 import torch.nn as nn
 from models.cfa.efficientnet import EfficientNet as effnet
@@ -14,17 +15,16 @@ __all__ = ['CFA']
 
 class CFA():
 
-    def __init__(self, config, device, file_path, net, optimizer):
+    def __init__(self, config, device, file_path, net, optimizer, scheduler):
     
         self.config = config
         self.device = device
         self.file_path = file_path
-        self.backbone = net
-        self.backbone.to(self.device)
+        #self.backbone = net
         #self.optimizer = optimizer
 
-        #if self.config['backbone'] == 'resnet18':
-        #    self.backbone = resnet18(pretrained=True, progress=True)
+        if self.config['backbone'] == 'resnet18':
+            self.backbone = resnet18(pretrained=True, progress=True)
         #elif self.config['backbone'] == 'efficientnet':
         #    self.backbone = effnet(pretrained=True, progress=True)
         #elif self.config['backbone'] == 'wide_resnet50':
@@ -32,14 +32,16 @@ class CFA():
         #elif self.config['backbone'] == 'vgg':
         #    self.backbone = vgg19(pretrained=True, progress=True)
 
-        
-        self.pixel_gt_list = []
-        self.img_gt_list = []
-        self.pixel_pred_list = []
-        self.img_pred_list = []
+        self.backbone.to(self.device)
 
-        self.best_img_auroc = -1
-        self.best_pixel_auroc = -1
+        
+        #self.pixel_gt_list = []
+        #self.img_gt_list = []
+        #self.pixel_pred_list = []
+        #self.img_pred_list = []
+
+        #self.best_img_auroc = -1
+        #self.best_pixel_auroc = -1
     
     @staticmethod 
     def upsample(x, size, mode):
@@ -88,7 +90,7 @@ class CFA():
     def train_model(self, train_loader, task_id, inf=''):
 
         self.loss_fn = DSVDD(model=self.backbone, data_loader=train_loader,
-                             cnn=self.config['net'], gamma_c=self.config['gamma_c'],
+                             cnn=self.config['backbone'], gamma_c=self.config['gamma_c'],
                              gamma_d=self.config['gamma_d'], device=self.device)
 
         self.loss_fn = self.loss_fn.to(self.device)
@@ -97,9 +99,8 @@ class CFA():
 
         self.loss_fn.train()
 
-        optimizer = torch.optim.AdamW(params=self.loss_fn.parameters(),
-                                      lr=self.config['lr'],
-                                      weight_decay=self.config['weight_decay'],
+        params = [{'params' : self.loss_fn.parameters()},]
+        optimizer = torch.optim.AdamW(params=params, lr=1e-3, weight_decay=5e-4,
                                       amsgrad=True)
 
         for epoch in range(self.config['num_epochs']): 
@@ -112,54 +113,24 @@ class CFA():
                 loss.backward()
                 optimizer.step()
             
-            #self.loss_fn.eval()
-            #for batch_id, batch in enumerate(self.chosen_valid_loader):
-    
-            #    img = batch['img'].to(self.device)
-            #    label = batch['label'].to(self.device)
-            #    mask = batch['mask'].to(self.device)
-
-            #    self.img_gt_list.append(label.cpu().detach().numpy())
-            #    self.pixel_gt_list.append(mask.cpu().detach().numpy())
-
-            #    p = self.backbone(img)
-
-            #    _, score = self.loss_fn(p)
-            #    heatmap = score.cpu().detach()
-            #    heatmap = torch.mean(heatmap, dim=1) 
-            #    heatmaps = torch.cat((heatmaps, heatmap), dim=0) if heatmaps != None else heatmap
-       
-            #heatmaps = CFA.upsample(heatmaps, size=img.size(2)) 
-            #heatmaps = CFA.gaussian_smooth(heatmaps, sigma=4)
-        
-            #gt_mask = np.asarray(self.pixel_gt_list)
-            #scores = CFA.rescale(heatmaps)
-    
-            #img_auroc = CFA.cal_img_roc(scores, self.img_gt_list)
-            #pixel_auroc = CFA.cal_pxl_roc(gt_mask, scores)
-
-            #self.best_img_auroc = img_auroc if img_auroc > self.best_img_auroc else self.best_img_auroc
-            #self.best_pixel_auroc = pixel_auroc if pixel_auroc > self.best_pixel_auroc else self.best_pixel_auroc
-
-            #print('[%d / %d]image ROCAUC: %.3f | best: %.3f'% (epoch, self.config['num_epochs'], img_auroc, self.best_img_auroc))
-            #print('[%d / %d]pixel ROCAUC: %.3f | best: %.3f'% (epoch, self.config['num_epochs'], pixel_auroc, self.best_pixel_auroc))
 
     def prediction(self, valid_loader, task_id=None):
         self.loss_fn.eval()
-        self.pixel_gt_list.clear()
-        self.img_gt_list.clear()
-        self.pixel_pred_list.clear()
-        self.img_pred_list.clear()
+        gt_mask_list = list()
+        gt_list = list()
+        heatmaps = None
 
         with torch.no_grad():
-            for batch_id, batch in enumerate(self.valid_loader):
+            for batch_id, batch in enumerate(valid_loader):
 
                 img = batch['img'].to(self.device)
-                label = batch['label'].to(self.device)
+                label = batch['label']
                 mask = batch['mask'].to(self.device)
+                mask[mask>=0.5] = 1
+                mask[mask<0.5] = 0
 
-                self.img_gt_list.append(label.cpu().detach().numpy())
-                self.pixel_gt_list.append(mask.cpu().detach().numpy())
+                gt_list.extend(label.cpu().detach().numpy())
+                gt_mask_list.extend(mask.cpu().detach().numpy())
 
                 p = self.backbone(img)
 
@@ -168,13 +139,13 @@ class CFA():
                 heatmap = torch.mean(heatmap, dim=1) 
                 heatmaps = torch.cat((heatmaps, heatmap), dim=0) if heatmaps != None else heatmap
        
-        heatmaps = CFA.upsample(heatmaps, size=img.size(2)) 
-        heatmaps = CFA.gaussian_smooth(heatmaps, sigma=4)
+        heatmaps = upsample(heatmaps, size=img.size(2), mode='bilinear') 
+        heatmaps = gaussian_smooth(heatmaps, sigma=4)
         
-        gt_mask = np.asarray(self.pixel_gt_list)
-        scores = CFA.rescale(heatmaps)
-    
-        img_auroc = CFA.cal_img_roc(scores, self.img_gt_list)
-        pixel_auroc = CFA.cal_pxl_roc(gt_mask, scores)
+        gt_mask = np.asarray(gt_mask_list)
+        scores = rescale(heatmaps)
+        
+        fpr, tpr, img_auroc = cal_img_roc(scores, gt_list)
+        pixel_auroc = cal_pxl_roc(gt_mask, scores)
 
         return pixel_auroc, img_auroc

@@ -24,7 +24,7 @@ from models.reverse.net_reverse import NetReverse
 from models.fastflow.net import NetFastFlow
  
 from optimizer.optimizer import get_optimizer
-from models.favae.vae import VAE
+from models.favae.net_favae import NetFAVAE
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
 
@@ -53,7 +53,6 @@ class CentralizedTrain():
         self.args = extract_config(self.args)
 
         ip, root_path = assign_service(self.para_dict['guoyang'])
-
         print('local ip: {}, root_path: {}'.format(ip, root_path))
 
         self.para_dict['root_path'] = root_path
@@ -253,20 +252,21 @@ class CentralizedTrain():
             self.net = DevNetResNet18()
             self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)       
-        if self.para_dict['model'] == 'favae':
-            self.net = VAE(input_channel=self.para_dict['input_channel'], z_dim=100) 
-            self.optimizer =  get_optimizer(args, self.net.parameters())
+        if self.para_dict['net'] == 'net_favae':
+            self.net = NetFAVAE() 
+            self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = None
-        if self.para_dict['model'] == 'reverse':
+        if self.para_dict['net'] == 'net_reverse':
             self.net = NetReverse(args) 
-            self.optimizer =  get_optimizer(args, list(self.net.decoder.parameters()) + list(self.net.bn.parameters()))
-            self.scheduler = None
+            self.optimizer = get_optimizer(args, list(self.net.decoder.parameters()) + list(self.net.bn.parameters()))
         if self.para_dict['model'] == 'fastflow':
             self.net = NetFastFlow(args) 
             self.optimizer = get_optimizer(args, self.net.parameters())
-            self.scheduler = None
+        if self.para_dict['model'] == 'stpm':
+            self.optimizer = get_optimizer(args, self.net.parameters())
         if self.para_dict['model'] == 'cfa':
-            self.optimizer = None 
+            self.net = None
+            self.optimizer = None
             self.scheduler = None
 
         model_name = {'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
@@ -278,10 +278,11 @@ class CentralizedTrain():
                       'dra': ('arch_base.dra', 'dra', 'DRA'),
                       'devnet': ('arch_base.devnet', 'devnet', 'DevNet'),
                       'favae': ('arch_base.favae', 'favae', 'FAVAE'),
-                      'reverse': ('arch_base.reverse', 'reverse', 'Reverse'),
-                      'spade': ('arch_base.spade', 'spade', 'Spade'),
                       'fastflow': ('arch_base.fastflow', 'fastflow', 'FastFlow'),
-                      'cfa': ('arch_base.cfa', 'cfa', 'CFA')
+                      'cfa': ('arch_base.cfa', 'cfa', 'CFA'),
+                      'reverse': ('arch_base.reverse', 'reverse', 'REVERSE'),
+                      'spade': ('arch_base.spade', 'spade', 'SPADE'),
+                      'stpm': ('arch_base.stpm', 'stpm', 'STPM'),
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])

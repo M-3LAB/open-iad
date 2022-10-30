@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
 from einops import rearrange
-from tqdm import tqdm
+#from tqdm import tqdm
 from sklearn.cluster import KMeans
-from .metric import *
-from utils.coordconv import CoordConv2d
+from models.cfa.metrics import *
+from models.cfa.coordconv import CoordConv2d
 import torch.nn.functional as F
 
 __all__ = ['DSVDD', 'Descriptor']
@@ -25,7 +25,8 @@ class DSVDD(nn.Module):
         self.J = 3
 
         self.r   = nn.Parameter(1e-5*torch.ones(1), requires_grad=True)
-        self.Descriptor = Descriptor(self.gamma_d, cnn).to(device)
+        self.Descriptor = Descriptor(self.gamma_d, cnn, self.device).to(self.device)
+        model.to(self.device)
         self._init_centroid(model, data_loader)
         self.C = rearrange(self.C, 'b c h w -> (b h w) c').detach()
         
@@ -90,21 +91,23 @@ class DSVDD(nn.Module):
 
 
 class Descriptor(nn.Module):
-    def __init__(self, gamma_d, cnn):
+    def __init__(self, gamma_d, cnn, device):
         super(Descriptor, self).__init__()
         self.cnn = cnn
+        self.device = device
+
         if cnn == 'wide_resnet50':
             dim = 1792 
-            self.layer = CoordConv2d(dim, dim//gamma_d, 1)
+            self.layer = CoordConv2d(dim, dim//gamma_d, 1, self.device).to(self.device)
         elif cnn == 'resnet18':
             dim = 448
-            self.layer = CoordConv2d(dim, dim//gamma_d, 1)
+            self.layer = CoordConv2d(dim, dim//gamma_d, 1, self.device).to(self.device)
         elif cnn == 'efficientnet':
             dim = 568
-            self.layer = CoordConv2d(dim, 2*dim//gamma_d, 1)
+            self.layer = CoordConv2d(dim, 2*dim//gamma_d, 1, self.device).to(self.device)
         elif cnn == 'vgg':
             dim = 1280 
-            self.layer = CoordConv2d(dim, dim//gamma_d, 1)
+            self.layer = CoordConv2d(dim, dim//gamma_d, 1, self.device).to(self.device)
         
 
     def forward(self, p):
@@ -113,5 +116,6 @@ class Descriptor(nn.Module):
             o = F.avg_pool2d(o, 3, 1, 1) / o.size(1) if self.cnn == 'effnet-b5' else F.avg_pool2d(o, 3, 1, 1)
             sample = o if sample is None else torch.cat((sample, F.interpolate(o, sample.size(2), mode='bilinear')), dim=1)
         
+        sample 
         phi_p = self.layer(sample)
         return phi_p
