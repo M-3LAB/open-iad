@@ -20,10 +20,8 @@ class _CutPaste(nn.Module):
         self.cross_entropy = nn.CrossEntropyLoss()
 
     def forward(self, epoch, inputs, labels, one_epoch_embeds, *args):
-        if self.args.dataset.strong_augmentation:
-            num = int(len(inputs) / 2)
-        else:
-            num = int(len(inputs))
+        num = int(len(inputs) / 2)
+        #num = int(len(inputs))
 
         self.optimizer.zero_grad()
         embeds, outs = self.net(inputs)
@@ -56,8 +54,13 @@ class CutPaste(ModelBase):
         for epoch in range(self.config['num_epochs']):
             for batch_id, batch in enumerate(train_loader):
                 self.net.train()
-                inputs = batch['img'].to(self.device)
-                labels = batch['label'].to(self.device)
+                #inputs = batch['img'].to(self.device)
+                #labels = batch['label'].to(self.device)
+                imgs = batch['img']
+                inputs = [img.to(self.device) for img in imgs]
+                labels = torch.arange(len(inputs), device=self.device)
+                labels = labels.repeat_interleave(inputs[0].size(0))
+                inputs = torch.cat(inputs, dim=0)
                 self.model(epoch, inputs, labels, self.one_epoch_embeds)
 
         self.net.eval()
