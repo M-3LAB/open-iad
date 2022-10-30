@@ -35,12 +35,6 @@ class PatchCore(ModelBase):
         #TODO: Visualize Embeddings
         self.random_projector = SparseRandomProjection(n_components='auto', eps=0.9)
 
-        self.pixel_gt_list = []
-        self.img_gt_list = []
-        self.pixel_pred_list = []
-        self.img_pred_list = []
-        self.img_path_list = []
-
         self.embeddings_list = []
 
         source_domain = ''
@@ -161,19 +155,13 @@ class PatchCore(ModelBase):
 
     def prediction(self, valid_loader, task_id=None):
         self.net.eval()
+        self.clear_all_list()
 
         self.index = faiss.read_index(os.path.join(self.embedding_dir_path, 'index.faiss')) 
-        
         if torch.cuda.is_available():
             res = faiss.StandardGpuResources()
             self.index = faiss.index_cpu_to_gpu(res, int(self.config['gpu_id']), self.index)
         
-        self.pixel_gt_list.clear()
-        self.img_gt_list.clear()
-        self.pixel_pred_list.clear()
-        self.img_pred_list.clear()
-        self.img_path_list.clear()
-
         sampling_dir_path = os.path.join(self.file_path, 'samples', str(self.config['valid_task_id']))
         create_folders(sampling_dir_path)
 
