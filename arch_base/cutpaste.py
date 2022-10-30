@@ -42,7 +42,6 @@ class _CutPaste(nn.Module):
 
 class CutPaste(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super().__init__()
         self.config = config
         self.device = device
         self.file_path = file_path

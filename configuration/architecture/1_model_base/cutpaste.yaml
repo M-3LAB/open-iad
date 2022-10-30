@@ -11,5 +11,6 @@ mask_size: 224
 mask_crop_size: 224
 
 _name: cutpaste 
+_base_lr: 0.0001
 _optimizer_name: adam
 _weight_decay: 0.00001
