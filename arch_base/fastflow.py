@@ -39,16 +39,19 @@ class FastFlow(ModelBase):
         with torch.no_grad():
             for batch_id, batch in enumerate(valid_loader):
                 img = batch['img'].to(self.device)
-                mask = batch['mask']
-                ret = self.net(img)
-                mask = mask.flatten()
+                mask = batch['mask'].to(self.device)
+                mask[mask>=0.5] = 1
+                mask[mask<0.5] = 0
 
-                outputs = ret["anamaly_map"].cpu().detach()
+                ret = self.net(img)
+
+                outputs = ret["anomaly_map"].cpu().detach()
                 outputs = outputs.flatten()
+                mask = mask.flatten()
                 auroc_metric.update((outputs, mask))
         
         pixel_auroc = auroc_metric.compute()
-        img_auroc = None
+        img_auroc = 0 
         return pixel_auroc, img_auroc 
         
     
