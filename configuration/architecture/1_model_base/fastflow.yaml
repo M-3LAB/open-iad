@@ -12,4 +12,4 @@ _weight_decay: 0.00001
 train_aug_type: normal
 valid_aug_type: normal
 train_batch_size: 32
-valid_batch_size: 32
+valid_batch_size: 1
