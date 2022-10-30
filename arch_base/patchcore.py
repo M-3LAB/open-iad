@@ -226,16 +226,6 @@ class PatchCore(ModelBase):
                 save_anomaly_map(anomaly_map=anomaly_map_cv, input_img=img_cv,
                                  mask=mask_np*255, 
                                  file_path=os.path.join(sampling_dir_path, defect_type, str(batch_id)))
-                
-                
-        # pixel_auroc = roc_auc_score(self.pixel_gt_list, self.pixel_pred_list) 
-        # img_auroc = roc_auc_score(self.img_gt_list, self.img_pred_list)
-        # pixel_ap = average_precision_score(self.pixel_gt_list, self.pixel_pred_list)
-        # img_ap = average_precision_score(self.img_gt_list, self.img_pred_list)
-        # au_pro, au_pro_curve = calculate_au_pro(self.pixel_gt_list_2d, self.pixel_pred_list_2d)
-        # print('pixel_auroc: ', pixel_auroc, 'img_auroc: ', img_auroc, 'pixel_ap: ', pixel_ap, 'img_ap: ', img_ap, 'au_pro: ', au_pro)
-
-        # return pixel_auroc, img_auroc
 
 
 

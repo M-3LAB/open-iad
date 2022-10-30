@@ -21,33 +21,11 @@ class CFA(ModelBase):
         self.config = config
         self.device = device
         self.file_path = file_path
-        self.pixel_gt_list = []
-        self.img_gt_list = []
-        self.pixel_pred_list = []
-        self.img_pred_list = []
-        self.img_path_list = []
-        #self.backbone = net
-        #self.optimizer = optimizer
 
         if self.config['backbone'] == 'resnet18':
             self.backbone = resnet18(pretrained=True, progress=True)
-        #elif self.config['backbone'] == 'efficientnet':
-        #    self.backbone = effnet(pretrained=True, progress=True)
-        #elif self.config['backbone'] == 'wide_resnet50':
-        #    self.backbone = wide_resnet50_2(pretrained=True, progress=True)
-        #elif self.config['backbone'] == 'vgg':
-        #    self.backbone = vgg19(pretrained=True, progress=True)
 
         self.backbone.to(self.device)
-
-        
-        #self.pixel_gt_list = []
-        #self.img_gt_list = []
-        #self.pixel_pred_list = []
-        #self.img_pred_list = []
-
-        #self.best_img_auroc = -1
-        #self.best_pixel_auroc = -1
     
     @staticmethod 
     def upsample(x, size, mode):
@@ -80,17 +58,13 @@ class CFA(ModelBase):
     def cal_img_roc(scores, gt_list):
         img_scores = scores.reshape(scores.shape[0], -1).max(axis=1)
         gt_list = np.asarray(gt_list)
-        #fpr, tpr, _ = roc_curve(gt_list, img_scores)
         img_roc_auc = CFA.roc_auc_img(gt_list, img_scores)
 
-        #return fpr, tpr, img_roc_auc
         return img_roc_auc
     
     def cal_pxl_roc(gt_mask, scores):
-        #fpr, tpr, _ = roc_curve(gt_mask.flatten(), scores.flatten())
         per_pixel_rocauc = CFA.roc_auc_pixel(gt_mask.flatten(), scores.flatten())
     
-        #return fpr, tpr, per_pixel_rocauc
         return per_pixel_rocauc
 
     def train_model(self, train_loader, task_id, inf=''):
@@ -118,17 +92,10 @@ class CFA(ModelBase):
                 loss, _ = self.loss_fn(p)
                 loss.backward()
                 optimizer.step()
-            
 
     def prediction(self, valid_loader, task_id=None):
-        self.pixel_gt_list.clear()
-        self.img_gt_list.clear()
-        self.pixel_pred_list.clear()
-        self.img_pred_list.clear()
-        self.img_path_list.clear()
         self.loss_fn.eval()
-        gt_mask_list = list()
-        gt_list = list()
+        self.clear_all_list()
         heatmaps = None
 
         with torch.no_grad():
@@ -148,20 +115,13 @@ class CFA(ModelBase):
 
                 _, score = self.loss_fn(p)
                 heatmap = score.cpu().detach()
-                heatmap = torch.mean(heatmap, dim=1) 
-                # self.pixel_pred_list.append(heatmap.squeeze(0).squeeze(0).cpu().numpy())
+                heatmap = torch.mean(heatmap, dim=1)
                 heatmaps = torch.cat((heatmaps, heatmap), dim=0) if heatmaps != None else heatmap
        
         heatmaps = upsample(heatmaps, size=img.size(2), mode='bilinear') 
         heatmaps = gaussian_smooth(heatmaps, sigma=4)
-        
-        # gt_mask = np.asarray(gt_mask_list)
         scores = rescale(heatmaps)
         for i in range(scores.shape[0]):
             self.pixel_pred_list.append(scores[i])
         img_scores = scores.reshape(scores.shape[0], -1).max(axis=1)
         self.img_pred_list = img_scores
-        # fpr, tpr, img_auroc = cal_img_roc(scores, gt_list)
-        # pixel_auroc = cal_pxl_roc(gt_mask, scores)
-
-        # return pixel_auroc, img_auroc

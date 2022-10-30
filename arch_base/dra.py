@@ -4,7 +4,6 @@ import numpy as np
 import argparse
 import torch.nn.functional as F
 from arch_base.base import ModelBase
-from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve, average_precision_score
 from models.dra.dra_resnet18 import *
 from loss_function.deviation_loss import DeviationLoss
 from loss_function.binaryfocal_loss import BinaryFocalLoss
@@ -148,19 +147,13 @@ class DRA(ModelBase):
                     class_loss[i] += losses[i].item()
 
     def prediction(self, valid_ref_loader, task_id):
-        self.pixel_gt_list.clear()
-        self.img_gt_list.clear()
-        self.pixel_pred_list.clear()
-        self.img_pred_list.clear()
-        self.img_path_list.clear()
+        self.model.eval()
+        self.clear_all_list()
         valid_loader, ref_loader = valid_ref_loader
         ref = iter(ref_loader)
-        self.model.eval()
-        pixel_auroc, img_auroc = 0, 0
 
         test_loss = 0.0
         class_pred = [np.array([]) for i in range(self.args._total_heads)]
-        total_target = np.array([])
 
         for batch_id, batch in enumerate(valid_loader):
             image = batch['img'].to(self.device)
@@ -200,18 +193,9 @@ class DRA(ModelBase):
                 else:
                     data = outputs[i].data.cpu().numpy()
                 class_pred[i] = np.append(class_pred[i], data)
-            # total_target = np.append(total_target, target.cpu().numpy())
             self.img_gt_list.append(target.cpu().numpy()[0])
 
         total_pred = self.normalization(class_pred[0])
         for i in range(1, self.args._total_heads):
             total_pred = total_pred + self.normalization(class_pred[i])
         self.img_pred_list = total_pred
-        print(self.img_pred_list)
-        print(type(self.img_pred_list))
-
-
-        # img_auroc = roc_auc_score(total_target, total_pred)
-        # ap = average_precision_score(total_target, total_pred)
-
-        # return pixel_auroc, img_auroc

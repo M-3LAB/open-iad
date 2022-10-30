@@ -38,11 +38,6 @@ class CSFlow(ModelBase):
         self.file_path = file_path
         self.net = net
         self.model = _CSFlow(self.config, self.net, optimizer, scheduler).to(self.device)
-        self.pixel_gt_list = []
-        self.img_gt_list = []
-        self.pixel_pred_list = []
-        self.img_pred_list = []
-        self.img_path_list = []
         
     def train_model(self, train_loader, task_id, inf=''):
         self.net.density_estimator.train()
@@ -55,6 +50,7 @@ class CSFlow(ModelBase):
 
     def prediction(self, valid_loader, task_id):
         self.net.eval()
+        self.clear_all_list()
         pixel_auroc, img_auroc =0, 0
 
         test_z, test_labels = [], []
@@ -73,8 +69,5 @@ class CSFlow(ModelBase):
             test_labels = np.concatenate(test_labels)
             is_anomaly = np.array([0 if l == 0 else 1 for l in test_labels])
             anomaly_score = np.concatenate(test_z, axis=0)
-            # img_auroc = np_get_auroc(is_anomaly, anomaly_score)
             self.img_gt_list = is_anomaly
             self.img_pred_list = anomaly_score
-
-        # return pixel_auroc, img_auroc

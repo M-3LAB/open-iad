@@ -45,6 +45,7 @@ class _DRAEM(nn.Module):
 
 class DRAEM(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
+        super(DRAEM, self).__init__(config, device, file_path, net, optimizer, scheduler)
         self.config = config
         self.device = device
         self.file_path = file_path
@@ -67,6 +68,7 @@ class DRAEM(ModelBase):
 
     def prediction(self, valid_loader, task_id):
         self.net.eval()
+        self.cal_metric_all()
         pixel_auroc, img_auroc = 0, 0
 
         seg_score_gt, dec_score_prediction = [], []
@@ -74,7 +76,10 @@ class DRAEM(ModelBase):
             for batch_id, batch in enumerate(valid_loader):
                 inputs = batch['img'].to(self.device)
                 labels = batch['label'].numpy()
-
+                mask = batch['mask'].to(self.device)
+                self.img_path_list.append(batch['img_src'])
+                self.img_gt_list.append(labels[0])
+                
                 seg_score_gt.append(labels)
                 _, out_masks = self.net(inputs)
                 out_masks_sm = torch.softmax(out_masks, dim=1)
