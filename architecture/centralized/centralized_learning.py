@@ -269,6 +269,9 @@ class CentralizedTrain():
             self.net = None
             self.optimizer = None
             self.scheduler = None
+        if self.para_dict['model'] == 'cutpaste':
+            self.optimizer = get_optimizer(args, self.net.parameters())
+            self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs) 
 
         model_name = {'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
                       'padim': ('arch_base.padim', 'padim', 'PaDim'),
@@ -284,6 +287,7 @@ class CentralizedTrain():
                       'reverse': ('arch_base.reverse', 'reverse', 'REVERSE'),
                       'spade': ('arch_base.spade', 'spade', 'SPADE'),
                       'stpm': ('arch_base.stpm', 'stpm', 'STPM'),
+                      'cutpaste': ('arch_base.cutpaste', 'cutpaste', 'CutPaste')
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])

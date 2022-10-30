@@ -68,6 +68,7 @@ class CutPaste(ModelBase):
     def prediction(self, valid_loader, task_id=None):
         self.net.eval()
         img_auroc = 0
+        pixel_auroc = 0
         labels = []
         embeds = []
         with torch.no_grad():
@@ -89,4 +90,4 @@ class CutPaste(ModelBase):
             fpr, tpr, _ = roc_curve(labels, distances)
             img_auroc = auc(fpr, tpr)
         
-        return img_auroc
+        return pixel_auroc, img_auroc
