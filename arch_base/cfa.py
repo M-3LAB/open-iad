@@ -136,22 +136,26 @@ class CFA(ModelBase):
                 mask[mask<0.5] = 0
 
                 self.img_gt_list.append(label.cpu().detach().numpy())
-                self.pixel_gt_list.append(mask.cpu().detach().numpy())
+                self.pixel_gt_list.append(mask.cpu().detach().numpy()[0,0,:,:])
+                self.img_path_list.append(batch['img_src'])
 
                 p = self.backbone(img)
 
                 _, score = self.loss_fn(p)
                 heatmap = score.cpu().detach()
                 heatmap = torch.mean(heatmap, dim=1) 
-                self.pixel_pred_list.append(heatmap.squeeze(0).squeeze(0).cpu().numpy())
-                # heatmaps = torch.cat((heatmaps, heatmap), dim=0) if heatmaps != None else heatmap
+                # self.pixel_pred_list.append(heatmap.squeeze(0).squeeze(0).cpu().numpy())
+                heatmaps = torch.cat((heatmaps, heatmap), dim=0) if heatmaps != None else heatmap
        
         heatmaps = upsample(heatmaps, size=img.size(2), mode='bilinear') 
         heatmaps = gaussian_smooth(heatmaps, sigma=4)
         
-        gt_mask = np.asarray(gt_mask_list)
+        # gt_mask = np.asarray(gt_mask_list)
         scores = rescale(heatmaps)
-        
+        for i in range(scores.shape[0]):
+            self.pixel_pred_list.append(scores[i])
+        img_scores = scores.reshape(scores.shape[0], -1).max(axis=1)
+        self.img_pred_list = img_scores
         # fpr, tpr, img_auroc = cal_img_roc(scores, gt_list)
         # pixel_auroc = cal_pxl_roc(gt_mask, scores)
 
