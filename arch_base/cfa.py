@@ -121,6 +121,11 @@ class CFA(ModelBase):
             
 
     def prediction(self, valid_loader, task_id=None):
+        self.pixel_gt_list.clear()
+        self.img_gt_list.clear()
+        self.pixel_pred_list.clear()
+        self.img_pred_list.clear()
+        self.img_path_list.clear()
         self.loss_fn.eval()
         gt_mask_list = list()
         gt_list = list()
