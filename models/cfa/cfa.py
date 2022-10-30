@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from einops import rearrange
-#from tqdm import tqdm
 from sklearn.cluster import KMeans
 from models.cfa.metrics import *
 from models.cfa.coordconv import CoordConv2d
@@ -81,7 +80,6 @@ class DSVDD(nn.Module):
         return loss 
 
     def _init_centroid(self, model, data_loader):
-        #for i, (x, _, _) in enumerate(tqdm(data_loader)):
         for i, batch in enumerate(data_loader): 
             img = batch['img'].to(self.device)
             p = model(img)

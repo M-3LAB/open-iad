@@ -22,6 +22,7 @@ from models.devnet.devnet_resnet18 import DevNetResNet18
 from models.igd.net_igd import NetIGD
 from models.reverse.net_reverse import NetReverse
 from models.fastflow.net import NetFastFlow
+from models.cfa.net_cfa import NetCFA
  
 from optimizer.optimizer import get_optimizer
 from models.favae.net_favae import NetFAVAE
@@ -265,8 +266,8 @@ class CentralizedTrain():
             self.scheduler = None
         if self.para_dict['model'] == 'stpm':
             self.optimizer = get_optimizer(args, self.net.parameters())
-        if self.para_dict['model'] == 'cfa':
-            self.net = None
+        if self.para_dict['net'] == 'net_cfa':
+            self.net = NetCFA(args)
             self.optimizer = None
             self.scheduler = None
         if self.para_dict['model'] == 'cutpaste':
