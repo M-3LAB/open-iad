@@ -67,10 +67,11 @@ class _DNE(nn.Module):
 
 class DNE(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
+        super(DNE, self).__init__(config, device, file_path, net, optimizer, scheduler)
         self.config = config
         self.device = device
         self.file_path = file_path
-        self.net = net 
+        self.net = net
 
         self.args = argparse.Namespace(**self.config)
         self.model = _DNE(self.args, self.net, optimizer, scheduler).to(self.device)
@@ -93,6 +94,11 @@ class DNE(ModelBase):
 
 
     def prediction(self, valid_loader, task_id):
+        self.pixel_gt_list.clear()
+        self.img_gt_list.clear()
+        self.pixel_pred_list.clear()
+        self.img_pred_list.clear()
+        self.img_path_list.clear()
         self.model.eval()
         pixel_auroc, img_auroc = 0, 0
 
@@ -107,29 +113,34 @@ class DNE(ModelBase):
                     embed = self.net.forward_features(x)
                     embeds.append(embed.cpu())
                     labels.append(label.cpu())
+                    self.img_path_list.append(batch['img_src'])
 
             labels = torch.cat(labels)
             embeds = torch.cat(embeds)
             embeds = F.normalize(embeds, p=2, dim=1)
-
             distances = density.predict(embeds)
-            roc_auc = roc_auc_score(labels, distances)
-            fpr, tpr, _ = roc_curve(labels, distances)
-            img_auroc = auc(fpr, tpr)
+            self.img_gt_list = labels
+            self.img_pred_list = distances
+            # roc_auc = roc_auc_score(labels, distances)
+            # fpr, tpr, _ = roc_curve(labels, distances)
+            # img_auroc = auc(fpr, tpr)
 
         elif self.args._eval_classifier == 'head':
-            labels, outs = [], []
+            # labels, outs = [], []
             with torch.no_grad():
                 for batch_id, batch in enumerate(valid_loader):
                     x = batch['img'].to(self.device)
                     label = batch['label'].to(self.device)
                     _, out = self.net(x)
                     _, out = torch.max(out, 1)
-                    outs.append(out.cpu())
-                    labels.append(label.cpu())
+                    self.img_pred_list.append(out.cpu().numpy()[0])
+                    self.img_gt_list.append(label.cpu().numpy()[0])
+                    self.img_path_list.append(batch['img_src'])
+        #             outs.append(out.cpu())
+        #             labels.append(label.cpu())
 
-            labels = torch.cat(labels)
-            outs = torch.cat(outs)
-            img_auroc = roc_auc_score(labels, outs)
+        #     labels = torch.cat(labels)
+        #     outs = torch.cat(outs)
+        #     img_auroc = roc_auc_score(labels, outs)
 
-        return pixel_auroc, img_auroc
+        # return pixel_auroc, img_auroc

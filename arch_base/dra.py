@@ -68,6 +68,7 @@ class _DRA(nn.Module):
 
 class DRA(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
+        super(DRA, self).__init__(config, device, file_path, net, optimizer, scheduler)
         self.config = config
         self.device = device
         self.file_path = file_path
@@ -147,6 +148,11 @@ class DRA(ModelBase):
                     class_loss[i] += losses[i].item()
 
     def prediction(self, valid_ref_loader, task_id):
+        self.pixel_gt_list.clear()
+        self.img_gt_list.clear()
+        self.pixel_pred_list.clear()
+        self.img_pred_list.clear()
+        self.img_path_list.clear()
         valid_loader, ref_loader = valid_ref_loader
         ref = iter(ref_loader)
         self.model.eval()
@@ -159,6 +165,7 @@ class DRA(ModelBase):
         for batch_id, batch in enumerate(valid_loader):
             image = batch['img'].to(self.device)
             target = batch['label'].to(self.device)
+            self.img_path_list.append(batch['img_src'])
 
             if self.args._total_heads == 4:
                 try:
@@ -193,14 +200,18 @@ class DRA(ModelBase):
                 else:
                     data = outputs[i].data.cpu().numpy()
                 class_pred[i] = np.append(class_pred[i], data)
-            total_target = np.append(total_target, target.cpu().numpy())
+            # total_target = np.append(total_target, target.cpu().numpy())
+            self.img_gt_list.append(target.cpu().numpy()[0])
 
         total_pred = self.normalization(class_pred[0])
         for i in range(1, self.args._total_heads):
             total_pred = total_pred + self.normalization(class_pred[i])
+        self.img_pred_list = self.normalization
+        print(self.img_pred_list)
+        print(type(self.img_pred_list))
 
 
-        img_auroc = roc_auc_score(total_target, total_pred)
-        ap = average_precision_score(total_target, total_pred)
+        # img_auroc = roc_auc_score(total_target, total_pred)
+        # ap = average_precision_score(total_target, total_pred)
 
-        return pixel_auroc, img_auroc
+        # return pixel_auroc, img_auroc

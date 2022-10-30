@@ -8,10 +8,10 @@ train_batch_size: 48
 valid_batch_size: 1
 train_aug_type: normal
 valid_aug_type: normal
-data_size: 448
-data_crop_size: 448
-mask_size: 448
-mask_crop_size: 448
+data_size: 224
+data_crop_size: 224
+mask_size: 224
+mask_crop_size: 224
 
 _name: dra
 _batch_size: 48
@@ -22,7 +22,7 @@ _test_rate: 0
 _ramdn_seed: 42
 _no-cuda: True
 _classname: 'capsule'
-_img_size: 448
+_img_size: 224
 _nAnomaly: 10
 _n_scales: 2
 _criterion: 'deviation'
