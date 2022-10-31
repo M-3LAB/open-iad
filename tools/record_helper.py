@@ -31,18 +31,15 @@ class RecordHelper():
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
-        # if paradim == 'vanilla':
         save_path = save_dir + '/result.txt'
-
+        if paradim == 'vanilla':
+            save_path = save_path
         if paradim == 'semi':
             save_path = '{}/result_{}.txt'.format(save_dir, self.config['semi_anonmaly_num'])
-
         if paradim == 'fewshot':
             save_path = '{}/result_{}.txt'.format(save_dir, self.config['fewshot_exm'])
-
         if paradim == 'noisy':
             save_path = '{}/result_{}.txt'.format(save_dir, self.config['noisy_ratio'])
-
         if paradim == 'continual':
             save_path = '{}/result_{}.txt'.format(save_dir, self.config['valid_task_id_tmp'])
         

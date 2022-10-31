@@ -300,31 +300,34 @@ class CentralizedTrain():
        
 
     def work_flow(self):
-        print('-> train ...')
         # train all task in one time
-        for idx, train_loader in enumerate(self.chosen_train_loaders):
-            self.para_dict['train_task_id_tmp'] = self.para_dict['train_task_id'][idx]
+        for i, train_loader in enumerate(self.chosen_train_loaders):
+            print('-> train ...')
+            self.para_dict['train_task_id_tmp'] = self.para_dict['train_task_id'][i]
             print('run task: {}'.format(self.para_dict['train_task_id_tmp']))
             self.trainer.train_model(train_loader, self.para_dict['train_task_id_tmp'])
 
-        print('-> test ...')
-        # test each task individually
-        for idx, valid_loader in enumerate(self.chosen_valid_loaders):
-            self.para_dict['valid_task_id_tmp'] = self.para_dict['valid_task_id'][idx]
-            self.trainer.prediction(valid_loader, task_id=self.para_dict['valid_task_id_tmp'])
-            pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all()
-            self.trainer.recorder.update(self.para_dict)
+            print('-> test ...')
+            # test each task individually
+            for j, valid_loader in enumerate(self.chosen_valid_loaders):
+                # for continual
+                if j > i:
+                    break
+                self.para_dict['valid_task_id_tmp'] = self.para_dict['valid_task_id'][j]
+                self.trainer.prediction(valid_loader, task_id=self.para_dict['valid_task_id_tmp'])
+                pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all()
+                self.trainer.recorder.update(self.para_dict)
 
-            paradim = self.trainer.recorder.paradigm_name()
-            infor_basic = 'paradigm: {} dataset: {} model: {} train_task_id: {} valid_task_id: {}'.format(paradim, 
-                self.para_dict['dataset'], self.para_dict['model'], self.para_dict['train_task_id_tmp'], self.para_dict['valid_task_id_tmp'])
+                paradim = self.trainer.recorder.paradigm_name()
+                infor_basic = 'paradigm: {} dataset: {} model: {} train_task_id: {} valid_task_id: {}'.format(paradim, 
+                    self.para_dict['dataset'], self.para_dict['model'], self.para_dict['train_task_id_tmp'], self.para_dict['valid_task_id_tmp'])
 
-            infor_result = 'pixel_auroc: {:.4f} img_auroc: {:.4f} pixel_ap: {:.4f} img_ap: {:.4f} pixel_aupro: {:.4f}'.format(                                                                                  
-                pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro)
-            self.trainer.recorder.printer('{} {}'.format(infor_basic, infor_result))
+                infor_result = 'pixel_auroc: {:.4f} img_auroc: {:.4f} pixel_ap: {:.4f} img_ap: {:.4f} pixel_aupro: {:.4f}'.format(                                                                                  
+                    pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro)
+                self.trainer.recorder.printer('{} {}'.format(infor_basic, infor_result))
 
-            # save results
-            self.trainer.recorder.record_result(paradim, infor_result)
+                # save results
+                self.trainer.recorder.record_result(paradim, infor_result)
 
 
     def run_work_flow(self):

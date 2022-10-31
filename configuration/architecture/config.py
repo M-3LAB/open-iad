@@ -44,12 +44,12 @@ def parse_arguments_centralized():
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
-    parser.add_argument('--train-task-id', '-tid', type=int, default=[1], nargs='+')
-    parser.add_argument('--valid-task-id', '-vid', type=int, default=[1], nargs='+')
+    parser.add_argument('--train-task-id', '-tid', type=int, default=[0, 1, 2], nargs='+')
+    parser.add_argument('--valid-task-id', '-vid', type=int, default=[0, 1, 2], nargs='+')
     parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default= 0.0001)
 
     # vanilla learning
-    parser.add_argument('--vanilla', '-v', action='store_true', default=True)
+    parser.add_argument('--vanilla', '-v', action='store_true', default=False)
     
     # semi-supervised learning
     parser.add_argument('--semi', '-s', action='store_true', default=False)
