@@ -4,7 +4,6 @@ from torch import nn
 import numpy as np
 
 from arch_base.base import ModelBase
-from metrics.common.np_auc_precision_recall import np_get_auroc
 
 
 __all__ = ['CSFlow']

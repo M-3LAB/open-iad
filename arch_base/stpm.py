@@ -96,7 +96,6 @@ class STPM(ModelBase):
 
                     loss = self.cal_loss(feat_teachers=self.features_teacher, feat_students=self.features_student,
                                             criterion=self.criterion)
-                        
                     loss.backward()
                     self.optimizer.step()
 
@@ -127,7 +126,4 @@ class STPM(ModelBase):
                 self.pixel_gt_list.append(mask.cpu().numpy()[0,0].astype(int))
                 self.img_pred_list.append(np.max(mask.cpu().numpy()).astype(int))
                 self.img_gt_list.append(label.numpy()[0])
-
-
-
-                        
+        

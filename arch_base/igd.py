@@ -141,8 +141,6 @@ class IGD(ModelBase):
         self.generator.eval()
         self.discriminator.eval()
         self.clear_all_list()
-        self.img_gt_list = []
-        self.img_pred_list = []
 
         with torch.no_grad():
             for batch_id, batch in enumerate(valid_loader):

@@ -4,7 +4,6 @@ import torch.nn.functional as F
 
 from arch_base.base import ModelBase
 from tools.density import GaussianDensityTorch
-from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 
 
 __all__ = ['CutPaste']
@@ -86,8 +85,3 @@ class CutPaste(ModelBase):
             distances = density.predict(embeds)
             self.img_gt_list = labels
             self.img_pred_list = distances
-            # roc_auc = roc_auc_score(labels, distances)
-            # fpr, tpr, _ = roc_curve(labels, distances)
-            # img_auroc = auc(fpr, tpr)
-        
-        # return pixel_auroc, img_auroc

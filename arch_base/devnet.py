@@ -4,7 +4,6 @@ import numpy as np
 import argparse
 import torch.nn.functional as F
 from arch_base.base import ModelBase
-from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve, average_precision_score
 from loss_function.deviation_loss import DeviationLoss
 from loss_function.binaryfocal_loss import BinaryFocalLoss
 
@@ -117,12 +116,3 @@ class DevNet(ModelBase):
             self.img_gt_list.append(target.cpu().numpy()[0])
             self.img_pred_list.append(output.data.cpu().numpy()[0])
             self.img_path_list.append(batch['img_src'])
-
-        #     total_pred = np.append(total_pred, output.data.cpu().numpy())
-        #     total_target = np.append(total_target, target.cpu().numpy())
-
-
-        # img_auroc = roc_auc_score(total_target, total_pred)
-        # ap = average_precision_score(total_target, total_pred)
-
-        # return pixel_auroc, img_auroc

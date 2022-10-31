@@ -5,11 +5,9 @@ import argparse
 import torch.nn.functional as F
 from arch_base.base import ModelBase
 from tools.density import GaussianDensityTorch
-from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 
 __all__ = ['DNE']
 
-# contastive svdd
 class _DNE(nn.Module):
     def __init__(self, args, net, optimizer, scheduler):
         super(_DNE, self).__init__()
@@ -121,12 +119,8 @@ class DNE(ModelBase):
             distances = density.predict(embeds)
             self.img_gt_list = labels
             self.img_pred_list = distances
-            # roc_auc = roc_auc_score(labels, distances)
-            # fpr, tpr, _ = roc_curve(labels, distances)
-            # img_auroc = auc(fpr, tpr)
 
         elif self.args._eval_classifier == 'head':
-            # labels, outs = [], []
             with torch.no_grad():
                 for batch_id, batch in enumerate(valid_loader):
                     x = batch['img'].to(self.device)
@@ -136,11 +130,3 @@ class DNE(ModelBase):
                     self.img_pred_list.append(out.cpu().numpy()[0])
                     self.img_gt_list.append(label.cpu().numpy()[0])
                     self.img_path_list.append(batch['img_src'])
-        #             outs.append(out.cpu())
-        #             labels.append(label.cpu())
-
-        #     labels = torch.cat(labels)
-        #     outs = torch.cat(outs)
-        #     img_auroc = roc_auc_score(labels, outs)
-
-        # return pixel_auroc, img_auroc

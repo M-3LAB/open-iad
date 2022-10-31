@@ -40,7 +40,6 @@ class REVERSE(ModelBase):
                 loss.backward()
                 self.optimizer.step()
 
-
     def prediction(self, valid_loader, task_id):
         self.encoder.eval()
         self.bn.eval()

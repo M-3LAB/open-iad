@@ -3,7 +3,6 @@ import torch.nn as nn
 from models.patchcore.kcenter_greedy import KCenterGreedy 
 from torchvision import transforms
 import cv2
-from typing import List
 from tools.utils import *
 import os
 import torch.nn.functional as F
@@ -12,11 +11,9 @@ from sklearn.random_projection import SparseRandomProjection
 import faiss
 import math
 from scipy.ndimage import gaussian_filter
-from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve, average_precision_score
 from tools.visualize import save_anomaly_map, vis_embeddings
 from memory_augmentation.domain_generalization import feature_augmentation
 from arch_base.base import ModelBase
-from metrics.mvtec3d.au_pro import calculate_au_pro
 
 __all__ = ['PatchCore']
 
@@ -151,7 +148,6 @@ class PatchCore(ModelBase):
             embedding_data = self.embedding_coreset
             print(embedding_label)
             vis_embeddings(embedding_data, embedding_label, self.config['fewshot_exm'], '{}/vis_embedding.png'.format(self.file_path))
-
 
     def prediction(self, valid_loader, task_id=None):
         self.net.eval()

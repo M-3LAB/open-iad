@@ -5,7 +5,6 @@ import os
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
 from arch_base.base import ModelBase
-import numpy as np
 
 
 __all__ = ['SPADE']
@@ -113,8 +112,6 @@ class SPADE(ModelBase):
         topk_values, topk_indexes = torch.topk(dist_matrix, k=self.config['_top_k'], dim=1, largest=False)
         scores = torch.mean(topk_values, 1).cpu().detach().numpy()
         self.img_pred_list = scores
-        # calculate image-level AUROC
-        # img_auroc = roc_auc_score(self.img_gt_list, scores) 
 
         # score_map_list = []
         for t_idx in range(self.test_outputs['avgpool'].shape[0]):
