@@ -35,17 +35,16 @@ class RecordHelper():
         save_path = save_dir + '/result.txt'
 
         if paradim == 'semi':
-            save_path = save_path.replace('result.txt', 'result_{}.txt'.format(self.config['semi_anonmaly_num']))
+            save_path = '{}/result_{}.txt'.format(save_dir, self.config['semi_anonmaly_num'])
 
         if paradim == 'fewshot':
-            save_path = save_path.replace('result.txt', 'result_{}.txt'.format(self.config['fewshot_exm']))
+            save_path = '{}/result_{}.txt'.format(save_dir, self.config['fewshot_exm'])
 
         if paradim == 'noisy':
-            save_path = save_path.replace('result.txt', 'result_{}.txt'.format(self.config['noisy_ratio']))
-
+            save_path = '{}/result_{}.txt'.format(save_dir, self.config['noisy_ratio'])
 
         if paradim == 'continual':
-            save_path = save_path.replace('result.txt', 'result_{}.txt'.format(self.config['valid_task_id_tmp']))
+            save_path = '{}/result_{}.txt'.format(save_dir, self.config['valid_task_id_tmp'])
         
         with open(save_path, 'a') as f:
             print(result, file=f) 

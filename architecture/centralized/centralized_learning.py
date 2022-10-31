@@ -327,7 +327,6 @@ class CentralizedTrain():
             self.trainer.recorder.record_result(paradim, infor_result)
 
 
-
     def run_work_flow(self):
         self.load_config()
         self.preliminary()
