@@ -308,6 +308,9 @@ class CentralizedTrain():
         # test each task individually
         for task_id, valid_loader in enumerate(self.chosen_valid_loaders):
             self.trainer.prediction(valid_loader, task_id=task_id)
+            self.trainer.config['task_id'] = task_id
+            self.trainer.config['fewshot_exm'] = self.para_dict['fewshot_exm']
+            self.trainer.config['semi_anomaly_num'] = self.para_dict['semi_anomaly_num']
             pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all()
 
             infor = 'dataset_name: {} model_name: {} train_task_id: {} valid_task_id: {}'.format(\
