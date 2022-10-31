@@ -32,7 +32,7 @@ class RecordHelper():
     def record_result(self, result):
         paradim = self.paradigm_name()
         save_dir = '{}/benchmark/{}/{}/{}/{}'.format(self.config['work_dir'], paradim, self.config['dataset'],
-                                                                 self.config['model'], self.config['train_task_id_tmp'])
+                                                     self.config['model'], self.config['train_task_id_tmp'])
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
@@ -73,17 +73,17 @@ class RecordHelper():
         img_shape = pixel_pred_list[0].shape
         for i in range(len(img_path_list)):
             path_dir = img_path_list[i][0].split('/')
-            img_pred_path = '{}/{}_{}'.format(save_dir,path_dir[-2],path_dir[-1].replace('.','_heatmap.'))
+            img_pred_path = '{}/{}_{}'.format( save_dir, path_dir[-2], path_dir[-1].replace('.', '_heatmap.'))
             heatmap = self.cv2heatmap(pixel_pred_list[i]*255)
             cv2.imwrite(img_pred_path, heatmap)
-            img_gt_path = '{}/{}_{}'.format(save_dir,path_dir[-2],path_dir[-1].replace('.','_gt.'))
+            img_gt_path = '{}/{}_{}'.format(save_dir, path_dir[-2], path_dir[-1].replace('.', '_gt.'))
             cv2.imwrite(img_gt_path, pixel_gt_list[i]*255)
-            img_org_path = '{}/{}_{}'.format(save_dir,path_dir[-2],path_dir[-1].replace('.','_org.'))
+            img_org_path = '{}/{}_{}'.format(save_dir, path_dir[-2], path_dir[-1].replace('.', '_org.'))
             org_img = cv2.imread(img_path_list[i][0])
-            org_img = cv2.resize(org_img,img_shape)
+            org_img = cv2.resize(org_img, img_shape)
             cv2.imwrite(img_org_path, org_img)
             heatmap_on_img = self.heatmap_on_image(heatmap, org_img)
-            img_heatmapOnImg_path = '{}/{}_{}'.format(save_dir,path_dir[-2],path_dir[-1].replace('.','_heatmapOnImg.'))
+            img_heatmapOnImg_path = '{}/{}_{}'.format(save_dir, path_dir[-2], path_dir[-1].replace('.', '_heatmapOnImg.'))
             cv2.imwrite(img_heatmapOnImg_path, heatmap_on_img)
     
     def heatmap_on_image(self, heatmap, image):
