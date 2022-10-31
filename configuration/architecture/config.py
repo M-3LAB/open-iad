@@ -44,8 +44,8 @@ def parse_arguments_centralized():
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
-    parser.add_argument('--train-task-id', '-tid', type=int, default=[11], nargs='+')
-    parser.add_argument('--valid-task-id', '-vid', type=int, default=[11], nargs='+')
+    parser.add_argument('--train-task-id', '-tid', type=int, default=[1], nargs='+')
+    parser.add_argument('--valid-task-id', '-vid', type=int, default=[1], nargs='+')
     parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default= 0.0001)
 
     # vanilla learning

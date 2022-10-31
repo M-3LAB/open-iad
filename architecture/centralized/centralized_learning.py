@@ -1,3 +1,4 @@
+from distutils.log import info
 import imp
 from re import I
 from xml.dom.minidom import DOMImplementation
@@ -314,42 +315,16 @@ class CentralizedTrain():
             pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all()
             self.trainer.recorder.update(self.para_dict)
 
-            infor = 'paradigm: {} dataset: {} model: {} train_task_id: {} valid_task_id: {}'.format(self.trainer.recorder.paradigm(), \
+            paradim = self.trainer.recorder.paradigm_name()
+            infor_basic = 'paradigm: {} dataset: {} model: {} train_task_id: {} valid_task_id: {}'.format(paradim, 
                 self.para_dict['dataset'], self.para_dict['model'], self.para_dict['train_task_id_tmp'], self.para_dict['valid_task_id_tmp'])
 
-            save_path = None 
-            if self.para_dict['vanilla']:
-                save_path = '{}/result_{}_vanilla.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
+            infor_result = 'pixel_auroc: {:.4f} img_auroc: {:.4f} pixel_ap: {:.4f} img_ap: {:.4f} pixel_aupro: {:.4f}'.format(                                                                                  
+                pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro)
+            self.trainer.recorder.printer('{} {}'.format(infor_basic, infor_result))
 
-            if self.para_dict['semi']:
-                save_path = '{}/result_{}_semi.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
-
-            if self.para_dict['fewshot']:
-                infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])          
-                save_path = '{}/result_{}_fewshot_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
-                if self.para_dict['fewshot_data_aug']:
-                    save_path = '{}/result_{}_fewshot_{}_da.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
-                if self.para_dict['fewshot_feat_aug']:
-                    save_path = '{}/result_{}_fewshot_{}_fa.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
-                if self.para_dict['fewshot_data_aug'] and self.para_dict['fewshot_feat_aug']:
-                    save_path = '{}/result_{}_fewshot_{}_ma.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
-
-            if self.para_dict['noisy']:
-                infor = '{} noisy_ratio: {}'.format(infor, self.para_dict['noisy_ratio'])          
-                save_path = '{}/result_{}_noisy.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
-
-            if self.para_dict['continual']:
-                source_domain = ''
-                for i in self.para_dict['train_task_id']:  
-                    source_domain = source_domain + str(self.para_dict['train_task_id'][i])
-                save_path = '{}/result_{}_continual_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], source_domain) 
-            
-            infor = '{} pixel_auroc: {:.4f} img_auroc: {:.4f} pixel_ap: {:.4f} img_ap: {:.4f} pixel_aupro: {:.4f}'.format(\
-                infor, pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro)
-            print(infor)
-
-            with open(save_path, 'a') as f:
-                print(infor, file=f)
+            # save results
+            self.trainer.recorder.record_result(paradim, infor_result)
 
 
 

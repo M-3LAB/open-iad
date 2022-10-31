@@ -11,7 +11,7 @@ continual: false
 # fewshot learning
 fewshot: false 
 fewshot_exm: 5 
-fewshot_num_dg: 5
+fewshot_num_dg: 4
 fewshot_data_aug: false
 fewshot_feat_aug: false
 # noisy label
