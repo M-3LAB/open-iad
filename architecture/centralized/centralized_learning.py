@@ -1,3 +1,4 @@
+from distutils.log import info
 import imp
 from re import I
 from xml.dom.minidom import DOMImplementation
@@ -299,55 +300,34 @@ class CentralizedTrain():
        
 
     def work_flow(self):
-        print('-> train ...')
         # train all task in one time
-        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
-            print('run task: {}'.format(self.para_dict['train_task_id'][task_idx]))
-            self.trainer.train_model(train_loader, task_idx)
+        for i, train_loader in enumerate(self.chosen_train_loaders):
+            print('-> train ...')
+            self.para_dict['train_task_id_tmp'] = self.para_dict['train_task_id'][i]
+            print('run task: {}'.format(self.para_dict['train_task_id_tmp']))
+            self.trainer.train_model(train_loader, self.para_dict['train_task_id_tmp'])
 
-        print('-> test ...')
-        # test each task individually
-        for task_id, valid_loader in enumerate(self.chosen_valid_loaders):
-            self.trainer.prediction(valid_loader, task_id=task_id)
-            pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all()
+            print('-> test ...')
+            # test each task individually
+            for j, valid_loader in enumerate(self.chosen_valid_loaders):
+                # for continual
+                if j > i:
+                    break
+                self.para_dict['valid_task_id_tmp'] = self.para_dict['valid_task_id'][j]
+                self.trainer.prediction(valid_loader, task_id=self.para_dict['valid_task_id_tmp'])
+                pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all()
+                self.trainer.recorder.update(self.para_dict)
 
-            infor = 'dataset_name: {} model_name: {} train_task_id: {} valid_task_id: {}'.format(\
-                self.para_dict['dataset'], self.para_dict['model'], self.para_dict['train_task_id'], self.para_dict['valid_task_id'][task_id])
+                paradim = self.trainer.recorder.paradigm_name()
+                infor_basic = 'paradigm: {} dataset: {} model: {} train_task_id: {} valid_task_id: {}'.format(paradim, 
+                    self.para_dict['dataset'], self.para_dict['model'], self.para_dict['train_task_id_tmp'], self.para_dict['valid_task_id_tmp'])
 
-            save_path = None 
-            if self.para_dict['vanilla']:
-                save_path = '{}/result_{}_vanilla.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
+                infor_result = 'pixel_auroc: {:.4f} img_auroc: {:.4f} pixel_ap: {:.4f} img_ap: {:.4f} pixel_aupro: {:.4f}'.format(                                                                                  
+                    pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro)
+                self.trainer.recorder.printer('{} {}'.format(infor_basic, infor_result))
 
-            if self.para_dict['semi']:
-                save_path = '{}/result_{}_semi.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
-
-            if self.para_dict['fewshot']:
-                infor = '{} shot: {}'.format(infor, self.para_dict['fewshot_exm'])          
-                save_path = '{}/result_{}_fewshot_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
-                if self.para_dict['fewshot_data_aug']:
-                    save_path = '{}/result_{}_fewshot_{}_da.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
-                if self.para_dict['fewshot_feat_aug']:
-                    save_path = '{}/result_{}_fewshot_{}_fa.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
-                if self.para_dict['fewshot_data_aug'] and self.para_dict['fewshot_feat_aug']:
-                    save_path = '{}/result_{}_fewshot_{}_ma.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], self.para_dict['fewshot_exm']) 
-
-            if self.para_dict['noisy']:
-                infor = '{} noisy_ratio: {}'.format(infor, self.para_dict['noisy_ratio'])          
-                save_path = '{}/result_{}_noisy.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset']) 
-
-            if self.para_dict['continual']:
-                source_domain = ''
-                for i in self.para_dict['train_task_id']:  
-                    source_domain = source_domain + str(self.para_dict['train_task_id'][i])
-                save_path = '{}/result_{}_continual_{}.txt'.format(self.para_dict['work_dir'], self.para_dict['dataset'], source_domain) 
-            
-            infor = '{} pixel_auroc: {:.4f} img_auroc: {:.4f} pixel_ap: {:.4f} img_ap: {:.4f} pixel_aupro: {:.4f}'.format(\
-                infor, pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro)
-            print(infor)
-
-            with open(save_path, 'a') as f:
-                print(infor, file=f)
-
+                # save results
+                self.trainer.recorder.record_result(paradim, infor_result)
 
 
     def run_work_flow(self):

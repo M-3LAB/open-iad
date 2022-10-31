@@ -1,4 +1,5 @@
 from metrics.cal_metric import CalMetric
+from tools.record_helper import RecordHelper
 
 class ModelBase():
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
@@ -13,7 +14,9 @@ class ModelBase():
         self.pixel_pred_list = [] # list<numpy(m,n)>
         self.pixel_gt_list = [] # list<numpy(m,n)>
         self.img_path_list = [] # list<str>
-         
+
+        self.recorder = RecordHelper(self.config)
+
     def train_epoch(self, train_loader, task_id, inf=''):
         pass
 
@@ -22,11 +25,11 @@ class ModelBase():
         pass
 
     def clear_all_list(self):
-        self.pixel_gt_list.clear()
-        self.img_gt_list.clear()
-        self.pixel_pred_list.clear()
-        self.img_pred_list.clear()
-        self.img_path_list.clear()
+        self.img_pred_list = []
+        self.img_gt_list = []
+        self.pixel_pred_list = []
+        self.pixel_gt_list = []
+        self.img_path_list = []
 
     def cal_metric_all(self):
         return self.metric.cal_metric(self.img_pred_list, self.img_gt_list,
