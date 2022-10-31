@@ -1,31 +1,19 @@
-from math import gamma
-from arch_base.base import ModelBase
-from models.cfa.metrics import get_threshold, cal_img_roc, cal_pxl_roc, upsample, rescale, gaussian_smooth
 import torch
-import torch.nn as nn
-from models.cfa.efficientnet import EfficientNet as effnet
-from models.cfa.resnet import wide_resnet50_2, resnet18
-from models.cfa.vgg import vgg19_bn as vgg19
+from arch_base.base import ModelBase
+from models.cfa.metrics import  upsample, rescale, gaussian_smooth
 from models.cfa.cfa import DSVDD
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
-import numpy as np
-from sklearn.metrics import roc_auc_score
 
 __all__ = ['CFA']
 
 class CFA(ModelBase):
-
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
         super(CFA, self).__init__(config, device, file_path, net, optimizer, scheduler)
         self.config = config
         self.device = device
         self.file_path = file_path
-
-        if self.config['backbone'] == 'resnet18':
-            self.backbone = resnet18(pretrained=True, progress=True)
-
-        self.backbone.to(self.device)
+        self.net = net.resnet18.to(self.device)
     
     @staticmethod 
     def upsample(x, size, mode):
@@ -43,40 +31,13 @@ class CFA(ModelBase):
     def rescale(x):
         return (x - x.min()) / (x.max() - x.min())
     
-    @staticmethod
-    def roc_auc_img(gt, score):
-        img_roc_auc = roc_auc_score(gt, score)
-        return img_roc_auc
-    
-    @staticmethod
-    def roc_auc_pixel(gt, score):
-        per_pixel_roc_auc = roc_auc_score(gt.flatten(), score.flatten())
-        return per_pixel_roc_auc
-        
-    
-    @staticmethod
-    def cal_img_roc(scores, gt_list):
-        img_scores = scores.reshape(scores.shape[0], -1).max(axis=1)
-        gt_list = np.asarray(gt_list)
-        img_roc_auc = CFA.roc_auc_img(gt_list, img_scores)
-
-        return img_roc_auc
-    
-    def cal_pxl_roc(gt_mask, scores):
-        per_pixel_rocauc = CFA.roc_auc_pixel(gt_mask.flatten(), scores.flatten())
-    
-        return per_pixel_rocauc
-
     def train_model(self, train_loader, task_id, inf=''):
+        self.net.eval()
 
-        self.loss_fn = DSVDD(model=self.backbone, data_loader=train_loader,
-                             cnn=self.config['backbone'], gamma_c=self.config['gamma_c'],
+        self.loss_fn = DSVDD(model=self.net, data_loader=train_loader,
+                             cnn='resnet18', gamma_c=self.config['gamma_c'],
                              gamma_d=self.config['gamma_d'], device=self.device)
-
         self.loss_fn = self.loss_fn.to(self.device)
-
-        self.backbone.eval()
-
         self.loss_fn.train()
 
         params = [{'params' : self.loss_fn.parameters()},]
@@ -87,12 +48,12 @@ class CFA(ModelBase):
             for batch_id, batch in enumerate(train_loader):
                 optimizer.zero_grad()
                 img = batch['img'].to(self.device)
-                p = self.backbone(img)
+                p = self.net(img)
 
                 loss, _ = self.loss_fn(p)
                 loss.backward()
                 optimizer.step()
-
+            
     def prediction(self, valid_loader, task_id=None):
         self.loss_fn.eval()
         self.clear_all_list()
@@ -100,7 +61,6 @@ class CFA(ModelBase):
 
         with torch.no_grad():
             for batch_id, batch in enumerate(valid_loader):
-
                 img = batch['img'].to(self.device)
                 label = batch['label']
                 mask = batch['mask'].to(self.device)
@@ -111,15 +71,16 @@ class CFA(ModelBase):
                 self.pixel_gt_list.append(mask.cpu().detach().numpy()[0,0,:,:])
                 self.img_path_list.append(batch['img_src'])
 
-                p = self.backbone(img)
+                p = self.net(img)
 
                 _, score = self.loss_fn(p)
                 heatmap = score.cpu().detach()
-                heatmap = torch.mean(heatmap, dim=1)
+                heatmap = torch.mean(heatmap, dim=1) 
                 heatmaps = torch.cat((heatmaps, heatmap), dim=0) if heatmaps != None else heatmap
        
         heatmaps = upsample(heatmaps, size=img.size(2), mode='bilinear') 
         heatmaps = gaussian_smooth(heatmaps, sigma=4)
+        
         scores = rescale(heatmaps)
         for i in range(scores.shape[0]):
             self.pixel_pred_list.append(scores[i])
