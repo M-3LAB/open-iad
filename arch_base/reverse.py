@@ -2,7 +2,6 @@ import torch
 import numpy as np
 from torch.nn import functional as F
 from arch_base.base import ModelBase
-from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 from scipy.ndimage import gaussian_filter
 from loss_function.reverse_loss import reverse_loss
 
@@ -10,6 +9,7 @@ __all__ = ['REVERSE']
 
 class REVERSE(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
+        super(REVERSE, self).__init__(config, device, file_path, net, optimizer, scheduler)
         self.config = config
         self.device = device
         self.file_path = file_path
@@ -42,10 +42,10 @@ class REVERSE(ModelBase):
 
 
     def prediction(self, valid_loader, task_id):
-        pixel_auroc, img_auroc = 0, 0
         self.encoder.eval()
         self.bn.eval()
         self.decoder.eval()
+        self.clear_all_list()
 
         self.pixel_gt_list = []
         self.pixel_pred_list = []
@@ -66,17 +66,18 @@ class REVERSE(ModelBase):
                 mask[mask >= 0.5] = 1
                 mask[mask < 0.5] = 0
 
-                self.pixel_gt_list.extend(mask.cpu().numpy().astype(int).ravel())
-                self.pixel_pred_list.extend(anomaly_map.ravel())
-                self.img_gt_list.append(label.numpy())
+                self.pixel_gt_list.append(mask.cpu().numpy()[0,0].astype(int))
+                self.pixel_pred_list.append(anomaly_map)
+                self.img_gt_list.append(label.numpy()[0])
                 self.img_pred_list.append(np.max(anomaly_map))
+                self.img_path_list.append(batch['img_src'])
         
-        pixel_auroc = roc_auc_score(self.pixel_gt_list, self.pixel_pred_list)
-        img_auroc = roc_auc_score(self.img_gt_list, self.img_pred_list)
+        # pixel_auroc = roc_auc_score(self.pixel_gt_list, self.pixel_pred_list)
+        # img_auroc = roc_auc_score(self.img_gt_list, self.img_pred_list)
         
-        return pixel_auroc, img_auroc
+        # return pixel_auroc, img_auroc
 
-    def cal_anomaly_map(self, fs_list, ft_list, out_size=224, amap_mode='full'):
+    def cal_anomaly_map(self, fs_list, ft_list, out_size=256, amap_mode='full'):
         if amap_mode == 'mul':
             anomaly_map = np.ones([out_size, out_size])
         else:

@@ -181,13 +181,3 @@ class PaDim(ModelBase):
         self.img_pred_list = img_scores
         self.img_gt_list = np.asarray(self.img_gt_list)
         self.pixel_pred_list = scores
-        # img_auroc = roc_auc_score(self.img_gt_list, img_scores) 
-
-        # calculate pixel-level AUROC
-        # self.pixel_gt_list = np.array(self.pixel_gt_list).flatten().astype(int)
-        # mask = scores.flatten()
-        # pixel_auroc = roc_auc_score(self.pixel_gt_list, mask.astype(int))
-
-        # return pixel_auroc, img_auroc
-
-
