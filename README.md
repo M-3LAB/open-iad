@@ -32,7 +32,7 @@ python3 mmad_training.py
 | semi | -s | all data (id=0) + anomaly data (id=0) | all data (id=0) - anomaly data (id=0)|
 | continual | -c| all data (id=0 and 1)| all data (id=0 or 1)|
 | fewshot | -f | fewshot (id=0) | all data (id=0) |
-| noisy | -n | all data (id=0) + noisy data (id=0) | all data (id=0) - noisy data (id=0)|
+| noisy | -ny | all data (id=0) + noisy data (id=0) | all data (id=0) - noisy data (id=0)|
 
 
 | Method / -m | Net / -n |
