@@ -21,7 +21,8 @@ class MVTec2DF3D(Dataset):
         self.data_path = data_path
         self.learning_mode = learning_mode
         self.phase = phase
-        self.data_transform = data_transform
+        self.img_transform = data_transform[0]
+        self.mask_transform = data_transform[1] 
         self.class_name = mvtec2df3d_classes()
         assert set(self.class_name) <= set(mvtec2df3d_classes())
         
@@ -41,21 +42,11 @@ class MVTec2DF3D(Dataset):
         self.load_dataset()
         self.allocate_task_data()
 
-        # data preprocessing 
-        self.imge_transform = T.Compose([T.Resize((self.data_transform['data_size'], self.data_transform['data_size'])),
-                                        T.CenterCrop(self.data_transform['data_crop_size']),
-                                        T.ToTensor(),
-                                        T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-                                        ])
-        self.mask_transform = T.Compose([T.Resize(self.data_transform['mask_size']),
-                                        T.CenterCrop(self.data_transform['mask_crop_size']),
-                                        T.ToTensor(),
-                                        ])
     def __getitem__(self, idx):
         img_src, label, mask, task_id = self.imgs_list[idx], self.labels_list[idx], self.masks_list[idx], self.task_ids_list[idx]
 
         img = Image.open(img_src).convert('RGB')
-        img = self.imge_transform(img)
+        img = self.img_transform(img)
 
         if label == 0:
             mask = torch.zeros([1, img.shape[1], img.shape[2]])

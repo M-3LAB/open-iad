@@ -40,7 +40,7 @@ class RecordHelper():
         if paradim == 'vanilla':
             save_path = save_path
         if paradim == 'semi':
-            save_path = '{}/result_{}.txt'.format(save_dir, self.config['semi_anonmaly_num'])
+            save_path = '{}/result_{}.txt'.format(save_dir, self.config['semi_anomaly_num'])
         if paradim == 'fewshot':
             save_path = '{}/result_{}.txt'.format(save_dir, self.config['fewshot_exm'])
         if paradim == 'continual':
@@ -59,7 +59,7 @@ class RecordHelper():
         if paradim == 'vanilla':
             save_dir = save_dir + '/vis'
         if paradim == 'semi':
-            save_dir = '{}/vis_{}'.format(save_dir, self.config['semi_anonmaly_num'])
+            save_dir = '{}/vis_{}'.format(save_dir, self.config['semi_anomaly_num'])
         if paradim == 'fewshot':
             save_dir = '{}/vis_{}'.format(save_dir, self.config['fewshot_exm'])
         if paradim == 'continual':

@@ -28,10 +28,10 @@ class ModelBase():
         self.clear_all_list()
 
         self.prediction(vis_loader, task_id)
-
-        self.recorder.record_images(self.img_pred_list, self.img_gt_list,
-                                    self.pixel_pred_list, self.pixel_gt_list,
-                                    self.img_path_list)
+        if len(self.pixel_gt_list)!=0 :
+            self.recorder.record_images(self.img_pred_list, self.img_gt_list,
+                                        self.pixel_pred_list, self.pixel_gt_list,
+                                        self.img_path_list)
         
     def clear_all_list(self):
         self.img_pred_list = []

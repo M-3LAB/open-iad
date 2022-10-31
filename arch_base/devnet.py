@@ -92,17 +92,10 @@ class DevNet(ModelBase):
                 train_loss += loss.item()
 
     def prediction(self, valid_loader, task_id):
-        self.pixel_gt_list.clear()
-        self.img_gt_list.clear()
-        self.pixel_pred_list.clear()
-        self.img_pred_list.clear()
-        self.img_path_list.clear()
         self.model.eval()
-        pixel_auroc, img_auroc = 0, 0
+        self.clear_all_list()
 
         test_loss = 0.0
-        total_pred = np.array([])
-        total_target = np.array([])
 
         for batch_id, batch in enumerate(valid_loader):
             image = batch['img'].to(self.device)

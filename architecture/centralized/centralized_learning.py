@@ -84,12 +84,12 @@ class CentralizedTrain():
 
     def load_data(self):
         dataset_name = {'mvtec2d': ('data_io.mvtec2d', 'mvtec2d', 'MVTec2D'),
-                        'mvtec2df3d': ('data_io', 'mvtec2df3d', 'MVTec2DF3D'),
+                        'mvtec2df3d': ('data_io.mvtec2df3d', 'mvtec2df3d', 'MVTec2DF3D'),
                         'mvtecloco': ('data_io.mvtecloco', 'mvtecloco', 'MVTecLoco'),
-                        'mpdd': ('data_io', 'mpdd', 'MPDD'),
-                        'btad': ('data_io', 'btad', 'BTAD'),
-                        'mtd': ('data_io', 'mtd', 'MTD'),
-                        'mvtec3d': ('data_io', 'mvtec3d', 'MVTec3D'), 
+                        'mpdd': ('data_io.mpdd', 'mpdd', 'MPDD'),
+                        'btad': ('data_io.btad', 'btad', 'BTAD'),
+                        'mtd': ('data_io.mtd', 'mtd', 'MTD'),
+                        'mvtec3d': ('data_io.mvtec3d', 'mvtec3d', 'MVTec3D'), 
                         }
 
         dataset_package = __import__(dataset_name[self.para_dict['dataset']][0])
@@ -125,9 +125,6 @@ class CentralizedTrain():
                                                     self.valid_dataset, 
                                                     noisy_ratio=self.para_dict['noisy_ratio'], 
                                                     noisy_overlap=self.para_dict['noisy_overlap'])
-
-        if self.para_dict['model'] == 'devnet':
-            self.train_dataset = self.train_semi_dataset
 
         self.train_loaders, self.valid_loaders = [], []
         self.refer_loaders = []

@@ -77,7 +77,7 @@ python3 centralized_training.py --continual --model patchcore --net resent18 --d
 
 > Fewshot
 ```bash
-python3 centralized_training.py --fewshot --fewshot-exm 1 --fewshot-num-dg 4 --model patchcore --net resent18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 1 -g 1
+python3 centralized_training.py --fewshot --fewshot-exm 1 --fewshot-num-dg 4 --model patchcore --net resnet18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 1 -g 1
 ```
 > Semi
 ```bash
@@ -87,7 +87,7 @@ python3 centralized_training.py -s --model dra --net net_dra --dataset mvtecloco
 
 > Noisy
 ```bash
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model patchcore --net resent18 --dataset mvtec2d --train-task-id 0 --valid-task-id 1 --coreset-sampling-ratio 0.001 -g 1
+python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model patchcore --net resnet18 --dataset mvtec2d --train-task-id 0 --valid-task-id 1 --coreset-sampling-ratio 0.001 -g 1
 ```
 
 
