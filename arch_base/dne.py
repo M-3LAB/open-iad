@@ -92,13 +92,8 @@ class DNE(ModelBase):
 
 
     def prediction(self, valid_loader, task_id):
-        self.pixel_gt_list.clear()
-        self.img_gt_list.clear()
-        self.pixel_pred_list.clear()
-        self.img_pred_list.clear()
-        self.img_path_list.clear()
         self.model.eval()
-        pixel_auroc, img_auroc = 0, 0
+        self.clear_all_list()
 
         density = self.model.training_epoch(self.density, self.one_epoch_embeds, self.task_wise_mean, 
                                           self.task_wise_cov, self.task_wise_train_data_nums, task_id)
