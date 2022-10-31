@@ -1,6 +1,6 @@
 model: csflow
 train_batch_size: 16
-valid_batch_size: 16
+valid_batch_size: 1
 net: net_csflow # resnet, vit, net_csflow, net_draem, net_revdis
 num_epochs: 50
 train_aug_type: normal
