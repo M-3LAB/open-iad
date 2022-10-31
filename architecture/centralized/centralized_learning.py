@@ -301,21 +301,21 @@ class CentralizedTrain():
     def work_flow(self):
         print('-> train ...')
         # train all task in one time
-        for task_idx, train_loader in enumerate(self.chosen_train_loaders):
-            print('run task: {}'.format(self.para_dict['train_task_id'][task_idx]))
-            self.trainer.train_model(train_loader, task_idx)
+        for idx, train_loader in enumerate(self.chosen_train_loaders):
+            self.para_dict['train_task_id_tmp'] = self.para_dict['train_task_id'][idx]
+            print('run task: {}'.format(self.para_dict['train_task_id_tmp']))
+            self.trainer.train_model(train_loader, self.para_dict['train_task_id_tmp'])
 
         print('-> test ...')
         # test each task individually
-        for task_id, valid_loader in enumerate(self.chosen_valid_loaders):
-            self.trainer.prediction(valid_loader, task_id=task_id)
-            self.trainer.config['task_id'] = task_id
-            self.trainer.config['fewshot_exm'] = self.para_dict['fewshot_exm']
-            self.trainer.config['semi_anomaly_num'] = self.para_dict['semi_anomaly_num']
+        for idx, valid_loader in enumerate(self.chosen_valid_loaders):
+            self.para_dict['valid_task_id_tmp'] = self.para_dict['valid_task_id'][idx]
+            self.trainer.prediction(valid_loader, task_id=self.para_dict['valid_task_id_tmp'])
             pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all()
+            self.trainer.recorder.update(self.para_dict)
 
-            infor = 'dataset_name: {} model_name: {} train_task_id: {} valid_task_id: {}'.format(\
-                self.para_dict['dataset'], self.para_dict['model'], self.para_dict['train_task_id'], self.para_dict['valid_task_id'][task_id])
+            infor = 'paradigm: {} dataset: {} model: {} train_task_id: {} valid_task_id: {}'.format(self.trainer.recorder.paradigm(), \
+                self.para_dict['dataset'], self.para_dict['model'], self.para_dict['train_task_id_tmp'], self.para_dict['valid_task_id_tmp'])
 
             save_path = None 
             if self.para_dict['vanilla']:
