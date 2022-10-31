@@ -30,9 +30,6 @@ class PaDim(ModelBase):
         self.features = []
         self.get_layer_features()
 
-        self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
-        self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])]) 
-
         source_domain = ''
         if self.config['continual']:
             for i in self.config['train_task_id']:  
@@ -53,12 +50,6 @@ class PaDim(ModelBase):
         self.net.layer3[-1].register_forward_hook(hook_t)
     
     @staticmethod
-    def dict_clear(outputs):
-        for key, value in outputs.items():
-            if isinstance(value, list): 
-                value.clear()
-    
-    @staticmethod
     def embedding_concate(x, y):
         B, C1, H1, W1 = x.size()
         _, C2, H2, W2 = y.size()
@@ -75,8 +66,7 @@ class PaDim(ModelBase):
 
     def train_model(self, train_loader, task_id, inf=''):
         self.net.eval()
-
-        PaDim.dict_clear(self.train_outputs)
+        self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
 
         for _ in range(self.config['num_epochs']):
             for batch_id, batch in enumerate(train_loader):
@@ -118,7 +108,7 @@ class PaDim(ModelBase):
     def prediction(self, valid_loader, task_id):
         self.net.eval()
         self.clear_all_list()
-        PaDim.dict_clear(self.test_outputs) 
+        self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])]) 
 
         for batch_id, batch in enumerate(valid_loader):
             img = batch['img'].to(self.device)
@@ -128,14 +118,14 @@ class PaDim(ModelBase):
             mask[mask >= 0.5] = 1
             mask[mask < 0.5] = 0
             self.img_gt_list.append(label.cpu().detach().numpy())
-            self.pixel_gt_list.append(mask.cpu().detach().numpy()[0,0])
+            self.pixel_gt_list.append(mask.cpu().detach().numpy()[0, 0])
             self.img_path_list.append(batch['img_src'])
             # extract features from backbone
             with torch.no_grad():
                 _ = self.net(img)
 
             # get the intermediate layer outputs
-            for k,v in zip(self.test_outputs.keys(), self.features):
+            for k, v in zip(self.test_outputs.keys(), self.features):
                 self.test_outputs[k].append(v.cpu().detach())
             # initialize hook outputs
             self.features = [] 

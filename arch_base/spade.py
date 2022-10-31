@@ -20,9 +20,6 @@ class SPADE(ModelBase):
  
         self.features = []
         self.get_layer_features()
-
-        self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', []), ('avgpool', [])])
-        self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', []), ('avgpool', [])])
         
         if self.config['continual']:
             for i in self.config['train_task_id']:  
@@ -32,12 +29,6 @@ class SPADE(ModelBase):
 
         self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', source_domain)
         create_folders(self.embedding_dir_path)
-    
-    @staticmethod
-    def dict_clear(outputs):
-        for key, value in outputs.items():
-            if isinstance(value, list): 
-                value.clear()
     
     def get_layer_features(self):
         
@@ -62,7 +53,7 @@ class SPADE(ModelBase):
 
     def train_model(self, train_loader, task_id, inf=''):
         self.net.eval()
-        SPADE.dict_clear(self.train_outputs)
+        self.train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', []), ('avgpool', [])])
 
         for _ in range(self.config['num_epochs']):
             for batch_id, batch in enumerate(train_loader):
@@ -86,7 +77,7 @@ class SPADE(ModelBase):
     def prediction(self, valid_loader, task_id):
         self.net.eval()
         self.clear_all_list()
-        SPADE.dict_clear(self.test_outputs)
+        self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', []), ('avgpool', [])])
 
         for batch_id, batch in enumerate(valid_loader):
             img = batch['img'].to(self.device)

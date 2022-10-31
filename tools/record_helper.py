@@ -50,7 +50,8 @@ class RecordHelper():
         with open(save_path, 'a') as f:
             print(result, file=f) 
 
-    def record_images(self, paradim, img_pred_list, img_gt_list, pixel_pred_list, pixel_gt_list, img_path_list):
+    def record_images(self, img_pred_list, img_gt_list, pixel_pred_list, pixel_gt_list, img_path_list):
+        paradim = self.paradigm_name()
         if paradim == 'continual':
             append_dir = '/'+str(self.config['train_task_id_tmp'])
         elif paradim == 'fewshot':
