@@ -47,3 +47,6 @@ class RecordHelper():
         
         with open(save_path, 'a') as f:
             print(result, file=f) 
+
+    def record_images(self, img_pred_list, img_gt_list, pixel_pred_list, pixel_gt_list, img_path_list):
+        pass

@@ -24,6 +24,14 @@ class ModelBase():
     def prediction(self, valid_loader, task_id=None):
         pass
 
+    def visualization(self, vis_loader, task_id=None):
+        self.clear_all_list()
+
+        self.prediction(vis_loader, task_id)
+        self.recorder.record_images(self.img_pred_list, self.img_gt_list,
+                                    self.pixel_pred_list, self.pixel_gt_list,
+                                    self.img_path_list)
+        
     def clear_all_list(self):
         self.img_pred_list = []
         self.img_gt_list = []
@@ -35,3 +43,4 @@ class ModelBase():
         return self.metric.cal_metric(self.img_pred_list, self.img_gt_list,
                                       self.pixel_pred_list, self.pixel_gt_list,
                                       self.img_path_list)
+    
