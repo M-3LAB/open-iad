@@ -76,6 +76,8 @@ class CalMetric():
             train_type = 'continual'
         elif self.config['noisy']:
             train_type = 'noisy'
+        elif self.config['semi']:
+            train_type = 'semi'
         elif self.config['fedrated']:
             train_type = 'fedrated'
         else:
@@ -83,16 +85,26 @@ class CalMetric():
 
         path_dir = self.img_path_list[0][0].split('/')
         img_shape = img_shape_list[path_dir[-4]]
-        if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+'structural_anomalies'):
-            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+'structural_anomalies')
-        if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+'logical_anomalies'):
-            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+'logical_anomalies')
-        if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+'good'):
-            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+'good')
+        if train_type == 'continual':
+            append_dir = '/'+str(self.config['train_task_id_tmp'])
+        elif train_type == 'fewshot':
+            append_dir = '/'+str(self.config['fewshot_exm'])
+        elif train_type == 'noisy':
+            append_dir = '/'+str(self.config['noisy_ratio'])
+        elif train_type == 'semi':
+            append_dir = '/'+str(self.config['semi_anomaly_num'])
+        else:
+            append_dir = ''
+        if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+'structural_anomalies'):
+            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+'structural_anomalies')
+        if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+'logical_anomalies'):
+            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+'logical_anomalies')
+        if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+'good'):
+            os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+'good')
         for i in range(len(self.img_path_list)):
             path_dir = self.img_path_list[i][0].split('/')
             anomaly_map = cv2.resize(self.pixel_pred_list[i],(img_shape[0],img_shape[1]))
-            cv2.imwrite('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+'/'+path_dir[-4]+'/test/'+path_dir[-2]+'/'+path_dir[-1].replace('png','tiff'),anomaly_map)
+            cv2.imwrite('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+path_dir[-2]+'/'+path_dir[-1].replace('png','tiff'),anomaly_map)
             
     def cal_logical_img_auc(self):
         img_pred_logical_list = []

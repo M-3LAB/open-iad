@@ -4,7 +4,6 @@ import os
 from tools.utils import create_folders
 from arch_base.base import ModelBase
 import numpy as np
-from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 import copy
 
 __all__ = ['STPM']
@@ -112,6 +111,7 @@ class STPM(ModelBase):
             mask = batch['mask']
             mask[mask>=0.5] = 1
             mask[mask<0.5] = 0
+            self.img_path_list.append(batch['img_src'])
 
             with torch.set_grad_enabled(False):
                 self.features_teacher.clear()
@@ -127,12 +127,6 @@ class STPM(ModelBase):
                 self.pixel_gt_list.append(mask.cpu().numpy()[0,0].astype(int))
                 self.img_pred_list.append(np.max(mask.cpu().numpy()).astype(int))
                 self.img_gt_list.append(label.numpy()[0])
-        
-        # pixel_auroc = roc_auc_score(self.pixel_gt_list, self.pixel_pred_list)
-        # img_auroc = roc_auc_score(self.img_gt_list, self.img_pred_list)
-
-        # return pixel_auroc, img_auroc
-
 
 
 
