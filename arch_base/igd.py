@@ -171,6 +171,7 @@ class IGD(ModelBase):
                     guass_svdd_loss = 1 - torch.exp(dist)
                     anomaly_score = (0.5 * ms_ssim_l1 + 0.5 * guass_svdd_loss).cpu().detach().numpy()
                     self.img_pred_list.append(float(anomaly_score))
+                    self.img_path_list.append(batch['img_src'])
 
                 self.img_gt_list.extend(label.numpy().tolist())
 

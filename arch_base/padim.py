@@ -8,14 +8,13 @@ from arch_base.base import ModelBase
 from tools.utils import *
 from scipy.spatial.distance import mahalanobis
 from scipy.ndimage import gaussian_filter
-from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 from tools.utils import save_feat_pickle
-
 
 __all__ = ['PaDim']
 
 class PaDim(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
+        super(PaDim, self).__init__(config, device, file_path, net, optimizer, scheduler)
         self.config = config
         self.device = device
         self.file_path = file_path
@@ -118,18 +117,19 @@ class PaDim(ModelBase):
 
     def prediction(self, valid_loader, task_id):
         self.net.eval()
-
-        self.pixel_gt_list = []
-        self.img_gt_list = []
+        self.clear_all_list()
         PaDim.dict_clear(self.test_outputs) 
 
         for batch_id, batch in enumerate(valid_loader):
             img = batch['img'].to(self.device)
             mask = batch['mask'].to(self.device)
-            label = batch['label'].to(self.device)
-            
+            label = batch['label'].to(self.device)        
+               
+            mask[mask >= 0.5] = 1
+            mask[mask < 0.5] = 0
             self.img_gt_list.extend(label.cpu().detach().numpy())
-            self.pixel_gt_list.extend(mask.cpu().detach().numpy())
+            self.pixel_gt_list.extend(mask.squeeze(0).cpu().detach().numpy())
+            self.img_path_list.append(batch['img_src'])
             # extract features from backbone
             with torch.no_grad():
                 _ = self.net(img)
@@ -178,16 +178,16 @@ class PaDim(ModelBase):
 
         # calculate image-level ROC AUC score
         img_scores = scores.reshape(scores.shape[0], -1).max(axis=1)
+        self.img_pred_list = img_scores
         self.img_gt_list = np.asarray(self.img_gt_list)
-        img_auroc = roc_auc_score(self.img_gt_list, img_scores) 
+        self.pixel_pred_list = scores
+        # img_auroc = roc_auc_score(self.img_gt_list, img_scores) 
 
         # calculate pixel-level AUROC
-        self.pixel_gt_list = np.array(self.pixel_gt_list).flatten().astype(int)
-        mask = scores.flatten()           
-        mask[mask >= 0.5] = 1
-        mask[mask < 0.5] = 0
-        pixel_auroc = roc_auc_score(self.pixel_gt_list, mask.astype(int))
+        # self.pixel_gt_list = np.array(self.pixel_gt_list).flatten().astype(int)
+        # mask = scores.flatten()
+        # pixel_auroc = roc_auc_score(self.pixel_gt_list, mask.astype(int))
 
-        return pixel_auroc, img_auroc
+        # return pixel_auroc, img_auroc
 
 
