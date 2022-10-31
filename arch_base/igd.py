@@ -1,18 +1,14 @@
 import torch
-import torch.nn as nn
+from arch_base.base import ModelBase
 from models.igd.ssim_module import *
 from models.igd.mvtec_module import *
-from pytorch_msssim import ms_ssim, ssim
-from tools.utils import create_folders
-from sklearn.metrics import roc_curve, auc
-from sklearn import metrics
-
+from pytorch_msssim import ms_ssim
 
 __all__ = ['IGD']
 
-
-class IGD():
+class IGD(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
+        super(IGD, self).__init__(config, device, file_path, net, optimizer, scheduler)
         self.config = config
         self.device = device
         self.file_path = file_path
@@ -142,10 +138,9 @@ class IGD():
 
 
     def prediction(self, valid_loader, task_id):
-        pixel_auroc, img_auroc = 0, 0
-
         self.generator.eval()
         self.discriminator.eval()
+        self.clear_all_list()
         self.img_gt_list = []
         self.img_pred_list = []
 
@@ -178,11 +173,6 @@ class IGD():
                     self.img_pred_list.append(float(anomaly_score))
 
                 self.img_gt_list.extend(label.numpy().tolist())
-        
-        fpr, tpr, thresholds = metrics.roc_curve(self.img_gt_list, self.img_pred_list, pos_label=1)
-        img_auroc = auc(fpr, tpr)
-
-        return pixel_auroc, img_auroc
 
 
                     

@@ -2,7 +2,7 @@ model: igd
 net: net_igd
 num_epochs: 1 # 256
 train_batch_size: 16 
-valid_batch_size: 16
+valid_batch_size: 1
 train_aug_type: normal
 valid_aug_type: normal
 

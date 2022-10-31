@@ -2,11 +2,10 @@ import torch
 import torch.nn as nn
 from arch_base.base import ModelBase
 from torchvision import models
-from models.favae.func import EarlyStop,AverageMeter, feature_extractor, print_log
+from models.favae.func import EarlyStop,AverageMeter, feature_extractor
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
 import numpy as np
-from sklearn.metrics import precision_recall_curve, roc_auc_score, roc_curve
 
 __all__ = ['FAVAE']
 
@@ -59,7 +58,6 @@ class FAVAE(ModelBase):
         self.vaenet.eval()
         self.teacher.eval()
         self.clear_all_list()
-        pixel_auroc, img_auroc = 0, 0
 
         pixel_pred_list = []
         gt_mask_list = []
@@ -84,14 +82,11 @@ class FAVAE(ModelBase):
 
                 for i in range(score.shape[0]):
                     score[i] = gaussian_filter(score[i], sigma=4)
-                # print(score.shape)
                 pixel_pred_list.append(score.reshape(img.size(2),img.size(2)))
                 recon_imgs.extend(output.cpu().numpy())
                 mask[mask>=0.5] = 1
                 mask[mask<0.5] = 0
                 gt_mask_list.append(mask[0,0].astype(int))
-                # self.pixel_gt_list.append(mask[0,0].astype(int))
-                # self.pixel_pred_list.append(score)
                 self.img_path_list.append(batch['img_src'])
         
         max_anomaly_score = np.array(pixel_pred_list).max()
@@ -99,9 +94,3 @@ class FAVAE(ModelBase):
         pixel_pred_list = (pixel_pred_list - min_anomaly_score) / (max_anomaly_score - min_anomaly_score)
         self.pixel_gt_list = gt_mask_list
         self.pixel_pred_list = pixel_pred_list
-        print(len(self.pixel_gt_list))
-        print(len(self.pixel_pred_list))
-
-        pixel_auroc = roc_auc_score(np.array(gt_mask_list).astype(int).flatten(), pixel_pred_list.astype(int).flatten())
-
-        # return pixel_auroc, img_auroc

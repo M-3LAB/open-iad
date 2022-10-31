@@ -49,6 +49,7 @@ python3 mmad_training.py
 | reverse | net_reverse |
 | favae | net_favae |
 | cfa | net_cfa |
+| cut_paste | vit_b_16 |
 
 
 
@@ -61,7 +62,7 @@ python3 centralized_training.py --vanilla --model dne --net vit_b_16 --dataset m
 python3 centralized_training.py -v --model fastflow  --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 python3 centralized_training.py -v --model cutpaste  --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
 python3 centralized_training.py -v --model favae --net net_favae --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-
+python3 centralized_training.py -v --model cutpaste -n vit_b_16 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --valid-task-id 0 -g 7
 ```
 
 > Continual
