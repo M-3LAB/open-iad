@@ -61,6 +61,7 @@ python3 centralized_training.py --vanilla --model cfa --net resnet18 --dataset m
 python3 centralized_training.py --vanilla --model dne --net vit_b_16 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 python3 centralized_training.py -v --model fastflow  --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 python3 centralized_training.py -v --model cutpaste  --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
+python3 centralized_training.py -v --model padim -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 python3 centralized_training.py -v --model favae --net net_favae --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
 python3 centralized_training.py -v --model cutpaste -n vit_b_16 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 python3 centralized_training.py -v --model igd -n net_igd --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7

@@ -127,8 +127,8 @@ class PaDim(ModelBase):
                
             mask[mask >= 0.5] = 1
             mask[mask < 0.5] = 0
-            self.img_gt_list.extend(label.cpu().detach().numpy())
-            self.pixel_gt_list.extend(mask.squeeze(0).cpu().detach().numpy())
+            self.img_gt_list.append(label.cpu().detach().numpy())
+            self.pixel_gt_list.append(mask.cpu().detach().numpy()[0,0])
             self.img_path_list.append(batch['img_src'])
             # extract features from backbone
             with torch.no_grad():
@@ -179,5 +179,5 @@ class PaDim(ModelBase):
         # calculate image-level ROC AUC score
         img_scores = scores.reshape(scores.shape[0], -1).max(axis=1)
         self.img_pred_list = img_scores
-        self.img_gt_list = np.asarray(self.img_gt_list)
+        # self.img_gt_list = np.asarray(self.img_gt_list)
         self.pixel_pred_list = scores

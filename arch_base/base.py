@@ -28,7 +28,8 @@ class ModelBase():
         self.clear_all_list()
 
         self.prediction(vis_loader, task_id)
-        self.recorder.record_images(self.img_pred_list, self.img_gt_list,
+        paradim = self.recorder.paradigm_name()
+        self.recorder.record_images(paradim, self.img_pred_list, self.img_gt_list,
                                     self.pixel_pred_list, self.pixel_gt_list,
                                     self.img_path_list)
         
