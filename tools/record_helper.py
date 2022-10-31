@@ -22,6 +22,8 @@ class RecordHelper():
             return 'continual'
         if self.config['fewshot']:
             return 'fewshot'
+        if self.config['noisy']:
+            return 'noisy'
         
         return 'unknown'
 
@@ -38,10 +40,10 @@ class RecordHelper():
             save_path = '{}/result_{}.txt'.format(save_dir, self.config['semi_anonmaly_num'])
         if paradim == 'fewshot':
             save_path = '{}/result_{}.txt'.format(save_dir, self.config['fewshot_exm'])
-        if paradim == 'noisy':
-            save_path = '{}/result_{}.txt'.format(save_dir, self.config['noisy_ratio'])
         if paradim == 'continual':
             save_path = '{}/result_{}.txt'.format(save_dir, self.config['valid_task_id_tmp'])
+        if paradim == 'noisy':
+            save_path = '{}/result_{}.txt'.format(save_dir, self.config['noisy_ratio'])
         
         with open(save_path, 'a') as f:
             print(result, file=f) 
