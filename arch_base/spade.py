@@ -6,13 +6,13 @@ import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
 from arch_base.base import ModelBase
 import numpy as np
-from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 
 
 __all__ = ['SPADE']
 
 class SPADE(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
+        super(SPADE, self).__init__(config, device, file_path, net, optimizer, scheduler)
         self.config = config
         self.device = device
         self.file_path = file_path
@@ -85,20 +85,18 @@ class SPADE(ModelBase):
 
     def prediction(self, valid_loader, task_id):
         self.net.eval()
+        self.clear_all_list()
         SPADE.dict_clear(self.test_outputs)
-
-        self.img_list = []
-        self.pixel_gt_list = []
-        self.img_gt_list = []
 
         for batch_id, batch in enumerate(valid_loader):
             img = batch['img'].to(self.device)
             mask = batch['mask'].to(self.device)
             label = batch['label'].to(self.device)
-
-            self.img_list.extend(img.cpu().detach().numpy())
-            self.img_gt_list.extend(label.cpu().detach().numpy())
-            self.pixel_gt_list.extend(mask.cpu().detach().numpy())
+            mask[mask>=0.5] = 1
+            mask[mask<0.5] = 0
+            self.img_gt_list.append(label.cpu().detach().numpy()[0])
+            self.pixel_gt_list.append(mask.cpu().detach().numpy()[0,0])
+            self.img_path_list.append(batch['img_src'])
 
             # extract features from backbone
             with torch.no_grad():
@@ -123,11 +121,11 @@ class SPADE(ModelBase):
         # select K nearest neighbor and take advantage 
         topk_values, topk_indexes = torch.topk(dist_matrix, k=self.config['_top_k'], dim=1, largest=False)
         scores = torch.mean(topk_values, 1).cpu().detach().numpy()
-
+        self.img_pred_list = scores
         # calculate image-level AUROC
-        img_auroc = roc_auc_score(self.img_gt_list, scores) 
+        # img_auroc = roc_auc_score(self.img_gt_list, scores) 
 
-        score_map_list = []
+        # score_map_list = []
         for t_idx in range(self.test_outputs['avgpool'].shape[0]):
             score_maps = []
             # for each layer
@@ -156,17 +154,7 @@ class SPADE(ModelBase):
 
             # apply gaussian smoothing on the score map
             score_map = gaussian_filter(score_map.squeeze().cpu().detach().numpy(), sigma=4)
-            score_map_list.append(score_map)
-
-        mask = np.concatenate(self.pixel_gt_list).ravel()
-        mask_pred = np.concatenate(score_map_list).ravel()
-        
-        # mask_pred[mask_pred >= 0.5] = 1
-        # mask_pred[mask_pred < 0.5] = 0
-
-        pixel_auroc = roc_auc_score(mask.astype(int), mask_pred.astype(int))
-
-        return pixel_auroc, img_auroc
+            self.pixel_pred_list.append(score_map)
 
         
 

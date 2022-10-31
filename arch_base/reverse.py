@@ -71,11 +71,6 @@ class REVERSE(ModelBase):
                 self.img_gt_list.append(label.numpy()[0])
                 self.img_pred_list.append(np.max(anomaly_map))
                 self.img_path_list.append(batch['img_src'])
-        
-        # pixel_auroc = roc_auc_score(self.pixel_gt_list, self.pixel_pred_list)
-        # img_auroc = roc_auc_score(self.img_gt_list, self.img_pred_list)
-        
-        # return pixel_auroc, img_auroc
 
     def cal_anomaly_map(self, fs_list, ft_list, out_size=256, amap_mode='full'):
         if amap_mode == 'mul':
