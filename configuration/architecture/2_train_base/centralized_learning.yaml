@@ -32,6 +32,8 @@ train_task_id:
   - 0
 valid_task_id: 
   - 0
+# running task id
+task_id: 0
 # vis embedding
 vis_em: false
 guoyang: false
