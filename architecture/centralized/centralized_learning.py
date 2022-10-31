@@ -115,6 +115,8 @@ class CentralizedTrain():
                                                 anomaly_num=self.para_dict['semi_anomaly_num'], 
                                                 anomaly_overlap=self.para_dict['semi_overlap'])                                                    
 
+        self.vis_dataset = extract_fewshot_data(self.valid_dataset, self.para_dict['vis_num'])
+            
         if self.para_dict['fewshot']:
             self.train_fewshot_dataset = extract_fewshot_data(self.train_dataset, self.para_dict['fewshot_exm'])
 
@@ -129,11 +131,13 @@ class CentralizedTrain():
 
         self.train_loaders, self.valid_loaders = [], []
         self.refer_loaders = []
+        self.vis_loaders = []
         
         # vanilla training
         train_task_data_list = self.train_dataset.sample_indices_in_task
         valid_task_data_list = self.valid_dataset.sample_indices_in_task
         semi_task_data_list = self.semi_dataset.sample_indices_in_task
+        vis_task_data_list = self.vis_dataset.sample_indices_in_task
 
         for i in range(self.para_dict['num_task']):
             train_loader = DataLoader(self.train_dataset,
@@ -157,6 +161,13 @@ class CentralizedTrain():
                                 sampler=SubsetRandomSampler(semi_task_data_list[i]),
                                 drop_last=True)
             self.refer_loaders.append(semi_loader) 
+
+            vis_loader = DataLoader(self.vis_dataset, 
+                                batch_size=self.para_dict['valid_batch_size'], 
+                                num_workers=self.para_dict['num_workers'],
+                                sampler=SubsetRandomSampler(vis_task_data_list[i]),
+                                drop_last=True)
+            self.vis_loaders.append(vis_loader) 
 
         if self.para_dict['fewshot']:
             # capture few-shot images
@@ -203,6 +214,7 @@ class CentralizedTrain():
 
 
         self.chosen_train_loaders, self.chosen_valid_loaders = [], []
+        self.chosen_vis_loaders = []
 
         if self.para_dict['train_task_id'] == None or self.para_dict['valid_task_id'] == None:
             raise ValueError('Plase Assign Train Task Id!')
@@ -217,6 +229,7 @@ class CentralizedTrain():
                 self.chosen_train_loaders.append(self.train_loaders[idx])
             for idx in self.para_dict['valid_task_id']:
                 self.chosen_valid_loaders.append(self.valid_loaders[idx])
+
 
     def init_model(self):
         self.net, self.optimizer, self.scheduler = None, None, None
@@ -314,7 +327,7 @@ class CentralizedTrain():
                 if j > i:
                     break
                 self.para_dict['valid_task_id_tmp'] = self.para_dict['valid_task_id'][j]
-                self.trainer.prediction(valid_loader, task_id=self.para_dict['valid_task_id_tmp'])
+                self.trainer.prediction(valid_loader, self.para_dict['valid_task_id_tmp'])
                 pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all()
                 self.trainer.recorder.update(self.para_dict)
 
@@ -326,8 +339,13 @@ class CentralizedTrain():
                     pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro)
                 self.trainer.recorder.printer('{} {}'.format(infor_basic, infor_result))
 
-                # save results
-                self.trainer.recorder.record_result(paradim, infor_result)
+                # save result
+                if self.para_dict['save_log']:
+                    self.trainer.recorder.record_result(paradim, infor_result)
+
+                # visualize result
+                if self.para_dict['vis']:
+                    self.trainer.visualization(self.vis_loaders[j], self.para_dict['valid_task_id_tmp'])
 
 
     def run_work_flow(self):
