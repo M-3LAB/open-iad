@@ -37,7 +37,6 @@ class FAVAE(ModelBase):
             for batch_id, batch in enumerate(train_loader):
                 img = batch['img'].to(self.device)
                 z, output, mu, log_var = self.vaenet(img)
-                # get model's intermediate outputs
                 s_activations, _ = feature_extractor(z, self.vaenet.decode, target_layers=['10', '16', '22'])
                 t_activations, _ = feature_extractor(img, self.teacher.features, target_layers=['7', '14', '21'])
 

@@ -3,7 +3,6 @@ from torch import nn
 import numpy as np
 import argparse
 from arch_base.base import ModelBase
-from sklearn.metrics import roc_curve, auc, roc_auc_score, precision_recall_curve
 from loss_function.focal_loss import FocalLoss
 from loss_function.ssim_loss import SSIMLoss
 from data_io.augmentation.draem_aug import DraemAugData
@@ -69,9 +68,8 @@ class DRAEM(ModelBase):
     def prediction(self, valid_loader, task_id):
         self.net.eval()
         self.cal_metric_all()
-        pixel_auroc, img_auroc = 0, 0
 
-        seg_score_gt, dec_score_prediction = [], []
+        seg_score_gt = []
         with torch.no_grad():
             for batch_id, batch in enumerate(valid_loader):
                 inputs = batch['img'].to(self.device)
