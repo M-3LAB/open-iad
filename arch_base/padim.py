@@ -30,15 +30,15 @@ class PaDim(ModelBase):
         self.features = []
         self.get_layer_features()
 
-        source_domain = ''
-        if self.config['continual']:
-            for i in self.config['train_task_id']:  
-                source_domain = source_domain + str(self.config['train_task_id'][i])
-        else:
-            source_domain = str(self.config['train_task_id'][0])
+        # source_domain = ''
+        # if self.config['continual']:
+        #     for i in self.config['train_task_id']:  
+        #         source_domain = source_domain + str(self.config['train_task_id'][i])
+        # else:
+        #     source_domain = str(self.config['train_task_id'][0])
 
-        self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', source_domain)
-        create_folders(self.embedding_dir_path)
+        # self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', source_domain)
+        # create_folders(self.embedding_dir_path)
     
     def get_layer_features(self):
     

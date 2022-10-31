@@ -29,7 +29,8 @@ class RecordHelper():
         
         return 'unknown'
 
-    def record_result(self, paradim, result):
+    def record_result(self, result):
+        paradim = self.paradigm_name()
         save_dir = '{}/benchmark/{}/{}/{}/{}'.format(self.config['work_dir'], paradim, self.config['dataset'],
                                                                  self.config['model'], self.config['train_task_id_tmp'])
         if not os.path.exists(save_dir):
@@ -52,22 +53,23 @@ class RecordHelper():
 
     def record_images(self, img_pred_list, img_gt_list, pixel_pred_list, pixel_gt_list, img_path_list):
         paradim = self.paradigm_name()
-        if paradim == 'continual':
-            append_dir = '/'+str(self.config['train_task_id_tmp'])
-        elif paradim == 'fewshot':
-            append_dir = '/'+str(self.config['fewshot_exm'])
-        elif paradim == 'noisy':
-            append_dir = '/'+str(self.config['noisy_ratio'])
-        elif paradim == 'semi':
-            append_dir = '/'+str(self.config['semi_anomaly_num'])
-        else:
-            append_dir = ''
         save_dir = '{}/benchmark/{}/{}/{}/{}'.format(self.config['work_dir'], paradim, self.config['dataset'],
-                                                                 self.config['model'], self.config['train_task_id_tmp'])
-        save_dir = save_dir+'/vis/'+append_dir
+                                                      self.config['model'], self.config['train_task_id_tmp'])
         
+        if paradim == 'vanilla':
+            save_dir = save_dir + '/vis'
+        if paradim == 'semi':
+            save_dir = '{}/vis_{}'.format(save_dir, self.config['semi_anonmaly_num'])
+        if paradim == 'fewshot':
+            save_dir = '{}/vis_{}'.format(save_dir, self.config['fewshot_exm'])
+        if paradim == 'continual':
+            save_dir = '{}/vis_{}'.format(save_dir, self.config['valid_task_id_tmp'])
+        if paradim == 'noisy':
+            save_dir = '{}/vis_{}'.format(save_dir, self.config['noisy_ratio'])
+
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
+            
         img_shape = pixel_pred_list[0].shape
         for i in range(len(img_path_list)):
             path_dir = img_path_list[i][0].split('/')

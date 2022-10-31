@@ -341,7 +341,7 @@ class CentralizedTrain():
 
                 # save result
                 if self.para_dict['save_log']:
-                    self.trainer.recorder.record_result(paradim, infor_result)
+                    self.trainer.recorder.record_result(infor_result)
 
                 # visualize result
                 if self.para_dict['vis']:
