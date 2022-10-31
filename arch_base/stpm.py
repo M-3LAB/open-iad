@@ -11,6 +11,7 @@ __all__ = ['STPM']
 
 class STPM(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
+        super(STPM, self).__init__(config, device, file_path, net, optimizer, scheduler)
         self.config = config
         self.device = device
         self.file_path = file_path
@@ -103,16 +104,14 @@ class STPM(ModelBase):
     def prediction(self, valid_loader, task_id):
         self.net_teacher.eval()
         self.net_student.eval()
-
-        self.pixel_gt_list = []
-        self.img_gt_list = []
-        self.pixel_pred_list = []
-        self.img_pred_list = []
+        self.clear_all_list()
 
         for batch_id, batch in enumerate(valid_loader):
             img = batch['img'].to(self.device)
             label = batch['label']
             mask = batch['mask']
+            mask[mask>=0.5] = 1
+            mask[mask<0.5] = 0
 
             with torch.set_grad_enabled(False):
                 self.features_teacher.clear()
@@ -124,15 +123,15 @@ class STPM(ModelBase):
                 anomaly_map, _ = self.cal_anomaly_map(feat_teachers=self.features_teacher, feat_students=self.features_student,
                                                       out_size=self.config['data_crop_size'])                 
 
-                self.pixel_pred_list.extend(anomaly_map.ravel())
-                self.pixel_gt_list.extend(mask.cpu().numpy().astype(int).ravel())
+                self.pixel_pred_list.append(anomaly_map)
+                self.pixel_gt_list.append(mask.cpu().numpy()[0,0].astype(int))
                 self.img_pred_list.append(np.max(mask.cpu().numpy()).astype(int))
-                self.img_gt_list.append(label.numpy())
+                self.img_gt_list.append(label.numpy()[0])
         
-        pixel_auroc = roc_auc_score(self.pixel_gt_list, self.pixel_pred_list)
-        img_auroc = roc_auc_score(self.img_gt_list, self.img_pred_list)
+        # pixel_auroc = roc_auc_score(self.pixel_gt_list, self.pixel_pred_list)
+        # img_auroc = roc_auc_score(self.img_gt_list, self.img_pred_list)
 
-        return pixel_auroc, img_auroc
+        # return pixel_auroc, img_auroc
 
 
 

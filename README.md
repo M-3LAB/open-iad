@@ -65,6 +65,8 @@ python3 centralized_training.py -v --model favae --net net_favae --dataset mvtec
 python3 centralized_training.py -v --model cutpaste -n vit_b_16 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 python3 centralized_training.py -v --model igd -n net_igd --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 python3 centralized_training.py -v --model reverse -n net_reverse --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
+python3 centralized_training.py -v --model spade -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
+python3 centralized_training.py -v --model stpm -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 ```
 
 > Continual
