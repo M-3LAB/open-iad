@@ -37,19 +37,19 @@ def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad', 'mvtec2df3d'])
 
-    parser.add_argument('--model', '-m', type=str, default='dne', choices=['patchcore', 'csflow', 'dne', 'draem', 'igd', 'cutpaste', 'devnet', 'dra', 
+    parser.add_argument('--model', '-m', type=str, default='patchcore', choices=['patchcore', 'csflow', 'dne', 'draem', 'igd', 'cutpaste', 'devnet', 'dra', 
                                                                               'favae', 'padim', 'reverse', 'spade', 'fastflow', 'softpatch', 'cfa', 'stpm'])
-    parser.add_argument('--net', '-n', type=str, default='vit_b_16', choices=['wide_resnet50', 'resnet18', 'net_csflow', 'vit_b_16', 'net_draem', 'net_dra',
+    parser.add_argument('--net', '-n', type=str, default='resnet18', choices=['wide_resnet50', 'resnet18', 'net_csflow', 'vit_b_16', 'net_draem', 'net_dra',
                                                                               'net_igd', 'net_reverse', 'net_favae', 'net_fastflow', 'net_cfa', 'net_devnet'])
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
-    parser.add_argument('--train-task-id', '-tid', type=int, default=[1, 11], nargs='+')
-    parser.add_argument('--valid-task-id', '-vid', type=int, default=[1, 11], nargs='+')
-    parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default= 0.0001)
+    parser.add_argument('--train-task-id', '-tid', type=int, default=[1], nargs='+')
+    parser.add_argument('--valid-task-id', '-vid', type=int, default=[1], nargs='+')
+    parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default= 0.001)
 
     # vanilla learning
-    parser.add_argument('--vanilla', '-v', action='store_true', default=False)
+    parser.add_argument('--vanilla', '-v', action='store_true', default=True)
     
     # semi-supervised learning
     parser.add_argument('--semi', '-s', action='store_true', default=False)

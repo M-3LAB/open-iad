@@ -185,7 +185,7 @@ class PatchCore(ModelBase):
 
                 mask[mask >= 0.5] = 1
                 mask[mask < 0.5] = 0
-                mask_np = mask.cpu().numpy()[0,0].astype(int)
+                mask_np = mask.cpu().numpy()[0, 0].astype(int)
                 self.pixel_gt_list.append(mask_np)
                 self.pixel_pred_list.append(anomaly_map_cv)
                 self.img_gt_list.append(label.cpu().numpy()[0])

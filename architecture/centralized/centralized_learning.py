@@ -326,25 +326,28 @@ class CentralizedTrain():
                 if j > i:
                     break
                 self.para_dict['valid_task_id_tmp'] = self.para_dict['valid_task_id'][j]
+                
+                # calculate time 
                 start_time = time.time()
                 self.trainer.prediction(valid_loader, j)
                 end_time = time.time()
                 inference_speed = (end_time - start_time)/len(self.trainer.img_path_list)
+
+                # calculate result
                 pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all()
                 self.trainer.recorder.update(self.para_dict)
 
                 paradim = self.trainer.recorder.paradigm_name()
                 infor_basic = 'paradigm: {} dataset: {} model: {} train_task_id: {} valid_task_id: {}'.format(paradim, 
                     self.para_dict['dataset'], self.para_dict['model'], self.para_dict['train_task_id_tmp'], self.para_dict['valid_task_id_tmp'])
-
                 
-
                 # visualize result
                 if self.para_dict['vis']:
                     self.trainer.visualization(vis_loader, j)
                 infor_result = 'pixel_auroc: {:.4f} img_auroc: {:.4f} pixel_ap: {:.4f} img_ap: {:.4f} pixel_aupro: {:.4f} inference speed: {:.4f}'.format(                                                                                  
                     pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro, inference_speed)
                 self.trainer.recorder.printer('{} {}'.format(infor_basic, infor_result))
+
                 # save result
                 if self.para_dict['save_log']:
                     self.trainer.recorder.record_result(infor_result)
