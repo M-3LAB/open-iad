@@ -212,7 +212,7 @@ class CentralizedTrain():
 
         self.chosen_train_loaders, self.chosen_valid_loaders = [], []
         self.chosen_vis_loaders = []
-
+        
         if self.para_dict['train_task_id'] == None or self.para_dict['valid_task_id'] == None:
             raise ValueError('Plase Assign Train Task Id!')
 
@@ -221,12 +221,13 @@ class CentralizedTrain():
                 self.chosen_train_loaders.append([self.train_loaders[idx], self.refer_loaders[idx]])
             for idx in self.para_dict['valid_task_id']:
                 self.chosen_valid_loaders.append([self.valid_loaders[idx], self.refer_loaders[idx]])
+                self.chosen_vis_loaders.append([self.vis_loaders[idx], self.refer_loaders[idx]])
         else:
             for idx in self.para_dict['train_task_id']:
                 self.chosen_train_loaders.append(self.train_loaders[idx])
             for idx in self.para_dict['valid_task_id']:
                 self.chosen_valid_loaders.append(self.valid_loaders[idx])
-
+                self.chosen_vis_loaders.append(self.vis_loaders[idx])
 
     def init_model(self):
         self.net, self.optimizer, self.scheduler = None, None, None
@@ -319,12 +320,12 @@ class CentralizedTrain():
 
             print('-> test ...')
             # test each task individually
-            for j, valid_loader in enumerate(self.chosen_valid_loaders):
+            for j, (valid_loader, vis_loader) in enumerate(zip(self.chosen_valid_loaders, self.chosen_vis_loaders)):
                 # for continual
                 if j > i:
                     break
                 self.para_dict['valid_task_id_tmp'] = self.para_dict['valid_task_id'][j]
-                self.trainer.prediction(valid_loader, self.para_dict['valid_task_id_tmp'])
+                self.trainer.prediction(valid_loader, j)
                 pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all()
                 self.trainer.recorder.update(self.para_dict)
 
@@ -342,7 +343,7 @@ class CentralizedTrain():
 
                 # visualize result
                 if self.para_dict['vis']:
-                    self.trainer.visualization(self.vis_loaders[j], self.para_dict['valid_task_id_tmp'])
+                    self.trainer.visualization(vis_loader, j)
 
 
     def run_work_flow(self):
