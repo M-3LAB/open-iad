@@ -1,15 +1,12 @@
 import torch
 from models.patchcore.kcenter_greedy import KCenterGreedy 
-from torchvision import transforms
 import cv2
-from tools.utils import *
 import torch.nn.functional as F
 import numpy as np
 from sklearn.random_projection import SparseRandomProjection
 import faiss
 import math
 from scipy.ndimage import gaussian_filter
-from tools.visualize import vis_embeddings
 from memory_augmentation.domain_generalization import feature_augmentation
 from arch_base.base import ModelBase
 
@@ -28,10 +25,8 @@ class PatchCore(ModelBase):
         self.features = [] 
         self.get_layer_features()
 
-        #TODO: Visualize Embeddings
         self.random_projector = SparseRandomProjection(n_components='auto', eps=0.9)
-
-        self.embeddings_list = []
+        self.embedding_coreset = np.array([])
     
     def get_layer_features(self):
 
@@ -41,14 +36,6 @@ class PatchCore(ModelBase):
         #self.net.layer1[-1].register_forward_hook(hook_t)
         self.net.layer2[-1].register_forward_hook(hook_t)
         self.net.layer3[-1].register_forward_hook(hook_t)
-
-    @staticmethod 
-    def torch_to_cv(torch_img):
-        inverse_normalization = transforms.Normalize(mean=[-0.485/0.229, -0.456/0.224, -0.406/0.255], 
-                                                     std=[1/0.229, 1/0.224, 1/0.255])
-        torch_img = inverse_normalization(torch_img)
-        cv_img = cv2.cvtColor(torch_img.permute(0,2,3,1).cpu().numpy()[0]*255, cv2.COLOR_BGR2RGB) 
-        return cv_img
 
     @staticmethod
     def embedding_concate(x, y):
@@ -77,6 +64,7 @@ class PatchCore(ModelBase):
         
     def train_model(self, train_loader, task_id, inf=''):
         self.net.eval()
+        embeddings_list = []
 
         for _ in range(self.config['num_epochs']):
             for batch_id, batch in enumerate(train_loader):
@@ -93,7 +81,7 @@ class PatchCore(ModelBase):
 
                 embedding = PatchCore.embedding_concate(embeddings[0], embeddings[1])
                 embedding = PatchCore.reshape_embedding(embedding.detach().numpy())
-                self.embeddings_list.extend(embedding)
+                embeddings_list.extend(embedding)
 
                 if self.config['fewshot']:
                     embeddings_rot = []
@@ -107,10 +95,10 @@ class PatchCore(ModelBase):
 
                         embedding_rot = PatchCore.embedding_concate(embeddings_rot[0], embeddings_rot[1])
                         embedding_rot = PatchCore.reshape_embedding(embedding_rot.detach().numpy())
-                        self.embeddings_list.extend(embedding_rot)
+                        embeddings_list.extend(embedding_rot)
 
         # Sparse random projection from high-dimensional space into low-dimensional euclidean space
-        total_embeddings = np.array(self.embeddings_list).astype(np.float32)
+        total_embeddings = np.array(embeddings_list).astype(np.float32)
         self.random_projector.fit(total_embeddings)
         # Coreset subsampling
         # y refers to the label of total embeddings. X is good in training, so y=0
@@ -118,24 +106,16 @@ class PatchCore(ModelBase):
         selected_idx = selector.select_batch(model=self.random_projector, 
                                              already_selected=[],
                                              N=int(total_embeddings.shape[0] * self.config['coreset_sampling_ratio']))
+        if self.embedding_coreset.size == 0:
+            self.embedding_coreset = total_embeddings[selected_idx]
+        else:
+            self.embedding_coreset = np.concatenate([self.embedding_coreset, total_embeddings[selected_idx]], axis=0)
 
-        self.embedding_coreset = total_embeddings[selected_idx]
-
-        print('initial embedding size : ', total_embeddings.shape)
-        print('final embedding size : ', self.embedding_coreset.shape)
+        print('current task embedding size: ', total_embeddings.shape)
+        print('total embedding size: ', self.embedding_coreset.shape)
 
         self.index = faiss.IndexFlatL2(self.embedding_coreset.shape[1])
-        self.index.add(self.embedding_coreset) 
-                    
-        # visualize embeddings
-        if self.config['vis_em']:
-            print('visualize embeddings')
-            total_labels = np.array([i // 784 for i in range(total_embeddings.shape[0])])
-            print(total_labels)
-            embedding_label = total_labels[selected_idx]
-            embedding_data = self.embedding_coreset
-            print(embedding_label)
-            vis_embeddings(embedding_data, embedding_label, self.config['fewshot_exm'], '{}/vis_embedding.png'.format(self.file_path))
+        self.index.add(self.embedding_coreset)
 
     def prediction(self, valid_loader, task_id=None):
         self.net.eval()

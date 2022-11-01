@@ -47,8 +47,8 @@ def parse_arguments_centralized():
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
-    parser.add_argument('--train-task-id', '-tid', type=int, default=[1], nargs='+')
-    parser.add_argument('--valid-task-id', '-vid', type=int, default=[1], nargs='+')
+    parser.add_argument('--train-task-id', '-tid', type=int, default=[1, 2, 4], nargs='+')
+    parser.add_argument('--valid-task-id', '-vid', type=int, default=[1, 2, 4], nargs='+')
     parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default= 0.001)
 
     # vanilla learning
@@ -60,7 +60,7 @@ def parse_arguments_centralized():
     parser.add_argument('--semi-overlap', '-so', action='store_true', default=False)
     
     # continual learning
-    parser.add_argument('--continual', '-c', action='store_true', default=False)
+    parser.add_argument('--continual', '-c', action='store_true', default=True)
 
     # fewshot learniing
     parser.add_argument('--fewshot', '-f', action='store_true', default=False)
