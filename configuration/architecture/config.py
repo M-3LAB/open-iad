@@ -1,15 +1,18 @@
 import argparse
 from asyncio import FastChildWatcher
 from logging import root
-import socket,fcntl,struct
+import socket
+import fcntl
+import struct
+
+
+__all__ = ['parse_arguments_centralized', 'parse_arguments_federated']
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     info = fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15], 'utf-8')))
 
     return socket.inet_ntoa(info[20:24])
-
-__all__ = ['parse_arguments_centralized', 'parse_arguments_federated']
 
 def assign_service(guoyang):
     
