@@ -17,14 +17,6 @@ class STPM(ModelBase):
         self.net_student = net.to(self.device) 
         self.net_teacher = copy.deepcopy(net).to(self.device) 
 
-        if self.config['continual']:
-            for i in self.config['train_task_id']:  
-                source_domain = source_domain + str(self.config['train_task_id'][i])
-        else:
-            source_domain = str(self.config['train_task_id'][0])
-        self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', source_domain)
-        create_folders(self.embedding_dir_path)
-
         self.features_teacher = []
         self.features_student = []
         self.get_layer_features()
