@@ -72,8 +72,7 @@ class MVTecLoco(Dataset):
         # ground truth directory: only bad case
 
         # get classes in each task group
-
-        # If num_task is 15, each task constain each class
+        # If num_task is 5, each task constain each class
         self.class_in_task = self.split_chunks(self.class_name, self.num_task)
         # get data
         for id, class_in_task in enumerate(self.class_in_task):

@@ -72,7 +72,6 @@ class MTD(Dataset):
         # ground truth directory: only bad case
 
         # get classes in each task group
-
         # only one task
         self.class_in_task = self.split_chunks(self.class_name, self.num_task)
         # get data

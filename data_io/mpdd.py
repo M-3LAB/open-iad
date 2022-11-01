@@ -13,7 +13,6 @@ def mpdd_classes():
     return [ "bracket_black", "bracket_brown", "bracket_white",
             "connector", "metal_plate", "tubes"]
 
-
 class MPDD(Dataset):
     def __init__(self, data_path, learning_mode='centralized', phase='train', 
                  data_transform=None, num_task=6):
@@ -72,8 +71,7 @@ class MPDD(Dataset):
         # ground truth directory: only bad case
 
         # get classes in each task group
-
-        # If num_task is 15, each task constain each class
+        # If num_task is 5, each task constain each class
         self.class_in_task = self.split_chunks(self.class_name, self.num_task)
         # get data
         for id, class_in_task in enumerate(self.class_in_task):

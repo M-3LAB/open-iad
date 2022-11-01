@@ -9,10 +9,8 @@ from torchvision import transforms as T
 
 __all__ = ['BTAD', 'btad_classes']
 
-
 def btad_classes():
     return ['01', '02', '03']
-
 
 class BTAD(Dataset):
     def __init__(self, data_path, learning_mode='centralized', phase='train', 
@@ -34,7 +32,6 @@ class BTAD(Dataset):
         self.masks_list = []
         self.task_ids_list = []
         
-        # continual
         self.sample_num_in_task = []
         self.sample_indices_in_task = []
 
@@ -72,8 +69,6 @@ class BTAD(Dataset):
         # ground truth directory: only bad case
 
         # get classes in each task group
-
-        # only one task
         self.class_in_task = self.split_chunks(self.class_name, self.num_task)
         # get data
         for id, class_in_task in enumerate(self.class_in_task):
