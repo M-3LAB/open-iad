@@ -74,7 +74,10 @@ class RecordHelper():
         for i in range(len(img_path_list)):
             path_dir = img_path_list[i][0].split('/')
             img_pred_path = '{}/{}_{}'.format( save_dir, path_dir[-2], path_dir[-1].replace('.', '_heatmap.'))
-            heatmap = self.cv2heatmap(pixel_pred_list[i]*255)
+            # heatmap = self.cv2heatmap(pixel_pred_list[i])
+            heatmap = pixel_pred_list[i]*255
+            heatmap = np.expand_dims(heatmap, axis=2)
+            heatmap = np.repeat(heatmap, 3, axis=2)
             cv2.imwrite(img_pred_path, heatmap)
             img_gt_path = '{}/{}_{}'.format(save_dir, path_dir[-2], path_dir[-1].replace('.', '_gt.'))
             cv2.imwrite(img_gt_path, pixel_gt_list[i]*255)
@@ -82,9 +85,9 @@ class RecordHelper():
             org_img = cv2.imread(img_path_list[i][0])
             org_img = cv2.resize(org_img, img_shape)
             cv2.imwrite(img_org_path, org_img)
-            heatmap_on_img = self.heatmap_on_image(heatmap, org_img)
-            img_heatmapOnImg_path = '{}/{}_{}'.format(save_dir, path_dir[-2], path_dir[-1].replace('.', '_heatmapOnImg.'))
-            cv2.imwrite(img_heatmapOnImg_path, heatmap_on_img)
+            # heatmap_on_img = self.heatmap_on_image(heatmap, org_img)
+            # img_heatmapOnImg_path = '{}/{}_{}'.format(save_dir, path_dir[-2], path_dir[-1].replace('.', '_heatmap_on_img.'))
+            # cv2.imwrite(img_heatmapOnImg_path, heatmap_on_img)
     
     def heatmap_on_image(self, heatmap, image):
         if heatmap.shape != image.shape:
