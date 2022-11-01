@@ -33,16 +33,6 @@ class PatchCore(ModelBase):
         self.random_projector = SparseRandomProjection(n_components='auto', eps=0.9)
 
         self.embeddings_list = []
-
-        source_domain = ''
-        if self.config['continual']:
-            for i in self.config['train_task_id']:  
-                source_domain = source_domain + str(self.config['train_task_id'][i])
-        else:
-            source_domain = str(self.config['train_task_id'][0])
-
-        self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', source_domain)
-        create_folders(self.embedding_dir_path)
     
     def get_layer_features(self):
 
@@ -137,7 +127,6 @@ class PatchCore(ModelBase):
 
         self.index = faiss.IndexFlatL2(self.embedding_coreset.shape[1])
         self.index.add(self.embedding_coreset) 
-        faiss.write_index(self.index, os.path.join(self.embedding_dir_path, 'index.faiss'))
                     
         # visualize embeddings
         if self.config['vis_em']:
@@ -152,15 +141,7 @@ class PatchCore(ModelBase):
     def prediction(self, valid_loader, task_id=None):
         self.net.eval()
         self.clear_all_list()
-
-        self.index = faiss.read_index(os.path.join(self.embedding_dir_path, 'index.faiss')) 
-        if torch.cuda.is_available():
-            res = faiss.StandardGpuResources()
-            self.index = faiss.index_cpu_to_gpu(res, int(self.config['gpu_id']), self.index)
         
-        sampling_dir_path = os.path.join(self.file_path, 'samples', str(self.config['valid_task_id']))
-        create_folders(sampling_dir_path)
-
         if valid_loader.batch_size != 1:
             assert 'PatchCore Evaluation, Batch Size should be Equal to 1'
 
@@ -202,9 +183,8 @@ class PatchCore(ModelBase):
                 anomaly_map_resized = cv2.resize(anomaly_map, (self.config['data_crop_size'], self.config['data_crop_size']))
                 anomaly_map_cv = gaussian_filter(anomaly_map_resized, sigma=4)
 
-                mask[mask>=0.5] = 1
-                mask[mask<0.5] = 0
-                # print(mask.shape) 1 1 256 256
+                mask[mask >= 0.5] = 1
+                mask[mask < 0.5] = 0
                 mask_np = mask.cpu().numpy()[0,0].astype(int)
                 self.pixel_gt_list.append(mask_np)
                 self.pixel_pred_list.append(anomaly_map_cv)
@@ -212,16 +192,6 @@ class PatchCore(ModelBase):
                 self.img_pred_list.append(img_score)
                 self.img_path_list.append(batch['img_src'])
 
-                #TODO: Anomaly Map Visualization
-                if label == 0:
-                    defect_type = 'norminal'
-                else:
-                    defect_type = 'anomaly'
-
-                img_cv = PatchCore.torch_to_cv(img)
-                save_anomaly_map(anomaly_map=anomaly_map_cv, input_img=img_cv,
-                                 mask=mask_np*255, 
-                                 file_path=os.path.join(sampling_dir_path, defect_type, str(batch_id)))
 
 
 

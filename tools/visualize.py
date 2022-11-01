@@ -44,14 +44,12 @@ def save_anomaly_map(anomaly_map, input_img, mask, file_path):
     heatmap = cv2heatmap(anomaly_map_norm*255)
 
     heatmap_on_img = heatmap_on_image(heatmap, input_img)
-    #TODO: save problems
     create_folders(file_path)
 
     cv2.imwrite(os.path.join(file_path, 'input.jpg'), input_img)
     cv2.imwrite(os.path.join(file_path, 'heatmap.jpg'), heatmap)
     cv2.imwrite(os.path.join(file_path, 'heatmap_on_img.jpg'), heatmap_on_img)
     cv2.imwrite(os.path.join(file_path, 'mask.jpg'), mask)
-
     
 def plot_embedding(data, label, num_shot, title):
     x_min, x_max = np.min(data, 0), np.max(data, 0)
@@ -73,7 +71,6 @@ def plot_embedding(data, label, num_shot, title):
     plt.title(title)
 
     return fig
-
 
 def vis_embeddings(data, label, num_shot, file_path):
     print('Computing t-SNE embedding')
