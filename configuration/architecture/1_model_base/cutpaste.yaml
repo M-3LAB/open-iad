@@ -2,7 +2,7 @@ model: cutpaste
 train_batch_size: 32
 valid_batch_size: 1
 net: vit_b_16 
-num_epochs: 1 #256 
+num_epochs: 256 #256 
 train_aug_type: cutpaste
 valid_aug_type: normal 
 data_size: 224
