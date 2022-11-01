@@ -87,6 +87,8 @@ class SoftPatch(torch.nn.Module):
         self.featuresampler = featuresampler
 
         ############SoftPatch ##########
+        self.featuresampler = patchcore.sampler.WeightedGreedyCoresetSampler(featuresampler.percentage,
+                                                                             featuresampler.device)
         self.patch_weight = None
         self.feature_shape = []
         self.LOF_k = LOF_k

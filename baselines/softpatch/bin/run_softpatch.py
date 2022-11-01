@@ -15,9 +15,9 @@ import patchcore.sampler
 import patchcore.utils
 import patchcore.datasets
 
+import time
 import random
 from torch.utils.data import Subset, ConcatDataset
-import time
 from pathlib import Path
 import patchcore.softpatch
 
@@ -420,7 +420,7 @@ def dataset(
                 click.echo("{} anomaly samples are being added into train dataset as noise.".format(noise_number))
 
                 noise_index_path = Path("noise_index" + "/" + "noise" + str(noise) + "_fold" + str(fold))
-                # noise_index_path = Path("noise_index" + "/" + "noise" + str(noise) + "_seed" + str(seed))
+
                 noise_index_path.mkdir(parents=True, exist_ok=True)
                 path = noise_index_path / (subdataset + "-noise" + str(noise) + ".pth")
                 if path.exists():
@@ -430,31 +430,12 @@ def dataset(
                     noise_index = random.sample(anomaly_index, noise_number)
                     torch.save(noise_index, path)
 
-                use_denoised_train_data = False
-                if use_denoised_train_data:
-                    path = os.path.join(data_path, subdataset)
-                    noise_index = torch.load(os.path.join(path, str("noise" + str(noise) + ".pth")))
+                noise_dataset = Subset(test_dataset, noise_index)
+                if noise_augmentation:
+                    noise_dataset = patchcore.datasets.NoiseDataset(noise_dataset)
+                train_dataset = ConcatDataset([train_dataset, noise_dataset])
 
-                    temp = torch.load(os.path.join(path, str("noise" + str(noise) + "padim.pth")))
-                    thre = 0.15
-                    image_threshold = torch.topk(temp["pred_scores"], int(train_length * thre))[0][-1]
-                    image_weight = torch.where(temp["pred_scores"] < image_threshold, 0, 1)
-                    image_index = [i for i in range(len(image_weight)) if image_weight[i] == 0]
-                    assert len(image_weight) == train_length + noise_number
-                    noise_dataset = Subset(test_dataset, noise_index)
-                    train_dataset = ConcatDataset([train_dataset, noise_dataset])
-                    train_dataset = Subset(train_dataset, image_index)
-                    click.echo("{} samples are deleted from train dataset as noise.".format(len(image_weight)-len(image_index)))
-
-                    train_dataset.imagesize = train_dataset.dataset.datasets[0].imagesize
-
-                else:
-                    noise_dataset = Subset(test_dataset, noise_index)
-                    if noise_augmentation:
-                        noise_dataset = patchcore.datasets.NoiseDataset(noise_dataset)
-                    train_dataset = ConcatDataset([train_dataset, noise_dataset])
-
-                    train_dataset.imagesize = train_dataset.datasets[0].imagesize
+                train_dataset.imagesize = train_dataset.datasets[0].imagesize
 
                 if not overlap:
                     new_test_data_index = list(set(range(len(test_dataset))) - set(noise_index))

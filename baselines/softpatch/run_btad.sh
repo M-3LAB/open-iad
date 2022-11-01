@@ -1,7 +1,6 @@
 ##################### BTAD
 datapath=../BTAD
-#datasets=('01' '02' '03')
-datasets=('01' '02')
+datasets=('01' '02' '03')
 dataset_flags=($(for dataset in "${datasets[@]}"; do echo '-d '$dataset; done))
 
 python bin/run_softpatch.py --gpu 1 --seed 1 \
