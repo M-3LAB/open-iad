@@ -4,7 +4,7 @@ from logging import root
 import socket,fcntl,struct
 
 def get_ip_address(ifname):
-    s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     info = fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(ifname[:15], 'utf-8')))
 
     return socket.inet_ntoa(info[20:24])
