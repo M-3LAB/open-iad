@@ -4,6 +4,7 @@ from models.igd.ssim_module import *
 from models.igd.mvtec_module import *
 from pytorch_msssim import ms_ssim
 
+
 __all__ = ['IGD']
 
 class IGD(ModelBase):
@@ -151,7 +152,6 @@ class IGD(ModelBase):
                 generate_result = self.generator(img)
 
                 ################ Normal ##############
-
                 for visual_index in range(latent_z.shape[0]):
                     weight = 0.85
                     tmp_org_unsq = img[visual_index].unsqueeze(0)

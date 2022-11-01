@@ -1,7 +1,5 @@
 import torch
 from collections import OrderedDict
-from tools.utils import create_folders
-import os
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
 from arch_base.base import ModelBase
@@ -20,7 +18,6 @@ class SPADE(ModelBase):
         self.features = []
         self.get_layer_features()
         
-    
     def get_layer_features(self):
         
         def hook_t(module, input, output):
@@ -54,7 +51,7 @@ class SPADE(ModelBase):
                 with torch.no_grad():
                     _ = self.net(img)
                     
-                #get the intermediate layer outputs
+                # get the intermediate layer outputs
                 for k,v in zip(self.train_outputs.keys(), self.features):
                     self.train_outputs[k].append(v)
                 # initialize hook outputs
@@ -63,8 +60,6 @@ class SPADE(ModelBase):
             for k, v in self.train_outputs.items():
                 self.train_outputs[k] = torch.cat(v, 0)
                 
-            # save_feat_pickle(feat=self.train_outputs, file_path=self.embedding_dir_path + '/feature.npy')
-
     def prediction(self, valid_loader, task_id):
         self.net.eval()
         self.clear_all_list()

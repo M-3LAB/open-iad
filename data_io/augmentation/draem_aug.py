@@ -5,9 +5,8 @@ import cv2
 import imgaug.augmenters as iaa
 from data_io.augmentation.perlin import rand_perlin_2d_np
 
+
 __all__ = ['DraemAugData']
-
-
 
 class DraemAugData():
     def __init__(self, anomaly_source_path='/dtd/images', resize_shape=[256, 256]):

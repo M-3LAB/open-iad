@@ -4,6 +4,7 @@ from torchvision import transforms
 import random
 import math
 
+
 __all__ = ['CutPaste', 'CutPasteNormal', 'CutPasteScar', 'CutPasteUnion']
 
 class CutPaste(object):
@@ -43,7 +44,8 @@ class CutPasteNormal(CutPaste):
         self.aspect_ratio = aspect_ratio
 
     def __call__(self, img):
-        # TODO: we might want to use the pytorch implementation to calculate the patches from https://pytorch.org/vision/stable/_modules/torchvision/transforms/transforms.html#RandomErasing
+        # TODO: we might want to use the pytorch implementation to calculate the patches 
+        # from https://pytorch.org/vision/stable/_modules/torchvision/transforms/transforms.html#RandomErasing
         h = img.size[0]
         w = img.size[1]
 

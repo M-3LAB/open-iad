@@ -7,6 +7,7 @@ from loss_function.focal_loss import FocalLoss
 from loss_function.ssim_loss import SSIMLoss
 from data_io.augmentation.draem_aug import DraemAugData
 
+
 __all__ = ['DNE', 'weights_init']
 
 def weights_init(m):
@@ -16,7 +17,6 @@ def weights_init(m):
     elif classname.find('BatchNorm') != -1:
         m.weight.data.normal_(1.0, 0.02)
         m.bias.data.fill_(0)
-
 
 class _DRAEM(nn.Module):
     def __init__(self, args, net, optimizer, scheduler):

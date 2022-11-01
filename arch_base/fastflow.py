@@ -3,6 +3,7 @@ from arch_base.base import ModelBase
 from models.fastflow.func import AverageMeter
 import numpy as np
 
+
 __all__ = ['FastFlow']
 
 class FastFlow(ModelBase):
@@ -30,14 +31,11 @@ class FastFlow(ModelBase):
                 loss.backward()
                 self.optimizer.step()
                 loss_meter.update(loss.item())
-
-            infor = '\r{}[Epoch {}/{}] Loss: {:.6f}'.format(inf, epoch, self.config['num_epochs'],
-                                                            loss_meter.avg) 
-            print(infor, flush=True, end='')
     
     def prediction(self, valid_loader, task_id=None):
         self.net.eval()
         self.clear_all_list()
+        
         with torch.no_grad():
             for batch_id, batch in enumerate(valid_loader):
                 img = batch['img'].to(self.device)
