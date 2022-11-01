@@ -73,6 +73,7 @@ class FAVAE(ModelBase):
             for batch_id, batch in enumerate(valid_loader):
                 img = batch['img'].to(self.device)
                 mask = batch['mask'].numpy()
+                label = batch['label']
                 z, output, mu, log_var = self.vaenet(img)
                 s_activations, _ = self.feature_extractor(z, self.vaenet.decode, target_layers=['10', '16', '22']) 
                 t_activations, _ = self.feature_extractor(img, self.teacher.features, target_layers=['7', '14', '21'])
@@ -93,6 +94,8 @@ class FAVAE(ModelBase):
                 mask[mask>=0.5] = 1
                 mask[mask<0.5] = 0
                 gt_mask_list.append(mask[0,0].astype(int))
+                self.img_gt_list.append(label.numpy()[0])
+                self.img_pred_list.append(np.max(score))
                 self.img_path_list.append(batch['img_src'])
         
         max_anomaly_score = np.array(pixel_pred_list).max()
