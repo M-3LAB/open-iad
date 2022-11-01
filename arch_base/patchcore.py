@@ -1,19 +1,18 @@
 import torch
-import torch.nn as nn
 from models.patchcore.kcenter_greedy import KCenterGreedy 
 from torchvision import transforms
 import cv2
 from tools.utils import *
-import os
 import torch.nn.functional as F
 import numpy as np
 from sklearn.random_projection import SparseRandomProjection
 import faiss
 import math
 from scipy.ndimage import gaussian_filter
-from tools.visualize import save_anomaly_map, vis_embeddings
+from tools.visualize import vis_embeddings
 from memory_augmentation.domain_generalization import feature_augmentation
 from arch_base.base import ModelBase
+
 
 __all__ = ['PatchCore']
 

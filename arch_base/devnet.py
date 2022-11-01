@@ -1,6 +1,5 @@
 import torch
 from torch import nn
-import numpy as np
 import argparse
 import torch.nn.functional as F
 from arch_base.base import ModelBase
@@ -67,7 +66,6 @@ class DevNet(ModelBase):
         self.model = _DevNet(self.args, self.net).to(self.device)
         
         self.criterion = build_criterion(self.args._criterion) 
-        
         self.optimizer = optimizer
         self.scheduler = scheduler
 
@@ -94,7 +92,6 @@ class DevNet(ModelBase):
     def prediction(self, valid_loader, task_id):
         self.model.eval()
         self.clear_all_list()
-
         test_loss = 0.0
 
         for batch_id, batch in enumerate(valid_loader):

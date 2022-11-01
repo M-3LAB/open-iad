@@ -72,7 +72,7 @@ def parse_arguments_centralized():
     parser.add_argument('--noisy-ratio', '-nr', type=float, default=0.1)
 
     parser.add_argument('--gpu-id', '-g', type=str, default=2)
-    parser.add_argument('--num-epoch', '-ne', type=int, default=None)
+    parser.add_argument('--num-epochs', '-ne', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--vis-em', action='store_true', default=False)
     parser.add_argument('--guoyang', '-gy', action='store_true', default=False)

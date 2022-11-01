@@ -1,7 +1,5 @@
 import torch
 import torch.nn.functional as F
-import os
-from tools.utils import create_folders
 from arch_base.base import ModelBase
 import numpy as np
 import copy

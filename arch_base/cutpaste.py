@@ -20,8 +20,6 @@ class _CutPaste(nn.Module):
 
     def forward(self, epoch, inputs, labels, one_epoch_embeds, *args):
         num = int(len(inputs) / 2)
-        #num = int(len(inputs))
-
         self.optimizer.zero_grad()
         embeds, outs = self.net(inputs)
         one_epoch_embeds.append(embeds[:num].detach().cpu())
@@ -64,10 +62,9 @@ class CutPaste(ModelBase):
     def prediction(self, valid_loader, task_id=None):
         self.net.eval()
         density = self.model.training_epoch(self.density, self.one_epoch_embeds)
-        # img_auroc = 0
-        # pixel_auroc = 0
         labels = []
         embeds = []
+        
         with torch.no_grad():
             for batch_id, batch in enumerate(valid_loader):
                 input = batch['img'].to(self.device)

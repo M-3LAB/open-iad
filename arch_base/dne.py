@@ -6,6 +6,7 @@ import torch.nn.functional as F
 from arch_base.base import ModelBase
 from tools.density import GaussianDensityTorch
 
+
 __all__ = ['DNE']
 
 class _DNE(nn.Module):

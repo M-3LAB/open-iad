@@ -2,10 +2,11 @@ import torch
 import torch.nn as nn
 from arch_base.base import ModelBase
 from torchvision import models
-from models.favae.func import EarlyStop,AverageMeter, feature_extractor
+from models.favae.func import EarlyStop, AverageMeter
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
 import numpy as np
+
 
 __all__ = ['FAVAE']
 
@@ -24,9 +25,16 @@ class FAVAE(ModelBase):
         self.early_stop = EarlyStop(patience=20, save_name='favae.pt')
         self.criterion_1 = nn.MSELoss(reduction='sum')
         self.criterion_2 = nn.MSELoss(reduction='none')
-    
         self.optimizer = optimizer
         self.scheduler = scheduler
+
+    def feature_extractor(self, x, model, target_layers):
+        target_activations = list()
+        for name, module in model._modules.items():
+            x = module(x)
+            if name in target_layers:
+                target_activations += [x]
+        return target_activations, x
 
     def train_model(self, train_loader, task_id, inf=''):
         self.vaenet.train()
@@ -37,8 +45,8 @@ class FAVAE(ModelBase):
             for batch_id, batch in enumerate(train_loader):
                 img = batch['img'].to(self.device)
                 z, output, mu, log_var = self.vaenet(img)
-                s_activations, _ = feature_extractor(z, self.vaenet.decode, target_layers=['10', '16', '22'])
-                t_activations, _ = feature_extractor(img, self.teacher.features, target_layers=['7', '14', '21'])
+                s_activations, _ = self.feature_extractor(z, self.vaenet.decode, target_layers=['10', '16', '22'])
+                t_activations, _ = self.feature_extractor(img, self.teacher.features, target_layers=['7', '14', '21'])
 
                 self.optimizer.zero_grad()
                 mse_loss = self.criterion_1(output, img)
@@ -51,7 +59,6 @@ class FAVAE(ModelBase):
 
                 loss.backward()
                 self.optimizer.step()
-
 
     def prediction(self, valid_loader, task_id=None):
         self.vaenet.eval()
@@ -67,8 +74,8 @@ class FAVAE(ModelBase):
                 img = batch['img'].to(self.device)
                 mask = batch['mask'].numpy()
                 z, output, mu, log_var = self.vaenet(img)
-                s_activations, _ = feature_extractor(z, self.vaenet.decode, target_layers=['10', '16', '22']) 
-                t_activations, _ = feature_extractor(img, self.teacher.features, target_layers=['7', '14', '21'])
+                s_activations, _ = self.feature_extractor(z, self.vaenet.decode, target_layers=['10', '16', '22']) 
+                t_activations, _ = self.feature_extractor(img, self.teacher.features, target_layers=['7', '14', '21'])
 
                 score = self.criterion_2(output, img).sum(1, keepdim=True)
 

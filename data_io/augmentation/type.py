@@ -1,5 +1,5 @@
 from torchvision import transforms as T
-from data_io.augmentation.cutpaste_augmentation import *
+from data_io.augmentation.cutpaste_aug import *
 
 __all__ = ['aug_type']
 
@@ -28,7 +28,7 @@ def aug_type(augment_type, args):
                                    CutPasteNormal(transform=after_cutpaste_transform)
                                    #T.RandomChoice([CutPasteNormal(transform=after_cutpaste_transform),
                                    #                CutPasteScar(transform=after_cutpaste_transform)])
-        ])
+                                   ])
 
         mask_transform = T.Compose([T.Resize(args['mask_size']),
                                     T.CenterCrop(args['mask_crop_size']),

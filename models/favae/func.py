@@ -56,7 +56,6 @@ def feature_extractor(x, model, target_layers):
             target_activations += [x]
     return target_activations, x
 
-
 def denormalization(x):
     # mean = np.array([0.485, 0.456, 0.406])
     # std = np.array([0.229, 0.224, 0.225])
