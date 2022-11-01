@@ -317,7 +317,7 @@ class CentralizedTrain():
             print('-> train ...')
             self.para_dict['train_task_id_tmp'] = self.para_dict['train_task_id'][i]
             print('run task: {}'.format(self.para_dict['train_task_id_tmp']))
-            self.trainer.train_model(train_loader, self.para_dict['train_task_id_tmp'])
+            self.trainer.train_model(train_loader, i)
 
             print('-> test ...')
             # test each task individually
