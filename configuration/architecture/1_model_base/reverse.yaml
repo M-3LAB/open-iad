@@ -10,7 +10,6 @@ data_crop_size: 256
 mask_size: 256
 mask_crop_size: 256
 
-
 _name: reverse
 _optimizer_name: adam
 _base_lr: 0.005
