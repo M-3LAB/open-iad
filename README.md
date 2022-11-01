@@ -37,19 +37,21 @@ python3 mmad_training.py
 
 | Method / -m | Net / -n |
 | ------ | ------ |
-| patchcore  | resnet18, wide_resnet50 |
+| cfa | net_cfa |
+| csflow | net_csflow |
+| cutpaste | vit_b_16 |
+| devnet | net_devnet |
+| dne | vit_b_16 |
+| dra | net_dra |
+| draem | net_draem |
+| fastflow | net_fastflow |
+| favae | net_favae |
+| igd | net_igd |
 | padim  | resnet18, wide_resnet50 |
+| patchcore  | resnet18, wide_resnet50 |
+| reverse | net_reverse |
 | spade  | resnet18, wide_resnet50 |
 | stpm  | resnet18, wide_resnet50 |
-| csflow | net_csflow |
-| dne | vit_b_16 |
-| draem | net_draem |
-| dra | net_dra |
-| igd | net_igd |
-| reverse | net_reverse |
-| favae | net_favae |
-| cfa | net_cfa |
-| cut_paste | vit_b_16 |
 
 
 
