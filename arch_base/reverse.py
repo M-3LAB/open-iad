@@ -5,6 +5,7 @@ from arch_base.base import ModelBase
 from scipy.ndimage import gaussian_filter
 from loss_function.reverse_loss import reverse_loss
 
+
 __all__ = ['REVERSE']
 
 class REVERSE(ModelBase):

@@ -3,12 +3,12 @@ from collections import OrderedDict
 from random import sample
 import torch.nn.functional as F
 import numpy as np
-import os
 from arch_base.base import ModelBase
 from tools.utils import *
 from scipy.spatial.distance import mahalanobis
 from scipy.ndimage import gaussian_filter
 from tools.utils import save_feat_pickle
+
 
 __all__ = ['PaDim']
 
@@ -29,16 +29,6 @@ class PaDim(ModelBase):
         self.idx = torch.tensor(sample(range(0, t_d), d))
         self.features = []
         self.get_layer_features()
-
-        # source_domain = ''
-        # if self.config['continual']:
-        #     for i in self.config['train_task_id']:  
-        #         source_domain = source_domain + str(self.config['train_task_id'][i])
-        # else:
-        #     source_domain = str(self.config['train_task_id'][0])
-
-        # self.embedding_dir_path = os.path.join(self.file_path, 'embeddings', source_domain)
-        # create_folders(self.embedding_dir_path)
     
     def get_layer_features(self):
     
@@ -169,5 +159,4 @@ class PaDim(ModelBase):
         # calculate image-level ROC AUC score
         img_scores = scores.reshape(scores.shape[0], -1).max(axis=1)
         self.img_pred_list = img_scores
-        # self.img_gt_list = np.asarray(self.img_gt_list)
         self.pixel_pred_list = scores

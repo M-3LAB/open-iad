@@ -28,7 +28,6 @@ class _CSFlow(nn.Module):
         if self.scheduler is not None:
             self.scheduler.step(epoch)
 
-
 class CSFlow(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
         super(CSFlow, self).__init__(config, device, file_path, net, optimizer, scheduler)
@@ -45,7 +44,6 @@ class CSFlow(ModelBase):
             for batch_id, batch in enumerate(train_loader):
                 inputs = batch['img'].to(self.device)
                 self.model(epoch, inputs)
-
 
     def prediction(self, valid_loader, task_id):
         self.net.eval()
