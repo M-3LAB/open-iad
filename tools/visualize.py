@@ -41,7 +41,7 @@ def save_anomaly_map(anomaly_map, input_img, mask, file_path):
         anomaly_map = cv2.resize(anomaly_map, (input_img.shape[0], input_img.shape[1]))
 
     anomaly_map_norm = min_max_norm(anomaly_map) 
-    heatmap = cv2heatmap(anomaly_map_norm*255)
+    heatmap = cv2heatmap(anomaly_map_norm * 255)
 
     heatmap_on_img = heatmap_on_image(heatmap, input_img)
     create_folders(file_path)
@@ -49,7 +49,7 @@ def save_anomaly_map(anomaly_map, input_img, mask, file_path):
     cv2.imwrite(os.path.join(file_path, 'input.jpg'), input_img)
     cv2.imwrite(os.path.join(file_path, 'heatmap.jpg'), heatmap)
     cv2.imwrite(os.path.join(file_path, 'heatmap_on_img.jpg'), heatmap_on_img)
-    cv2.imwrite(os.path.join(file_path, 'mask.jpg'), mask)
+    cv2.imwrite(os.path.join(file_path, 'mask.jpg'), mask * 255)
     
 def plot_embedding(data, label, num_shot, title):
     x_min, x_max = np.min(data, 0), np.max(data, 0)
