@@ -1,6 +1,6 @@
 model: favae
 net: net_favae
-num_epochs: 100 # 100
+num_epochs: 1 # 100
 train_batch_size: 64 # 64
 valid_batch_size: 1
 train_aug_type: normal
