@@ -33,7 +33,7 @@ class RecordHelper():
 
     def record_result(self, result):
         paradim = self.paradigm_name()
-        save_dir = '{}/benchmark/{}/{}/{}/{}'.format(self.config['work_dir'], paradim, self.config['dataset'],
+        save_dir = '{}/benchmark/{}/{}/{}/task_{}'.format(self.config['work_dir'], paradim, self.config['dataset'],
                                                      self.config['model'], self.config['train_task_id_tmp'])
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
@@ -42,32 +42,32 @@ class RecordHelper():
         if paradim == 'vanilla':
             save_path = save_path
         if paradim == 'semi':
-            save_path = '{}/result_{}.txt'.format(save_dir, self.config['semi_anomaly_num'])
+            save_path = '{}/result_{}_num.txt'.format(save_dir, self.config['semi_anomaly_num'])
         if paradim == 'fewshot':
-            save_path = '{}/result_{}.txt'.format(save_dir, self.config['fewshot_exm'])
+            save_path = '{}/result_{}_shot.txt'.format(save_dir, self.config['fewshot_exm'])
         if paradim == 'continual':
-            save_path = '{}/result_{}.txt'.format(save_dir, self.config['valid_task_id_tmp'])
+            save_path = '{}/result_{}_task.txt'.format(save_dir, self.config['valid_task_id_tmp'])
         if paradim == 'noisy':
-            save_path = '{}/result_{}.txt'.format(save_dir, self.config['noisy_ratio'])
+            save_path = '{}/result_{}_ratio.txt'.format(save_dir, self.config['noisy_ratio'])
         
         with open(save_path, 'a') as f:
             print(result, file=f) 
 
     def record_images(self, img_pred_list, img_gt_list, pixel_pred_list, pixel_gt_list, img_path_list):
         paradim = self.paradigm_name()
-        save_dir = '{}/benchmark/{}/{}/{}/{}'.format(self.config['work_dir'], paradim, self.config['dataset'],
+        save_dir = '{}/benchmark/{}/{}/{}/task_{}'.format(self.config['work_dir'], paradim, self.config['dataset'],
                                                       self.config['model'], self.config['train_task_id_tmp'])
         
         if paradim == 'vanilla':
             save_dir = save_dir + '/vis'
         if paradim == 'semi':
-            save_dir = '{}/vis_{}'.format(save_dir, self.config['semi_anomaly_num'])
+            save_dir = '{}/vis_{}_num'.format(save_dir, self.config['semi_anomaly_num'])
         if paradim == 'fewshot':
-            save_dir = '{}/vis_{}'.format(save_dir, self.config['fewshot_exm'])
+            save_dir = '{}/vis_{}_shot'.format(save_dir, self.config['fewshot_exm'])
         if paradim == 'continual':
-            save_dir = '{}/vis_{}'.format(save_dir, self.config['valid_task_id_tmp'])
+            save_dir = '{}/vis_{}_task'.format(save_dir, self.config['valid_task_id_tmp'])
         if paradim == 'noisy':
-            save_dir = '{}/vis_{}'.format(save_dir, self.config['noisy_ratio'])
+            save_dir = '{}/vis_{}_ratio'.format(save_dir, self.config['noisy_ratio'])
 
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
