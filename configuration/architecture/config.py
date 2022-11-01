@@ -37,9 +37,9 @@ def parse_arguments_centralized():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad', 'mvtec2df3d'])
 
-    parser.add_argument('--model', '-m', type=str, default='padim', choices=['patchcore', 'csflow', 'dne', 'draem', 'igd', 'cutpaste', 'devnet', 'dra', 
+    parser.add_argument('--model', '-m', type=str, default='dne', choices=['patchcore', 'csflow', 'dne', 'draem', 'igd', 'cutpaste', 'devnet', 'dra', 
                                                                               'favae', 'padim', 'reverse', 'spade', 'fastflow', 'softpatch', 'cfa', 'stpm'])
-    parser.add_argument('--net', '-n', type=str, default='resnet18', choices=['wide_resnet50', 'resnet18', 'net_csflow', 'vit_b_16', 'net_draem', 'net_dra',
+    parser.add_argument('--net', '-n', type=str, default='vit_b_16', choices=['wide_resnet50', 'resnet18', 'net_csflow', 'vit_b_16', 'net_draem', 'net_dra',
                                                                               'net_igd', 'net_reverse', 'net_favae', 'net_fastflow', 'net_cfa', 'net_devnet'])
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
@@ -57,7 +57,7 @@ def parse_arguments_centralized():
     parser.add_argument('--semi-overlap', '-so', action='store_true', default=False)
     
     # continual learning
-    parser.add_argument('--continual', '-c', action='store_true', default=False)
+    parser.add_argument('--continual', '-c', action='store_true', default=True)
 
     # fewshot learniing
     parser.add_argument('--fewshot', '-f', action='store_true', default=False)

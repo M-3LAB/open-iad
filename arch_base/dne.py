@@ -51,7 +51,7 @@ class _DNE(nn.Module):
             task_wise_cov[-1] = cov
 
         task_wise_embeds = []
-        for i in range(t+1):
+        for i in range(t + 1):
             if i < t:
                 past_mean, past_cov, past_nums = task_wise_mean[i], task_wise_cov[i], task_wise_train_data_nums[i]
                 past_embeds = np.random.multivariate_normal(past_mean, past_cov, size=past_nums)
@@ -78,7 +78,7 @@ class DNE(ModelBase):
         self.one_epoch_embeds = []
         self.task_wise_mean = []
         self.task_wise_cov = []
-        self.task_wise_train_data_nums = [] 
+        self.task_wise_train_data_nums = []
 
     def train_model(self, train_loader, task_id, inf=''):
         self.net.train()
@@ -90,6 +90,7 @@ class DNE(ModelBase):
 
                 self.model(epoch, inputs, labels, self.one_epoch_embeds, self.task_wise_mean, self.task_wise_cov, task_id)
 
+        self.task_wise_train_data_nums.append(len(train_loader) * self.config['train_batch_size'])
 
     def prediction(self, valid_loader, task_id):
         self.model.eval()
