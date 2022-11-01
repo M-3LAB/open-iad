@@ -1,5 +1,5 @@
 model: fastflow
-num_epochs: 1 
+num_epochs: 500 
 net: net_fastflow
 data_size: 256
 data_crop_size: 256

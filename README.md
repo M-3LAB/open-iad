@@ -55,9 +55,9 @@ python3 mmad_training.py
 
 > Vanilla
 ```bash
-python3 centralized_training.py --vanilla --model patchcore --net resnet18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 0.001 -g 1
-python3 centralized_training.py --vanilla --model csflow --net net_csflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 1
-python3 centralized_training.py --vanilla --model cfa --net net_cfa --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --coreset-sampling-ratio 0.001 -g 7
+python3 centralized_training.py -v --model patchcore --net resnet18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 0.001 -g 1
+python3 centralized_training.py -v --model csflow --net net_csflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 1
+python3 centralized_training.py -v --model cfa --net net_cfa --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --coreset-sampling-ratio 0.001 -g 7
 python3 centralized_training.py -v --model draem --net net_draem --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 2
 python3 centralized_training.py -v --model fastflow -n net_fastflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 python3 centralized_training.py -v --model cutpaste -n vit_b_16  --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
@@ -74,19 +74,19 @@ python3 centralized_training.py -v --model stpm -n resnet18 --dataset mvtec2d --
 > Continual
 ```bash
 python3 centralized_training.py --continual --model patchcore --net resent18 --dataset mvtec2d --train-task-id 0 1 --valid-task-id 0 1 --coreset-sampling-ratio 0.001 -g 1
-python3 centralized_training.py --continual --model csflow --net net_csflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 1
-python3 centralized_training.py --continual --model cfa --net net_cfa --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --coreset-sampling-ratio 0.001 -g 7
-python3 centralized_training.py --continual --model draem --net net_draem --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 2
-python3 centralized_training.py --continual --model fastflow -n net_fastflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --continual --model cutpaste -n vit_b_16  --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-python3 centralized_training.py --continual --model padim -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --continual --model favae --net net_favae --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-python3 centralized_training.py --continual --model cutpaste -n vit_b_16 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --continual --model igd -n net_igd --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --continual --model reverse -n net_reverse --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --continual --model spade -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --continual --model stpm -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py -c --model dne --net vit_b_16 --dataset mvtec2d --train-task-id 0 11 --valid-task-id 0 11 -g 7
+python3 centralized_training.py --continual --model csflow --net net_csflow --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 1
+python3 centralized_training.py --continual --model cfa --net net_cfa --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 --coreset-sampling-ratio 0.001 -g 7
+python3 centralized_training.py --continual --model draem --net net_draem --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 2
+python3 centralized_training.py --continual --model fastflow -n net_fastflow --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
+python3 centralized_training.py --continual --model cutpaste -n vit_b_16  --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11  -g 7
+python3 centralized_training.py --continual --model padim -n resnet18 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
+python3 centralized_training.py --continual --model favae --net net_favae --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11  -g 7
+python3 centralized_training.py --continual --model cutpaste -n vit_b_16 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
+python3 centralized_training.py --continual --model igd -n net_igd --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
+python3 centralized_training.py --continual --model reverse -n net_reverse --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
+python3 centralized_training.py --continual --model spade -n resnet18 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
+python3 centralized_training.py --continual --model stpm -n resnet18 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
+python3 centralized_training.py --continual --model dne --net vit_b_16 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
 ```
 
 > Fewshot

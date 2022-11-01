@@ -3,7 +3,7 @@ net: resnet18
 semi: false
 semi_anomaly_num: 10 # _n_anomaly
 semi_overlap: false
-num_epochs: 1 # 50 
+num_epochs: 50 # 50 
 train_batch_size: 48
 valid_batch_size: 1
 train_aug_type: normal

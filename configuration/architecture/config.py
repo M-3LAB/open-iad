@@ -49,7 +49,7 @@ def parse_arguments_centralized():
     parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default= 0.001)
 
     # vanilla learning
-    parser.add_argument('--vanilla', '-v', action='store_true', default=True)
+    parser.add_argument('--vanilla', '-v', action='store_true', default=False)
     
     # semi-supervised learning
     parser.add_argument('--semi', '-s', action='store_true', default=False)

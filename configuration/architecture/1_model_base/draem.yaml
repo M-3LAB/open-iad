@@ -2,7 +2,7 @@ model: draem
 train_batch_size: 8 # 16
 valid_batch_size: 1
 net: net_draem  
-num_epochs: 1 # 50
+num_epochs: 700 # 50
 train_aug_type: normal
 valid_aug_type: normal
 data_size: 256

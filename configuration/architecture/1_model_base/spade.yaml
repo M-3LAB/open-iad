@@ -6,9 +6,9 @@ valid_batch_size: 1
 train_aug_type: normal
 valid_aug_type: normal
 data_size: 256
-data_crop_size: 224
+data_crop_size: 256
 mask_size: 256
-mask_crop_size: 224
+mask_crop_size: 256
 
 _name: spade
 _top_k: 5
