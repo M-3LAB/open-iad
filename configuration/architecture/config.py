@@ -62,7 +62,7 @@ def parse_arguments_centralized():
     # continual learning
     parser.add_argument('--continual', '-c', action='store_true', default=True)
 
-    # fewshot learniing
+    # fewshot learniinr
     parser.add_argument('--fewshot', '-f', action='store_true', default=False)
     parser.add_argument('--fewshot-exm', '-fe', type=int, default=1)
     parser.add_argument('--fewshot-data-aug', '-fda', action='store_true', default=False)
