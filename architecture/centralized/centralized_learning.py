@@ -196,20 +196,22 @@ class CentralizedTrain():
         if self.para_dict['noisy']:
             train_task_data_list = self.train_noisy_dataset.sample_indices_in_task
             valid_task_data_list = self.valid_noisy_dataset.sample_indices_in_task 
+            train_noisy_loaders, valid_noisy_loaders = [], []
             for i in range(self.para_dict['num_task']):
                 train_loader = DataLoader(self.train_noisy_dataset,
                                         batch_size=self.para_dict['train_batch_size'],
                                         num_workers=self.para_dict['num_workers'],
                                         sampler=SubsetRandomSampler(train_task_data_list[i]))
-                self.train_loaders.append(train_loader)
+                train_noisy_loaders.append(train_loader)
 
                 valid_loader = DataLoader(self.valid_noisy_dataset, 
                                         num_workers=self.para_dict['num_workers'],
                                         batch_size=self.para_dict['valid_batch_size'], 
                                         shuffle=False,
                                         sampler=SubsetRandomSampler(valid_task_data_list[i]))
-                self.valid_loaders.append(valid_loader)
-
+                valid_noisy_loaders.append(valid_loader)
+            self.train_loaders = train_noisy_loaders
+            self.valid_loaders = valid_noisy_loaders
 
         self.chosen_train_loaders, self.chosen_valid_loaders = [], []
         self.chosen_vis_loaders = []
