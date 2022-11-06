@@ -70,7 +70,7 @@ def parse_arguments_centralized():
     parser.add_argument('--fewshot-num-dg', '-fnd', type=int, default=1)
 
     # noisy label
-    parser.add_argument('--noisy', '-ny', action='store_true', default=False)
+    parser.add_argument('--noisy', '-ny', action='store_true', default=True)
     parser.add_argument('--noisy-overlap', '-no', action='store_true', default=False)
     parser.add_argument('--noisy-ratio', '-nr', type=float, default=0.1)
 

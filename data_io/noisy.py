@@ -4,7 +4,7 @@ import random
 
 __all__ = ['extract_noisy_data']
 
-def extract_noisy_data(train_dataset, valid_dataset, noisy_ratio=0.1, noisy_overlap=False, upper_ratio=0.5):
+def extract_noisy_data(train_dataset, valid_dataset, noisy_ratio=0.1, noisy_overlap=False, upper_ratio=0.75):
     valid_sample_nums = [0] + valid_dataset.sample_num_in_task
     valid_sample_indice = valid_dataset.sample_indices_in_task
 
