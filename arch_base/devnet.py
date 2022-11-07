@@ -53,7 +53,6 @@ class _DevNet(nn.Module):
         score = torch.mean(scores, dim=1)
         return score.view(-1, 1)
 
-
 class DevNet(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
         super(DevNet, self).__init__(config, device, file_path, net, optimizer, scheduler)

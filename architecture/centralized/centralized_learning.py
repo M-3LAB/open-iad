@@ -111,12 +111,9 @@ class CentralizedTrain():
                                            data_transform=valid_data_transform,
                                            num_task=self.para_dict['num_task'])
 
-        self.train_semi_dataset, self.valid_semi_dataset, self.semi_dataset = extract_semi_data(self.train_dataset, 
-                                                self.valid_dataset, 
-                                                anomaly_num=self.para_dict['semi_anomaly_num'], 
-                                                anomaly_overlap=self.para_dict['semi_overlap'])                                                    
-
+        self.refer_dataset = extract_fewshot_data(self.train_dataset, self.para_dict['ref_num'])
         self.vis_dataset = extract_fewshot_data(self.valid_dataset, self.para_dict['vis_num'])
+
             
         if self.para_dict['fewshot']:
             self.train_fewshot_dataset = extract_fewshot_data(self.train_dataset, self.para_dict['fewshot_exm'])
@@ -127,44 +124,51 @@ class CentralizedTrain():
                                                     noisy_ratio=self.para_dict['noisy_ratio'], 
                                                     noisy_overlap=self.para_dict['noisy_overlap'])
 
+        if self.para_dict['semi']:
+            self.train_semi_dataset, self.valid_semi_dataset, self.semi_dataset = extract_semi_data(self.train_dataset, 
+                                                    self.valid_dataset, 
+                                                    anomaly_num=self.para_dict['semi_anomaly_num'], 
+                                                    anomaly_overlap=self.para_dict['semi_overlap'])                                                    
+
         self.train_loaders, self.valid_loaders = [], []
+        self.train_semi_loaders = []
         self.refer_loaders = []
         self.vis_loaders = []
         
         # vanilla training
         train_task_data_list = self.train_dataset.sample_indices_in_task
         valid_task_data_list = self.valid_dataset.sample_indices_in_task
-        semi_task_data_list = self.semi_dataset.sample_indices_in_task
+        refer_task_data_list = self.refer_dataset.sample_indices_in_task
         vis_task_data_list = self.vis_dataset.sample_indices_in_task
 
         for i in range(self.para_dict['num_task']):
-            train_loader = DataLoader(self.train_dataset,
+            train_noisy_loader = DataLoader(self.train_dataset,
                                     batch_size=self.para_dict['train_batch_size'],
                                     num_workers=self.para_dict['num_workers'],
                                     sampler=SubsetRandomSampler(train_task_data_list[i]),
                                     drop_last=False)
-            self.train_loaders.append(train_loader)
+            self.train_loaders.append(train_noisy_loader)
 
-            valid_loader = DataLoader(self.valid_dataset, 
-                                    num_workers=self.para_dict['num_workers'],
+            valid_noisy_loader = DataLoader(self.valid_dataset, 
                                     batch_size=self.para_dict['valid_batch_size'], 
+                                    num_workers=self.para_dict['num_workers'],
                                     shuffle=False,
                                     sampler=SubsetRandomSampler(valid_task_data_list[i]),
                                     drop_last=False)
-            self.valid_loaders.append(valid_loader)
+            self.valid_loaders.append(valid_noisy_loader)
 
-            semi_loader = DataLoader(self.semi_dataset, 
-                                batch_size=self.para_dict['semi_anomaly_num'], 
-                                num_workers=self.para_dict['num_workers'],
-                                sampler=SubsetRandomSampler(semi_task_data_list[i]),
-                                drop_last=False)
-            self.refer_loaders.append(semi_loader) 
+            refer_loader = DataLoader(self.train_dataset, 
+                                    batch_size=self.para_dict['ref_num'], 
+                                    num_workers=self.para_dict['num_workers'],
+                                    sampler=SubsetRandomSampler(refer_task_data_list[i]),
+                                    drop_last=False)
+            self.refer_loaders.append(refer_loader) 
 
             vis_loader = DataLoader(self.vis_dataset, 
-                                batch_size=self.para_dict['valid_batch_size'], 
-                                num_workers=self.para_dict['num_workers'],
-                                sampler=SubsetRandomSampler(vis_task_data_list[i]),
-                                drop_last=False)
+                                    batch_size=self.para_dict['valid_batch_size'], 
+                                    num_workers=self.para_dict['num_workers'],
+                                    sampler=SubsetRandomSampler(vis_task_data_list[i]),
+                                    drop_last=False)
             self.vis_loaders.append(vis_loader) 
 
         if self.para_dict['fewshot']:
@@ -198,20 +202,40 @@ class CentralizedTrain():
             valid_task_data_list = self.valid_noisy_dataset.sample_indices_in_task 
             train_noisy_loaders, valid_noisy_loaders = [], []
             for i in range(self.para_dict['num_task']):
-                train_loader = DataLoader(self.train_noisy_dataset,
+                train_noisy_loader = DataLoader(self.train_noisy_dataset,
                                         batch_size=self.para_dict['train_batch_size'],
                                         num_workers=self.para_dict['num_workers'],
                                         sampler=SubsetRandomSampler(train_task_data_list[i]))
-                train_noisy_loaders.append(train_loader)
+                train_noisy_loaders.append(train_noisy_loader)
 
-                valid_loader = DataLoader(self.valid_noisy_dataset, 
-                                        num_workers=self.para_dict['num_workers'],
+                valid_noisy_loader = DataLoader(self.valid_noisy_dataset, 
                                         batch_size=self.para_dict['valid_batch_size'], 
+                                        num_workers=self.para_dict['num_workers'],
                                         shuffle=False,
                                         sampler=SubsetRandomSampler(valid_task_data_list[i]))
-                valid_noisy_loaders.append(valid_loader)
+                valid_noisy_loaders.append(valid_noisy_loader)
             self.train_loaders = train_noisy_loaders
             self.valid_loaders = valid_noisy_loaders
+
+        if self.para_dict['semi']:
+            train_task_data_list = self.train_semi_dataset.sample_indices_in_task
+            valid_task_data_list = self.valid_semi_dataset.sample_indices_in_task 
+            train_semi_loaders, valid_semi_loaders = [], []
+            for i in range(self.para_dict['num_task']):
+                train_semi_loader = DataLoader(self.train_semi_dataset,
+                                        batch_size=self.para_dict['train_batch_size'],
+                                        num_workers=self.para_dict['num_workers'],
+                                        sampler=SubsetRandomSampler(train_task_data_list[i]))
+                train_semi_loaders.append(train_semi_loader)
+
+                valid_semi_loader = DataLoader(self.valid_semi_dataset, 
+                                        batch_size=self.para_dict['valid_batch_size'], 
+                                        num_workers=self.para_dict['num_workers'],
+                                        shuffle=False,
+                                        sampler=SubsetRandomSampler(valid_task_data_list[i]))
+                valid_semi_loaders.append(valid_semi_loader)
+            self.train_loaders = train_semi_loaders
+            self.valid_loaders = valid_semi_loaders
 
         self.chosen_train_loaders, self.chosen_valid_loaders = [], []
         self.chosen_vis_loaders = []
@@ -353,8 +377,6 @@ class CentralizedTrain():
                 # save result
                 if self.para_dict['save_log']:
                     self.trainer.recorder.record_result(infor_result)
-
-
 
     def run_work_flow(self):
         self.load_config()

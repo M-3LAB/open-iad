@@ -6,6 +6,8 @@ vanilla: false
 semi: false
 semi_anomaly_num: 5
 semi_overlap: false
+# reference
+ref_num: 5
 # continual learning
 continual: false
 # fewshot learning
