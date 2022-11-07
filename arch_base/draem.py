@@ -8,7 +8,7 @@ from loss_function.ssim_loss import SSIMLoss
 from data_io.augmentation.draem_aug import DraemAugData
 
 
-__all__ = ['DNE', 'weights_init']
+__all__ = ['DRAEM', 'weights_init']
 
 def weights_init(m):
     classname = m.__class__.__name__
@@ -69,26 +69,24 @@ class DRAEM(ModelBase):
         self.net.eval()
         self.cal_metric_all()
 
-        seg_score_gt = []
         with torch.no_grad():
             for batch_id, batch in enumerate(valid_loader):
                 inputs = batch['img'].to(self.device)
                 labels = batch['label'].numpy()
-                mask = batch['mask']
-                mask[mask>=0.5] = 1
-                mask[mask<0.5] = 0
-                mask_np = mask.numpy()[0,0].astype(int)
-                self.pixel_gt_list.append(mask_np)
-                self.img_gt_list.append(labels[0])
-                self.img_path_list.append(batch['img_src'])
-                
-                seg_score_gt.append(labels)
+                mask = batch['mask'].numpy()
+
                 _, out_masks = self.net(inputs)
                 out_masks_sm = torch.softmax(out_masks, dim=1)
-                out_mask_cv = out_masks_sm[0 ,1 ,: ,:].detach().cpu().numpy()
+                out_mask_cv = out_masks_sm[0, 1, :, :].detach().cpu().numpy()
                 outs_mask_averaged = torch.nn.functional.avg_pool2d(out_masks_sm[:, 1:, :, :],
                                                                      21, stride=1, padding=21 // 2).cpu().detach().numpy()
-
                 image_score = np.max(outs_mask_averaged)
                 self.pixel_pred_list.append(out_mask_cv)
                 self.img_pred_list.append(image_score)
+
+                mask[mask >= 0.5] = 1
+                mask[mask < 0.5] = 0
+                mask_np = mask[0, 0].astype(int)
+                self.pixel_gt_list.append(mask_np)
+                self.img_gt_list.append(labels[0])
+                self.img_path_list.append(batch['img_src'])

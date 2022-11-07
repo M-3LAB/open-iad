@@ -1,8 +1,8 @@
 model: draem
-train_batch_size: 8 # 16
+train_batch_size: 8 # 8
 valid_batch_size: 1
 net: net_draem  
-num_epochs: 700 # 50
+num_epochs: 50 # 700
 train_aug_type: normal
 valid_aug_type: normal
 data_size: 256
@@ -10,24 +10,11 @@ data_crop_size: 256
 mask_size: 256
 mask_crop_size: 256
 
-# _name: seq-mvtec   # seq-mvtec or seq-mtd-mvtec
-_image_size: 256  # 224; draem, revdis: 256; csflow: 768;
-_data_incre_setting: mul # one: 10+1+1+1+1+1 mul: 3+3+3+3+3
-_n_classes_per_task: 3  # one_class_incre:1 mul_class_incre: 3
-_n_tasks: 5  # seq-mtd-mvtec, one_class_incre：6, mul_class_incre: 5
-_dataset_order: 1 # 1, 2, 3
-_strong_augmentation: True # strong augmentation: cutpaste, maskimg, etc.; weak augmentation: ColorJitter, RandomRotation, etc.
-_random_aug: True
-
 _name: draem 
-# _net: net_draem 
 _pretrained: True
-# plug in
 _use_dis: False
-# dis, discat
 _fix_head: True
 _save_anormal : True
-# cflow
 _n_feat: 304
 _fc_internal: 1024
 _n_coupling_blocks: 4
@@ -35,22 +22,18 @@ _clamp: 3
 _n_scales: 3
 
 _optimizer_name: adam
-_weight_decay: 0.00003 # 0.00003; csflow: 0.00001
+_weight_decay: 0.00003
 _momentum: 0.9
 _warmup_epochs: 10
 _warmup_lr: 0
-_base_lr: 0.0001 # 0.0001; csflow: 0.0002; revdis:0.005
+_base_lr: 0.0001 
 _gamma: 0.2
 _final_lr: 0
-# _num_epochs: 50
-# _batch_size: 16 # 32， csflow, draem:16
 _test_epochs: 10
 _alpha: 0.4
 _beta: 0.5
 _num_classes: 2
-
 _eval_classifier: density # head, density
-# _batch_size: 1 # 32, revdis,draem:1
 _visualization: False
 
 

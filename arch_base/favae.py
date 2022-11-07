@@ -91,9 +91,9 @@ class FAVAE(ModelBase):
                     score[i] = gaussian_filter(score[i], sigma=4)
                 pixel_pred_list.append(score.reshape(img.size(2),img.size(2)))
                 recon_imgs.extend(output.cpu().numpy())
-                mask[mask>=0.5] = 1
-                mask[mask<0.5] = 0
-                gt_mask_list.append(mask[0,0].astype(int))
+                mask[mask >= 0.5] = 1
+                mask[mask < 0.5] = 0
+                gt_mask_list.append(mask[0, 0].astype(int))
                 self.img_gt_list.append(label.numpy()[0])
                 self.img_pred_list.append(np.max(score))
                 self.img_path_list.append(batch['img_src'])

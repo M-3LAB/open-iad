@@ -64,8 +64,8 @@ class CFA(ModelBase):
                 img = batch['img'].to(self.device)
                 label = batch['label']
                 mask = batch['mask'].to(self.device)
-                mask[mask>=0.5] = 1
-                mask[mask<0.5] = 0
+                mask[mask >= 0.5] = 1
+                mask[mask < 0.5] = 0
 
                 self.img_gt_list.append(label.cpu().detach().numpy())
                 self.pixel_gt_list.append(mask.cpu().detach().numpy()[0,0,:,:])
