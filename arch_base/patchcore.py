@@ -83,20 +83,6 @@ class PatchCore(ModelBase):
                 embedding = PatchCore.reshape_embedding(embedding.detach().numpy())
                 embeddings_list.extend(embedding)
 
-                if self.config['fewshot']:
-                    embeddings_rot = []
-                    if self.config['fewshot_feat_aug']:
-                        self.embed_rot = feature_augmentation(self.features, self.device)
-
-                        for feat in self.embed_rot:
-                            # Pooling for layer 2 and layer 3 features
-                            pooling = torch.nn.AvgPool2d(3, 1, 1)
-                            embeddings_rot.append(pooling(feat))
-
-                        embedding_rot = PatchCore.embedding_concate(embeddings_rot[0], embeddings_rot[1])
-                        embedding_rot = PatchCore.reshape_embedding(embedding_rot.detach().numpy())
-                        embeddings_list.extend(embedding_rot)
-
         # Sparse random projection from high-dimensional space into low-dimensional euclidean space
         total_embeddings = np.array(embeddings_list).astype(np.float32)
         self.random_projector.fit(total_embeddings)

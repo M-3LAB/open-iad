@@ -142,7 +142,7 @@ class CentralizedTrain():
                                     batch_size=self.para_dict['train_batch_size'],
                                     num_workers=self.para_dict['num_workers'],
                                     sampler=SubsetRandomSampler(train_task_data_list[i]),
-                                    drop_last=True)
+                                    drop_last=False)
             self.train_loaders.append(train_loader)
 
             valid_loader = DataLoader(self.valid_dataset, 
@@ -150,21 +150,21 @@ class CentralizedTrain():
                                     batch_size=self.para_dict['valid_batch_size'], 
                                     shuffle=False,
                                     sampler=SubsetRandomSampler(valid_task_data_list[i]),
-                                    drop_last=True)
+                                    drop_last=False)
             self.valid_loaders.append(valid_loader)
 
             semi_loader = DataLoader(self.semi_dataset, 
                                 batch_size=self.para_dict['semi_anomaly_num'], 
                                 num_workers=self.para_dict['num_workers'],
                                 sampler=SubsetRandomSampler(semi_task_data_list[i]),
-                                drop_last=True)
+                                drop_last=False)
             self.refer_loaders.append(semi_loader) 
 
             vis_loader = DataLoader(self.vis_dataset, 
                                 batch_size=self.para_dict['valid_batch_size'], 
                                 num_workers=self.para_dict['num_workers'],
                                 sampler=SubsetRandomSampler(vis_task_data_list[i]),
-                                drop_last=True)
+                                drop_last=False)
             self.vis_loaders.append(vis_loader) 
 
         if self.para_dict['fewshot']:
