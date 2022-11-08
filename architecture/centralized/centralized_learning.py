@@ -274,7 +274,7 @@ class CentralizedTrain():
             self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs)
         if self.para_dict['net'] == 'net_draem':
             self.net = NetDRAEM(args)
-            self.optimizer = get_optimizer(args, self.net.parameters())
+            self.optimizer = get_optimizer(args, list(self.net.reconstructive_subnetwork.parameters()) + list(self.net.discriminative_subnetwork.parameters()))
             self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
         if self.para_dict['net'] == 'net_igd':
             self.net = NetIGD(args)

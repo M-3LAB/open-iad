@@ -1,5 +1,5 @@
 model: draem
-train_batch_size: 8 # 8
+train_batch_size: 16 # 8
 valid_batch_size: 1
 net: net_draem  
 num_epochs: 50 # 700

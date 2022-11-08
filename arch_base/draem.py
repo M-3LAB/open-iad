@@ -29,7 +29,8 @@ class _DRAEM(nn.Module):
         self.loss_ssim = SSIMLoss()
         self.loss_focal = FocalLoss()
 
-        self.net.apply(weights_init)
+        self.net.reconstructive_subnetwork.apply(weights_init)
+        self.net.discriminative_subnetwork.apply(weights_init)
         
     def forward(self, epoch, inputs, labels, masks):
         rec_imgs, out_masks = self.net(inputs)
