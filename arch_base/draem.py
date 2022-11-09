@@ -63,7 +63,7 @@ class DRAEM(ModelBase):
 
     def prediction(self, valid_loader, task_id):
         self.net.eval()
-        self.cal_metric_all()
+        self.clear_all_list()
 
         with torch.no_grad():
             for batch_id, batch in enumerate(valid_loader):
