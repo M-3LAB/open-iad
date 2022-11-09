@@ -18,43 +18,25 @@ def weights_init(m):
         m.weight.data.normal_(1.0, 0.02)
         m.bias.data.fill_(0)
 
-class _DRAEM(nn.Module):
-    def __init__(self, args, net, optimizer, scheduler):
-        super(_DRAEM, self).__init__()
-        self.args = args
-        self.net = net
-        self.optimizer = optimizer
-        self.scheduler = scheduler
-        self.loss_l2 = nn.modules.loss.MSELoss()
-        self.loss_ssim = SSIMLoss()
-        self.loss_focal = FocalLoss()
-
-        self.net.reconstructive_subnetwork.apply(weights_init)
-        self.net.discriminative_subnetwork.apply(weights_init)
-        
-    def forward(self, epoch, inputs, labels, masks):
-        rec_imgs, out_masks = self.net(inputs)
-        out_masks_sm = torch.softmax(out_masks, dim=1)
-        l2_loss = self.loss_l2(rec_imgs, inputs)
-        ssim_loss = self.loss_ssim(rec_imgs, inputs)
-        segment_loss = self.loss_focal(out_masks_sm, masks)
-        loss = l2_loss + ssim_loss + segment_loss
-
-        loss.backward()
-        self.optimizer.step()
-
 class DRAEM(ModelBase):
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
         super(DRAEM, self).__init__(config, device, file_path, net, optimizer, scheduler)
         self.config = config
         self.device = device
         self.file_path = file_path
-        self.net = net
+        self.net = net.to(self.device)
+        self.optimizer = optimizer
         self.scheduler = scheduler
 
         self.args = argparse.Namespace(**self.config)
-        self.model = _DRAEM(self.args, self.net, optimizer, self.scheduler).to(self.device)
         self.dream_aug = DraemAugData(self.args.root_path + '/dtd/images', [self.args.data_size, self.args.data_size])
+
+        self.net.reconstructive_subnetwork.apply(weights_init)
+        self.net.discriminative_subnetwork.apply(weights_init)
+
+        self.loss_l2 = nn.modules.loss.MSELoss()
+        self.loss_ssim = SSIMLoss()
+        self.loss_focal = FocalLoss()
 
     def train_model(self, train_loader, task_id, inf=''):
         self.net.train()
@@ -62,8 +44,21 @@ class DRAEM(ModelBase):
         for epoch in range(self.config['num_epochs']):
             for batch_id, batch in enumerate(train_loader):
                 inputs, masks, labels = self.dream_aug.transform_batch(batch['img'], batch['label'], batch['mask'])
-                self.model(epoch, inputs.to(self.device), labels.to(self.device), masks.to(self.device))
+                inputs = inputs.to(self.device)
+                masks = masks.to(self.device)
 
+                rec_imgs, out_masks = self.net(inputs)
+
+                out_masks_sm = torch.softmax(out_masks, dim=1)
+                l2_loss = self.loss_l2(rec_imgs, inputs)
+                ssim_loss = self.loss_ssim(rec_imgs, inputs)
+                segment_loss = self.loss_focal(out_masks_sm, masks)
+                loss = l2_loss + ssim_loss + segment_loss
+
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
+                
             self.scheduler.step()
 
     def prediction(self, valid_loader, task_id):
