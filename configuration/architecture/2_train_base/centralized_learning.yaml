@@ -38,7 +38,7 @@ valid_task_id:
 train_task_id_tmp: 0
 valid_task_id_tmp: 0
 # vis img
-vis: true
+vis: false
 vis_num: 10
 # vis embedding
 vis_em: false

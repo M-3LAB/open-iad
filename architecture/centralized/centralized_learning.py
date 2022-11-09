@@ -369,6 +369,7 @@ class CentralizedTrain():
                 
                 # visualize result
                 if self.para_dict['vis']:
+                    print('-> visualize ...')
                     self.trainer.visualization(vis_loader, j)
                 infor_result = 'pixel_auroc: {:.4f} img_auroc: {:.4f} pixel_ap: {:.4f} img_ap: {:.4f} pixel_aupro: {:.4f} inference speed: {:.4f}'.format(                                                                                  
                     pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro, inference_speed)
