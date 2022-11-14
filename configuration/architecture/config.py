@@ -60,7 +60,7 @@ def parse_arguments_centralized():
     parser.add_argument('--semi-overlap', '-so', action='store_true', default=False)
     
     # continual learning
-    parser.add_argument('--continual', '-c', action='store_true', default=True)
+    parser.add_argument('--continual', '-c', action='store_true', default=False)
 
     # fewshot learniing
     parser.add_argument('--fewshot', '-f', action='store_true', default=False)
