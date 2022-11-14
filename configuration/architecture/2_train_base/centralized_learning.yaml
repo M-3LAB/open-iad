@@ -6,6 +6,8 @@ vanilla: false
 semi: false
 semi_anomaly_num: 5
 semi_overlap: false
+# reference
+ref_num: 5
 # continual learning
 continual: false
 # fewshot learning
@@ -36,7 +38,7 @@ valid_task_id:
 train_task_id_tmp: 0
 valid_task_id_tmp: 0
 # vis img
-vis: true
+vis: false
 vis_num: 10
 # vis embedding
 vis_em: false

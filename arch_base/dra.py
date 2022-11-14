@@ -43,8 +43,8 @@ class _DRA(nn.Module):
             image_scaled = F.interpolate(image, size=self.args._img_size // (2 ** s)) if s > 0 else image
             feature = self.net(image_scaled)
 
-            ref_feature = feature[:self.args._nRef, :, :, :]
-            feature = feature[self.args._nRef:, :, :, :]
+            ref_feature = feature[:self.args.ref_num, :, :, :]
+            feature = feature[self.args.ref_num:, :, :, :]
 
             if self.training:
                 normal_scores = self.holistic_head(feature)

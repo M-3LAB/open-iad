@@ -101,14 +101,15 @@ class PaDim(ModelBase):
         self.test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])]) 
 
         for batch_id, batch in enumerate(valid_loader):
+            
             img = batch['img'].to(self.device)
-            mask = batch['mask'].to(self.device)
-            label = batch['label'].to(self.device)        
+            mask = batch['mask'].numpy()
+            label = batch['label'].numpy()       
                
             mask[mask >= 0.5] = 1
             mask[mask < 0.5] = 0
-            self.img_gt_list.append(label.cpu().detach().numpy())
-            self.pixel_gt_list.append(mask.cpu().detach().numpy()[0, 0])
+            self.img_gt_list.append(label)
+            self.pixel_gt_list.append(mask[0, 0])
             self.img_path_list.append(batch['img_src'])
             # extract features from backbone
             with torch.no_grad():
