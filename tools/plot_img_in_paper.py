@@ -216,11 +216,105 @@ def plot_k_mvtec2d_2():
     # plt.legend(bbox_to_anchor=(1.05, 0.6), loc=3, borderaxespad=0, fontsize='medium')
     plt.savefig('./k_mvtec2d_2.pdf', bbox_inches='tight', pad_inches=0.1)
     plt.close()
+
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import warnings
+warnings.filterwarnings(action='once')
+plt.style.use('seaborn-whitegrid')
+sns.set_style("whitegrid")
+import matplotlib
+from matplotlib.pyplot import MultipleLocator
+
+
+def normalize(a):
+    a = np.array(a)
+    return a/np.linalg.norm(a)
+
+
+def draw_scatter_mvtec_ad():
+    method = ['CFA', 'CSFlow', 'CutPaste', 'DRAEM', 'FastFlow', 'FAVAE', 'PaDiM', 'PatchCore', 'RD4AD', 'SPADE', 'STPM']
+    img_auc = [0.980, 0.952, 0.917, 0.980, 0.904, 0.793, 0.908, 0.992, 0.986, 0.853, 0.956]
+    infer_speed = [0.061026667, 0.2776, 0.03026, 0.098465522, 0.030966667, 0.032653333,  0.411, 0.346, 0.063616667, 0.26726, 0.027026667]
+    gpu_size = [3208, 17453, 12920, 13248, 3939, 905, 1596, 3446, 5094, 2624, 1877] 
+    
+    indices = list(np.argsort(img_auc))
+    method = [method[i] for i in indices]
+    img_auc = [img_auc[i] for i in indices]
+    infer_speed = [infer_speed[i] for i in indices]
+    gpu_size = [gpu_size[i] for i in indices]
+
+    colors = [plt.cm.Set1(i / float(len(method) - 1)) for i in range(len(method))]
+    # Draw Plot for Each Category
+    fig = plt.figure(figsize=(5, 4), dpi=400, facecolor='w', edgecolor='k')
+    ax = fig.add_subplot(111)
+
+    for i, category in enumerate(method):
+        plt.scatter( 1./ infer_speed[i], img_auc[i], s=normalize(gpu_size)[i] * 200, cmap=plt.cm.Spectral, label=str(category))
+
+    # Decorations
+    # ax=plt.gca().set(xlim=(0, 40), ylim=(0.8, 1),)
+    # plt.xticks(fontsize=10)
+    # plt.yticks(fontsize=10)
+    plt.xlim(0, 40)
+    plt.ylim(0.6, 1)
+    y_major_locator=MultipleLocator(0.05)
+    ax.yaxis.set_major_locator(y_major_locator)
+    plt.xlabel('Inference Speed (FPS)', fontdict={'fontsize': 10})
+    plt.ylabel('Image AUC', fontdict={'fontsize': 10})
+    plt.title('MVTec AD', fontsize=12)
+    # plt.legend(fontsize=10)
+    # plt.legend(loc='lower right',fontsize='medium')
+    plt.legend(bbox_to_anchor=(1.05, 0), loc=3, fontsize=8, borderaxespad=0)
+    plt.show()
+    plt.savefig('./work_dir/mvtec2d_imgauc.pdf', bbox_inches='tight', pad_inches=0.1)
+
+def draw_scatter_mvtec_loco_ad():
+    method = ['CFA', 'CSFlow', 'CutPaste', 'DRAEM', 'FastFlow', 'FAVAE', 'PaDiM', 'PatchCore', 'RD4AD', 'SPADE', 'STPM']
+    img_auc = [0.809, 0.815, 0.823, 0.736, 0.72, 0.643, 0.671, 0.755, 0.787, 0.701, 0.68]
+    infer_speed = [0.061026667, 0.2776, 0.03026, 0.098465522, 0.030966667, 0.032653333,  0.411, 0.346, 0.063616667, 0.26726, 0.027026667]
+    gpu_size = [3208, 17453, 12920, 13248, 3939, 905, 1596, 3446, 5094, 2624, 1877] 
+    
+    indices = list(np.argsort(img_auc))
+    method = [method[i] for i in indices]
+    img_auc = [img_auc[i] for i in indices]
+    infer_speed = [infer_speed[i] for i in indices]
+    gpu_size = [gpu_size[i] for i in indices]
+
+    colors = [plt.cm.Set1(i / float(len(method) - 1)) for i in range(len(method))]
+    # Draw Plot for Each Category
+    fig = plt.figure(figsize=(5, 4), dpi=400, facecolor='w', edgecolor='k')
+    ax = fig.add_subplot(111)
+
+    for i, category in enumerate(method):
+        plt.scatter( 1./ infer_speed[i], img_auc[i], s=normalize(gpu_size)[i] * 300, cmap=plt.cm.Spectral, label=str(category))
+
+    # Decorations
+    # ax=plt.gca().set(xlim=(0, 40), ylim=(0.8, 1),)
+    # plt.xticks(fontsize=10)
+    # plt.yticks(fontsize=10)
+    plt.xlim(0, 40)
+    plt.ylim(0.6, 1)
+    y_major_locator=MultipleLocator(0.05)
+    ax.yaxis.set_major_locator(y_major_locator)
+    plt.xlabel('Inference Speed (FPS)', fontdict={'fontsize': 10})
+    plt.ylabel('Image AUC', fontdict={'fontsize': 10})
+    plt.title('MVTec LOCO AD', fontsize=12)
+    # plt.legend(fontsize=10)
+    # plt.legend(loc='lower right',fontsize='medium')
+    plt.legend(bbox_to_anchor=(1.05, 0), loc=3, fontsize=8, borderaxespad=0)
+    plt.show()
+    plt.savefig('./work_dir/mvtec2d_loco_imgauc.pdf', bbox_inches='tight', pad_inches=0.1)
+
+
 if __name__ == '__main__':
     # plot_p_n_mpdd()
     # plot_p_n_mvtec2d()
     # plot_p_n_mvteclogical()
-    plot_k_mpdd_1()
-    plot_k_mvtec2d_1()
-    plot_k_mpdd_2()
-    plot_k_mvtec2d_2()
+    # plot_k_mpdd_1()
+    # plot_k_mvtec2d_1()
+    # plot_k_mpdd_2()
+    # plot_k_mvtec2d_2()
+    draw_scatter_mvtec_ad()
+    draw_scatter_mvtec_loco_ad()
