@@ -125,10 +125,11 @@ python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --mode
 python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model padim -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model favae --net net_favae --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
 python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model cutpaste -n vit_b_16 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model igd -n net_igd --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model reverse -n net_reverse --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model spade -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model stpm -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
+
+python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model igd -n net_igd --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
 ```
 
 
