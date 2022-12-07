@@ -1,0 +1,11 @@
+model: base
+net: net_base
+data_size: 256
+data_crop_size: 256
+mask_size: 256
+mask_crop_size: 256
+num_epochs: 50
+train_batch_size: 4
+valid_batch_size: 1
+train_aug_type: normal
+valid_aug_type: normal

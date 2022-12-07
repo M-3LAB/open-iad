@@ -1,0 +1,14 @@
+model: _patchcore
+net: wide_resnet50 # resnet18/wide_resnet50
+coreset_sampling_ratio: 0.001
+n_neighbours: 9
+lr: 0.0001
+num_epochs: 1 
+train_batch_size: 32
+valid_batch_size: 1
+# optimizer
+beta1: 0.5
+beta2: 0.999
+train_aug_type: normal
+valid_aug_type: normal
+

@@ -314,7 +314,8 @@ class CentralizedTrain():
             self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs) 
 
-        model_name = {'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
+        model_name = {'_patchcore': ('arch_base._patchcore', '_patchcore', 'PatchCore'),
+                      'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
                       'padim': ('arch_base.padim', 'padim', 'PaDim'),
                       'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
                       'dne': ('arch_base.dne', 'dne', 'DNE'),
