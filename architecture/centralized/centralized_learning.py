@@ -90,7 +90,8 @@ class CentralizedTrain():
                         'mpdd': ('data_io.mpdd', 'mpdd', 'MPDD'),
                         'btad': ('data_io.btad', 'btad', 'BTAD'),
                         'mtd': ('data_io.mtd', 'mtd', 'MTD'),
-                        'mvtec3d': ('data_io.mvtec3d', 'mvtec3d', 'MVTec3D'), 
+                        'mvtec3d': ('data_io.mvtec3d', 'mvtec3d', 'MVTec3D'),
+                        'imad_hardware_parts': ('data_io.imad_hardware_parts', 'imad_hardware_parts', 'iMAD_hardware_parts')
                         }
 
         dataset_package = __import__(dataset_name[self.para_dict['dataset']][0])
