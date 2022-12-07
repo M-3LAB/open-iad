@@ -1,4 +1,4 @@
-model: patchcore2d
+model: _patchcore
 net: wide_resnet50 # resnet18/wide_resnet50
 coreset_sampling_ratio: 0.001
 n_neighbours: 9
