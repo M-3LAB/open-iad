@@ -10,7 +10,7 @@ from torchvision import transforms as T
 __all__ = ['iMAD_hardware_parts', 'imad_hardware_parts_classes']
 
 def imad_hardware_parts_classes():
-    return ["nail_01"]
+    return ["screw", "nail_01"]
 
 
 class iMAD_hardware_parts(Dataset):
