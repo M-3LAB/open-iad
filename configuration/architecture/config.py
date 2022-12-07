@@ -49,6 +49,7 @@ def parse_arguments_centralized():
 
     parser.add_argument('--train-task-id', '-tid', type=int, default=[11], nargs='+')
     parser.add_argument('--valid-task-id', '-vid', type=int, default=[11], nargs='+')
+    parser.add_argument('--sampler-percentage', '-sp', type=float, default= 0.1)
     parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default= 0.001)
 
     # vanilla learning
