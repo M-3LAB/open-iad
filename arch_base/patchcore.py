@@ -9,6 +9,8 @@ import math
 from scipy.ndimage import gaussian_filter
 from data_io.augmentation.domain_generalization import feature_augmentation
 from arch_base.base import ModelBase
+from tools.utils import *
+import os
 
 
 __all__ = ['PatchCore']
@@ -27,6 +29,9 @@ class PatchCore(ModelBase):
 
         self.random_projector = SparseRandomProjection(n_components='auto', eps=0.9)
         self.embedding_coreset = np.array([])
+        self.embedding_path = 'embed'
+        create_folders(self.embedding_path)
+        
     
     def get_layer_features(self):
 
@@ -102,6 +107,7 @@ class PatchCore(ModelBase):
 
         self.index = faiss.IndexFlatL2(self.embedding_coreset.shape[1])
         self.index.add(self.embedding_coreset)
+        faiss.write_index(self.index, os.path.join(self.embedding_path, 'index.faiss'))
 
     def prediction(self, valid_loader, task_id=None):
         self.net.eval()
