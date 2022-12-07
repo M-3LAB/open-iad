@@ -8,6 +8,7 @@ sys.path.append('./')
 
 from tools.utils import create_folders
 
+__all__ = ['NAIL', '01']
 
 def process(classes=['01'], clip_size=(1000, 1000)):
     for category in classes:
@@ -76,4 +77,8 @@ def process(classes=['01'], clip_size=(1000, 1000)):
             cv2.imwrite(img_path, img_resize)
 
 if __name__ == '__main__':
-    process()
+
+    classes = ['01']
+    clip_size = (1000, 1000)
+
+    process(classes, clip_size)
