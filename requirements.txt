@@ -22,3 +22,4 @@ efficientnet_pytorch==0.7.1
 FrEIA==0.2
 ignite==0.4.10
 einops==0.4.1
+faiss-gpu==1.7.2
