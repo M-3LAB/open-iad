@@ -1,5 +1,5 @@
 import torch
-from models.patchcore.kcenter_greedy import KCenterGreedy 
+from models._patchcore.kcenter_greedy import KCenterGreedy 
 import cv2
 import torch.nn.functional as F
 import numpy as np
@@ -29,10 +29,9 @@ class PatchCore(ModelBase):
 
         self.random_projector = SparseRandomProjection(n_components='auto', eps=0.9)
         self.embedding_coreset = np.array([])
-        self.embedding_path = 'embed'
+        self.embedding_path = self.file_path + '/embed'
         create_folders(self.embedding_path)
         
-    
     def get_layer_features(self):
 
         def hook_t(module, input, output):

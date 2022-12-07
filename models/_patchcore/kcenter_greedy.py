@@ -11,7 +11,7 @@ outlier datapoints.  Resulting centers are solution to multiple integer program.
 
 import numpy as np
 from sklearn.metrics import pairwise_distances
-from models.patchcore.sampling_base import SamplingMethod
+from models._patchcore.sampling_base import SamplingMethod
 
 __all__ = ['KCenterGreedy']
 

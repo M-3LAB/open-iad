@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 from models.common.feat import FeatureExtractor
-from models.patchcore.anomaly_map import AnomalyMapGenerator
+from models._patchcore.anomaly_map import AnomalyMapGenerator
 from models.common.kcenter_greedy import KCenterGreedy
 
 __all__ = ['PatchCore']
