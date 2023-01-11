@@ -18,7 +18,8 @@ pip3 install -r requirements.txt
 ├── configuration
 │   ├── 1_model_base # highest priority
 │   ├── 2_train_base # middle priority
-│   └── 3_dataset_base # lowest priority
+│   ├── 3_dataset_base # lowest priority
+│   └── config.py # for main.py
 ├── data_io # dataset processing and load data interface
 ├── legacy_code # old code, not used
 ├── loss_function
@@ -31,7 +32,7 @@ pip3 install -r requirements.txt
 ├── run_scripts # shell code
 ├── tools
 ├── work_dir # save results
-├── main.py # run start
+├── main.py # run start, with configuration/config.py
 └── requirements.txt
 ```
 
