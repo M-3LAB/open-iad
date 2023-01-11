@@ -1,0 +1,10 @@
+scikit-learn>=0.24.2
+scipy>=1.7.1
+numpy>=1.21.2
+torch>=1.9.1
+torchvision>=0.10.1
+matplotlib>=3.4.2
+tqdm>=4.62.2
+efficientnet-pytorch>=0.6.3
+tifffile>=2021.11.2
+PIL>=7.1.2
