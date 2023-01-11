@@ -6,7 +6,7 @@ import fcntl
 import struct
 
 
-__all__ = ['parse_arguments_centralized', 'parse_arguments_federated']
+__all__ = ['parse_arguments_main']
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -36,8 +36,12 @@ def assign_service(guoyang):
 
     return ip, root_path
 
-def parse_arguments_centralized():
+def parse_arguments_main():
     parser = argparse.ArgumentParser()
+    ## learning paradigm 
+    parser.add_argument('--paradigm', '-p', type=str, default='c2d', choices=['c2d', 'c3d', 'f2d'])
+
+    # ----------------------------- centralized learning ----------------------------- #
     parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad', 'mvtec2df3d', 'imad_hardware_parts'])
 
     parser.add_argument('--model', '-m', type=str, default='patchcore', choices=['_patchcore', 'patchcore', 'csflow', 'dne', 'draem', 'igd', 'cutpaste', 'devnet', 'dra', 
@@ -90,17 +94,10 @@ def parse_arguments_centralized():
     #parser.add_argument('--load-model', action='store_true', default=False)
     #parser.add_argument('--load-model-dir', type=str, default=None)
 
-
-    args = parser.parse_args()
-    return args
-
-def parse_arguments_federated():
-    parser = argparse.ArgumentParser()
-    # federated setting
+    # ----------------------------- federated learning ----------------------------- #
     parser.add_argument('--fed-aggregate-method', '-fam', type=str, default=None)
     parser.add_argument('--num-round', type=int, default=None)
 
-    # centralized setting
     # TODO
 
     args = parser.parse_args()

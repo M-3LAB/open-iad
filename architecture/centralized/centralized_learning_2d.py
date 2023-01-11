@@ -38,7 +38,7 @@ import time
 import warnings
 warnings.filterwarnings("ignore")
 
-class CentralizedTrain():
+class Centralized2DTrain():
     def __init__(self, args):
         self.args = args
 
