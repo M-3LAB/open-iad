@@ -30,7 +30,7 @@ from models.favae.net_favae import NetFAVAE
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
 
-from configuration.config import assign_service
+from configuration.device import assign_service
 
 from rich import print
 import time

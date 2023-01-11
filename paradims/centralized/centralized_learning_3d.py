@@ -1,7 +1,7 @@
 import yaml
 from tools.utils import *
 
-from configuration.config import assign_service
+from configuration.device import assign_service
 from rich import print
 
 import warnings
