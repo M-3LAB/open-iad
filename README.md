@@ -10,6 +10,28 @@ opencv, pip install opencv-python
 pip3 install -r requirements.txt
 ```
 
+## Project Instruction
+```bash
+├── arch_base # model base class
+├── baselines # source code 
+├── checkpoints # checkpoints or requirements
+├── configuration
+│   ├── 1_model_base # highest priority
+│   ├── 2_train_base # middle priority
+│   └── 3_dataset_base # lowest priority
+├── data_io # dataset processing and load data interface
+├── legacy_code # old code, not used
+├── loss_function
+├── metrics
+├── models # basic layers or tools for model class in arch_base
+├── optimizer
+├── paradigms # learning paradigms
+│   ├── centralized
+│   └── federated
+├── run_scripts # shell code
+└── tools
+```
+
 ## MVTec3D Preprocessing (Denoise Data)
 ```bash
 python3 data_io/preprocessing.py -d-path '/disk/mvtec3d'
