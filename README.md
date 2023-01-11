@@ -12,8 +12,14 @@ pip3 install -r requirements.txt
 
 ## MVTec3D Preprocessing (Denoise Data)
 ```bash
-python3 data_io/preprocessing.py --dataset-path '/disk/mvtec3d'
+python3 data_io/preprocessing.py -d-path '/disk/mvtec3d'
 ```
+
+## Dataset
+
+--dataset / -d 
+
+mvtec2d, mvtec3d, mpdd, mvtecloco, mtd, btad, mvtec2df3d, imad_hardware_parts
 
 
 ## Learning Paradigm
@@ -29,7 +35,7 @@ python3 data_io/preprocessing.py --dataset-path '/disk/mvtec3d'
 | fewshot | -f | fewshot (id=0) | all data (id=0) |
 | noisy | -ny | all data (id=0) + noisy data (id=0) | all data (id=0) - noisy data (id=0)|
 
-
+## Model
 | Method / -m | Net / -n |
 | ------ | ------ |
 | cfa | net_cfa |
@@ -49,81 +55,82 @@ python3 data_io/preprocessing.py --dataset-path '/disk/mvtec3d'
 | stpm  | resnet18, wide_resnet50 |
 
 
+## Run Example
 
 > Vanilla
 ```bash
-python3 main.py -p c2d -v --model patchcore --net resnet18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 0.001 -g 1
-python3 main.py -p c2d -v --model csflow --net net_csflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 1
-python3 main.py -p c2d -v --model cfa --net net_cfa --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --coreset-sampling-ratio 0.001 -g 7
-python3 main.py -p c2d -v --model draem --net net_draem --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 2
-python3 main.py -p c2d -v --model fastflow -n net_fastflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 main.py -p c2d -v --model cutpaste -n vit_b_16  --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-python3 main.py -p c2d -v --model padim -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 main.py -p c2d -v --model favae --net net_favae --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-python3 main.py -p c2d -v --model cutpaste -n vit_b_16 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 main.py -p c2d -v --model igd -n net_igd --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 main.py -p c2d -v --model reverse -n net_reverse --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 main.py -p c2d -v --model spade -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 main.py -p c2d -v --model stpm -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
+python3 main.py -p c2d -v -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 --coreset-sampling-ratio 0.001 -g 1
+python3 main.py -p c2d -v -m csflow -n net_csflow -d mvtec2d -tid 11 -vid 11 -g 1
+python3 main.py -p c2d -v -m cfa -n net_cfa -d mvtec2d -tid 11 -vid 11 --coreset-sampling-ratio 0.001 -g 7
+python3 main.py -p c2d -v -m draem -n net_draem -d mvtec2d -tid 11 -vid 11 -g 2
+python3 main.py -p c2d -v -m fastflow -n net_fastflow -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -v -m cutpaste -n vit_b_16  -d mvtec2d -tid 11 -vid 11  -g 7
+python3 main.py -p c2d -v -m padim -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -v -m favae -n net_favae -d mvtec2d -tid 11 -vid 11  -g 7
+python3 main.py -p c2d -v -m cutpaste -n vit_b_16 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -v -m igd -n net_igd -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -v -m reverse -n net_reverse -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -v -m spade -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -v -m stpm -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
 
 ```
 
 > Continual
 ```bash
-python3 main.py -p c2d -c --model patchcore --net resent18 --dataset mvtec2d --train-task-id 0 1 --valid-task-id 0 1 --coreset-sampling-ratio 0.001 -g 1
-python3 main.py -p c2d -c --model csflow --net net_csflow --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 1
-python3 main.py -p c2d -c --model cfa --net net_cfa --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 --coreset-sampling-ratio 0.001 -g 7
-python3 main.py -p c2d -c --model draem --net net_draem --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 2
-python3 main.py -p c2d -c --model fastflow -n net_fastflow --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
-python3 main.py -p c2d -c --model cutpaste -n vit_b_16  --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11  -g 7
-python3 main.py -p c2d -c --model padim -n resnet18 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
-python3 main.py -p c2d -c --model favae --net net_favae --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11  -g 7
-python3 main.py -p c2d -c --model cutpaste -n vit_b_16 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
-python3 main.py -p c2d -c --model igd -n net_igd --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
-python3 main.py -p c2d -c --model reverse -n net_reverse --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
-python3 main.py -p c2d -c --model spade -n resnet18 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
-python3 main.py -p c2d -c --model stpm -n resnet18 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
-python3 main.py -p c2d -c --model dne --net vit_b_16 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
+python3 main.py -p c2d -c -m patchcore -n resent18 -d mvtec2d -tid 0 1 -vid 0 1 --coreset-sampling-ratio 0.001 -g 1
+python3 main.py -p c2d -c -m csflow -n net_csflow -d mvtec2d -tid 10 11 -vid 10 11 -g 1
+python3 main.py -p c2d -c -m cfa -n net_cfa -d mvtec2d -tid 10 11 -vid 10 11 --coreset-sampling-ratio 0.001 -g 7
+python3 main.py -p c2d -c -m draem -n net_draem -d mvtec2d -tid 10 11 -vid 10 11 -g 2
+python3 main.py -p c2d -c -m fastflow -n net_fastflow -d mvtec2d -tid 10 11 -vid 10 11 -g 7
+python3 main.py -p c2d -c -m cutpaste -n vit_b_16  -d mvtec2d -tid 10 11 -vid 10 11  -g 7
+python3 main.py -p c2d -c -m padim -n resnet18 -d mvtec2d -tid 10 11 -vid 10 11 -g 7
+python3 main.py -p c2d -c -m favae -n net_favae -d mvtec2d -tid 10 11 -vid 10 11  -g 7
+python3 main.py -p c2d -c -m cutpaste -n vit_b_16 -d mvtec2d -tid 10 11 -vid 10 11 -g 7
+python3 main.py -p c2d -c -m igd -n net_igd -d mvtec2d -tid 10 11 -vid 10 11 -g 7
+python3 main.py -p c2d -c -m reverse -n net_reverse -d mvtec2d -tid 10 11 -vid 10 11 -g 7
+python3 main.py -p c2d -c -m spade -n resnet18 -d mvtec2d -tid 10 11 -vid 10 11 -g 7
+python3 main.py -p c2d -c -m stpm -n resnet18 -d mvtec2d -tid 10 11 -vid 10 11 -g 7
+python3 main.py -p c2d -c -m dne -n vit_b_16 -d mvtec2d -tid 10 11 -vid 10 11 -g 7
 ```
 
 > Fewshot
 ```bash
-python3 mian.py -p c2d -f --fewshot-exm 1 --fewshot-num-dg 4 --model patchcore --net resnet18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 1 -g 1
-python3 mian.py -p c2d -f --fewshot-exm 1 --model patchcore --net resnet18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 1 -g 1
-python3 mian.py -p c2d -f --fewshot-exm 1 --model csflow --net net_csflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 1
-python3 mian.py -p c2d -f --fewshot-exm 1 --model cfa --net net_cfa --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --coreset-sampling-ratio 1 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 --model draem --net net_draem --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 2
-python3 mian.py -p c2d -f --fewshot-exm 1 --model fastflow -n net_fastflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 --model cutpaste -n vit_b_16  --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 --model padim -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 --model favae --net net_favae --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 --model cutpaste -n vit_b_16 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 --model igd -n net_igd --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 --model reverse -n net_reverse --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 8 --model spade -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 --model stpm -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 --fewshot-num-dg 4 -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 --coreset-sampling-ratio 1 -g 1
+python3 mian.py -p c2d -f --fewshot-exm 1 -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 --coreset-sampling-ratio 1 -g 1
+python3 mian.py -p c2d -f --fewshot-exm 1 -m csflow -n net_csflow -d mvtec2d -tid 11 -vid 11 -g 1
+python3 mian.py -p c2d -f --fewshot-exm 1 -m cfa -n net_cfa -d mvtec2d -tid 11 -vid 11 --coreset-sampling-ratio 1 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m draem -n net_draem -d mvtec2d -tid 11 -vid 11 -g 2
+python3 mian.py -p c2d -f --fewshot-exm 1 -m fastflow -n net_fastflow -d mvtec2d -tid 11 -vid 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m cutpaste -n vit_b_16  -d mvtec2d -tid 11 -vid 11  -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m padim -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m favae -n net_favae -d mvtec2d -tid 11 -vid 11  -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m cutpaste -n vit_b_16 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m igd -n net_igd -d mvtec2d -tid 11 -vid 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m reverse -n net_reverse -d mvtec2d -tid 11 -vid 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 8 -m spade -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m stpm -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
 ```
 > Semi
 ```bash
-python3 mian.py -p c2d -s --model devnet --net net_devnet --dataset mvtec2d --train-task-id 0 --valid-task-id 0 -g 1
-python3 mian.py -p c2d -s --model dra --net net_dra --dataset mvtecloco --train-task-id 0 --valid-task-id 0 -g 1
+python3 mian.py -p c2d -s -m devnet -n net_devnet -d mvtec2d -tid 0 -vid 0 -g 1
+python3 mian.py -p c2d -s -m dra -n net_dra -d mvtecloco -tid 0 -vid 0 -g 1
 ```
 
 > Noisy
 ```bash
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap --model patchcore --net resnet18 --dataset mvtec2d --train-task-id 0 --valid-task-id 1 --coreset-sampling-ratio 0.001 -g 1
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap --model csflow --net net_csflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 1
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap --model cfa --net net_cfa --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --coreset-sampling-ratio 0.001 -g 7
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap --model draem --net net_draem --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 2
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap --model fastflow -n net_fastflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap --model cutpaste -n vit_b_16  --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap --model padim -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap --model favae --net net_favae --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap --model cutpaste -n vit_b_16 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap --model reverse -n net_reverse --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap --model spade -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap --model stpm -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap --model igd -n net_igd --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 1 --coreset-sampling-ratio 0.001 -g 1
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m csflow -n net_csflow -d mvtec2d -tid 11 -vid 11 -g 1
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m cfa -n net_cfa -d mvtec2d -tid 11 -vid 11 --coreset-sampling-ratio 0.001 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m draem -n net_draem -d mvtec2d -tid 11 -vid 11 -g 2
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m fastflow -n net_fastflow -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m cutpaste -n vit_b_16  -d mvtec2d -tid 11 -vid 11  -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m padim -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m favae -n net_favae -d mvtec2d -tid 11 -vid 11  -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m cutpaste -n vit_b_16 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m reverse -n net_reverse -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m spade -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m stpm -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m igd -n net_igd -d mvtec2d -tid 11 -vid 11 -g 7
 ```
 
 
