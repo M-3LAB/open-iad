@@ -14,7 +14,7 @@ pip3 install -r requirements.txt
 ```bash
 ├── arch_base # model base class
 ├── baselines # source code 
-├── checkpoints # checkpoints or requirements
+├── checkpoints # pretrained or requirements
 ├── configuration
 │   ├── 1_model_base # highest priority
 │   ├── 2_train_base # middle priority
@@ -23,13 +23,16 @@ pip3 install -r requirements.txt
 ├── legacy_code # old code, not used
 ├── loss_function
 ├── metrics
-├── models # basic layers or tools for model class in arch_base
+├── models # basic layers for model class in arch_base
 ├── optimizer
 ├── paradigms # learning paradigms
 │   ├── centralized
 │   └── federated
 ├── run_scripts # shell code
-└── tools
+├── tools
+├── work_dir # save results
+├── main.py # run start
+└── requirements.txt
 ```
 
 ## MVTec3D Preprocessing (Denoise Data)
