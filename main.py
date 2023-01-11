@@ -1,4 +1,4 @@
-from configuration.architecture.config import parse_arguments_main
+from configuration.config import parse_arguments_main
 from architecture.centralized.centralized_learning_2d import CentralizedAD2D
 from architecture.centralized.centralized_learning_3d import CentralizedAD3D
 
