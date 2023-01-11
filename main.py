@@ -1,6 +1,6 @@
 from configuration.config import parse_arguments_main
-from paradims.centralized.centralized_learning_2d import CentralizedAD2D
-from paradims.centralized.centralized_learning_3d import CentralizedAD3D
+from paradigms.centralized.centralized_learning_2d import CentralizedAD2D
+from paradigms.centralized.centralized_learning_3d import CentralizedAD3D
 
 
 def main(args):
