@@ -10,24 +10,19 @@ opencv, pip install opencv-python
 pip3 install -r requirements.txt
 ```
 
-## Install Third Party Library
-```bash
-bash setup.sh
-```
-
 ## MVTec3D Preprocessing (Denoise Data)
 ```bash
 python3 data_io/preprocessing.py --dataset-path '/disk/mvtec3d'
 ```
 
-## Train MMAD
-```bash
-python3 mmad_training.py
-```
 
 ## Learning Paradigm
+
 | Prototypes | Marker | Train | Test |
 | ------ | ---| -------|------ |
+| centralized 2d | -p c2d | |
+| centralized 3d | -p c3d | |
+| federated 2d | -p f2d | |
 | vanilla | -v |all data (id=0) | all data (id=0) |
 | semi | -s | all data (id=0) + anomaly data (id=0) | all data (id=0) - anomaly data (id=0)|
 | continual | -c| all data (id=0 and 1)| all data (id=0 or 1)|
