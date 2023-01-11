@@ -7,7 +7,7 @@ from rich import print
 import warnings
 warnings.filterwarnings("ignore")
 
-class Centralized3DTrain():
+class CentralizedAD3D():
     def __init__(self, args):
         self.args = args
 
