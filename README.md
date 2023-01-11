@@ -19,7 +19,8 @@ pip3 install -r requirements.txt
 │   ├── 1_model_base # highest priority
 │   ├── 2_train_base # middle priority
 │   ├── 3_dataset_base # lowest priority
-│   └── config.py # for main.py
+│   ├── config.py # for main.py
+│   └── device.py # for device
 ├── data_io # dataset processing and load data interface
 ├── legacy_code # old code, not used
 ├── loss_function
