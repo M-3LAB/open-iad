@@ -29,7 +29,10 @@ pip3 install -r requirements.txt
 ├── optimizer
 ├── paradigms # learning paradigms
 │   ├── centralized
+│   │   ├── centralized_learning_2d.py # 2D
+│   │   ├── centralized_learning_3d.py # 3D
 │   └── federated
+│       └── federated_learning_2d.py # 2D
 ├── run_scripts # shell code
 ├── tools
 ├── work_dir # save results
