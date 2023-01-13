@@ -72,24 +72,30 @@ python3 ./baselines/3d_btf/utils/preprocessing.py
 | fewshot | -f | fewshot (id=0) | all data (id=0) |
 | noisy | -ny | all data (id=0) + noisy data (id=0) | all data (id=0) - noisy data (id=0)|
 
-## Model
-| Method / -m | Net / -n |
-| ------ | ------ |
-| cfa | net_cfa |
-| csflow | net_csflow |
-| cutpaste | vit_b_16 |
-| devnet | net_devnet |
-| dne | vit_b_16 |
-| dra | net_dra |
-| draem | net_draem |
-| fastflow | net_fastflow |
-| favae | net_favae |
-| igd | net_igd |
-| padim  | resnet18, wide_resnet50 |
-| patchcore  | resnet18, wide_resnet50 |
-| reverse | net_reverse |
-| spade  | resnet18, wide_resnet50 |
-| stpm  | resnet18, wide_resnet50 |
+## 2D Model
+| Method / -m | Net / -n | Paper |
+| ------ | ------ | ------ |
+| cfa | net_cfa | |
+| csflow | net_csflow | |
+| cutpaste | vit_b_16 | |
+| devnet | net_devnet | |
+| dne | vit_b_16 | |
+| dra | net_dra | |
+| draem | net_draem | |
+| fastflow | net_fastflow |  |
+| favae | net_favae | |
+| igd | net_igd | |
+| padim  | resnet18, wide_resnet50 | |
+| patchcore  | resnet18, wide_resnet50 | |
+| reverse | net_reverse | |
+| spade  | resnet18, wide_resnet50 | |
+| stpm  | resnet18, wide_resnet50 | |
+
+## 3D Model
+| Method / -m | Net / -n | Paper |
+| ------ | ------ | ------ |
+| 3d_btf | | Back to the Feature: Classical 3D Features are (Almost) All You Need for 3D Anomaly Detection | 
+| 3d_ast | | Asymmetric Student-Teacher Networks for Industrial Anomaly Detection |
 
 
 ## Run Example
