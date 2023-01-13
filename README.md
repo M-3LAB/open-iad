@@ -92,10 +92,10 @@ python3 ./baselines/3d_btf/utils/preprocessing.py
 | stpm  | resnet18, wide_resnet50 | |
 
 ## 3D Model
-| Method / -m | Net / -n | Paper |
-| ------ | ------ | ------ |
-| 3d_btf | | Back to the Feature: Classical 3D Features are (Almost) All You Need for 3D Anomaly Detection | 
-| 3d_ast | | Asymmetric Student-Teacher Networks for Industrial Anomaly Detection |
+| Method / -m | Paper |
+| ------ | ------ |
+| 3d_btf | Back to the Feature: Classical 3D Features are (Almost) All You Need for 3D Anomaly Detection | 
+| 3d_ast | Asymmetric Student-Teacher Networks for Industrial Anomaly Detection |
 
 
 ## Run Example
