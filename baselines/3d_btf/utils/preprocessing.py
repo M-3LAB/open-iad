@@ -1,20 +1,13 @@
-import tifffile as tiff
 import os
-import open3d as o3d
-import math
-import argparse
-from PIL import Image
-from mvtec3d import read_tiff
 import numpy as np
+import tifffile as tiff
+import open3d as o3d
 from pathlib import Path
+from PIL import Image
+import math
+import mvtec3d_util as mvt_util
+import argparse
 
-"""
-MVTec3D Preprocessing
-pc: Point Cloud
-"""
-
-def organized_pc_to_unorganized_pc(organized_pc):
-    return organized_pc.reshape(organized_pc.shape[0] * organized_pc.shape[1], organized_pc.shape[2])
 
 def get_edges_of_pc(organized_pc):
     unorganized_edges_pc = organized_pc[0:10, :, :].reshape(organized_pc[0:10, :, :].shape[0]*organized_pc[0:10, :, :].shape[1],organized_pc[0:10, :, :].shape[2])
@@ -31,8 +24,8 @@ def get_plane_eq(unorganized_pc,ransac_n_pts=50):
 
 def remove_plane(organized_pc_clean, organized_rgb ,distance_threshold=0.005):
     # PREP PC
-    unorganized_pc = organized_pc_to_unorganized_pc(organized_pc_clean)
-    unorganized_rgb = organized_pc_to_unorganized_pc(organized_rgb)
+    unorganized_pc = mvt_util.organized_pc_to_unorganized_pc(organized_pc_clean)
+    unorganized_rgb = mvt_util.organized_pc_to_unorganized_pc(organized_rgb)
     clean_planeless_unorganized_pc = unorganized_pc.copy()
     planeless_unorganized_rgb = unorganized_rgb.copy()
 
@@ -52,9 +45,10 @@ def remove_plane(organized_pc_clean, organized_rgb ,distance_threshold=0.005):
     return clean_planeless_organized_pc, planeless_organized_rgb
 
 
+
 def connected_components_cleaning(organized_pc, organized_rgb, image_path):
-    unorganized_pc = organized_pc_to_unorganized_pc(organized_pc)
-    unorganized_rgb = organized_pc_to_unorganized_pc(organized_rgb)
+    unorganized_pc = mvt_util.organized_pc_to_unorganized_pc(organized_pc)
+    unorganized_rgb = mvt_util.organized_pc_to_unorganized_pc(organized_rgb)
 
     nonzero_indices = np.nonzero(np.all(unorganized_pc != 0, axis=1))[0]
     unorganized_pc_no_zeros = unorganized_pc[nonzero_indices, :]
@@ -75,14 +69,12 @@ def connected_components_cleaning(organized_pc, organized_rgb, image_path):
     outlier_indices_original_pc_array = nonzero_indices[outlier_indices_nonzero_array]
     unorganized_pc[outlier_indices_original_pc_array] = 0
     unorganized_rgb[outlier_indices_original_pc_array] = 0
-
     organized_clustered_pc = unorganized_pc.reshape(organized_pc.shape[0],
-                                                    organized_pc.shape[1],
-                                                    organized_pc.shape[2])
-
+                                                                          organized_pc.shape[1],
+                                                                          organized_pc.shape[2])
     organized_clustered_rgb = unorganized_rgb.reshape(organized_rgb.shape[0],
-                                                      organized_rgb.shape[1],
-                                                      organized_rgb.shape[2])
+                                                    organized_rgb.shape[1],
+                                                    organized_rgb.shape[2])
     return organized_clustered_pc, organized_clustered_rgb
 
 def roundup_next_100(x):
@@ -106,7 +98,7 @@ def pad_cropped_pc(cropped_pc, single_channel=False):
 
 def preprocess_pc(tiff_path):
     # READ FILES
-    organized_pc = read_tiff(tiff_path)
+    organized_pc = mvt_util.read_tiff_organized_pc(tiff_path)
     rgb_path = str(tiff_path).replace("xyz", "rgb").replace("tiff", "png")
     gt_path = str(tiff_path).replace("xyz", "gt").replace("tiff", "png")
     organized_rgb = np.array(Image.open(rgb_path))
@@ -118,7 +110,6 @@ def preprocess_pc(tiff_path):
 
     # REMOVE PLANE
     planeless_organized_pc, planeless_organized_rgb = remove_plane(organized_pc, organized_rgb)
-
 
     # PAD WITH ZEROS TO LARGEST SIDE (SO THAT THE FINAL IMAGE IS SQUARE)
     padded_planeless_organized_pc = pad_cropped_pc(planeless_organized_pc, single_channel=False)
@@ -137,7 +128,7 @@ def preprocess_pc(tiff_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Preprocess MVTec 3D-AD')
-    parser.add_argument('--dataset_path', type=str,required=True , help='The root path of the MVTec 3D-AD. The preprocessing is done inplace (i.e. the preprocessed dataset overrides the existing one)')
+    parser.add_argument('--dataset_path', type=str, default='/ssd2/m3lab/data/open-ad/mvtec3d_btf', help='The root path of the MVTec 3D-AD. The preprocessing is done inplace (i.e. the preprocessed dataset overrides the existing one)')
     args = parser.parse_args()
 
 
@@ -150,3 +141,12 @@ if __name__ == '__main__':
         processed_files += 1
         if processed_files % 50 == 0:
             print(f"Processed {processed_files} tiff files...")
+
+
+
+
+
+
+
+
+

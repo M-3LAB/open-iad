@@ -8,7 +8,7 @@ from torch import nn
 import config as c
 from freia_funcs import *
 
-MODEL_DIR = './models'
+MODEL_DIR = './checkpoints/3d_ast/models'
 
 
 def get_nf(input_dim=c.n_feat, channels_hidden=c.channels_hidden_teacher):

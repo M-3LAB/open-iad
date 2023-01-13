@@ -40,9 +40,17 @@ pip3 install -r requirements.txt
 └── requirements.txt
 ```
 
-## MVTec3D Preprocessing (Denoise Data)
+## MVTec3D Preprocessing
+
+> 3d_ast
 ```bash
-python3 data_io/preprocessing.py -d-path '/disk/mvtec3d'
+cp -r ../zip/mvtec3d_official ./mvtec3d_ast
+python3 ./baselines/3d_ast/preprocess.py
+```
+> 3d_btf
+```bash
+cp -r ../zip/mvtec3d_official ./mvtec3d_btf
+python3 ./baselines/3d_btf/utils/preprocessing.py
 ```
 
 ## Dataset
