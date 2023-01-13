@@ -53,12 +53,11 @@ cp -r ../zip/mvtec3d_official ./mvtec3d_btf
 python3 ./baselines/3d_btf/utils/preprocessing.py
 ```
 
-## Dataset
+## Dataset (--dataset / -d)
 
---dataset / -d 
+> 2D: mvtec2d, mpdd, mvtecloco, mtd, btad, mvtec2df3d, imad_hardware_parts
 
-mvtec2d, mvtec3d, mpdd, mvtecloco, mtd, btad, mvtec2df3d, imad_hardware_parts
-
+> 3D: mvtec3d
 
 ## Learning Paradigm
 
@@ -95,7 +94,7 @@ mvtec2d, mvtec3d, mpdd, mvtecloco, mtd, btad, mvtec2df3d, imad_hardware_parts
 
 ## Run Example
 
-> Vanilla
+> Vanilla / -v
 ```bash
 python3 main.py -p c2d -v -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 --coreset-sampling-ratio 0.001 -g 1
 python3 main.py -p c2d -v -m csflow -n net_csflow -d mvtec2d -tid 11 -vid 11 -g 1
@@ -113,7 +112,7 @@ python3 main.py -p c2d -v -m stpm -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
 
 ```
 
-> Continual
+> Continual / -c
 ```bash
 python3 main.py -p c2d -c -m patchcore -n resent18 -d mvtec2d -tid 0 1 -vid 0 1 --coreset-sampling-ratio 0.001 -g 1
 python3 main.py -p c2d -c -m csflow -n net_csflow -d mvtec2d -tid 10 11 -vid 10 11 -g 1
@@ -131,7 +130,7 @@ python3 main.py -p c2d -c -m stpm -n resnet18 -d mvtec2d -tid 10 11 -vid 10 11 -
 python3 main.py -p c2d -c -m dne -n vit_b_16 -d mvtec2d -tid 10 11 -vid 10 11 -g 7
 ```
 
-> Fewshot
+> Fewshot / -f
 ```bash
 python3 mian.py -p c2d -f --fewshot-exm 1 --fewshot-num-dg 4 -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 --coreset-sampling-ratio 1 -g 1
 python3 mian.py -p c2d -f --fewshot-exm 1 -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 --coreset-sampling-ratio 1 -g 1
@@ -148,13 +147,13 @@ python3 mian.py -p c2d -f --fewshot-exm 1 -m reverse -n net_reverse -d mvtec2d -
 python3 mian.py -p c2d -f --fewshot-exm 8 -m spade -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
 python3 mian.py -p c2d -f --fewshot-exm 1 -m stpm -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
 ```
-> Semi
+> Semi / -s
 ```bash
 python3 mian.py -p c2d -s -m devnet -n net_devnet -d mvtec2d -tid 0 -vid 0 -g 1
 python3 mian.py -p c2d -s -m dra -n net_dra -d mvtecloco -tid 0 -vid 0 -g 1
 ```
 
-> Noisy
+> Noisy / -ny
 ```bash
 python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 1 --coreset-sampling-ratio 0.001 -g 1
 python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m csflow -n net_csflow -d mvtec2d -tid 11 -vid 11 -g 1
