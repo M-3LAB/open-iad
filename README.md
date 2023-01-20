@@ -10,126 +10,170 @@ opencv, pip install opencv-python
 pip3 install -r requirements.txt
 ```
 
-## Install Third Party Library
+## Project Instruction
 ```bash
-bash setup.sh
+├── arch_base # model base class
+├── baselines # source code 
+├── checkpoints # pretrained or requirements
+├── configuration
+│   ├── 1_model_base # highest priority
+│   ├── 2_train_base # middle priority
+│   ├── 3_dataset_base # lowest priority
+│   ├── config.py # for main.py
+│   └── device.py # for device
+├── data_io # dataset processing and load data interface
+├── legacy_code # old code, not used
+├── loss_function
+├── metrics
+├── models # basic layers for model class in arch_base
+├── optimizer
+├── paradigms # learning paradigms
+│   ├── centralized
+│   │   ├── centralized_learning_2d.py # 2D
+│   │   ├── centralized_learning_3d.py # 3D
+│   └── federated
+│       └── federated_learning_2d.py # 2D
+├── run_scripts # shell code
+├── tools
+├── work_dir # save results
+├── main.py # run start, with configuration/config.py
+└── requirements.txt
 ```
 
-## MVTec3D Preprocessing (Denoise Data)
+## MVTec3D Preprocessing
+
+> 3d_ast
 ```bash
-python3 data_io/preprocessing.py --dataset-path '/disk/mvtec3d'
+cp -r ../zip/mvtec3d_official ./mvtec3d_ast
+python3 ./baselines/3d_ast/preprocess.py
+```
+> 3d_btf
+```bash
+cp -r ../zip/mvtec3d_official ./mvtec3d_btf
+python3 ./baselines/3d_btf/utils/preprocessing.py
 ```
 
-## Train MMAD
-```bash
-python3 mmad_training.py
-```
+## Dataset (--dataset / -d)
+
+> 2D: mvtec2d, mpdd, mvtecloco, mtd, btad, mvtec2df3d, imad_hardware_parts
+
+> 3D: mvtec3d
 
 ## Learning Paradigm
+
 | Prototypes | Marker | Train | Test |
 | ------ | ---| -------|------ |
+| centralized 2d | -p c2d | |
+| centralized 3d | -p c3d | |
+| federated 2d | -p f2d | |
 | vanilla | -v |all data (id=0) | all data (id=0) |
 | semi | -s | all data (id=0) + anomaly data (id=0) | all data (id=0) - anomaly data (id=0)|
 | continual | -c| all data (id=0 and 1)| all data (id=0 or 1)|
 | fewshot | -f | fewshot (id=0) | all data (id=0) |
 | noisy | -ny | all data (id=0) + noisy data (id=0) | all data (id=0) - noisy data (id=0)|
 
+## 2D Model
+| Method / -m | Net / -n | Paper |
+| ------ | ------ | ------ |
+| cfa | net_cfa | |
+| csflow | net_csflow | |
+| cutpaste | vit_b_16 | |
+| devnet | net_devnet | |
+| dne | vit_b_16 | |
+| dra | net_dra | |
+| draem | net_draem | |
+| fastflow | net_fastflow |  |
+| favae | net_favae | |
+| igd | net_igd | |
+| padim  | resnet18, wide_resnet50 | |
+| patchcore  | resnet18, wide_resnet50 | |
+| reverse | net_reverse | |
+| spade  | resnet18, wide_resnet50 | |
+| stpm  | resnet18, wide_resnet50 | |
 
-| Method / -m | Net / -n |
-| ------ | ------ |
-| cfa | net_cfa |
-| csflow | net_csflow |
-| cutpaste | vit_b_16 |
-| devnet | net_devnet |
-| dne | vit_b_16 |
-| dra | net_dra |
-| draem | net_draem |
-| fastflow | net_fastflow |
-| favae | net_favae |
-| igd | net_igd |
-| padim  | resnet18, wide_resnet50 |
-| patchcore  | resnet18, wide_resnet50 |
-| reverse | net_reverse |
-| spade  | resnet18, wide_resnet50 |
-| stpm  | resnet18, wide_resnet50 |
+## 3D Model
+| Method / -m | Net / -n | Paper |
+| ------ | ------ | ------ |
+| 3d_btf | | Back to the Feature: Classical 3D Features are (Almost) All You Need for 3D Anomaly Detection | 
+| 3d_ast | | AST: Asymmetric Student-Teacher Networks for Industrial Anomaly Detection |
 
 
+## Run Example
 
-> Vanilla
+> Vanilla / -v
 ```bash
-python3 centralized_training.py -v --model patchcore --net resnet18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 0.001 -g 1
-python3 centralized_training.py -v --model csflow --net net_csflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 1
-python3 centralized_training.py -v --model cfa --net net_cfa --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --coreset-sampling-ratio 0.001 -g 7
-python3 centralized_training.py -v --model draem --net net_draem --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 2
-python3 centralized_training.py -v --model fastflow -n net_fastflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py -v --model cutpaste -n vit_b_16  --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-python3 centralized_training.py -v --model padim -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py -v --model favae --net net_favae --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-python3 centralized_training.py -v --model cutpaste -n vit_b_16 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py -v --model igd -n net_igd --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py -v --model reverse -n net_reverse --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py -v --model spade -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py -v --model stpm -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
+python3 main.py -p c2d -v -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 --coreset-sampling-ratio 0.001 -g 1
+python3 main.py -p c2d -v -m csflow -n net_csflow -d mvtec2d -tid 11 -vid 11 -g 1
+python3 main.py -p c2d -v -m cfa -n net_cfa -d mvtec2d -tid 11 -vid 11 --coreset-sampling-ratio 0.001 -g 7
+python3 main.py -p c2d -v -m draem -n net_draem -d mvtec2d -tid 11 -vid 11 -g 2
+python3 main.py -p c2d -v -m fastflow -n net_fastflow -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -v -m cutpaste -n vit_b_16  -d mvtec2d -tid 11 -vid 11  -g 7
+python3 main.py -p c2d -v -m padim -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -v -m favae -n net_favae -d mvtec2d -tid 11 -vid 11  -g 7
+python3 main.py -p c2d -v -m cutpaste -n vit_b_16 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -v -m igd -n net_igd -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -v -m reverse -n net_reverse -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -v -m spade -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -v -m stpm -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
 
 ```
 
-> Continual
+> Continual / -c
 ```bash
-python3 centralized_training.py --continual --model patchcore --net resent18 --dataset mvtec2d --train-task-id 0 1 --valid-task-id 0 1 --coreset-sampling-ratio 0.001 -g 1
-python3 centralized_training.py --continual --model csflow --net net_csflow --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 1
-python3 centralized_training.py --continual --model cfa --net net_cfa --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 --coreset-sampling-ratio 0.001 -g 7
-python3 centralized_training.py --continual --model draem --net net_draem --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 2
-python3 centralized_training.py --continual --model fastflow -n net_fastflow --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
-python3 centralized_training.py --continual --model cutpaste -n vit_b_16  --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11  -g 7
-python3 centralized_training.py --continual --model padim -n resnet18 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
-python3 centralized_training.py --continual --model favae --net net_favae --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11  -g 7
-python3 centralized_training.py --continual --model cutpaste -n vit_b_16 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
-python3 centralized_training.py --continual --model igd -n net_igd --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
-python3 centralized_training.py --continual --model reverse -n net_reverse --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
-python3 centralized_training.py --continual --model spade -n resnet18 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
-python3 centralized_training.py --continual --model stpm -n resnet18 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
-python3 centralized_training.py --continual --model dne --net vit_b_16 --dataset mvtec2d --train-task-id 10 11 --valid-task-id 10 11 -g 7
+python3 main.py -p c2d -c -m patchcore -n resent18 -d mvtec2d -tid 0 1 -vid 0 1 --coreset-sampling-ratio 0.001 -g 1
+python3 main.py -p c2d -c -m csflow -n net_csflow -d mvtec2d -tid 10 11 -vid 10 11 -g 1
+python3 main.py -p c2d -c -m cfa -n net_cfa -d mvtec2d -tid 10 11 -vid 10 11 --coreset-sampling-ratio 0.001 -g 7
+python3 main.py -p c2d -c -m draem -n net_draem -d mvtec2d -tid 10 11 -vid 10 11 -g 2
+python3 main.py -p c2d -c -m fastflow -n net_fastflow -d mvtec2d -tid 10 11 -vid 10 11 -g 7
+python3 main.py -p c2d -c -m cutpaste -n vit_b_16  -d mvtec2d -tid 10 11 -vid 10 11  -g 7
+python3 main.py -p c2d -c -m padim -n resnet18 -d mvtec2d -tid 10 11 -vid 10 11 -g 7
+python3 main.py -p c2d -c -m favae -n net_favae -d mvtec2d -tid 10 11 -vid 10 11  -g 7
+python3 main.py -p c2d -c -m cutpaste -n vit_b_16 -d mvtec2d -tid 10 11 -vid 10 11 -g 7
+python3 main.py -p c2d -c -m igd -n net_igd -d mvtec2d -tid 10 11 -vid 10 11 -g 7
+python3 main.py -p c2d -c -m reverse -n net_reverse -d mvtec2d -tid 10 11 -vid 10 11 -g 7
+python3 main.py -p c2d -c -m spade -n resnet18 -d mvtec2d -tid 10 11 -vid 10 11 -g 7
+python3 main.py -p c2d -c -m stpm -n resnet18 -d mvtec2d -tid 10 11 -vid 10 11 -g 7
+python3 main.py -p c2d -c -m dne -n vit_b_16 -d mvtec2d -tid 10 11 -vid 10 11 -g 7
 ```
 
-> Fewshot
+> Fewshot / -f
 ```bash
-python3 centralized_training.py --fewshot --fewshot-exm 1 --fewshot-num-dg 4 --model patchcore --net resnet18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 1 -g 1
-python3 centralized_training.py --fewshot --fewshot-exm 1 --model patchcore --net resnet18 --dataset mvtec2d --train-task-id 0 --valid-task-id 0 --coreset-sampling-ratio 1 -g 1
-python3 centralized_training.py --fewshot --fewshot-exm 1 --model csflow --net net_csflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 1
-python3 centralized_training.py --fewshot --fewshot-exm 1 --model cfa --net net_cfa --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --coreset-sampling-ratio 1 -g 7
-python3 centralized_training.py --fewshot --fewshot-exm 1 --model draem --net net_draem --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 2
-python3 centralized_training.py --fewshot --fewshot-exm 1 --model fastflow -n net_fastflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --fewshot --fewshot-exm 1 --model cutpaste -n vit_b_16  --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-python3 centralized_training.py --fewshot --fewshot-exm 1 --model padim -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --fewshot --fewshot-exm 1 --model favae --net net_favae --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-python3 centralized_training.py --fewshot --fewshot-exm 1 --model cutpaste -n vit_b_16 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --fewshot --fewshot-exm 1 --model igd -n net_igd --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --fewshot --fewshot-exm 1 --model reverse -n net_reverse --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --fewshot --fewshot-exm 8 --model spade -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --fewshot --fewshot-exm 1 --model stpm -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 --fewshot-num-dg 4 -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 --coreset-sampling-ratio 1 -g 1
+python3 mian.py -p c2d -f --fewshot-exm 1 -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 --coreset-sampling-ratio 1 -g 1
+python3 mian.py -p c2d -f --fewshot-exm 1 -m csflow -n net_csflow -d mvtec2d -tid 11 -vid 11 -g 1
+python3 mian.py -p c2d -f --fewshot-exm 1 -m cfa -n net_cfa -d mvtec2d -tid 11 -vid 11 --coreset-sampling-ratio 1 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m draem -n net_draem -d mvtec2d -tid 11 -vid 11 -g 2
+python3 mian.py -p c2d -f --fewshot-exm 1 -m fastflow -n net_fastflow -d mvtec2d -tid 11 -vid 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m cutpaste -n vit_b_16  -d mvtec2d -tid 11 -vid 11  -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m padim -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m favae -n net_favae -d mvtec2d -tid 11 -vid 11  -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m cutpaste -n vit_b_16 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m igd -n net_igd -d mvtec2d -tid 11 -vid 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m reverse -n net_reverse -d mvtec2d -tid 11 -vid 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 8 -m spade -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m stpm -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
 ```
-> Semi
+> Semi / -s
 ```bash
-python3 centralized_training.py -s --model devnet --net net_devnet --dataset mvtec2d --train-task-id 0 --valid-task-id 0 -g 1
-python3 centralized_training.py -s --model dra --net net_dra --dataset mvtecloco --train-task-id 0 --valid-task-id 0 -g 1
+python3 mian.py -p c2d -s -m devnet -n net_devnet -d mvtec2d -tid 0 -vid 0 -g 1
+python3 mian.py -p c2d -s -m dra -n net_dra -d mvtecloco -tid 0 -vid 0 -g 1
 ```
 
-> Noisy
+> Noisy / -ny
 ```bash
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model patchcore --net resnet18 --dataset mvtec2d --train-task-id 0 --valid-task-id 1 --coreset-sampling-ratio 0.001 -g 1
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model csflow --net net_csflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 1
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model cfa --net net_cfa --dataset mvtec2d --train-task-id 11 --valid-task-id 11 --coreset-sampling-ratio 0.001 -g 7
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model draem --net net_draem --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 2
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model fastflow -n net_fastflow --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model cutpaste -n vit_b_16  --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model padim -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model favae --net net_favae --dataset mvtec2d --train-task-id 11 --valid-task-id 11  -g 7
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model cutpaste -n vit_b_16 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model reverse -n net_reverse --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model spade -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model stpm -n resnet18 --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
-
-python3 centralized_training.py --noisy --noisy-ratio 0.1 --noisy-overlap --model igd -n net_igd --dataset mvtec2d --train-task-id 11 --valid-task-id 11 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 1 --coreset-sampling-ratio 0.001 -g 1
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m csflow -n net_csflow -d mvtec2d -tid 11 -vid 11 -g 1
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m cfa -n net_cfa -d mvtec2d -tid 11 -vid 11 --coreset-sampling-ratio 0.001 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m draem -n net_draem -d mvtec2d -tid 11 -vid 11 -g 2
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m fastflow -n net_fastflow -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m cutpaste -n vit_b_16  -d mvtec2d -tid 11 -vid 11  -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m padim -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m favae -n net_favae -d mvtec2d -tid 11 -vid 11  -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m cutpaste -n vit_b_16 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m reverse -n net_reverse -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m spade -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m stpm -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m igd -n net_igd -d mvtec2d -tid 11 -vid 11 -g 7
 ```
 
 

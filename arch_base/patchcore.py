@@ -37,6 +37,8 @@ class PatchCore(ModelBase):
             return sampler.GreedyCoresetSampler(self.config['sampler_percentage'], self.device)
         elif name == 'approx_greedy_coreset':
             return sampler.ApproximateGreedyCoresetSampler(self.config['sampler_percentage'], self.device)
+        else:
+            raise ValueError('No This Sampler: {}'.format(name))
 
     def train_model(self, train_loader, task_id, inf=''):
         self.patchcore_instance.eval()
