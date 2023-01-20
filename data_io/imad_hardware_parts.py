@@ -10,12 +10,12 @@ from torchvision import transforms as T
 __all__ = ['iMAD_hardware_parts', 'imad_hardware_parts_classes']
 
 def imad_hardware_parts_classes():
-    return ["screw", "nail_01"]
+    return ['A1','A2','A3','A4','A5','A6','A7','A8','B1','B2','B3','B4','B5','B6','B7','C1','C2','C3','C4','D1','D2']
 
 
 class iMAD_hardware_parts(Dataset):
     def __init__(self, data_path, learning_mode='centralized', phase='train', 
-                 data_transform=None, num_task=15):
+                 data_transform=None, num_task=21):
 
         self.data_path = data_path
         self.learning_mode = learning_mode
