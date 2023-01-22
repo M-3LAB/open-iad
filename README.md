@@ -73,29 +73,29 @@ python3 ./baselines/3d_btf/utils/preprocessing.py
 | noisy | -ny | all data (id=0) + noisy data (id=0) | all data (id=0) - noisy data (id=0)|
 
 ## 2D Model
-| Method / -m | Net / -n | Paper |
+| Method / -m | Net / -n | Paper Title|
 | ------ | ------ | ------ |
-| cfa | net_cfa | |
-| csflow | net_csflow | |
-| cutpaste | vit_b_16 | |
-| devnet | net_devnet | |
-| dne | vit_b_16 | |
-| dra | net_dra | |
-| draem | net_draem | |
-| fastflow | net_fastflow |  |
-| favae | net_favae | |
-| igd | net_igd | |
-| padim  | resnet18, wide_resnet50 | |
-| patchcore  | resnet18, wide_resnet50 | |
-| reverse | net_reverse | |
-| spade  | resnet18, wide_resnet50 | |
-| stpm  | resnet18, wide_resnet50 | |
+| cfa | net_cfa | CFA: Coupled-hypersphere-based feature adaptation for target-oriented anomaly localization |
+| csflow | net_csflow | Fully convolutional cross-scale-flows for image-based defect detection |
+| cutpaste | vit_b_16 | Cutpaste: Self-supervised learning for anomaly detection and localization |
+| devnet | net_devnet | Explainable deep few-shot anomaly detection with deviation networks |
+| dne | vit_b_16 | Towards continual adaptation in industrial anomaly detection |
+| dra | net_dra | Catching both gray and black swans: open-set supervised anomaly detection |
+| draem | net_draem | Draem: A discriminatively trained reconstruction embedding for surface anomaly detection |
+| fastflow | net_fastflow | Fastflow: Unsupervised anomaly detection and localization via 2d normalizing flows |
+| favae | net_favae | Anomaly localization by modeling perceptual features |
+| igd | net_igd | Deep one-class classification via interpolated gaussian descriptor |
+| padim  | resnet18, wide_resnet50 | Padim: a patch distribution modeling framework for anomaly detection and localization |
+| patchcore  | resnet18, wide_resnet50 | Towards total recall in industrial anomaly detection |
+| reverse (rd4ad) | net_reverse | Anomaly detection via reverse distillation from one-class embedding |
+| spade  | resnet18, wide_resnet50 | Sub-image anomaly detection with deep pyramid correspondences |
+| stpm  | resnet18, wide_resnet50 | Student-teacher feature pyramid matching for anomaly detection |
 
 ## 3D Model
 | Method / -m | Net / -n | Paper |
 | ------ | ------ | ------ |
-| 3d_btf | | Back to the Feature: Classical 3D Features are (Almost) All You Need for 3D Anomaly Detection | 
-| 3d_ast | | AST: Asymmetric Student-Teacher Networks for Industrial Anomaly Detection |
+| 3d_btf | | Back to the feature: classical 3D features are (almost) all you need for 3D anomaly detection | 
+| 3d_ast | | AST: Asymmetric student-teacher networks for industrial anomaly detection |
 
 
 ## Run Example
