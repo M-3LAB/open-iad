@@ -21,8 +21,7 @@ def parse_arguments_main():
 
     parser.add_argument('--train-task-id', '-tid', type=int, default=[11], nargs='+')
     parser.add_argument('--valid-task-id', '-vid', type=int, default=[11], nargs='+')
-    parser.add_argument('--sampler-percentage', '-sp', type=float, default= 0.1)
-    parser.add_argument('--coreset-sampling-ratio', '-csr', type=float, default= 0.001)
+    parser.add_argument('--sampler-percentage', '-sp', type=float, default= 0.01)
 
     # vanilla learning
     parser.add_argument('--vanilla', '-v', action='store_true', default=False)
@@ -58,9 +57,10 @@ def parse_arguments_main():
     parser.add_argument('--train-aug-type', '-tag', choices=['normal', 'cutpaste'], help='data augmentation type')
     parser.add_argument('--valid-aug-type', '-vag', choices=['normal', 'cutpaste'], help='data augmentation type')
 
-    #parser.add_argument('--save-model', action='store_true', default=False)
-    #parser.add_argument('--load-model', action='store_true', default=False)
-    #parser.add_argument('--load-model-dir', type=str, default=None)
+    # not used
+    parser.add_argument('--save-model', action='store_true', default=False)
+    parser.add_argument('--load-model', action='store_true', default=False)
+    parser.add_argument('--load-model-dir', type=str, default=None)
 
     # ----------------------------- federated learning ----------------------------- #
     parser.add_argument('--fed-aggregate-method', '-fam', type=str, default=None)

@@ -102,9 +102,9 @@ python3 ./baselines/3d_btf/utils/preprocessing.py
 
 > Vanilla / -v
 ```bash
-python3 main.py -p c2d -v -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 --coreset-sampling-ratio 0.001 -g 1
+python3 main.py -p c2d -v -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 --sampler-percentage 0.001 -g 1
 python3 main.py -p c2d -v -m csflow -n net_csflow -d mvtec2d -tid 11 -vid 11 -g 1
-python3 main.py -p c2d -v -m cfa -n net_cfa -d mvtec2d -tid 11 -vid 11 --coreset-sampling-ratio 0.001 -g 7
+python3 main.py -p c2d -v -m cfa -n net_cfa -d mvtec2d -tid 11 -vid 11 -g 7
 python3 main.py -p c2d -v -m draem -n net_draem -d mvtec2d -tid 11 -vid 11 -g 2
 python3 main.py -p c2d -v -m fastflow -n net_fastflow -d mvtec2d -tid 11 -vid 11 -g 7
 python3 main.py -p c2d -v -m cutpaste -n vit_b_16  -d mvtec2d -tid 11 -vid 11  -g 7
@@ -120,9 +120,9 @@ python3 main.py -p c2d -v -m stpm -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
 
 > Continual / -c
 ```bash
-python3 main.py -p c2d -c -m patchcore -n resent18 -d mvtec2d -tid 0 1 -vid 0 1 --coreset-sampling-ratio 0.001 -g 1
+python3 main.py -p c2d -c -m patchcore -n resent18 -d mvtec2d -tid 0 1 -vid 0 1 -sp 0.001 -g 1
 python3 main.py -p c2d -c -m csflow -n net_csflow -d mvtec2d -tid 10 11 -vid 10 11 -g 1
-python3 main.py -p c2d -c -m cfa -n net_cfa -d mvtec2d -tid 10 11 -vid 10 11 --coreset-sampling-ratio 0.001 -g 7
+python3 main.py -p c2d -c -m cfa -n net_cfa -d mvtec2d -tid 10 11 -vid 10 11 -g 7
 python3 main.py -p c2d -c -m draem -n net_draem -d mvtec2d -tid 10 11 -vid 10 11 -g 2
 python3 main.py -p c2d -c -m fastflow -n net_fastflow -d mvtec2d -tid 10 11 -vid 10 11 -g 7
 python3 main.py -p c2d -c -m cutpaste -n vit_b_16  -d mvtec2d -tid 10 11 -vid 10 11  -g 7
@@ -138,10 +138,10 @@ python3 main.py -p c2d -c -m dne -n vit_b_16 -d mvtec2d -tid 10 11 -vid 10 11 -g
 
 > Fewshot / -f
 ```bash
-python3 mian.py -p c2d -f --fewshot-exm 1 --fewshot-num-dg 4 -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 --coreset-sampling-ratio 1 -g 1
-python3 mian.py -p c2d -f --fewshot-exm 1 -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 --coreset-sampling-ratio 1 -g 1
+python3 mian.py -p c2d -f --fewshot-exm 1 --fewshot-num-dg 4 -m _patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 -sp 1 -g 1
+python3 mian.py -p c2d -f --fewshot-exm 1 -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 -sp 1 -g 1
 python3 mian.py -p c2d -f --fewshot-exm 1 -m csflow -n net_csflow -d mvtec2d -tid 11 -vid 11 -g 1
-python3 mian.py -p c2d -f --fewshot-exm 1 -m cfa -n net_cfa -d mvtec2d -tid 11 -vid 11 --coreset-sampling-ratio 1 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m cfa -n net_cfa -d mvtec2d -tid 11 -vid 11 -g 7
 python3 mian.py -p c2d -f --fewshot-exm 1 -m draem -n net_draem -d mvtec2d -tid 11 -vid 11 -g 2
 python3 mian.py -p c2d -f --fewshot-exm 1 -m fastflow -n net_fastflow -d mvtec2d -tid 11 -vid 11 -g 7
 python3 mian.py -p c2d -f --fewshot-exm 1 -m cutpaste -n vit_b_16  -d mvtec2d -tid 11 -vid 11  -g 7
@@ -161,9 +161,9 @@ python3 mian.py -p c2d -s -m dra -n net_dra -d mvtecloco -tid 0 -vid 0 -g 1
 
 > Noisy / -ny
 ```bash
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 1 --coreset-sampling-ratio 0.001 -g 1
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 1 -sp 0.001 -g 1
 python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m csflow -n net_csflow -d mvtec2d -tid 11 -vid 11 -g 1
-python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m cfa -n net_cfa -d mvtec2d -tid 11 -vid 11 --coreset-sampling-ratio 0.001 -g 7
+python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m cfa -n net_cfa -d mvtec2d -tid 11 -vid 11 -g 7
 python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m draem -n net_draem -d mvtec2d -tid 11 -vid 11 -g 2
 python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m fastflow -n net_fastflow -d mvtec2d -tid 11 -vid 11 -g 7
 python3 main.py -p c2d -ny --noisy-ratio 0.1 --noisy-overlap -m cutpaste -n vit_b_16  -d mvtec2d -tid 11 -vid 11  -g 7

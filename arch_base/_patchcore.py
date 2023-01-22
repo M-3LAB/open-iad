@@ -95,7 +95,7 @@ class PatchCore(ModelBase):
         selector = KCenterGreedy(X=total_embeddings, y=0)
         selected_idx = selector.select_batch(model=self.random_projector, 
                                              already_selected=[],
-                                             N=int(total_embeddings.shape[0] * self.config['coreset_sampling_ratio']))
+                                             N=int(total_embeddings.shape[0] * self.config['sampler_percentage']))
         if self.embedding_coreset.size == 0:
             self.embedding_coreset = total_embeddings[selected_idx]
         else:
