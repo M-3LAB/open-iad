@@ -153,7 +153,7 @@ python3 mian.py -p c2d -f --fewshot-exm 1 -m favae -n net_favae -d mvtec2d -tid 
 python3 mian.py -p c2d -f --fewshot-exm 1 -m cutpaste -n vit_b_16 -d mvtec2d -tid 11 -vid 11 -g 7
 python3 mian.py -p c2d -f --fewshot-exm 1 -m igd -n net_igd -d mvtec2d -tid 11 -vid 11 -g 7
 python3 mian.py -p c2d -f --fewshot-exm 1 -m reverse -n net_reverse -d mvtec2d -tid 11 -vid 11 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 8 -m spade -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 mian.py -p c2d -f --fewshot-exm 1 -m spade -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
 python3 mian.py -p c2d -f --fewshot-exm 1 -m stpm -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
 ```
 > Semi / -s
