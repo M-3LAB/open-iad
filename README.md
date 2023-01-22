@@ -1,13 +1,15 @@
-# Anomaly-Detection-RGBD (ad-3d)
+# IM-VAD: Vision Anomaly Detection Benchmark in Industrial Manufacturing
 ## Preliminary  
 
-pytorch 1.10.1 or 1.8.1\
-scikit-image, pip install scikit-image\
-scikit-learn, pip instll scikit-learn\
-opencv, pip install opencv-python
-
 ```bash
+pytorch 1.10.1 or 1.8.1
+conda activate ad-3d
 pip3 install -r requirements.txt
+
+# example
+pip install scikit-image
+pip instll scikit-learn
+pip install opencv-python
 ```
 
 ## Project Instruction
@@ -21,7 +23,7 @@ pip3 install -r requirements.txt
 │   ├── 3_dataset_base # lowest priority
 │   ├── config.py # for main.py
 │   └── device.py # for device
-├── data_io # dataset processing and load data interface
+├── data_io # dataset processing and loading data interface
 ├── legacy_code # old code, not used
 ├── loss_function
 ├── metrics
@@ -40,6 +42,12 @@ pip3 install -r requirements.txt
 └── requirements.txt
 ```
 
+## Dataset (--dataset / -d)
+
+> 2D: mvtec2d, mpdd, mvtecloco, mtd, btad, mvtec2df3d, imad_hardware_parts
+
+> 3D: mvtec3d
+
 ## MVTec3D Preprocessing
 
 > 3d_ast
@@ -53,11 +61,6 @@ cp -r ../zip/mvtec3d_official ./mvtec3d_btf
 python3 ./baselines/3d_btf/utils/preprocessing.py
 ```
 
-## Dataset (--dataset / -d)
-
-> 2D: mvtec2d, mpdd, mvtecloco, mtd, btad, mvtec2df3d, imad_hardware_parts
-
-> 3D: mvtec3d
 
 ## Learning Paradigm
 
@@ -92,9 +95,9 @@ python3 ./baselines/3d_btf/utils/preprocessing.py
 | stpm  | resnet18, wide_resnet50 | Student-teacher feature pyramid matching for anomaly detection |
 
 ## 3D Model
-| Method / -m | Net / -n | Paper |
+| Method / -m | Net / -n | Paper Title |
 | ------ | ------ | ------ |
-| 3d_btf | | Back to the feature: classical 3D features are (almost) all you need for 3D anomaly detection | 
+| 3d_btf | -- | Back to the feature: classical 3D features are (almost) all you need for 3D anomaly detection | 
 | 3d_ast | | AST: Asymmetric student-teacher networks for industrial anomaly detection |
 
 
