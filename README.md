@@ -141,25 +141,25 @@ python3 main.py -p c2d -c -m dne -n vit_b_16 -d mvtec2d -tid 10 11 -vid 10 11 -g
 
 > Fewshot / -f
 ```bash
-python3 mian.py -p c2d -f --fewshot-exm 1 --fewshot-num-dg 4 -m _patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 -sp 1 -g 1
-python3 mian.py -p c2d -f --fewshot-exm 1 -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 -sp 1 -g 1
-python3 mian.py -p c2d -f --fewshot-exm 1 -m csflow -n net_csflow -d mvtec2d -tid 11 -vid 11 -g 1
-python3 mian.py -p c2d -f --fewshot-exm 1 -m cfa -n net_cfa -d mvtec2d -tid 11 -vid 11 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 -m draem -n net_draem -d mvtec2d -tid 11 -vid 11 -g 2
-python3 mian.py -p c2d -f --fewshot-exm 1 -m fastflow -n net_fastflow -d mvtec2d -tid 11 -vid 11 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 -m cutpaste -n vit_b_16  -d mvtec2d -tid 11 -vid 11  -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 -m padim -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 -m favae -n net_favae -d mvtec2d -tid 11 -vid 11  -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 -m cutpaste -n vit_b_16 -d mvtec2d -tid 11 -vid 11 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 -m igd -n net_igd -d mvtec2d -tid 11 -vid 11 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 -m reverse -n net_reverse -d mvtec2d -tid 11 -vid 11 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 -m spade -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
-python3 mian.py -p c2d -f --fewshot-exm 1 -m stpm -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -f --fewshot-exm 1 --fewshot-num-dg 4 -m _patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 -sp 1 -g 1
+python3 main.py -p c2d -f --fewshot-exm 1 -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 -sp 1 -g 1
+python3 main.py -p c2d -f --fewshot-exm 1 -m csflow -n net_csflow -d mvtec2d -tid 11 -vid 11 -g 1
+python3 main.py -p c2d -f --fewshot-exm 1 -m cfa -n net_cfa -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -f --fewshot-exm 1 -m draem -n net_draem -d mvtec2d -tid 11 -vid 11 -g 2
+python3 main.py -p c2d -f --fewshot-exm 1 -m fastflow -n net_fastflow -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -f --fewshot-exm 1 -m cutpaste -n vit_b_16  -d mvtec2d -tid 11 -vid 11  -g 7
+python3 main.py -p c2d -f --fewshot-exm 1 -m padim -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -f --fewshot-exm 1 -m favae -n net_favae -d mvtec2d -tid 11 -vid 11  -g 7
+python3 main.py -p c2d -f --fewshot-exm 1 -m cutpaste -n vit_b_16 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -f --fewshot-exm 1 -m igd -n net_igd -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -f --fewshot-exm 1 -m reverse -n net_reverse -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -f --fewshot-exm 1 -m spade -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
+python3 main.py -p c2d -f --fewshot-exm 1 -m stpm -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
 ```
 > Semi / -s
 ```bash
-python3 mian.py -p c2d -s -m devnet -n net_devnet -d mvtec2d -tid 0 -vid 0 -g 1
-python3 mian.py -p c2d -s -m dra -n net_dra -d mvtecloco -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -s -m devnet -n net_devnet -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -s -m dra -n net_dra -d mvtecloco -tid 0 -vid 0 -g 1
 ```
 
 > Noisy / -ny

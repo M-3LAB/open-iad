@@ -1,7 +1,7 @@
 dataset: mvtec2d
 root_path: '/disk4/xgy'
 data_path: '/imad_nail_screw'
-num_task: 2 
+num_task: 21
 data_size: 256
 data_crop_size: 256
 mask_size: 256
