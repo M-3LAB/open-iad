@@ -1,8 +1,8 @@
 import os
 import json
 
-datasets = ['mvtec2d']
-num_tasks = [15]
+datasets = ['imad_hardware_parts']
+num_tasks = [21]
 fewshots = [1, 2, 4, 8]
 sample_ratios = [0.1, 0.1, 0.1, 0.1]
 gpu_id = 0

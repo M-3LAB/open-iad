@@ -25,4 +25,4 @@ _anomaly_scorer_num_nn: 1
 _patch_size: 3
 
 _sampler_name: approx_greedy_coreset # identity, greedy_coreset, approx_greedy_coreset
-sampler_percentage: 0.1
+sampler_percentage: 0.001
