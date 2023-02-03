@@ -263,7 +263,7 @@ def draw_scatter_mvtec_ad():
     ax.yaxis.set_major_locator(y_major_locator)
     plt.xlabel('Inference Speed (FPS)', fontdict={'fontsize': 10})
     plt.ylabel('Image AUC', fontdict={'fontsize': 10})
-    plt.title('MVTec AD', fontsize=12)
+    # plt.title('MVTec AD', fontsize=12)
     # plt.legend(fontsize=10)
     # plt.legend(loc='lower right',fontsize='medium')
     plt.legend(bbox_to_anchor=(1.05, 0), loc=3, fontsize=8, borderaxespad=0)
@@ -300,12 +300,154 @@ def draw_scatter_mvtec_loco_ad():
     ax.yaxis.set_major_locator(y_major_locator)
     plt.xlabel('Inference Speed (FPS)', fontdict={'fontsize': 10})
     plt.ylabel('Image AUC', fontdict={'fontsize': 10})
-    plt.title('MVTec LOCO AD', fontsize=12)
+    # plt.title('MVTec LOCO AD', fontsize=12)
     # plt.legend(fontsize=10)
     # plt.legend(loc='lower right',fontsize='medium')
     plt.legend(bbox_to_anchor=(1.05, 0), loc=3, fontsize=8, borderaxespad=0)
     plt.show()
     plt.savefig('./work_dir/mvtec2d_loco_imgauc.pdf', bbox_inches='tight', pad_inches=0.1)
+
+# metric: image auc and poxel ap
+# dataset: mvtec and mpdd 
+def draw_fewshot():
+    x = ['1', '2', '4', '8']
+    fig = plt.figure(figsize=(16, 4))
+
+    #MTec AD Image AUC
+    cfa = [0.813,0.839,0.879,0.923]
+    csflow = [0.743,0.743,0.786,0.845]
+    cutpaste = [0.65,0.697,0.728,0.705]
+    draem = [0.685,0.777,0.82,0.883]
+    fastflow = [0.552,0.552,0.729,0.801]
+    favae = [0.611,0.672,0.617,0.69]
+    padim = [0.684,0.708,0.722,0.776]
+    patchcore= [0.619,0.721,0.817,0.864]
+    rd4ad = [0.773,0.791,0.833,0.903]
+    stpm = [0.798,0.841,0.864,0.88]
+    regad = [0.828,0.862,0.891,0.912]
+
+    f3 = fig.add_subplot(141)
+    f3.plot(x, cfa, color='#845EC2', linewidth=2, alpha=1, linestyle='-', marker='H', markersize='6', label='CFA')
+    # f3.plot(x, csflow, color='#D65DB1', linewidth=1, alpha=1, linestyle='-', marker='o',markersize='6', label='CS-Flow')
+    # f3.plot(x, cutpaste, color='#FF6F91', linewidth=1, alpha=1, linestyle='-', marker='>',markersize='6', label='CutPaste')
+    f3.plot(x, draem, color='#FF9671', linewidth=1, alpha=1, linestyle='-', marker='<',markersize='6', label='DRAEM')
+    f3.plot(x, fastflow, color='#FFC75F', linewidth=1, alpha=1, linestyle='-', marker='*',markersize='6', label='FastFlow')
+    f3.plot(x, favae, color='#7E8236', linewidth=1, alpha=1, linestyle='-', marker='D',markersize='6', label='FAVAE')
+    f3.plot(x, padim, color='#2C73D2', linewidth=1, alpha=1, linestyle='-', marker='X',markersize='6', label='PaDiM')
+    f3.plot(x, patchcore, color='#A73221', linewidth=1, alpha=1, linestyle='-', marker='d',markersize='6', label='PatchCore')
+    f3.plot(x, rd4ad, color='#402E32', linewidth=1, alpha=1, linestyle='-', marker='s',markersize='6', label='RD4AD')
+    f3.plot(x, stpm, color='#008F7A', linewidth=1, alpha=1, linestyle='-', marker='P',markersize='6', label='STPM')
+    f3.plot(x, regad, color='#C2865E', linewidth=1, alpha=1, linestyle='-', marker='h',markersize='6', label='RegAD')
+    # f3.plot(x2, spade, color='#C34A36', linewidth=1, alpha=1, linestyle='-', marker='.', label='SPADE')
+    # f3.ylim(0.3, 0.8)
+    plt.ylim(0.2, 1)
+    plt.title('(a) MTec AD')    
+    plt.xlabel('Shot Number', fontsize=12)
+    plt.ylabel('Image AUC', fontsize=12)
+
+    #MPDD Image AUC
+    cfa = [ 0.542,0.568,0.642,0.694]
+    csflow = [0.661,0.63,0.708,0.741]
+    cutpaste = [0.532,0.506,0.526,0.577]
+    draem = [0.68,0.707,0.744,0.773]
+    fastflow = [0.5,0.498,0.671,0.719]
+    favae = [0.473,0.489,0.568,0.39]
+    padim = [0.481,0.528,0.557,0.56]
+    patchcore= [0.484,0.547,0.601,0.694]
+    rd4ad = [0.509,0.574,0.616,0.699]
+    stpm = [0.715,0.695,0.74,0.792]
+    regad = [0.555,0.578,0.648,0.71]
+    spade = [0.594]
+    
+    f4 = fig.add_subplot(142)
+    f4.plot(x, cfa, color='#845EC2', linewidth=2, alpha=1, linestyle='-', marker='H', markersize='6', label='CFA')
+    # f4.plot(x, csflow, color='#D65DB1', linewidth=1, alpha=1, linestyle='-', marker='o',markersize='6', label='CS-Flow')
+    # f4.plot(x, cutpaste, color='#FF6F91', linewidth=1, alpha=1, linestyle='-', marker='>',markersize='6', label='CutPaste')
+    f4.plot(x, draem, color='#FF9671', linewidth=1, alpha=1, linestyle='-', marker='<',markersize='6', label='DRAEM')
+    f4.plot(x, fastflow, color='#FFC75F', linewidth=1, alpha=1, linestyle='-', marker='*',markersize='6', label='FastFlow')
+    f4.plot(x, favae, color='#7E8236', linewidth=1, alpha=1, linestyle='-', marker='D',markersize='6', label='FAVAE')
+    f4.plot(x, padim, color='#2C73D2', linewidth=1, alpha=1, linestyle='-', marker='X',markersize='6', label='PaDiM')
+    f4.plot(x, patchcore, color='#A73221', linewidth=1, alpha=1, linestyle='-', marker='d',markersize='6', label='PatchCore')
+    f4.plot(x, rd4ad, color='#402E32', linewidth=1, alpha=1, linestyle='-', marker='s',markersize='6', label='RD4AD')
+    f4.plot(x, stpm, color='#008F7A', linewidth=1, alpha=1, linestyle='-', marker='P',markersize='6', label='STPM')
+    f4.plot(x, regad, color='#C2865E', linewidth=1, alpha=1, linestyle='-', marker='h',markersize='6', label='RegAD')
+    # f4.plot(x2, spade, color='#C34A36', linewidth=1, alpha=1, linestyle='-', marker='.', label='SPADE')
+    # f4.ylim(0.3, 0.8)
+    plt.ylim(0.2, 1)
+    plt.title('(b) MPDD')
+    plt.xlabel('Shot Number', fontsize=12)
+    plt.ylabel('Image AUC', fontsize=12)
+
+    #MVTec pixel AP
+    cfa = [0.424,0.449,0.482,0.513]
+    draem = [0.154,0.302,0.36,0.442]
+    fastflow = [0.079,0.138,0.22,0.279]
+    favae = [0.181,0.187,0.147,0.223]
+    padim = [0.244,0.277,0.32,0.362]
+    patchcore= [0.255,0.32,0.399,0.44]
+    rd4ad = [0.368,0.372,0.441,0.49]
+    stpm = [0.419,0.435,0.476,0.494]
+    regad = [0.404,0.475,0.482,0.514]
+
+    f2 = fig.add_subplot(143)
+    f2.plot(x, cfa, color='#845EC2', linewidth=2, alpha=1, linestyle='-', marker='H', markersize='6', label='CFA')
+    # f2.plot(x, csflow, color='#D65DB1', linewidth=1, alpha=1, linestyle='-', marker='o',markersize='6', label='CS-Flow')
+    # f2.plot(x, cutpaste, color='#FF6F91', linewidth=1, alpha=1, linestyle='-', marker='>',markersize='6', label='CutPaste')
+    f2.plot(x, draem, color='#FF9671', linewidth=1, alpha=1, linestyle='-', marker='<',markersize='6', label='DRAEM')
+    f2.plot(x, fastflow, color='#FFC75F', linewidth=1, alpha=1, linestyle='-', marker='*',markersize='6', label='FastFlow')
+    f2.plot(x, favae, color='#7E8236', linewidth=1, alpha=1, linestyle='-', marker='D',markersize='6', label='FAVAE')
+    f2.plot(x, padim, color='#2C73D2', linewidth=1, alpha=1, linestyle='-', marker='X',markersize='6', label='PaDiM')
+    f2.plot(x, patchcore, color='#A73221', linewidth=1, alpha=1, linestyle='-', marker='d',markersize='6', label='PatchCore')
+    f2.plot(x, rd4ad, color='#402E32', linewidth=1, alpha=1, linestyle='-', marker='s',markersize='6', label='RD4AD')
+    f2.plot(x, stpm, color='#008F7A', linewidth=1, alpha=1, linestyle='-', marker='P',markersize='6', label='STPM')
+    f2.plot(x, regad, color='#C2865E', linewidth=1, alpha=1, linestyle='-', marker='h',markersize='6', label='RegAD')
+    # f2.plot(x2, spade, color='#C34A36', linewidth=1, alpha=1, linestyle='-', marker='.', label='SPADE')
+
+    plt.ylim(0, 0.6)
+    plt.title('(c) MVTec AD')
+    plt.xlabel('Shot Number', fontsize=12)
+    plt.ylabel('Pixel AP', fontsize=12)
+
+    #MPDD pixel AP
+    cfa = [0.165,0.216,0.236,0.269]
+    draem = [0.179,0.235,0.301,0.286]
+    fastflow = [0.028,0.051,0.108,0.116]
+    favae = [0.057,0.054,0.076,0.073]
+    padim = [0.075,0.078,0.092,0.102]
+    patchcore= [0.126,0.167,0.198,0.24]
+    rd4ad = [0.1,0.142,0.19,0.245]
+    stpm = [0.228,0.253,0.289,0.321]
+    regad = [0.11,0.13,0.161,0.165]
+    
+    f1 = fig.add_subplot(144)    
+    f1.plot(x, cfa, color='#845EC2', linewidth=2, alpha=1, linestyle='-', marker='H', markersize='6', label='CFA')
+    # f1.plot(x, csflow, color='#D65DB1', linewidth=1, alpha=1, linestyle='-', marker='o',markersize='6', label='CS-Flow')
+    # f1.plot(x, cutpaste, color='#FF6F91', linewidth=1, alpha=1, linestyle='-', marker='>',markersize='6', label='CutPaste')
+    f1.plot(x, draem, color='#FF9671', linewidth=1, alpha=1, linestyle='-', marker='<',markersize='6', label='DRAEM')
+    f1.plot(x, fastflow, color='#FFC75F', linewidth=1, alpha=1, linestyle='-', marker='*',markersize='6', label='FastFlow')
+    f1.plot(x, favae, color='#7E8236', linewidth=1, alpha=1, linestyle='-', marker='D',markersize='6', label='FAVAE')
+    f1.plot(x, padim, color='#2C73D2', linewidth=1, alpha=1, linestyle='-', marker='X',markersize='6', label='PaDiM')
+    f1.plot(x, patchcore, color='#A73221', linewidth=1, alpha=1, linestyle='-', marker='d',markersize='6', label='PatchCore')
+    f1.plot(x, rd4ad, color='#402E32', linewidth=1, alpha=1, linestyle='-', marker='s',markersize='6', label='RD4AD')
+    f1.plot(x, stpm, color='#008F7A', linewidth=1, alpha=1, linestyle='-', marker='P',markersize='6', label='STPM')
+    f1.plot(x, regad, color='#C2865E', linewidth=1, alpha=1, linestyle='-', marker='h',markersize='6', label='RegAD')
+    # f1.plot(x2, spade, color='#C34A36', linewidth=1, alpha=1, linestyle='-', marker='.', label='SPADE')
+    plt.ylim(0, 0.6)
+    plt.title('(d) MPDD')
+    plt.xlabel('Shot Number', fontsize=12)
+    plt.ylabel('Pixel AP', fontsize=12)
+
+    ax = plt.gca()
+    ax.xaxis.set_major_locator(MultipleLocator(1))
+    ax.yaxis.set_major_locator(MultipleLocator(0.1))
+
+    #plt.title('Fed-Avg ', fontsize=12)
+    plt.grid(axis='y', color='0.7', linestyle='--', linewidth=1)
+    # plt.legend(loc='lower right',fontsize='medium')
+    plt.legend(bbox_to_anchor=(1.05, 0), loc=3, borderaxespad=0)
+    plt.tick_params(labelsize=12)
+    plt.savefig('./work_dir/fewshot.pdf', bbox_inches='tight', pad_inches=0.1)
+    plt.close()
 
 
 if __name__ == '__main__':
@@ -318,3 +460,5 @@ if __name__ == '__main__':
     # plot_k_mvtec2d_2()
     draw_scatter_mvtec_ad()
     draw_scatter_mvtec_loco_ad()
+
+    # draw_fewshot()
