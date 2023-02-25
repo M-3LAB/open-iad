@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="wangjinbao@172.18.36.108:22 password" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
-    <option name="confirmBeforeUploading" value="false" />
+  <component name="PublishConfigData">
     <serverData>
       <paths name="11910912@10.20.19.118:10022">
         <serverdata>
@@ -41,7 +40,7 @@
       <paths name="wangjinbao@172.18.36.108:22 password">
         <serverdata>
           <mappings>
-            <mapping deploy="/ssd2/m3lab/usrs/zsh/open-ad" local="$PROJECT_DIR$" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
