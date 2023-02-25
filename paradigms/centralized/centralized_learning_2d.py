@@ -91,6 +91,8 @@ class CentralizedAD2D():
                         'btad': ('data_io.btad', 'btad', 'BTAD'),
                         'mtd': ('data_io.mtd', 'mtd', 'MTD'),
                         'mvtec3d': ('data_io.mvtec3d', 'mvtec3d', 'MVTec3D'),
+                        'visa': ('data_io.visa', 'visa', 'VisA'),
+                        'dagm': ('data_io.dagm', 'dagm', 'DAGM'),
                         'imad_hardware_parts': ('data_io.imad_hardware_parts', 'imad_hardware_parts', 'iMAD_hardware_parts')
                         }
 
