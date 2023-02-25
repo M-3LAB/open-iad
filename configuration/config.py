@@ -10,7 +10,7 @@ def parse_arguments_main():
     parser.add_argument('--paradigm', '-p', type=str, default='c2d', choices=['c2d', 'c3d', 'f2d'])
 
     # ----------------------------- centralized learning ----------------------------- #
-    parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad', 'mvtec2df3d', 'imad_hardware_parts'])
+    parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad', 'mvtec2df3d', 'visa', 'dagm', 'imad_hardware_parts'])
 
     parser.add_argument('--model', '-m', type=str, default='patchcore', choices=['_patchcore', 'patchcore', 'csflow', 'dne', 'draem', 'igd', 'cutpaste', 'devnet', 'dra', 
                                                                               'favae', 'padim', 'reverse', 'spade', 'fastflow', 'softpatch', 'cfa', 'stpm'])
