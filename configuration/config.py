@@ -40,6 +40,7 @@ def parse_arguments_main():
     parser.add_argument('--fewshot-data-aug', '-fda', action='store_true', default=False)
     parser.add_argument('--fewshot-feat-aug', '-ffa', action='store_true', default=False)
     parser.add_argument('--fewshot-num-dg', '-fnd', type=int, default=1)
+    parser.add_argument('--fewshot-aug-type', '-fat', choices=['rotation', 'scale', 'translate', 'flip', 'color_jitter', 'perspective'], default='rotation')
 
     # noisy label
     parser.add_argument('--noisy', '-ny', action='store_true', default=False)

@@ -16,6 +16,7 @@ fewshot_exm: 5
 fewshot_num_dg: 4
 fewshot_data_aug: false
 fewshot_feat_aug: false
+fewshot_aug_type: 'rotation'
 # noisy label
 noisy: false
 noisy_ratio: 0.1
