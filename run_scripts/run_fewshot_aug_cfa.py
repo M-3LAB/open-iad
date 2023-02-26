@@ -11,7 +11,7 @@ for dataset, n in zip(datasets, num_tasks):
         train_ids = [i for i in range(n)]
         sample_ratio = ratio
         for train_id in train_ids:
-                f = open('/ssd3/ljq/AD/open-ad/results/fewshot_cfa.json',) 
+                f = open('/ssd3/ljq/AD/open-ad/results/fewshot_patchcore.json',)
                 data = json.load(f)
                 f.close()
                 if(train_id<int(data[str(fewshot_n)][dataset])):
@@ -21,9 +21,9 @@ for dataset, n in zip(datasets, num_tasks):
                                 fewshot_n, ratio, dataset, train_id, train_id, gpu_id)
                     # print(script)
                     os.system(script)
-                    f = open('/ssd3/ljq/AD/open-ad/results/fewshot_cfa.json',) 
+                    f = open('/ssd3/ljq/AD/open-ad/results/fewshot_patchcore.json',)
                     data = json.load(f)
                     f.close()
                     data[str(fewshot_n)][dataset] = train_id+1
-                    with open('/ssd3/ljq/AD/open-ad/results/fewshot_cfa.json', "w") as outfile: 
+                    with open('/ssd3/ljq/AD/open-ad/results/fewshot_patchcore.json', "w") as outfile:
                         json.dump(data, outfile)

@@ -72,10 +72,11 @@ def domain_gen(config, data):
                     {'img': img_da, 'label': d['label'], 'mask': mask, 'task_id': d['task_id'], 'img_src': img_src})
 
     elif config['fewshot_aug_type'] == 'flip':
-        assert aug_num == 4, 'Only 4 flips are supported'
         flips = [[T.RandomHorizontalFlip(p=1)], [T.RandomVerticalFlip(p=1)],
                  [T.RandomHorizontalFlip(p=1), T.RandomVerticalFlip(p=1)],
                  [T.RandomHorizontalFlip(p=0.5), T.RandomVerticalFlip(p=0.5)]]
+        if aug_num < 4:
+            flips = flips[:aug_num]
         for d in data:
             img_src = d['img_src']
             img = Image.open(img_src).convert('RGB')

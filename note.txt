@@ -5,5 +5,5 @@ centralized_learning_2d.py
 
 
 
-python3 main.py -p c2d -f --fewshot-exm 4 -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -sp 0.1 -g 0 -fnd 4 -fat rotation
+python3 main.py -p c2d -f -fda --fewshot-exm 4 -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -sp 0.1 -g 0 -fnd 4 -fat rotation
 

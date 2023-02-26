@@ -141,6 +141,7 @@ python3 main.py -p c2d -c -m dne -n vit_b_16 -d mvtec2d -tid 10 11 -vid 10 11 -g
 
 > Fewshot / -f
 ```bash
+python3 main.py -p c2d -f -fda --fewshot-exm 4 -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -sp 0.1 -g 0 -fnd 4 -fat rotation
 python3 main.py -p c2d -f --fewshot-exm 1 --fewshot-num-dg 4 -m _patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 -sp 1 -g 1
 python3 main.py -p c2d -f --fewshot-exm 1 -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 -sp 1 -g 1
 python3 main.py -p c2d -f --fewshot-exm 1 -m csflow -n net_csflow -d mvtec2d -tid 11 -vid 11 -g 1
