@@ -25,7 +25,6 @@ for dataset, n in zip(datasets, num_tasks):
                 continue
             else:
                 for aug in aug_type:
-                    #
                     if aug == 'normal':
                         script = 'python3 main.py -p c2d -f --fewshot-exm {} -m patchcore -n resnet18 -d {} -tid {} -vid {} -sp {} -g {}'.format(fewshot_n, dataset, train_id, train_id, sample_ratio, gpu_id)
                     else:
