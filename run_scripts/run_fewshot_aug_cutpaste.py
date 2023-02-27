@@ -1,17 +1,17 @@
 import os
 import json
 
-# datasets = ['mvtec2d', 'visa', 'btad', 'mtd', 'mpdd']
-# fewshots = [1, 2, 4, 8]
-# num_tasks = [15, 12, 3, 1, 6]
-# sample_ratios = [0.1, 0.1, 0.1, 0.1]
-# aug_type = ['normal', 'rotation', 'scale', 'translate', 'flip', 'color_jitter', 'perspective']
-datasets = ['mvtec2d']
-fewshots = [1]
-num_tasks = [2]
-sample_ratios = [0.1]
-aug_type = ['normal', 'rotation']
-gpu_id = 4
+datasets = ['mvtec2d', 'visa', 'btad', 'mtd', 'mpdd']
+fewshots = [1, 2, 4, 8]
+num_tasks = [15, 12, 3, 1, 6]
+sample_ratios = [0.1, 0.1, 0.1, 0.1]
+aug_type = ['normal', 'rotation', 'scale', 'translate', 'flip', 'color_jitter', 'perspective']
+# datasets = ['mvtec2d']
+# fewshots = [1]
+# num_tasks = [2]
+# sample_ratios = [0.1]
+# aug_type = ['normal', 'rotation']
+gpu_id = 1
 json_file = '/ssd2/m3lab/usrs/zsh/open-ad/run_scripts/fewshot_cutpaste.json'
 for dataset, n in zip(datasets, num_tasks):
     for fewshot_n, ratio in zip(fewshots, sample_ratios):

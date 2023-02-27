@@ -61,9 +61,10 @@ def domain_gen(config, data):
                 mask_transforms.insert(1, T.RandomAffine((0, 0),
                                                          translate=(translates[i], translates[i])))
             if 'flip' in config['fewshot_aug_type']:
-                for flip in flips[min(i, 3)]:
-                    img_transforms.insert(2, flip)
-                    mask_transforms.insert(1, flip)
+                if i > 0:
+                    for flip in flips[min(i-1, 3)]:
+                        img_transforms.insert(2, flip)
+                        mask_transforms.insert(1, flip)
             if 'color_jitter' in config['fewshot_aug_type']:
                 img_transforms.insert(2, T.ColorJitter(brightness=brightness[i], contrast=contrast[i]))
                 mask_transforms.insert(1,
