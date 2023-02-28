@@ -32,15 +32,15 @@ def domain_gen(config, data):
                               T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
     mask_transform_list = [T.ToPILImage(), T.ToTensor()]
     degrees = np.linspace(0, 360, aug_num + 1, endpoint=False)
-    scales = np.linspace(0.5, 1, aug_num + 1)
+    scales = np.linspace(1, 0.5, aug_num + 1)
     translates = np.linspace(0, 0.5, aug_num + 1)
     flips = [[T.RandomHorizontalFlip(p=1)], [T.RandomVerticalFlip(p=1)],
              [T.RandomHorizontalFlip(p=1), T.RandomVerticalFlip(p=1)],
              [T.RandomHorizontalFlip(p=0.5), T.RandomVerticalFlip(p=0.5)]]
     brightness = np.linspace(0.5, 1.5, aug_num)
-    brightness = np.concatenate((brightness, np.array([1])))
+    brightness = np.concatenate((np.array([1]), brightness))
     contrast = np.linspace(0.5, 1.5, aug_num)
-    contrast = np.concatenate((contrast, np.array([1])))
+    contrast = np.concatenate((np.array([1]), contrast))
     perspectives = np.linspace(0, 0.5, aug_num + 1)
     for d in data:
         img_src = d['img_src']
