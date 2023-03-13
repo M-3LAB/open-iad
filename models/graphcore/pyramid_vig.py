@@ -11,6 +11,7 @@ from timm.models.registry import register_model
 
 from gcn_lib import Grapher, act_layer
 
+__all__ = ['DeepGCN']
 
 def _cfg(url='', **kwargs):
     return {
