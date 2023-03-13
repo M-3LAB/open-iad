@@ -1,0 +1,3 @@
+model: tad
+net: resnet18
+num_epochs: 100
