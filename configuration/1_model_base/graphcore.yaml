@@ -12,3 +12,4 @@ gp: None # global pooling
 bn_tf: False # bn ad, use tensorflow batchnorm defaults for models that support it 
 bn_momentum: None 
 bn_eps: None
+checkpoint_path: './checkpoints/graphcore/' 
