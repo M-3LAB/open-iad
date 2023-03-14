@@ -10,7 +10,7 @@ from timm.models.layers import DropPath
 from timm.models.registry import register_model
 
 
-__all__ = ['DeepGCN']
+__all__ = ['pvig_ti_224_gelu', 'pvig_si_224_gelu', 'pvig_m_224_gelu']
 
 def _cfg(url='', **kwargs):
     return {

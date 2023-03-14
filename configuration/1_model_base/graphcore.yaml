@@ -1,0 +1,6 @@
+model: graphcore
+net: pvig_ti_224_gelu
+data_size: 224
+data_crop_size: 224
+mask_size: 224
+mask_crop_size:: 224

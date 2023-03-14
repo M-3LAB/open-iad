@@ -8,6 +8,8 @@ from timm.data import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 from timm.models.layers import DropPath
 from timm.models.registry import register_model
 
+__all__ = ['vig_ti_224_gelu', 'vig_s_224_gelu', 'vig_b_224_gelu']
+
 def _cfg(url='', **kwargs):
     return {
         'url': url,
