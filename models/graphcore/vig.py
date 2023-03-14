@@ -2,11 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import Sequential as Seq
-from gcn_lib import Grapher, act_layer
+from models.graphcore.gcn_lib import Grapher, act_layer
 
 from timm.data import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
-from timm.models.helpers import load_pretrained
-from timm.models.layers import DropPath, to_2tuple, trunc_normal_
+from timm.models.layers import DropPath
 from timm.models.registry import register_model
 
 def _cfg(url='', **kwargs):
