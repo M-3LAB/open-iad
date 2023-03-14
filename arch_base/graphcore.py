@@ -17,5 +17,8 @@ class GraphCore(ModelBase):
         self.optimizer = optimizer
         self.scheduler = scheduler
     
-    def forward(self, x):
+    def train_model(self, train_loader, task_id, inf=''):
+        pass
+
+    def prediction(self, valid_loader, task_id):
         pass
