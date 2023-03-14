@@ -12,6 +12,7 @@ class GraphCore(ModelBase):
 
         self.config = config
         self.device = device
+        self.file_path = file_path
         self.net = net
         self.optimizer = optimizer
         self.scheduler = scheduler
