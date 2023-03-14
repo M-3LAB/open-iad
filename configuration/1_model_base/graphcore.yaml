@@ -4,3 +4,8 @@ data_size: 224
 data_crop_size: 224
 mask_size: 224
 mask_crop_size:: 224
+pretrained: True
+drop_rate: 0
+drop_connect_rate: 0 # legacy issue, deprecated, use drop_path
+drop_block_rate: 0
+gp: None # global pooling
