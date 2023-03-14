@@ -9,3 +9,6 @@ drop_rate: 0
 drop_connect_rate: 0 # legacy issue, deprecated, use drop_path
 drop_block_rate: 0
 gp: None # global pooling
+bn_tf: False # bn ad, use tensorflow batchnorm defaults for models that support it 
+bn_momentum: None 
+bn_eps: None
