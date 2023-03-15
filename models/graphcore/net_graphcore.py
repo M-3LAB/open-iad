@@ -39,6 +39,8 @@ class NetGraphCore(nn.module):
         if hasattr(self.model, 'default_cfg'):
             default_cfg = self.model.default_cfg
             input_size = [1] + list(default_cfg['input_size'])
+        else:
+            input_size = [1, 3, 224, 224]
         
 
     
