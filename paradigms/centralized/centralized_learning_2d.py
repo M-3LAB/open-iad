@@ -24,11 +24,13 @@ from models.igd.net_igd import NetIGD
 from models.reverse.net_reverse import NetReverse
 from models.fastflow.net import NetFastFlow
 from models.cfa.net_cfa import NetCFA
+from models.graphcore.net_graphcore import NetGraphCore
  
 from optimizer.optimizer import get_optimizer
 from models.favae.net_favae import NetFAVAE
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
+from timm.optim import create_optimizer
 
 from configuration.device import assign_service
 
@@ -316,6 +318,7 @@ class CentralizedAD2D():
             self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs) 
         if self.para_dict['model'] == 'graphcore':
+            self.net = NetGraphCore(args)
             pass
 
 

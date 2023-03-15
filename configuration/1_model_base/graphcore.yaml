@@ -14,3 +14,10 @@ bn_momentum: None
 bn_eps: None
 checkpoint_path: './checkpoints/graphcore/' 
 pretrain_path: './checkpoints/graphcore/pretrain/'
+opt: sgd
+opt_eps: None
+opt_betas: None
+momentum: 0.9
+weight_decay: 0.0001
+clip_grad: None
+lr: 0.01
