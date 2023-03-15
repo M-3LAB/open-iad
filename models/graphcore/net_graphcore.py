@@ -42,7 +42,3 @@ class NetGraphCore(nn.module):
         else:
             input_size = [1, 3, 224, 224]
         
-
-    
-    #def forward(self, x):
-    #    pass
