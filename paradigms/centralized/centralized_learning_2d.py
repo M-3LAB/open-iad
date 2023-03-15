@@ -315,6 +315,9 @@ class CentralizedAD2D():
         if self.para_dict['model'] == 'cutpaste':
             self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs) 
+        if self.para_dict['model'] == 'graphcore':
+            pass
+
 
         model_name = {'_patchcore': ('arch_base._patchcore', '_patchcore', 'PatchCore'),
                       'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
