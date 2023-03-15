@@ -8,7 +8,7 @@ __all__ = ['LogAD']
 class LogAD(ModelBase):
 
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super().__init__(config, device)
+        super(LogAD, self).__init__(config, device)
 
         self.config = config
         self.device = device

@@ -3,12 +3,12 @@ import torch.nn as nn
 from arch_base.base import ModelBase
 
 
-__all__ = ['GraphCore']
+__all__ = ['PointCore']
 
-class GraphCore(ModelBase):
+class PointCore(ModelBase):
 
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(GraphCore, self).__init__(config, device)
+        super(PointCore, self).__init__(config, device)
 
         self.config = config
         self.device = device
