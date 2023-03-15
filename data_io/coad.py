@@ -7,23 +7,23 @@ from torch.utils.data import Dataset
 from torchvision import transforms as T
 
 
-__all__ = ['iMAD_hardware_parts', 'imad_hardware_parts_classes']
+__all__ = ['COAD', 'coad_parts_classes']
 
-def imad_hardware_parts_classes():
+def coad_parts_classes():
     return ['A1','A2','A3','A4','A5','A6','A7','A8','B1','B2','B3','B4','B5','B6','B7','C1','C2','C3','C4','D1','D2']
 
 
-class iMAD_hardware_parts(Dataset):
+class COAD(Dataset):
     def __init__(self, data_path, learning_mode='centralized', phase='train', 
                  data_transform=None, num_task=21):
 
         self.data_path = data_path
         self.learning_mode = learning_mode
         self.phase = phase
-        self.class_name = imad_hardware_parts_classes()
+        self.class_name = coad_parts_classes()
         self.img_transform = data_transform[0]
         self.mask_transform = data_transform[1] 
-        assert set(self.class_name) <= set(imad_hardware_parts_classes())
+        assert set(self.class_name) <= set(coad_parts_classes())
         
         self.num_task = num_task 
         self.class_in_task = []
