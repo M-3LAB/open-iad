@@ -14,6 +14,7 @@ bn_momentum: None
 bn_eps: None
 checkpoint_path: './checkpoints/graphcore/' 
 pretrain_path: './checkpoints/graphcore/pretrain/'
+#####optimizer######
 opt: sgd
 opt_eps: None
 opt_betas: None
@@ -21,3 +22,14 @@ momentum: 0.9
 weight_decay: 0.0001
 clip_grad: None
 lr: 0.01
+lr_noise: None
+lr_noise_pct: 0.67
+lr_noise_std: 1.0
+lr_cycle_mul: 1.0
+lr_cycle_limit: 1
+warmup_lr: 0.0001
+min_lr: 1e-5
+sched: step
+
+
+

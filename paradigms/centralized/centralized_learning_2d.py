@@ -31,6 +31,7 @@ from models.favae.net_favae import NetFAVAE
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
 from timm.optim import create_optimizer
+from timm.scheduler import create_scheduler
 
 from configuration.device import assign_service
 
@@ -318,7 +319,9 @@ class CentralizedAD2D():
             self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs) 
         if self.para_dict['model'] == 'graphcore':
-            self.net = NetGraphCore(args)
+            self.net.model = NetGraphCore(args)
+            self.optimizer = create_optimizer(self.net.model, args)
+            self.scheduler = create_scheduler(args, self.optimizer)
             pass
 
 
