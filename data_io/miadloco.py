@@ -9,8 +9,8 @@ from torchvision import transforms as T
 
 __all__ = ['MIADLoco', 'miad_loco_classes']
 
-def mvtec_loco_classes():
-    return ["breakfast_box", "juice_bottle", "pushpins", "screw_bag", "splicing_connectors"]
+def miad_loco_classes():
+    return ["cantenary_dropper", "nut_and_bolt", "witness_mask"]
 
 
 class MIADLoco(Dataset):
@@ -22,9 +22,9 @@ class MIADLoco(Dataset):
         self.phase = phase
         self.img_transform = data_transform[0]
         self.mask_transform = data_transform[1] 
-        self.class_name = mvtec_loco_classes()
+        self.class_name = miad_loco_classes()
         self.ignor_anomaly_type = ignore_anomaly_type #structural_anomalies logical_anomalies no
-        assert set(self.class_name) <= set(mvtec_loco_classes())
+        assert set(self.class_name) <= set(miad_loco_classes())
         
         self.num_task = num_task 
         self.class_in_task = []
