@@ -4,7 +4,7 @@ from models.graphcore.pyramid_vig import *
 from models.graphcore.vig import *
 from timm.models import create_model
 from tools.utils import *
-import torchprofile
+from torchprofile import profile_macs
 
 __all__ = ['NetGraphCore']
 
@@ -41,4 +41,11 @@ class NetGraphCore(nn.module):
             input_size = [1] + list(default_cfg['input_size'])
         else:
             input_size = [1, 3, 224, 224]
+        
+        input = torch.randn(input_size)
+        
+        self.model.eval()
+        macs = profile_macs(self.model, input)
+        self.model.train()
+        print('model flops:', macs, 'input_size:', input_size)
         
