@@ -4,6 +4,7 @@ from models.graphcore.pyramid_vig import *
 from models.graphcore.vig import *
 from timm.models import create_model
 from tools.utils import *
+import torchprofile
 
 __all__ = ['NetGraphCore']
 
@@ -25,7 +26,8 @@ class NetGraphCore(nn.module):
                                   bn_momentum=self.bn_momentum,
                                   bn_eps=self.bn_eps,
                                   checkpoint_path=self.checkpoint_path)
-        
+
+        # Loading pretrained model  
         if self.config.pretrain_path is not None:
             print('Loading:', self.config.pretrain_path)
             state_dict = torch.load(self.config.pretrain_path)
