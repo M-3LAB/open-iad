@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 from models.graphcore.pyramid_vig import *
 from models.graphcore.vig import *
@@ -10,6 +11,9 @@ class NetGraphCore(nn.module):
     def __init__(self, config):
         super().__init__()
         self.config = config
+        create_folders(self.config.checkpoint_path)
+        create_folders(self.config.pretrain_path)
+
         self.model = create_model(self.config.net,
                                   pretrained=self.config.pretrained,
                                   num_classes=1000,
@@ -23,8 +27,10 @@ class NetGraphCore(nn.module):
                                   checkpoint_path=self.checkpoint_path)
         
         if self.config.pretrain_path is not None:
-            pass
-
+            print('Loading:', self.config.pretrain_path)
+            state_dict = torch.load(self.config.pretrain_path)
+            self.model.load_state_dict(state_dict, strict=False)
+            print('Pretrain weights loaded')
         
 
     
