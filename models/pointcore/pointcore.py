@@ -1,12 +1,11 @@
 import torch
 import torch.nn as nn
 
-__all__ = ['PointCore']
+__all__ = ['NetPointCore']
 
-class PointCore(nn.Module):
-
+class NetPointCore(nn.Module):
     def __init__(self):
-        super(PointCore).__init__()
+        super(NetPointCore).__init__()
         pass
 
     def forward(self, x):
