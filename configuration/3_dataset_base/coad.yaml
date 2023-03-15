@@ -1,0 +1,3 @@
+dataset: coad
+root_path: '/disk3/xgy'
+data_path: '/coad'

@@ -1,0 +1,16 @@
+model: graphcore
+net: pvig_ti_224_gelu
+data_size: 224
+data_crop_size: 224
+mask_size: 224
+mask_crop_size:: 224
+pretrained: True
+drop_rate: 0
+drop_connect_rate: 0 # legacy issue, deprecated, use drop_path
+drop_block_rate: 0
+gp: None # global pooling
+bn_tf: False # bn ad, use tensorflow batchnorm defaults for models that support it 
+bn_momentum: None 
+bn_eps: None
+checkpoint_path: './checkpoints/graphcore/' 
+pretrain_path: './checkpoints/graphcore/pretrain/'

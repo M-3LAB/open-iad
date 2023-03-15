@@ -1,0 +1,4 @@
+model: tad
+net: resnet18
+num_epochs: 100
+train_batch_size: 8
