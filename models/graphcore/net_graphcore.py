@@ -8,7 +8,7 @@ from torchprofile import profile_macs
 
 __all__ = ['NetGraphCore']
 
-class NetGraphCore(nn.module):
+class NetGraphCore(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.config = config
