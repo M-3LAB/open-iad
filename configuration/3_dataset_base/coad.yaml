@@ -1,4 +1,4 @@
-dataset: mvtec2d
+dataset: coad 
 root_path: '/disk4/xgy'
 data_path: '/coad'
 num_task: 21
