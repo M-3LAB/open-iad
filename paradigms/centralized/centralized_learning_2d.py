@@ -322,7 +322,6 @@ class CentralizedAD2D():
             self.net.model = NetGraphCore(args)
             self.optimizer = create_optimizer(self.net.model, args)
             self.scheduler = create_scheduler(args, self.optimizer)
-            pass
 
 
         model_name = {'_patchcore': ('arch_base._patchcore', '_patchcore', 'PatchCore'),
