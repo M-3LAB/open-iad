@@ -339,7 +339,8 @@ class CentralizedAD2D():
                       'reverse': ('arch_base.reverse', 'reverse', 'REVERSE'),
                       'spade': ('arch_base.spade', 'spade', 'SPADE'),
                       'stpm': ('arch_base.stpm', 'stpm', 'STPM'),
-                      'cutpaste': ('arch_base.cutpaste', 'cutpaste', 'CutPaste')
+                      'cutpaste': ('arch_base.cutpaste', 'cutpaste', 'CutPaste'),
+                      'graphcore': ('arch_base.graphcore', 'graphcore', 'GraphCore') 
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])

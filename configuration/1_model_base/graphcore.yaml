@@ -29,7 +29,14 @@ lr_cycle_mul: 1.0
 lr_cycle_limit: 1
 warmup_lr: 0.0001
 min_lr: 1e-5
+#######scheduler######
 sched: step
+start_epoch: 0
+decay_epochs: 30
+warmup_epochs: 3
+cooldown_epochs: 10
+patience_epochs: 10
+decay_rate: 0.1
 
 
 
