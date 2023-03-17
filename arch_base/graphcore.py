@@ -63,6 +63,13 @@ class GraphCore(ModelBase):
         return embedding_list
 
     def train_model(self, train_loader, task_id, inf=''):
+        self.model.eval()
+        embeddings_list = []
+        for _ in range(self.config['num_epochs']):
+            for batch_id, batch in enumerate(train_loader):
+                img = batch['img'].to(self.device)
+                # Extract features from backbone
+                self.features.clear()
         pass
 
     def prediction(self, valid_loader, task_id):

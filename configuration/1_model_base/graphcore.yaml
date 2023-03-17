@@ -9,6 +9,7 @@ train_batch_size: 32
 valid_batch_size: 1
 train_aug_type: normal
 valid_aug_type: normal
+num_epochs: 1
 #####vig parameters#####
 drop_rate: 0
 drop_path_rate: 0
