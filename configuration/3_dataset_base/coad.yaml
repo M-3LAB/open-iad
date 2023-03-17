@@ -1,3 +1,9 @@
-dataset: coad
-root_path: '/disk3/xgy'
+dataset: coad 
+root_path: '/disk4/xgy'
 data_path: '/coad'
+num_task: 21
+data_size: 256
+data_crop_size: 256
+mask_size: 256
+mask_crop_size: 256
+seed: 66 
