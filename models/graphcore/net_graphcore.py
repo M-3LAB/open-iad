@@ -24,11 +24,10 @@ class NetGraphCore(nn.Module):
                                   bn_tf=self.config.bn_tf,
                                   bn_momentum=self.config.bn_momentum,
                                   bn_eps=self.config.bn_eps)
-        #print('test')
+
         # Loading pretrained model  
         if self.config.checkpoint_path is not None:
             print('Loading:', self.config.checkpoint_path)
-            #state_dict = torch.load(self.config.checkpoint_path)
             state_dict = torch.load(self.config.checkpoint_path)
             self.model.load_state_dict(state_dict, strict=False)
             print('Pretrain weights loaded')
