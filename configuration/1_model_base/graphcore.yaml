@@ -22,7 +22,7 @@ checkpoint_path: './checkpoints/graphcore/pretrain/vig_ti_74.5.pth'
 #####optimizer######
 opt: sgd
 opt_eps: None
-opt_betas: None
+#opt_betas: None
 momentum: 0.9
 weight_decay: 0.0001
 clip_grad: None
@@ -42,6 +42,7 @@ warmup_epochs: 3
 cooldown_epochs: 10
 patience_epochs: 10
 decay_rate: 0.1
+epochs: 200
 
 
 

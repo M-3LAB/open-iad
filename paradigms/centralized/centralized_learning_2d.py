@@ -320,7 +320,7 @@ class CentralizedAD2D():
             self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs) 
         if self.para_dict['model'] == 'graphcore':
             self.net = NetGraphCore(args)
-            self.optimizer = create_optimizer(self.net.model, args)
+            self.optimizer = create_optimizer(args, self.net.model)
             self.scheduler = create_scheduler(args, self.optimizer)
 
 
