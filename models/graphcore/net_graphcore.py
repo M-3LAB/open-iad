@@ -8,6 +8,19 @@ from torchprofile import profile_macs
 
 __all__ = ['NetGraphCore']
 
+def graphcore_ck_name(model_name, ck_path):
+    model_name_splits = ck_name_parsing(model_name)
+    print(model_name_splits)
+    if model_name_splits[0] == 'pvig':
+        ck_name = ck_path+model_name_splits[0]+ '_' + model_name_splits[1] + '.pth.tar'
+    elif model_name_splits[0] == 'vig':
+        ck_name = ck_path+model_name_splits[0]+ '_' + model_name_splits[1] + '.pth'
+    else:
+        raise FileNotFoundError
+
+    return ck_name
+    
+
 class NetGraphCore(nn.Module):
     def __init__(self, config):
         super().__init__()
@@ -27,8 +40,9 @@ class NetGraphCore(nn.Module):
 
         # Loading pretrained model  
         if self.config.checkpoint_path is not None:
-            print('Loading:', self.config.checkpoint_path)
-            state_dict = torch.load(self.config.checkpoint_path)
+            ck_name = graphcore_ck_name(self.config.net, self.config.checkpoint_path)
+            print('Loading:', ck_name)
+            state_dict = torch.load(ck_name)
             self.model.load_state_dict(state_dict, strict=False)
             print('Pretrain weights loaded')
         
