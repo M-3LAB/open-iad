@@ -75,4 +75,6 @@ class GraphCore(ModelBase):
     def prediction(self, valid_loader, task_id):
         self.model.eval()
         self.clear_all_list()
+        if valid_loader.batch_size != 1:
+            assert 'GraphCore Evaluation, Batch Size should be equal to 1'
         pass
