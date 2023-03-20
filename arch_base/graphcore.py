@@ -73,4 +73,6 @@ class GraphCore(ModelBase):
         pass
 
     def prediction(self, valid_loader, task_id):
+        self.model.eval()
+        self.clear_all_list()
         pass
