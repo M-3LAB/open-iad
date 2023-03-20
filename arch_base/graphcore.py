@@ -77,4 +77,12 @@ class GraphCore(ModelBase):
         self.clear_all_list()
         if valid_loader.batch_size != 1:
             assert 'GraphCore Evaluation, Batch Size should be equal to 1'
+        
+        with torch.no_grad():
+            for batch_id, batch in enumerate(valid_loader):
+                img = batch['img'].to(self.device)
+                mask = batch['mask'].to(self.device)
+                label = batch['label'].to(self.device)
+                # Extract features from backbone
+                self.features.clear(0)
         pass
