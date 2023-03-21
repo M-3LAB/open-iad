@@ -35,7 +35,12 @@ class GraphCore(ModelBase):
         self.scheduler = scheduler
     
     def get_layer_features(self):
-        pass
+
+        def hook_t(module, input, output):
+            self.features.append(output)
+
+        self.model.backbone[3].register_forward_hook(hook_t)
+        self.model.backbone[4].register_forward_hook(hook_t)
     
     @staticmethod
     def embedding_concate(x, y):
