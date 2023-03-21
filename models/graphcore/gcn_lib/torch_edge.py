@@ -3,6 +3,9 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
+__all__ = ['pairwise_distance', 'part_pairwise_distance', 'xy_pairwise_distance', 'dense_knn_matrix', 
+           'xy_dense_knn_matrix', 'DenseDilated', 'DenseDilatedKnnGraph']
+
 
 def pairwise_distance(x):
     """
