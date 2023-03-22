@@ -75,6 +75,7 @@ class GraphCore(ModelBase):
                 img = batch['img'].to(self.device)
                 # Extract features from backbone
                 self.features.clear()
+                _ = self.model(img)
         pass
 
     def prediction(self, valid_loader, task_id):
@@ -89,5 +90,5 @@ class GraphCore(ModelBase):
                 mask = batch['mask'].to(self.device)
                 label = batch['label'].to(self.device)
                 # Extract features from backbone
-                self.features.clear(0)
+                self.features.clear()
         pass
