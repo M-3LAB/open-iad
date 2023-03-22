@@ -76,7 +76,6 @@ class GraphCore(ModelBase):
                 # Extract features from backbone
                 self.features.clear()
                 _ = self.model(img)
-        pass
 
     def prediction(self, valid_loader, task_id):
         self.model.eval()
@@ -91,4 +90,4 @@ class GraphCore(ModelBase):
                 label = batch['label'].to(self.device)
                 # Extract features from backbone
                 self.features.clear()
-        pass
+                
