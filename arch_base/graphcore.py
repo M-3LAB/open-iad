@@ -16,7 +16,7 @@ __all__ = ['GraphCore']
 class GraphCore(ModelBase):
 
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(GraphCore, self).__init__(config, device)
+        super(GraphCore, self).__init__(config, device, file_path, net, optimizer, scheduler)
 
         self.config = config
         self.device = device
