@@ -77,6 +77,19 @@ class GraphCore(ModelBase):
                 self.features.clear()
                 _ = self.model(img)
 
+                embeddings = []
+
+                for feat in self.features:
+                    if self.config['local_smoothing']:
+                        pooling = torch.nn.AvgPool2d(3, 1, 1)
+                        embeddings.append(pooling(feat))
+                    else:
+                        embeddings.append(feat)
+                print(len(embeddings)) 
+                embedding = GraphCore.embedding_concate(embeddings[0], embeddings[1])
+                embedding_test = GraphCore.reshape_embedding(embedding.detach().numpy())
+                embedding_test = np.array(embedding_test)
+
     def prediction(self, valid_loader, task_id):
         self.model.eval()
         self.clear_all_list()
