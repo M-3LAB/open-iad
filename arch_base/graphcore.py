@@ -115,4 +115,13 @@ class GraphCore(ModelBase):
                         embeddings.append(pooling(feat))
                     else:
                         embeddings.append(feat)
+                    
+                embedding = GraphCore.embedding_concate(embeddings[0], embeddings[1])
+                embedding_test = GraphCore.reshape_embedding(embedding.detach().numpy())
+                embedding_test = np.array(embedding_test)
+
+                 # Nearest Neighbour Search
+                score_patches, _ = self.index.search(embedding_test, k=int(self.config['n_neighbours']))
+
+                
                 
