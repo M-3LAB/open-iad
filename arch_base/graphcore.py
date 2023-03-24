@@ -105,4 +105,14 @@ class GraphCore(ModelBase):
                 label = batch['label'].to(self.device)
                 # Extract features from backbone
                 self.features.clear()
+                _ = self.model(img)
+
+                embeddings = []
+                
+                for feat in self.features:
+                    if self.config['local_smoothing']:
+                        pooling = torch.nn.AvgPool2d(3, 1, 1)
+                        embeddings.append(pooling(feat))
+                    else:
+                        embeddings.append(feat)
                 
