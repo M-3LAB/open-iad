@@ -22,8 +22,10 @@ class GraphCore(ModelBase):
         self.device = device
         self.file_path = file_path
         self.net = net
+
         self.model = self.net.model
         self.model.to(self.device)
+        self.get_layer_features()
 
         self.features = []
         self.random_projector = SparseRandomProjection(n_components='auto', eps=0.9)
@@ -39,8 +41,8 @@ class GraphCore(ModelBase):
         def hook_t(module, input, output):
             self.features.append(output)
 
-        self.model.backbone[3].register_forward_hook(hook_t)
-        self.model.backbone[4].register_forward_hook(hook_t)
+        self.model.backbone[9].register_forward_hook(hook_t)
+        self.model.backbone[10].register_forward_hook(hook_t)
     
     @staticmethod
     def embedding_concate(x, y):
@@ -85,7 +87,7 @@ class GraphCore(ModelBase):
                         embeddings.append(pooling(feat))
                     else:
                         embeddings.append(feat)
-                print(len(embeddings)) 
+                #print(len(embeddings)) 
                 embedding = GraphCore.embedding_concate(embeddings[0], embeddings[1])
                 embedding_test = GraphCore.reshape_embedding(embedding.detach().numpy())
                 embedding_test = np.array(embedding_test)
