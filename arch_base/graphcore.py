@@ -120,8 +120,31 @@ class GraphCore(ModelBase):
                 embedding_test = GraphCore.reshape_embedding(embedding.detach().numpy())
                 embedding_test = np.array(embedding_test)
 
-                 # Nearest Neighbour Search
+                # Nearest Neighbour Search
                 score_patches, _ = self.index.search(embedding_test, k=int(self.config['n_neighbours']))
+
+                # Reweighting i.e., equation(7) in paper
+                max_min_distance = score_patches[:, 0]
+                ind = np.argmax(max_min_distance)
+                N_b = score_patches[ind]
+                w = (1 - (np.max(np.exp(N_b))/np.sum(np.exp(N_b))))
+                img_score = w * max(max_min_distance)
+
+                # Because the feature map size from the layer 2 of wide-resnet 18 is 28
+                #anomaly_map = max_min_distance.reshape((28, 28))
+                anomaly_map_size = math.sqrt(max_min_distance.shape[0])
+                anomaly_map = max_min_distance.reshape(int(anomaly_map_size), int(anomaly_map_size))
+                anomaly_map_resized = cv2.resize(anomaly_map, (self.config['data_crop_size'], self.config['data_crop_size']))
+                anomaly_map_cv = gaussian_filter(anomaly_map_resized, sigma=4)
+
+                mask[mask >= 0.5] = 1
+                mask[mask < 0.5] = 0
+                mask_np = mask.cpu().numpy()[0, 0].astype(int)
+                self.pixel_gt_list.append(mask_np)
+                self.pixel_pred_list.append(anomaly_map_cv)
+                self.img_gt_list.append(label.cpu().numpy()[0])
+                self.img_pred_list.append(img_score)
+                self.img_path_list.append(batch['img_src'])
 
                 
                 
