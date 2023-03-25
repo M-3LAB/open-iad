@@ -38,7 +38,7 @@ def parse_user_arguments():
         '--dataset_base_dir',
         required=True,
         help='Path to the directory that contains the dataset images of the'
-             ' MVTec LOCO dataset.')
+             ' MVTec 3D-AD dataset.')
 
     parser.add_argument(
         '--output_dir',
@@ -47,7 +47,7 @@ def parse_user_arguments():
 
     parser.add_argument(
         '--curve_max_distance',
-        default=0.001,
+        default=0.01,
         type=float,
         help='Maximum distance between two points on the overall FPR-sPRO'
              ' curve. Will be used for selecting anomaly thresholds.'

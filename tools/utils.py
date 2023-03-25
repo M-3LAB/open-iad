@@ -16,7 +16,7 @@ import pickle
 __all__ = ['seed_everything', 'parse_device_list', 'allocate_gpus', 
            'merge_config', 'convert_list_float_type', 'draem_weights_init', 'load_model', 
            'override_config', 'extract_config', 'create_folders', 'save_feat_pickle', 'load_feat_pickle',
-           'record_path', 'save_arg', 'save_log', 'save_script', 'save_image', 'save_model']
+           'record_path', 'save_arg', 'save_log', 'save_script', 'save_image', 'save_model', 'ck_name_parsing']
 
 def set_grad(model, flag=True):
     for p in model.parameters():
@@ -161,4 +161,12 @@ def load_feat_pickle(file_path):
     with open(file_path, 'rb') as f:
         feat = pickle.load(f)
         return feat
+
+def ck_name_parsing(name):
+    # name: string
+    name_splits = name.split("_") 
+    return name_splits
+
+
+
 

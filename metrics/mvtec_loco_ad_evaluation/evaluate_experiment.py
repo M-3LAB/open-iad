@@ -72,7 +72,7 @@ def parse_arguments():
 
     parser.add_argument(
         '--curve_max_distance',
-        default=0.001,
+        default=0.01,
         type=float,
         help='Maximum distance between two points on the overall FPR-sPRO'
              ' curve. Will be used for selecting anomaly thresholds.'
@@ -127,6 +127,14 @@ def main():
         metrics=metrics,
         anomaly_maps_test_dir=anomaly_maps_test_dir)
 
+    # Store the per-threshold metrics.
+    results_per_threshold = {
+        'thresholds': metrics.anomaly_thresholds.tolist(),
+        'mean_spros': metrics.get_mean_spros().tolist(),
+        'fp_rates': metrics.get_fp_rates().tolist(),
+    }
+    localization_results["per_threshold"] = results_per_threshold
+
     # Fetch the image-level anomaly detection results.
     classification_results = get_image_level_detection_metrics(
         gt_maps=gt_maps,
@@ -142,7 +150,8 @@ def main():
     if args.output_dir is not None:
         print(f'Writing results to {args.output_dir}')
         os.makedirs(args.output_dir, exist_ok=True)
-        results_path = os.path.join(args.output_dir, 'metrics.json')
+        # results_path = os.path.join(args.output_dir, 'metrics.json')
+        results_path = os.path.join(args.output_dir, 'metrics_'+args.object_name+'.json')
         with open(results_path, 'w') as results_file:
             json.dump(results, results_file, indent=4, sort_keys=True)
 
@@ -365,8 +374,7 @@ def get_auc_spros_per_subdir(metrics: ThresholdMetrics,
 
         subdir_metrics = metrics.reduce_to_images(subdir_anomaly_maps)
 
-        aucs_per_subdir[subdir_name] = get_auc_spros_for_metrics(
-            subdir_metrics)
+        aucs_per_subdir[subdir_name] = get_auc_spros_for_metrics(subdir_metrics)
     return aucs_per_subdir
 
 

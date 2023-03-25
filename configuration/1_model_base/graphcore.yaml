@@ -1,0 +1,50 @@
+model: graphcore
+net: vig_ti_224_gelu
+data_size: 224
+data_crop_size: 224
+mask_size: 224
+mask_crop_size:: 224
+pretrained: True
+train_batch_size: 32
+valid_batch_size: 1
+train_aug_type: normal
+valid_aug_type: normal
+num_epochs: 1
+#####vig parameters#####
+drop_rate: 0
+drop_path_rate: 0
+drop_connect_rate: 0 # legacy issue, deprecated, use drop_path
+drop_block_rate: 0
+gp: None # global pooling
+bn_tf: False # bn ad, use tensorflow batchnorm defaults for models that support it 
+bn_momentum: None 
+bn_eps: None
+checkpoint_path: './checkpoints/graphcore/pretrain/' 
+local_smoothing: True 
+#####optimizer######
+opt: sgd
+opt_eps: None
+#opt_betas: None
+momentum: 0.9
+weight_decay: 0.0001
+clip_grad: None
+lr: 0.01
+lr_noise: None
+lr_noise_pct: 0.67
+lr_noise_std: 1.0
+lr_cycle_mul: 1.0
+lr_cycle_limit: 1
+warmup_lr: 0.0001
+min_lr: 1e-5
+#######scheduler######
+sched: step
+start_epoch: 0
+decay_epochs: 30
+warmup_epochs: 3
+cooldown_epochs: 10
+patience_epochs: 10
+decay_rate: 0.1
+epochs: 200
+
+
+

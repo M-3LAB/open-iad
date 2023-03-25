@@ -16,6 +16,7 @@ class FewShot(Dataset):
         return len(self.data)
 
 def extract_fewshot_data(train_dataset, fewshot_exm=1):
+    fewshot_exm_src = fewshot_exm
     # construct train_fewshot_dataset
     train_fewshot_dataset = copy.deepcopy(train_dataset)
     for i, num in enumerate(train_dataset.sample_num_in_task):
@@ -24,6 +25,7 @@ def extract_fewshot_data(train_dataset, fewshot_exm=1):
         chosen_samples = random.sample(train_fewshot_dataset.sample_indices_in_task[i], fewshot_exm)
         train_fewshot_dataset.sample_indices_in_task[i] = chosen_samples
         train_fewshot_dataset.sample_num_in_task[i] = fewshot_exm
+        fewshot_exm = fewshot_exm_src
 
     return train_fewshot_dataset
 

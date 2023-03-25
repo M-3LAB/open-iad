@@ -24,11 +24,14 @@ from models.igd.net_igd import NetIGD
 from models.reverse.net_reverse import NetReverse
 from models.fastflow.net import NetFastFlow
 from models.cfa.net_cfa import NetCFA
+from models.graphcore.net_graphcore import NetGraphCore
  
 from optimizer.optimizer import get_optimizer
 from models.favae.net_favae import NetFAVAE
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
+from timm.optim import create_optimizer
+from timm.scheduler import create_scheduler
 
 from configuration.device import assign_service
 
@@ -44,14 +47,14 @@ class CentralizedAD2D():
 
     def load_config(self):
         with open('./configuration/3_dataset_base/{}.yaml'.format(self.args.dataset), 'r') as f:
-            config_model = yaml.load(f, Loader=yaml.SafeLoader)
+            config_dataset = yaml.load(f, Loader=yaml.SafeLoader)
         with open('./configuration/2_train_base/centralized_learning.yaml', 'r') as f:
             config_train = yaml.load(f, Loader=yaml.SafeLoader)
         with open('./configuration/1_model_base/{}.yaml'.format(self.args.model), 'r') as f:
-            config_dataset = yaml.load(f, Loader=yaml.SafeLoader)
+            config_model = yaml.load(f, Loader=yaml.SafeLoader)
 
-        config = override_config(config_model, config_train)
-        config = override_config(config, config_dataset)
+        config = override_config(config_dataset, config_train)
+        config = override_config(config, config_model)
         self.para_dict = merge_config(config, self.args)
         self.args = extract_config(self.args)
 
@@ -315,6 +318,11 @@ class CentralizedAD2D():
         if self.para_dict['model'] == 'cutpaste':
             self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs) 
+        if self.para_dict['model'] == 'graphcore':
+            self.net = NetGraphCore(args)
+            self.optimizer = create_optimizer(args, self.net.model)
+            self.scheduler = create_scheduler(args, self.optimizer)
+
 
         model_name = {'_patchcore': ('arch_base._patchcore', '_patchcore', 'PatchCore'),
                       'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
@@ -331,7 +339,8 @@ class CentralizedAD2D():
                       'reverse': ('arch_base.reverse', 'reverse', 'REVERSE'),
                       'spade': ('arch_base.spade', 'spade', 'SPADE'),
                       'stpm': ('arch_base.stpm', 'stpm', 'STPM'),
-                      'cutpaste': ('arch_base.cutpaste', 'cutpaste', 'CutPaste')
+                      'cutpaste': ('arch_base.cutpaste', 'cutpaste', 'CutPaste'),
+                      'graphcore': ('arch_base.graphcore', 'graphcore', 'GraphCore') 
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])

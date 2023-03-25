@@ -7,23 +7,24 @@ from torch.utils.data import Dataset
 from torchvision import transforms as T
 
 
-__all__ = ['iMAD_hardware_parts', 'imad_hardware_parts_classes']
+__all__ = ['MIADLoco', 'miad_loco_classes']
 
-def imad_hardware_parts_classes():
-    return ['A1','A2','A3','A4','A5','A6','A7','A8','B1','B2','B3','B4','B5','B6','B7','C1','C2','C3','C4','D1','D2']
+def miad_loco_classes():
+    return ["cantenary_dropper", "nut_and_bolt", "witness_mask"]
 
 
-class iMAD_hardware_parts(Dataset):
-    def __init__(self, data_path, learning_mode='centralized', phase='train', 
-                 data_transform=None, num_task=21):
+class MIADLoco(Dataset):
+    def __init__(self, data_path, ignore_anomaly_type='no', learning_mode='centralized', phase='train', 
+                 data_transform=None, num_task=5):
 
         self.data_path = data_path
         self.learning_mode = learning_mode
         self.phase = phase
-        self.class_name = imad_hardware_parts_classes()
         self.img_transform = data_transform[0]
         self.mask_transform = data_transform[1] 
-        assert set(self.class_name) <= set(imad_hardware_parts_classes())
+        self.class_name = miad_loco_classes()
+        self.ignor_anomaly_type = ignore_anomaly_type #structural_anomalies logical_anomalies no
+        assert set(self.class_name) <= set(miad_loco_classes())
         
         self.num_task = num_task 
         self.class_in_task = []
@@ -33,7 +34,7 @@ class iMAD_hardware_parts(Dataset):
         self.masks_list = []
         self.task_ids_list = []
         
-        # mark each sample task id
+        # continual
         self.sample_num_in_task = []
         self.sample_indices_in_task = []
 
@@ -41,7 +42,6 @@ class iMAD_hardware_parts(Dataset):
         self.load_dataset()
         self.allocate_task_data()
 
-            
     def __getitem__(self, idx):
         img_src, label, mask, task_id = self.imgs_list[idx], self.labels_list[idx], self.masks_list[idx], self.task_ids_list[idx]
 
@@ -58,7 +58,7 @@ class iMAD_hardware_parts(Dataset):
             mask = self.mask_transform(mask)
 
         return {
-            'img': img, 'label': label, 'mask': mask, 'task_id': task_id, 'img_src': img_src,
+            'img': img, 'label':label, 'mask':mask, 'task_id':task_id, 'img_src': img_src,
         }
 
     def __len__(self):
@@ -72,7 +72,7 @@ class iMAD_hardware_parts(Dataset):
         # ground truth directory: only bad case
 
         # get classes in each task group
-        # If num_task is 15, each task constain each class
+        # If num_task is 5, each task constain each class
         self.class_in_task = self.split_chunks(self.class_name, self.num_task)
         # get data
         for id, class_in_task in enumerate(self.class_in_task):
@@ -83,14 +83,15 @@ class iMAD_hardware_parts(Dataset):
 
                 img_types = sorted(os.listdir(img_dir))
                 for img_type in img_types:
-
+                    if img_type==self.ignor_anomaly_type:
+                        continue
                     # load images
                     img_type_dir = os.path.join(img_dir, img_type)
                     if not os.path.isdir(img_type_dir):
                         continue
                     img_path_list = sorted([os.path.join(img_type_dir, f)
                                             for f in os.listdir(img_type_dir)
-                                            if f.endswith('.jpg')])
+                                            if f.endswith('.png')])
                     x.extend(img_path_list)
 
                     if img_type == 'good':
@@ -100,10 +101,10 @@ class iMAD_hardware_parts(Dataset):
                         y.extend([1] * len(img_path_list))
                         gt_type_dir = os.path.join(gt_dir, img_type)
                         img_name_list = [os.path.splitext(os.path.basename(f))[0] for f in img_path_list]
-                        gt_path_list = [os.path.join(gt_type_dir, img_fname + '_mask.jpg')
+                        gt_path_list = [os.path.join(gt_type_dir, img_fname , '000.png')
                                         for img_fname in img_name_list]
                         mask.extend(gt_path_list)
-            
+            # continual
             task_id = [id for i in range(len(x))]
             self.sample_num_in_task.append(len(x))
 

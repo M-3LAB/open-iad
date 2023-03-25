@@ -65,7 +65,8 @@ def get_spros_per_defect_for_thresholds(gt_map: Optional[GroundTruthMap],
     """
     if gt_map is None:
         return []
-
+    # print(anomaly_map.np_array.shape)
+    # print(gt_map.size)
     assert anomaly_map.np_array.shape == gt_map.size
     spros_per_defect = []
     for channel in gt_map.channels:

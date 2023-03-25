@@ -17,8 +17,9 @@ imgaug==0.4.0
 kornia==0.6.5
 torchmetrics==0.9.1
 faiss-gpu==1.7.2
-timm==0.5.4
+timm==0.6.11
 efficientnet_pytorch==0.7.1
 FrEIA==0.2
 ignite==0.4.10
 einops==0.4.1
+torchprofile==0.0.4
