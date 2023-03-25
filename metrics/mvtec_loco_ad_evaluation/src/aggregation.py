@@ -50,6 +50,9 @@ def binary_refinement(init_queries: Sequence,
         A list with the final refined values.
     """
     # Input validation.
+    # print(len(init_queries))# 50
+    # print(len(init_values))# 50
+    # print(len(set(init_queries)))# 3
     assert len(init_queries) == len(init_values)
     assert len(set(init_queries)) == len(init_queries)
     pairwise_less = [init_queries[i] < init_queries[i + 1]
@@ -62,20 +65,11 @@ def binary_refinement(init_queries: Sequence,
         raise AssertionError
 
     # Get all adjacent queries, whose corresponding values are further apart
-    # than max_distance. As a secondary condition, the maximum tolerated area
-    # between two points is derived from max_distance. The area is defined by
-    # the triangle with side lengths delta_x and delta_y. Points with an area
-    # smaller than the tolerated area are not considered as candidates for
-    # further refinement of the curve.
+    # than max_distance.
     candidates = []
-    max_area = 0.25 * max_distance**2
     for i in range(len(init_queries) - 1):
         distance = np.linalg.norm(init_values[i] - init_values[i + 1])
-
-        # the area of the triangle defined by delta_x and delta_y
-        area = 0.5 * np.prod(init_values[i] - init_values[i + 1])
-
-        if distance <= max_distance or area <= max_area:
+        if distance <= max_distance:
             continue
         query_left, query_right = init_queries[i], init_queries[i + 1]
         candidates.append((distance, (query_left, query_right)))
