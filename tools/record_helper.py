@@ -44,7 +44,7 @@ class RecordHelper():
         if paradim == 'semi':
             save_path = '{}/result_{}_num.txt'.format(save_dir, self.config['semi_anomaly_num'])
         if paradim == 'fewshot':
-            save_path = '{}/result_{}_{}_shot.txt'.format(save_dir, self.config['fewshot_aug_type'], self.config['fewshot_exm'])
+            save_path = '{}/result_{}_{}_shot.txt'.format(save_dir, ''.join(self.config['fewshot_aug_type']), self.config['fewshot_exm'])
         if paradim == 'continual':
             save_path = '{}/result_{}_task.txt'.format(save_dir, self.config['valid_task_id_tmp'])
         if paradim == 'noisy':
@@ -63,7 +63,7 @@ class RecordHelper():
         if paradim == 'semi':
             save_dir = '{}/vis_{}_num'.format(save_dir, self.config['semi_anomaly_num'])
         if paradim == 'fewshot':
-            save_dir = '{}/vis_{}_{}_shot'.format(save_dir, self.config['fewshot_aug_type'], self.config['fewshot_exm'])
+            save_dir = '{}/vis_{}_{}_shot'.format(save_dir, ''.join(self.config['fewshot_aug_type']), self.config['fewshot_exm'])
         if paradim == 'continual':
             save_dir = '{}/vis_{}_task'.format(save_dir, self.config['valid_task_id_tmp'])
         if paradim == 'noisy':

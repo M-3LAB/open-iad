@@ -13,9 +13,11 @@ def parse_arguments_main():
     parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 'btad', 'mvtec2df3d', 'visa', 'dagm', 'imad_hardware_parts'])
 
     parser.add_argument('--model', '-m', type=str, default='patchcore', choices=['_patchcore', 'patchcore', 'csflow', 'dne', 'draem', 'igd', 'cutpaste', 'devnet', 'dra', 
-                                                                              'favae', 'padim', 'reverse', 'spade', 'fastflow', 'softpatch', 'cfa', 'stpm'])
+                                                                              'favae', 'padim', 'reverse', 'spade', 'fastflow', 'softpatch', 'cfa', 'stpm', 'graphcore'])
     parser.add_argument('--net', '-n', type=str, default='resnet18', choices=['wide_resnet50', 'resnet18', 'net_csflow', 'vit_b_16', 'net_draem', 'net_dra',
-                                                                              'net_igd', 'net_reverse', 'net_favae', 'net_fastflow', 'net_cfa', 'net_devnet'])
+                                                                              'net_igd', 'net_reverse', 'net_favae', 'net_fastflow', 'net_cfa', 'net_devnet',
+                                                                              'vig_ti_224_gelu', 'vig_s_224_gelu', 'vig_b_224_gelu', 'pvig_ti_224_gelu',
+                                                                              'pvig_s_224_gelu', 'pvig_m_224_gelu', 'pvig_b_224_gelu'])
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
@@ -34,13 +36,19 @@ def parse_arguments_main():
     # continual learning
     parser.add_argument('--continual', '-c', action='store_true', default=False)
 
+    # transfer AD
+    parser.add_argument('--transfer', '-tr', action='store_true', default=False)
+
+    # testing-time-training AD
+    parser.add_argument('--testing-time-training', '-ttt', action='store_true', default=False)
+
     # fewshot learning
     parser.add_argument('--fewshot', '-f', action='store_true', default=False)
     parser.add_argument('--fewshot-exm', '-fe', type=int, default=1)
     parser.add_argument('--fewshot-data-aug', '-fda', action='store_true', default=False)
     parser.add_argument('--fewshot-feat-aug', '-ffa', action='store_true', default=False)
     parser.add_argument('--fewshot-num-dg', '-fnd', type=int, default=1)
-    parser.add_argument('--fewshot-aug-type', '-fat', choices=['normal', 'rotation', 'scale', 'translate', 'flip', 'color_jitter', 'perspective'], default='normal')
+    parser.add_argument('--fewshot-aug-type', '-fat', choices=['normal', 'rotation', 'scale', 'translate', 'flip', 'color_jitter', 'perspective'], default=['normal'], nargs='+')
 
     # noisy label
     parser.add_argument('--noisy', '-ny', action='store_true', default=False)
