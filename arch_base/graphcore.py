@@ -89,8 +89,8 @@ class GraphCore(ModelBase):
                         embeddings.append(feat)
                 #print(len(embeddings)) 
                 embedding = GraphCore.embedding_concate(embeddings[0], embeddings[1])
-                embedding_test = GraphCore.reshape_embedding(embedding.detach().numpy())
-                embedding_test = np.array(embedding_test)
+                embedding = GraphCore.reshape_embedding(embedding.detach().numpy())
+                embeddings_list.extend(embedding)
         
          # Sparse random projection from high-dimensional space into low-dimensional euclidean space
         total_embeddings = np.array(embeddings_list).astype(np.float32)
@@ -164,6 +164,7 @@ class GraphCore(ModelBase):
                 self.pixel_gt_list.append(mask_np)
                 self.pixel_pred_list.append(anomaly_map_cv)
                 self.img_gt_list.append(label.cpu().numpy()[0])
+                print(img_score)
                 self.img_pred_list.append(img_score)
                 self.img_path_list.append(batch['img_src'])
 
