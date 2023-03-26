@@ -53,7 +53,7 @@ def parse_user_arguments():
 def extract_table_rows(metrics_folder, metric_type, integration_limit, mode):
     """
     Extract all rows to create a table that displays a given metric for each
-    evaluated experiment.
+    evaluated method.
 
     Args:
         metrics_folder:    Base folder that contains evaluation results.
@@ -65,33 +65,19 @@ def extract_table_rows(metrics_folder, metric_type, integration_limit, mode):
                            anomalies, or the mean of both values.
 
     Returns:
-        List of table rows. Each row contains the experiment name and the
-          extracted metrics for each evaluated object as well as the mean
-          performance.
+        List of table rows. Each row contains the method name and the extracted
+            metrics for each evaluated object as well as the mean performance.
     """
     assert metric_type in ['localization', 'classification']
     assert mode in ['logical_anomalies', 'structural_anomalies', 'mean']
 
-    # check whether metrics_folder is already an experiment, e.g. the
-    # output_dir specified in evaluate_experiment.py
-    is_experiment_folder = False
-
-    for obj in OBJECT_NAMES:
-        if os.path.exists(join(metrics_folder, obj)):
-            is_experiment_folder = True
-            break
-
-    # Iterate each evaluated experiment.
-    if not is_experiment_folder:
-        exp_ids = os.listdir(metrics_folder)
-    else:
-        exp_ids = [os.path.split(metrics_folder)[-1]]
-
+    # Iterate each evaluated method.
+    method_ids = os.listdir(metrics_folder)
     rows = []
-    for exp_id in exp_ids:
+    for method_id in method_ids:
 
-        # Each row starts with the name of the experiment.
-        row = [exp_id]
+        # Each row starts with the name of the method.
+        row = [method_id]
         metric_values = []
 
         # Fetch metrics for each dataset object.
@@ -99,12 +85,8 @@ def extract_table_rows(metrics_folder, metric_type, integration_limit, mode):
         for obj in OBJECT_NAMES:
 
             # Open the metrics file.
-            if not is_experiment_folder:
-                metrics_file = \
-                    join(metrics_folder, exp_id, obj, 'metrics.json')
-            else:
-                metrics_file = \
-                    join(metrics_folder, obj, 'metrics.json')
+            metrics_file = \
+                join(metrics_folder, method_id, obj, 'metrics.json')
 
             # Skip this object if no numbers exist for it.
             if not os.path.exists(metrics_file):
@@ -118,13 +100,15 @@ def extract_table_rows(metrics_folder, metric_type, integration_limit, mode):
 
             # Fetch the desired metric and store it in the table row.
             if metric_type == 'localization':
-                metric = metrics[metric_type]['auc_spro'][mode][integration_limit]
+                metric = \
+                    metrics[metric_type]['auc_spro'][mode][integration_limit]
             else:
                 metric = metrics[metric_type]['auc_roc'][mode]
             metric_values.append(metric)
-            row.append(np.round(metric, decimals=3))
 
         # Compute mean performance if no object had to be skipped.
+        row.extend(np.round(metric_values, decimals=3))
+
         if not skipped:
             mean_performance = np.mean(metric_values)
             row.append(np.round(mean_performance, decimals=3))
@@ -132,10 +116,6 @@ def extract_table_rows(metrics_folder, metric_type, integration_limit, mode):
             row.append('-')
 
         rows.append(row)
-
-        # only one experiment
-        if is_experiment_folder:
-            break
 
     return rows
 
@@ -150,11 +130,12 @@ def main():
     for mode in ['logical_anomalies', 'structural_anomalies', 'mean']:
 
         # Create the table rows. One row for each experiment.
-        rows_pro_structural = extract_table_rows(
-            metrics_folder=args.metrics_folder,
-            metric_type=args.metric_type,
-            integration_limit=args.integration_limit,
-            mode=mode)
+        rows_pro_structural = \
+            extract_table_rows(
+                metrics_folder=args.metrics_folder,
+                metric_type=args.metric_type,
+                integration_limit=args.integration_limit,
+                mode=mode)
 
         # Print localization result table.
 
@@ -166,7 +147,7 @@ def main():
         print(info_string)
 
         print(tabulate(rows_pro_structural,
-                       headers=['Experiment'] + OBJECT_NAMES + ['Mean'],
+                       headers=['Method'] + OBJECT_NAMES + ['Mean'],
                        tablefmt='fancy_grid'))
 
 
