@@ -102,7 +102,7 @@ class PatchCore(ModelBase):
             self.embedding_coreset = np.concatenate([self.embedding_coreset, total_embeddings[selected_idx]], axis=0)
 
         print('current task embedding size: ', total_embeddings.shape)
-        print('total embedding size: ', self.embedding_coreset.shape)
+        print('coreset embedding size: ', self.embedding_coreset.shape)
 
         self.index = faiss.IndexFlatL2(self.embedding_coreset.shape[1])
         self.index.add(self.embedding_coreset)

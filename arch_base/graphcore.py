@@ -91,6 +91,27 @@ class GraphCore(ModelBase):
                 embedding = GraphCore.embedding_concate(embeddings[0], embeddings[1])
                 embedding_test = GraphCore.reshape_embedding(embedding.detach().numpy())
                 embedding_test = np.array(embedding_test)
+        
+         # Sparse random projection from high-dimensional space into low-dimensional euclidean space
+        total_embeddings = np.array(embeddings_list).astype(np.float32)
+        self.random_projector.fit(total_embeddings)
+        # Coreset subsampling
+        # y refers to the label of total embeddings. X is good in training, so y=0
+        selector = KCenterGreedy(X=total_embeddings, y=0)
+        selected_idx = selector.select_batch(model=self.random_projector, 
+                                             already_selected=[],
+                                             N=int(total_embeddings.shape[0] * self.config['sampler_percentage']))
+        if self.embedding_coreset.size == 0:
+            self.embedding_coreset = total_embeddings[selected_idx]
+        else:
+            self.embedding_coreset = np.concatenate([self.embedding_coreset, total_embeddings[selected_idx]], axis=0)
+
+        print('current task embedding size: ', total_embeddings.shape)
+        print('coreset embedding size: ', self.embedding_coreset.shape)
+
+        self.index = faiss.IndexFlatL2(self.embedding_coreset.shape[1])
+        self.index.add(self.embedding_coreset)
+        faiss.write_index(self.index, os.path.join(self.embedding_path, 'index.faiss'))
 
     def prediction(self, valid_loader, task_id):
         self.model.eval()
