@@ -26,7 +26,7 @@ class CalMetric():
 
         pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_pro = 0, 0, 0, 0, 0
         
-        if(self.config['dataset']!='mvtecloco'):
+        if(self.config['dataset']!='mvtecloco' and self.config['dataset'] != 'miadloco'):
             if(len(self.pixel_pred_list)!=0):
                 pixel_pro, pro_curve = self.cal_pixel_aupro()
                 self.pixel_gt_list = np.array(self.pixel_gt_list).flatten()
@@ -84,7 +84,11 @@ class CalMetric():
             train_type = 'unknown'
 
         path_dir = self.img_path_list[0][0].split('/')
+        print(f'path dir: {path_dir}')
+
         img_shape = img_shape_list[path_dir[-4]]
+        print(f'img shape: {img_shape}')
+
         if train_type == 'continual':
             append_dir = '/'+str(self.config['train_task_id_tmp'])
         elif train_type == 'fewshot':

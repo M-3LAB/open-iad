@@ -1,4 +1,4 @@
-dataset: mvteclogical
+dataset: mvtecloco
 root_path: '/disk4/xgy'
 data_path: '/mvtecloco'
 num_task: 5 
