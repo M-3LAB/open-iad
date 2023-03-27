@@ -84,11 +84,9 @@ class GraphCore(ModelBase):
                     if self.config['local_smoothing']:
                         pooling = torch.nn.AvgPool2d(3, 1, 1)
                         embeddings.append(pooling(feat))
-                        #print(feat)
                     else:
                         embeddings.append(feat)
-                        #print(feat)
-                #print(len(embeddings)) 
+
                 embedding = GraphCore.embedding_concate(embeddings[0], embeddings[1])
                 embedding = GraphCore.reshape_embedding(embedding.detach().numpy())
                 embeddings_list.extend(embedding)
@@ -135,11 +133,9 @@ class GraphCore(ModelBase):
                 for feat in self.features:
                     if self.config['local_smoothing']:
                         pooling = torch.nn.AvgPool2d(3, 1, 1)
-                        #print(feat)
                         embeddings.append(pooling(feat))
                     else:
                         embeddings.append(feat)
-                        #print(feat)
                     
                 embedding = GraphCore.embedding_concate(embeddings[0], embeddings[1])
                 embedding_test = GraphCore.reshape_embedding(embedding.detach().numpy())
@@ -148,21 +144,13 @@ class GraphCore(ModelBase):
                 # Nearest Neighbour Search
                 score_patches, _ = self.index.search(embedding_test, k=int(self.config['n_neighbours']))
 
-                # Reweighting i.e., equation(7) in paper
+                # No Reweighting, Directly Obtain max_min_distance
                 max_min_distance = score_patches[:, 0]
                 print(f'max_min_distance: {max_min_distance}')
                 img_score = max(max_min_distance)
-                #ind = np.argmax(max_min_distance)
-                #print(f'max_min_distance index: {ind}')
-                #N_b = score_patches[ind]
-                #w = (1 - (np.max(np.exp(N_b))/np.sum(np.exp(N_b))))
-                #img_score = w * max(max_min_distance)
 
-                # Because the feature map size from the layer 2 of wide-resnet 18 is 28
-                #anomaly_map = max_min_distance.reshape((28, 28))
                 anomaly_map_size = math.sqrt(max_min_distance.shape[0])
                 anomaly_map = max_min_distance.reshape(int(anomaly_map_size), int(anomaly_map_size))
-                #print(self.config['data_crop_size'])
                 anomaly_map_resized = cv2.resize(anomaly_map, (self.config['data_crop_size'], self.config['data_crop_size']))
                 anomaly_map_cv = gaussian_filter(anomaly_map_resized, sigma=4)
 
