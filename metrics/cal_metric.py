@@ -36,7 +36,7 @@ class CalMetric():
             if(len(self.img_pred_list)!=0):
                 img_auroc = self.cal_img_auroc()
                 img_ap = self.cal_img_ap()
-        else:
+        elif self.config['dataset'] == 'mvtecloco':
             if(len(self.pixel_pred_list)!=0):
                 self.save_anomaly_map_tiff()
                 pixel_pro = 1
@@ -44,6 +44,11 @@ class CalMetric():
                 pixel_auroc, pixel_ap = self.cal_logical_img_auc()
                 img_auroc = self.cal_img_auroc()
                 img_ap = self.cal_img_ap()
+        
+        elif self.config['dataset'] == 'miadloco':
+            pass
+        else:
+            raise NotImplementedError('This type of dataset has not been implemented')
                 
         return pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_pro
 
