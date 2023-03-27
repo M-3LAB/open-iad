@@ -82,6 +82,7 @@ class PatchCore(ModelBase):
                     # Pooling for layer 2 and layer 3 features
                     pooling = torch.nn.AvgPool2d(3, 1, 1)
                     embeddings.append(pooling(feat))
+                    print(feat)
 
                 embedding = PatchCore.embedding_concate(embeddings[0], embeddings[1])
                 embedding = PatchCore.reshape_embedding(embedding.detach().numpy())
@@ -159,6 +160,7 @@ class PatchCore(ModelBase):
                 self.pixel_gt_list.append(mask_np)
                 self.pixel_pred_list.append(anomaly_map_cv)
                 self.img_gt_list.append(label.cpu().numpy()[0])
+                print(img_score)
                 self.img_pred_list.append(img_score)
                 self.img_path_list.append(batch['img_src'])
 

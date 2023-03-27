@@ -41,8 +41,8 @@ class GraphCore(ModelBase):
         def hook_t(module, input, output):
             self.features.append(output)
 
-        self.model.backbone[9].register_forward_hook(hook_t)
-        self.model.backbone[10].register_forward_hook(hook_t)
+        self.model.backbone[3][-1].register_forward_hook(hook_t)
+        self.model.backbone[4][-1].register_forward_hook(hook_t)
     
     @staticmethod
     def embedding_concate(x, y):
@@ -85,8 +85,10 @@ class GraphCore(ModelBase):
                     if self.config['local_smoothing']:
                         pooling = torch.nn.AvgPool2d(3, 1, 1)
                         embeddings.append(pooling(feat))
+                        #print(feat)
                     else:
                         embeddings.append(feat)
+                        #print(feat)
                 #print(len(embeddings)) 
                 embedding = GraphCore.embedding_concate(embeddings[0], embeddings[1])
                 embedding = GraphCore.reshape_embedding(embedding.detach().numpy())
@@ -133,9 +135,11 @@ class GraphCore(ModelBase):
                 for feat in self.features:
                     if self.config['local_smoothing']:
                         pooling = torch.nn.AvgPool2d(3, 1, 1)
+                        #print(feat)
                         embeddings.append(pooling(feat))
                     else:
                         embeddings.append(feat)
+                        #print(feat)
                     
                 embedding = GraphCore.embedding_concate(embeddings[0], embeddings[1])
                 embedding_test = GraphCore.reshape_embedding(embedding.detach().numpy())
@@ -155,6 +159,7 @@ class GraphCore(ModelBase):
                 #anomaly_map = max_min_distance.reshape((28, 28))
                 anomaly_map_size = math.sqrt(max_min_distance.shape[0])
                 anomaly_map = max_min_distance.reshape(int(anomaly_map_size), int(anomaly_map_size))
+                #print(self.config['data_crop_size'])
                 anomaly_map_resized = cv2.resize(anomaly_map, (self.config['data_crop_size'], self.config['data_crop_size']))
                 anomaly_map_cv = gaussian_filter(anomaly_map_resized, sigma=4)
 
