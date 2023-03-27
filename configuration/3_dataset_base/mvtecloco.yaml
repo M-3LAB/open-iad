@@ -7,3 +7,5 @@ data_crop_size: 256
 mask_size: 256
 mask_crop_size: 256
 seed: 66 
+niceness: 19
+curve_max_distance: 0.01

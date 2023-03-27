@@ -41,9 +41,10 @@ class CalMetric():
                 self.save_anomaly_map_tiff()
                 pixel_pro = 1
             if(len(self.img_pred_list)!=0):
-                pixel_auroc, pixel_ap = self.cal_logical_img_auc()
-                img_auroc = self.cal_img_auroc()
-                img_ap = self.cal_img_ap()
+                self.cal_logical_metrics()
+                #pixel_auroc, pixel_ap = self.cal_logical_img_auc()
+                #img_auroc = self.cal_img_auroc()
+                #img_ap = self.cal_img_ap()
         
         elif self.config['dataset'] == 'miadloco':
             pass
@@ -110,28 +111,37 @@ class CalMetric():
             os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+'logical_anomalies')
         if not os.path.exists('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+'good'):
             os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+'good')
+        
+        
+        self.anomaly_map_dir = self.file_path+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]
+        self.json_dir = self.file_path+'logical_json'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]
+
         for i in range(len(self.img_path_list)):
             path_dir = self.img_path_list[i][0].split('/')
             anomaly_map = cv2.resize(self.pixel_pred_list[i],(img_shape[0],img_shape[1]))
-            cv2.imwrite('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+path_dir[-2]+'/'+path_dir[-1].replace('png','tiff'),anomaly_map)
-            
-    def cal_logical_img_auc(self):
-        img_pred_logical_list = []
-        img_gt_logical_list = []
-        img_pred_structural_list = []
-        img_gt_structural_list = []
-        for i in range(len(self.img_pred_list)):
-            path_dir = self.img_path_list[i][0].split('/')
-            if(path_dir[-2]=='good'):
-                img_gt_logical_list.append(0)
-                img_gt_structural_list.append(0)
-                img_pred_logical_list.append(self.img_pred_list[i])
-                img_pred_structural_list.append(self.img_pred_list[i])
-            elif(path_dir[-2]=='logical_anomalies'):
-                img_gt_logical_list.append(1)
-                img_pred_logical_list.append(1)
-            else:
-                img_gt_structural_list.append(1)
-                img_pred_structural_list.append(1)
-                
-        return roc_auc_score(img_gt_logical_list, img_pred_logical_list), roc_auc_score(img_gt_structural_list, img_pred_structural_list)
+            cv2.imwrite(self.file_path+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+path_dir[-2]+'/'+path_dir[-1].replace('png','tiff'),anomaly_map)
+        
+          
+    def cal_logical_metrics(self):
+        pass 
+
+    #def cal_logical_img_auc(self):
+    #    img_pred_logical_list = []
+    #    img_gt_logical_list = []
+    #    img_pred_structural_list = []
+    #    img_gt_structural_list = []
+    #    for i in range(len(self.img_pred_list)):
+    #        path_dir = self.img_path_list[i][0].split('/')
+    #        if(path_dir[-2]=='good'):
+    #            img_gt_logical_list.append(0)
+    #            img_gt_structural_list.append(0)
+    #            img_pred_logical_list.append(self.img_pred_list[i])
+    #            img_pred_structural_list.append(self.img_pred_list[i])
+    #        elif(path_dir[-2]=='logical_anomalies'):
+    #            img_gt_logical_list.append(1)
+    #            img_pred_logical_list.append(1)
+    #        else:
+    #            img_gt_structural_list.append(1)
+    #            img_pred_structural_list.append(1)
+    #            
+    #    return roc_auc_score(img_gt_logical_list, img_pred_logical_list), roc_auc_score(img_gt_structural_list, img_pred_structural_list)
