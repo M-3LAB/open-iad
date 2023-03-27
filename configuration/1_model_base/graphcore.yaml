@@ -3,7 +3,7 @@ net: vig_ti_224_gelu
 data_size: 224
 data_crop_size: 224
 mask_size: 224
-mask_crop_size:: 224
+mask_crop_size: 224
 pretrained: True
 train_batch_size: 32
 valid_batch_size: 1
@@ -11,6 +11,7 @@ train_aug_type: normal
 valid_aug_type: normal
 num_epochs: 1
 n_neighbours: 9
+sampler_percentage: 0.001
 #####vig parameters#####
 drop_rate: 0
 drop_path_rate: 0
@@ -21,7 +22,7 @@ bn_tf: False # bn ad, use tensorflow batchnorm defaults for models that support 
 bn_momentum: None 
 bn_eps: None
 checkpoint_path: './checkpoints/graphcore/pretrain/' 
-local_smoothing: True 
+local_smoothing: False 
 #####optimizer######
 opt: sgd
 opt_eps: None

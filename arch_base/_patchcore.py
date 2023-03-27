@@ -82,6 +82,7 @@ class PatchCore(ModelBase):
                     # Pooling for layer 2 and layer 3 features
                     pooling = torch.nn.AvgPool2d(3, 1, 1)
                     embeddings.append(pooling(feat))
+                    #print(feat)
 
                 embedding = PatchCore.embedding_concate(embeddings[0], embeddings[1])
                 embedding = PatchCore.reshape_embedding(embedding.detach().numpy())
@@ -102,7 +103,7 @@ class PatchCore(ModelBase):
             self.embedding_coreset = np.concatenate([self.embedding_coreset, total_embeddings[selected_idx]], axis=0)
 
         print('current task embedding size: ', total_embeddings.shape)
-        print('total embedding size: ', self.embedding_coreset.shape)
+        print('coreset embedding size: ', self.embedding_coreset.shape)
 
         self.index = faiss.IndexFlatL2(self.embedding_coreset.shape[1])
         self.index.add(self.embedding_coreset)
@@ -141,6 +142,7 @@ class PatchCore(ModelBase):
 
                 # Reweighting i.e., equation(7) in paper
                 max_min_distance = score_patches[:, 0]
+                print(f'max_min_distance: {max_min_distance}')
                 ind = np.argmax(max_min_distance)
                 N_b = score_patches[ind]
                 w = (1 - (np.max(np.exp(N_b))/np.sum(np.exp(N_b))))
@@ -159,6 +161,7 @@ class PatchCore(ModelBase):
                 self.pixel_gt_list.append(mask_np)
                 self.pixel_pred_list.append(anomaly_map_cv)
                 self.img_gt_list.append(label.cpu().numpy()[0])
+                print(img_score)
                 self.img_pred_list.append(img_score)
                 self.img_path_list.append(batch['img_src'])
 
