@@ -346,7 +346,7 @@ class CentralizedAD2D():
         model_package = __import__(model_name[self.para_dict['model']][0])
         model_module = getattr(model_package, model_name[self.para_dict['model']][1])
         model_class = getattr(model_module, model_name[self.para_dict['model']][2])
-
+        #print(self.file_path)
         self.trainer = model_class(self.para_dict, self.device, self.file_path, self.net, self.optimizer, self.scheduler)
        
 

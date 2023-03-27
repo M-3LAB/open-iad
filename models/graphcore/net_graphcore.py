@@ -47,7 +47,7 @@ class NetGraphCore(nn.Module):
             print('Pretrain weights loaded')
         
         # Flops Calculation
-        #print(self.model)
+        print(self.model)
         if hasattr(self.model, 'default_cfg'):
             default_cfg = self.model.default_cfg
             input_size = [1] + list(default_cfg['input_size'])

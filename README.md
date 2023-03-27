@@ -118,7 +118,7 @@ python3 main.py -p c2d -v -m igd -n net_igd -d mvtec2d -tid 11 -vid 11 -g 7
 python3 main.py -p c2d -v -m reverse -n net_reverse -d mvtec2d -tid 11 -vid 11 -g 7
 python3 main.py -p c2d -v -m spade -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
 python3 main.py -p c2d -v -m stpm -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
-python3 main.py -p c2d -v -m graphcore -n vig_ti_224_gelu -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -v -m graphcore -n vig_ti_224_gelu -d mvtec2d -tid 0 -vid 0 --sampler-percentage 0.001 -g 1
 
 ```
 

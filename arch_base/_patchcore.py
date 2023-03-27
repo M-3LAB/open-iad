@@ -82,7 +82,7 @@ class PatchCore(ModelBase):
                     # Pooling for layer 2 and layer 3 features
                     pooling = torch.nn.AvgPool2d(3, 1, 1)
                     embeddings.append(pooling(feat))
-                    print(feat)
+                    #print(feat)
 
                 embedding = PatchCore.embedding_concate(embeddings[0], embeddings[1])
                 embedding = PatchCore.reshape_embedding(embedding.detach().numpy())
@@ -142,6 +142,7 @@ class PatchCore(ModelBase):
 
                 # Reweighting i.e., equation(7) in paper
                 max_min_distance = score_patches[:, 0]
+                print(f'max_min_distance: {max_min_distance}')
                 ind = np.argmax(max_min_distance)
                 N_b = score_patches[ind]
                 w = (1 - (np.max(np.exp(N_b))/np.sum(np.exp(N_b))))

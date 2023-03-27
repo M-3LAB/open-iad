@@ -25,24 +25,24 @@ class GraphCore(ModelBase):
 
         self.model = self.net.model
         self.model.to(self.device)
+        self.features = []
         self.get_layer_features()
 
-        self.features = []
         self.random_projector = SparseRandomProjection(n_components='auto', eps=0.9)
         self.embedding_coreset = np.array([])
         self.embedding_path = self.file_path + '/embed'
         create_folders(self.embedding_path)
 
-        self.optimizer = optimizer
-        self.scheduler = scheduler
-    
     def get_layer_features(self):
 
         def hook_t(module, input, output):
             self.features.append(output)
 
-        self.model.backbone[3][-1].register_forward_hook(hook_t)
-        self.model.backbone[4][-1].register_forward_hook(hook_t)
+        self.model.backbone[9][-1].register_forward_hook(hook_t)
+        self.model.backbone[10][-1].register_forward_hook(hook_t)
+
+        #self.model.stem.register_forward_hook(hook_t)
+        #self.model.stem.register_forward_hook(hook_t)
     
     @staticmethod
     def embedding_concate(x, y):
@@ -80,7 +80,6 @@ class GraphCore(ModelBase):
                 _ = self.model(img)
 
                 embeddings = []
-
                 for feat in self.features:
                     if self.config['local_smoothing']:
                         pooling = torch.nn.AvgPool2d(3, 1, 1)
@@ -118,6 +117,7 @@ class GraphCore(ModelBase):
     def prediction(self, valid_loader, task_id):
         self.model.eval()
         self.clear_all_list()
+
         if valid_loader.batch_size != 1:
             assert 'GraphCore Evaluation, Batch Size should be equal to 1'
         
@@ -150,10 +150,13 @@ class GraphCore(ModelBase):
 
                 # Reweighting i.e., equation(7) in paper
                 max_min_distance = score_patches[:, 0]
-                ind = np.argmax(max_min_distance)
-                N_b = score_patches[ind]
-                w = (1 - (np.max(np.exp(N_b))/np.sum(np.exp(N_b))))
-                img_score = w * max(max_min_distance)
+                print(f'max_min_distance: {max_min_distance}')
+                img_score = max(max_min_distance)
+                #ind = np.argmax(max_min_distance)
+                #print(f'max_min_distance index: {ind}')
+                #N_b = score_patches[ind]
+                #w = (1 - (np.max(np.exp(N_b))/np.sum(np.exp(N_b))))
+                #img_score = w * max(max_min_distance)
 
                 # Because the feature map size from the layer 2 of wide-resnet 18 is 28
                 #anomaly_map = max_min_distance.reshape((28, 28))
