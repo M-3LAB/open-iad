@@ -146,7 +146,7 @@ class GraphCore(ModelBase):
 
                 # No Reweighting, Directly Obtain max_min_distance
                 max_min_distance = score_patches[:, 0]
-                print(f'max_min_distance: {max_min_distance}')
+                #print(f'max_min_distance: {max_min_distance}')
                 img_score = max(max_min_distance)
 
                 anomaly_map_size = math.sqrt(max_min_distance.shape[0])
