@@ -73,7 +73,7 @@ python3 ./baselines/3d_btf/utils/preprocessing.py
 | semi | -s | all data (id=0) + anomaly data (id=0) | all data (id=0) - anomaly data (id=0)|
 | continual | -c| all data (id=0 and 1)| all data (id=0 or 1)|
 | fewshot | -f | fewshot (id=0) | all data (id=0) |
-| noisy | -ny | all data (id=0) + noisy data (id=0) | all data (id=0) - noisy data (id=0)|
+| noisy | -z | all data (id=0) + noisy data (id=0) | all data (id=0) - noisy data (id=0)|
 
 ## 2D Model
 | Method / -m | Net / -n | Paper Title|
