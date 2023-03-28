@@ -29,6 +29,10 @@ OBJECT_NAMES = ['breakfast_box', 'juice_bottle', 'pushpins', 'screw_bag',
 # can specify the integration limits that should be evaluated.
 MAX_FPRS = [0.01, 0.05, 0.1, 0.3, 1.]
 
+__all__ = ['read_maps', 'get_available_gt_map_rel_paths', 'get_available_test_image_rel_paths',
+           'get_auc_spro_results','get_auc_spros_per_defect_type', 'get_auc_spros_per_subdir',
+           'get_image_level_detection_metrics','get_image_level_detection_metrics_per_image',
+           'get_image_level_detection_metrics_aggregated', 'optional_int']
 
 def parse_arguments():
     """

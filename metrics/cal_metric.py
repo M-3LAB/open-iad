@@ -12,6 +12,7 @@ from tqdm import tqdm
 from metrics.mvtec_loco_ad_evaluation.src.aggregation import MetricsAggregator, ThresholdMetrics
 from metrics.mvtec_loco_ad_evaluation.src.image import GroundTruthMap, AnomalyMap, DefectsConfig
 from metrics.mvtec_loco_ad_evaluation.src.util import get_auc_for_max_fpr,listdir, set_niceness, compute_classification_auc_roc
+from metrics.mvtec_loco_ad_evaluation.evaluate_experiment import * 
 from data_io.mvtecloco import mvtec_loco_classes
 from data_io.miadloco import miad_loco_classes
 
@@ -144,6 +145,14 @@ class CalMetric():
         with open(defects_config_path) as defects_config_file:
             defects_list = json.load(defects_config_file)
         defects_config = DefectsConfig.create_from_list(defects_list)
+
+        # Read the ground truth maps and the anomaly maps.
+        gt_dir = os.path.join(args.dataset_base_dir, args.object_name, 'ground_truth')
+        anomaly_maps_test_dir = os.path.join(args.anomaly_maps_dir, args.object_name, 'test')
+        gt_maps, anomaly_maps = read_maps(
+        gt_dir=gt_dir,
+        anomaly_maps_test_dir=anomaly_maps_test_dir,
+        defects_config=defects_config)
 
         pass 
 
