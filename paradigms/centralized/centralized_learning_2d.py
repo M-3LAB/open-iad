@@ -373,7 +373,7 @@ class CentralizedAD2D():
                 inference_speed = (end_time - start_time)/len(self.trainer.img_path_list)
 
                 # calculate result
-                pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all(task_id=self.para_dict['train_task_id_tmp'])
+                pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all(task_id=int(self.para_dict['train_task_id_tmp']))
                 self.trainer.recorder.update(self.para_dict)
 
                 paradim = self.trainer.recorder.paradigm_name()
