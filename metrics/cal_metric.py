@@ -147,8 +147,8 @@ class CalMetric():
         defects_config = DefectsConfig.create_from_list(defects_list)
 
         # Read the ground truth maps and the anomaly maps.
-        gt_dir = os.path.join(args.dataset_base_dir, args.object_name, 'ground_truth')
-        anomaly_maps_test_dir = os.path.join(args.anomaly_maps_dir, args.object_name, 'test')
+        gt_dir = os.path.join(self.config['data_path'], object_name, 'ground_truth')
+        anomaly_maps_test_dir = os.path.join(self.anomaly_maps_dir, object_name, 'test')
         gt_maps, anomaly_maps = read_maps(
         gt_dir=gt_dir,
         anomaly_maps_test_dir=anomaly_maps_test_dir,
