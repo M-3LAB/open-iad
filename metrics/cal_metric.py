@@ -3,6 +3,17 @@ import cv2
 import os
 from sklearn.metrics import roc_auc_score, average_precision_score
 from metrics.mvtec3d.au_pro import calculate_au_pro
+import glob
+import json
+import os
+from typing import Optional, Iterable
+import numpy as np
+from tqdm import tqdm
+from metrics.mvtec_loco_ad_evaluation.src.aggregation import MetricsAggregator, ThresholdMetrics
+from metrics.mvtec_loco_ad_evaluation.src.image import GroundTruthMap, AnomalyMap, DefectsConfig
+from metrics.mvtec_loco_ad_evaluation.src.util import get_auc_for_max_fpr,listdir, set_niceness, compute_classification_auc_roc
+from data_io.mvtecloco import mvtec_loco_classes
+from data_io.miadloco import miad_loco_classes
 
 
 __all__ = ['CalMetric']
@@ -17,7 +28,7 @@ class CalMetric():
         self.pixel_gt_list = [] # list<numpy(m,n)>
         self.img_path_list = [] # list<str>
         
-    def cal_metric(self, img_pred_list, img_gt_list, pixel_pred_list, pixel_gt_list, img_path_list):
+    def cal_metric(self, img_pred_list, img_gt_list, pixel_pred_list, pixel_gt_list, img_path_list, task_id):
         self.img_pred_list = img_pred_list
         self.img_gt_list = img_gt_list
         self.pixel_pred_list = pixel_pred_list
@@ -41,7 +52,7 @@ class CalMetric():
                 self.save_anomaly_map_tiff()
                 pixel_pro = 1
             if(len(self.img_pred_list)!=0):
-                self.cal_logical_metrics()
+                self.cal_logical_metrics(task_id)
                 #pixel_auroc, pixel_ap = self.cal_logical_img_auc()
                 #img_auroc = self.cal_img_auroc()
                 #img_ap = self.cal_img_ap()
@@ -122,7 +133,18 @@ class CalMetric():
             cv2.imwrite(self.file_path+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+path_dir[-2]+'/'+path_dir[-1].replace('png','tiff'),anomaly_map)
         
           
-    def cal_logical_metrics(self):
+    def cal_logical_metrics(self, task_id):
+
+        set_niceness(self.config['niceness'])
+    
+        object_name = mvtec_loco_classes[task_id]
+        # Read the defects config file of the evaluated object.
+        defects_config_path = os.path.join(
+            self.config['data_path'], object_name, 'defects_config.json')
+        with open(defects_config_path) as defects_config_file:
+            defects_list = json.load(defects_config_file)
+        defects_config = DefectsConfig.create_from_list(defects_list)
+
         pass 
 
     #def cal_logical_img_auc(self):

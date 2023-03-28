@@ -40,8 +40,9 @@ class ModelBase():
         self.pixel_gt_list = []
         self.img_path_list = []
 
-    def cal_metric_all(self):
+    def cal_metric_all(self, task_id):
+        # Logica AD Evaluation Needs Task ID
         return self.metric.cal_metric(self.img_pred_list, self.img_gt_list,
                                       self.pixel_pred_list, self.pixel_gt_list,
-                                      self.img_path_list)
+                                      self.img_path_list, task_id)
     

@@ -15,7 +15,7 @@ def miad_loco_classes():
 
 class MIADLoco(Dataset):
     def __init__(self, data_path, ignore_anomaly_type='no', learning_mode='centralized', phase='train', 
-                 data_transform=None, num_task=5):
+                 data_transform=None, num_task=3):
 
         self.data_path = data_path
         self.learning_mode = learning_mode
