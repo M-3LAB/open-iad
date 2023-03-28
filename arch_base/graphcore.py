@@ -146,7 +146,7 @@ class GraphCore(ModelBase):
 
                 # No Reweighting, Directly Obtain max_min_distance
                 max_min_distance = score_patches[:, 0]
-                print(f'max_min_distance: {max_min_distance}')
+                #print(f'max_min_distance: {max_min_distance}')
                 img_score = max(max_min_distance)
 
                 anomaly_map_size = math.sqrt(max_min_distance.shape[0])
@@ -160,7 +160,7 @@ class GraphCore(ModelBase):
                 self.pixel_gt_list.append(mask_np)
                 self.pixel_pred_list.append(anomaly_map_cv)
                 self.img_gt_list.append(label.cpu().numpy()[0])
-                print(img_score)
+                #print(img_score)
                 self.img_pred_list.append(img_score)
                 self.img_path_list.append(batch['img_src'])
 
