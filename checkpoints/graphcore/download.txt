@@ -1,0 +1,1 @@
+https://github.com/huawei-noah/Efficient-AI-Backbones/releases/tag/vig
