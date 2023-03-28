@@ -51,7 +51,7 @@ def parse_arguments_main():
     parser.add_argument('--fewshot-aug-type', '-fat', choices=['normal', 'rotation', 'scale', 'translate', 'flip', 'color_jitter', 'perspective'], default=['normal'], nargs='+')
 
     # noisy label
-    parser.add_argument('--noisy', '-ny', action='store_true', default=False)
+    parser.add_argument('--noisy', '-z', action='store_true', default=False)
     parser.add_argument('--noisy-overlap', '-no', action='store_true', default=False)
     parser.add_argument('--noisy-ratio', '-nr', type=float, default=0.1)
 
