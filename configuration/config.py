@@ -42,6 +42,9 @@ def parse_arguments_main():
     # testing-time-training AD
     parser.add_argument('--testing-time-training', '-ttt', action='store_true', default=False)
 
+    # logical AD
+    parser.add_argument('--num-parallel-workers', '-npw', type=int, default=8)
+
     # fewshot learning
     parser.add_argument('--fewshot', '-f', action='store_true', default=False)
     parser.add_argument('--fewshot-exm', '-fe', type=int, default=1)
