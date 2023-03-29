@@ -10,7 +10,7 @@ from torchvision import transforms as T
 __all__ = ['MVTecLoco', 'mvtec_loco_classes']
 
 def mvtec_loco_classes():
-    return ["breakfast_box", "juice_bottle", "pushpins", "screw_bag", "splicing_connectors"]
+    return ["breakfast_box", "screw_bag", "pushpins", "splicing_connectors", "juice_bottle"]
 
 
 class MVTecLoco(Dataset):
