@@ -12,6 +12,7 @@ from tqdm import tqdm
 from metrics.mvtec_loco_ad_evaluation.src.aggregation import MetricsAggregator, ThresholdMetrics
 from metrics.mvtec_loco_ad_evaluation.src.image import GroundTruthMap, AnomalyMap, DefectsConfig
 from metrics.mvtec_loco_ad_evaluation.src.util import get_auc_for_max_fpr,listdir, set_niceness, compute_classification_auc_roc
+from metrics.mvtec_loco_ad_evaluation.evaluate_experiment import * 
 from data_io.mvtecloco import mvtec_loco_classes
 from data_io.miadloco import miad_loco_classes
 
@@ -58,6 +59,7 @@ class CalMetric():
                 #img_ap = self.cal_img_ap()
         
         elif self.config['dataset'] == 'miadloco':
+            #TODO 
             pass
         else:
             raise NotImplementedError('This type of dataset has not been implemented')
@@ -145,7 +147,57 @@ class CalMetric():
             defects_list = json.load(defects_config_file)
         defects_config = DefectsConfig.create_from_list(defects_list)
 
-        pass 
+        # Read the ground truth maps and the anomaly maps.
+        gt_dir = os.path.join(self.config['data_path'], object_name, 'ground_truth')
+        anomaly_maps_test_dir = os.path.join(self.anomaly_maps_dir, object_name, 'test')
+        gt_maps, anomaly_maps = read_maps(
+        gt_dir=gt_dir,
+        anomaly_maps_test_dir=anomaly_maps_test_dir,
+        defects_config=defects_config)
+
+        # Collect relevant metrics based on the ground truth and anomaly maps.
+        metrics_aggregator = MetricsAggregator(
+            gt_maps=gt_maps,
+            anomaly_maps=anomaly_maps,
+            parallel_workers=self.config['num_parallel_workers'],
+            parallel_niceness=self.config['niceness'])
+
+        metrics = metrics_aggregator.run(
+            curve_max_distance=self.config['curve_max_distance'])
+        
+        # Fetch the anomaly localization results.
+        localization_results = get_auc_spro_results(
+            metrics=metrics,
+            anomaly_maps_test_dir=anomaly_maps_test_dir)
+        
+        # Store the per-threshold metrics.
+        results_per_threshold = {
+            'thresholds': metrics.anomaly_thresholds.tolist(),
+            'mean_spros': metrics.get_mean_spros().tolist(),
+            'fp_rates': metrics.get_fp_rates().tolist(),
+        }
+        localization_results["per_threshold"] = results_per_threshold
+
+        # Fetch the image-level anomaly detection results.
+        classification_results = get_image_level_detection_metrics(
+            gt_maps=gt_maps,
+            anomaly_maps=anomaly_maps)
+        
+        # Create the dict to write to metrics.json.
+        results = {
+            'localization': localization_results, 
+            'classification': classification_results
+        }
+
+        # Write the results to the output directory.
+        if self.json_dir is not None:
+            print(f'Writing results to {self.json_dir}') 
+            os.makedirs(self.json_dir, exist_ok=True)
+            # results_path = os.path.join(args.output_dir, 'metrics.json')
+            results_path = os.path.join(self.json_dir, 'metrics_'+object_name+'.json')
+            with open(results_path, 'w') as results_file:
+                json.dump(results, results_file, indent=4, sort_keys=True)
+        
 
     #def cal_logical_img_auc(self):
     #    img_pred_logical_list = []
