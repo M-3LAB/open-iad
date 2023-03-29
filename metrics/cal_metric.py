@@ -12,6 +12,7 @@ from metrics.mvtec_loco_ad_evaluation.src.util import get_auc_for_max_fpr,listdi
 from metrics.mvtec_loco_ad_evaluation.evaluate_experiment import * 
 from data_io.mvtecloco import mvtec_loco_classes
 from data_io.miadloco import miad_loco_classes
+from tools.utils import *
 
 
 __all__ = ['CalMetric']
@@ -26,7 +27,7 @@ class CalMetric():
         self.pixel_gt_list = [] # list<numpy(m,n)>
         self.img_path_list = [] # list<str>
         
-    def cal_metric(self, img_pred_list, img_gt_list, pixel_pred_list, pixel_gt_list, img_path_list, task_id):
+    def cal_metric(self, img_pred_list, img_gt_list, pixel_pred_list, pixel_gt_list, img_path_list, task_id, file_path):
         self.img_pred_list = img_pred_list
         self.img_gt_list = img_gt_list
         self.pixel_pred_list = pixel_pred_list
@@ -47,7 +48,7 @@ class CalMetric():
                 img_ap = self.cal_img_ap()
         elif self.config['dataset'] == 'mvtecloco':
             if(len(self.pixel_pred_list)!=0):
-                self.save_anomaly_map_tiff()
+                self.save_anomaly_map_tiff(file_path)
                 pixel_pro = 1
             if(len(self.img_pred_list)!=0):
                 self.cal_logical_metrics(task_id)
@@ -78,7 +79,7 @@ class CalMetric():
     def cal_pixel_aupro(self):
         return calculate_au_pro(self.pixel_gt_list, self.pixel_pred_list)
 
-    def save_anomaly_map_tiff(self):
+    def save_anomaly_map_tiff(self, file_path):
         img_shape_list = {'breakfast_box': [1600,1280],
                           'juice_bottle': [800,1600],
                           'pushpins': [1700,1000],
@@ -123,20 +124,26 @@ class CalMetric():
             os.makedirs('./work_dir/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+'good')
         
         
-        self.anomaly_map_dir = self.file_path+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]
-        self.json_dir = self.file_path+'logical_json'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]
+        self.anomaly_maps_dir = file_path+'/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'
+        create_folders(self.anomaly_maps_dir)
+
+        self.anomaly_maps_total_dir = file_path+'/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'
+        self.json_dir = file_path+'/'+'logical_json'+'/'+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/'
 
         for i in range(len(self.img_path_list)):
             path_dir = self.img_path_list[i][0].split('/')
             anomaly_map = cv2.resize(self.pixel_pred_list[i],(img_shape[0],img_shape[1]))
-            cv2.imwrite(self.file_path+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+path_dir[-2]+'/'+path_dir[-1].replace('png','tiff'),anomaly_map)
+            per_anomaly_map_dir = os.path.join(self.anomaly_maps_dir, path_dir[-2])
+            create_folders(per_anomaly_map_dir)
+            #cv2.imwrite(file_path+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+path_dir[-2]+'/'+path_dir[-1].replace('png','tiff'),anomaly_map)
+            cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1].replace('png','tiff')),anomaly_map)
         
           
     def cal_logical_metrics(self, task_id):
 
         set_niceness(self.config['niceness'])
     
-        object_name = mvtec_loco_classes[task_id]
+        object_name = mvtec_loco_classes()[task_id]
         # Read the defects config file of the evaluated object.
         defects_config_path = os.path.join(
             self.config['data_path'], object_name, 'defects_config.json')
@@ -146,7 +153,8 @@ class CalMetric():
 
         # Read the ground truth maps and the anomaly maps.
         gt_dir = os.path.join(self.config['data_path'], object_name, 'ground_truth')
-        anomaly_maps_test_dir = os.path.join(self.anomaly_maps_dir, object_name, 'test')
+        anomaly_maps_test_dir = os.path.join(self.anomaly_maps_total_dir, object_name, 'test')
+        print(anomaly_maps_test_dir)
         gt_maps, anomaly_maps = read_maps(
         gt_dir=gt_dir,
         anomaly_maps_test_dir=anomaly_maps_test_dir,
@@ -156,7 +164,7 @@ class CalMetric():
         metrics_aggregator = MetricsAggregator(
             gt_maps=gt_maps,
             anomaly_maps=anomaly_maps,
-            parallel_workers=self.config['num_parallel_workers'],
+            parallel_workers=None,
             parallel_niceness=self.config['niceness'])
 
         metrics = metrics_aggregator.run(

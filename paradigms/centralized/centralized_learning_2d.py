@@ -64,8 +64,8 @@ class CentralizedAD2D():
         self.para_dict['root_path'] = root_path
         self.para_dict['data_path'] = '{}{}'.format(root_path, self.para_dict['data_path'])
 
-        if not (self.para_dict['vanilla'] or self.para_dict['semi'] or self.para_dict['fewshot'] or self.para_dict['noisy'] or self.para_dict['continual']):
-            raise ValueError('Please Assign Learning Paradigm, --vanilla, --semi, --noisy, --fewshot, --continual')
+        if not (self.para_dict['vanilla'] or self.para_dict['transfer'] or self.para_dict['semi'] or self.para_dict['fewshot'] or self.para_dict['noisy'] or self.para_dict['continual']):
+            raise ValueError('Please Assign Learning Paradigm, --vanilla, --transfer, --semi, --noisy, --fewshot, --continual')
 
     def preliminary(self):
         print('---------------------')
@@ -373,7 +373,9 @@ class CentralizedAD2D():
                 inference_speed = (end_time - start_time)/len(self.trainer.img_path_list)
 
                 # calculate result
-                pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all(task_id=int(self.para_dict['train_task_id_tmp']))
+                pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all(
+                    task_id=int(self.para_dict['train_task_id_tmp']),
+                    file_path=self.file_path)
                 self.trainer.recorder.update(self.para_dict)
 
                 paradim = self.trainer.recorder.paradigm_name()
