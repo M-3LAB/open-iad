@@ -177,6 +177,11 @@ class CalMetric():
         }
         localization_results["per_threshold"] = results_per_threshold
 
+        # Fetch the image-level anomaly detection results.
+        classification_results = get_image_level_detection_metrics(
+            gt_maps=gt_maps,
+            anomaly_maps=anomaly_maps)
+
         pass 
 
     #def cal_logical_img_auc(self):
