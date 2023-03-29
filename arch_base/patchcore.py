@@ -63,7 +63,8 @@ class PatchCore(ModelBase):
         segmentations = np.mean(segmentations, axis=0)
         segmentations[segmentations >= 0.5] = 1
         segmentations[segmentations < 0.5] = 0
-        segmentations = segmentations.astype(int) 
+        #segmentations = segmentations.astype(int) 
+        segmentations = np.array(segmentations, dtype='uint8')
         masks_gt = np.array(masks_gt).squeeze().astype(int)
 
         self.pixel_gt_list = [mask for mask in masks_gt]
