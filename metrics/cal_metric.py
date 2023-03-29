@@ -154,6 +154,29 @@ class CalMetric():
         anomaly_maps_test_dir=anomaly_maps_test_dir,
         defects_config=defects_config)
 
+        # Collect relevant metrics based on the ground truth and anomaly maps.
+        metrics_aggregator = MetricsAggregator(
+            gt_maps=gt_maps,
+            anomaly_maps=anomaly_maps,
+            parallel_workers=self.config['num_parallel_workers'],
+            parallel_niceness=self.config['niceness'])
+
+        metrics = metrics_aggregator.run(
+            curve_max_distance=self.config['curve_max_distance'])
+        
+        # Fetch the anomaly localization results.
+        localization_results = get_auc_spro_results(
+            metrics=metrics,
+            anomaly_maps_test_dir=anomaly_maps_test_dir)
+        
+        # Store the per-threshold metrics.
+        results_per_threshold = {
+            'thresholds': metrics.anomaly_thresholds.tolist(),
+            'mean_spros': metrics.get_mean_spros().tolist(),
+            'fp_rates': metrics.get_fp_rates().tolist(),
+        }
+        localization_results["per_threshold"] = results_per_threshold
+
         pass 
 
     #def cal_logical_img_auc(self):
