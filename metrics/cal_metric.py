@@ -59,6 +59,7 @@ class CalMetric():
                 #img_ap = self.cal_img_ap()
         
         elif self.config['dataset'] == 'miadloco':
+            #TODO 
             pass
         else:
             raise NotImplementedError('This type of dataset has not been implemented')
@@ -181,8 +182,22 @@ class CalMetric():
         classification_results = get_image_level_detection_metrics(
             gt_maps=gt_maps,
             anomaly_maps=anomaly_maps)
+        
+        # Create the dict to write to metrics.json.
+        results = {
+            'localization': localization_results, 
+            'classification': classification_results
+        }
 
-        pass 
+        # Write the results to the output directory.
+        if self.json_dir is not None:
+            print(f'Writing results to {self.json_dir}') 
+            os.makedirs(self.json_dir, exist_ok=True)
+            # results_path = os.path.join(args.output_dir, 'metrics.json')
+            results_path = os.path.join(self.json_dir, 'metrics_'+object_name+'.json')
+            with open(results_path, 'w') as results_file:
+                json.dump(results, results_file, indent=4, sort_keys=True)
+        
 
     #def cal_logical_img_auc(self):
     #    img_pred_logical_list = []
