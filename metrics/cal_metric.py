@@ -3,12 +3,9 @@ import cv2
 import os
 from sklearn.metrics import roc_auc_score, average_precision_score
 from metrics.mvtec3d.au_pro import calculate_au_pro
-import glob
 import json
 import os
-from typing import Optional, Iterable
 import numpy as np
-from tqdm import tqdm
 from metrics.mvtec_loco_ad_evaluation.src.aggregation import MetricsAggregator, ThresholdMetrics
 from metrics.mvtec_loco_ad_evaluation.src.image import GroundTruthMap, AnomalyMap, DefectsConfig
 from metrics.mvtec_loco_ad_evaluation.src.util import get_auc_for_max_fpr,listdir, set_niceness, compute_classification_auc_roc
