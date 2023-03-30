@@ -47,6 +47,8 @@ cooldown_epochs: 10
 patience_epochs: 10
 decay_rate: 0.1
 epochs: 200
-
+layer_num_1: 3
+layer_num_2: 4
+layer_num_3: 5
 
 

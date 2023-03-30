@@ -44,6 +44,11 @@ def parse_arguments_main():
 
     # logical AD
     parser.add_argument('--num-parallel-workers', '-npw', type=int, default=8)
+    
+    # graphcore layer number
+    parser.add_argument('--layer_num_1', '-lay_n1', type=int, default=3)
+    parser.add_argument('--layer_num_2', '-lay_n2', type=int, default=4)
+    parser.add_argument('--layer_num_3', '-lay_n3', type=int, default=5)
 
     # fewshot learning
     parser.add_argument('--fewshot', '-f', action='store_true', default=False)
