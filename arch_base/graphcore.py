@@ -163,6 +163,12 @@ class GraphCore(ModelBase):
                 #print(img_score)
                 self.img_pred_list.append(img_score)
                 self.img_path_list.append(batch['img_src'])
+            
+            max_dis = np.max(np.array(self.pixel_pred_list))
+            min_dis = np.min(np.array(self.pixel_pred_list))
+            for i, pred_mask in enumerate(self.pixel_pred_list):
+                self.pixel_pred_list[i] = (pred_mask - min_dis)/(max_dis - min_dis)
+
 
                 
                 

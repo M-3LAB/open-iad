@@ -13,6 +13,7 @@ from metrics.mvtec_loco_ad_evaluation.evaluate_experiment import *
 from data_io.mvtecloco import mvtec_loco_classes
 from data_io.miadloco import miad_loco_classes
 from tools.utils import *
+from tools.visualize import cv2heatmap,heatmap_on_image
 from tqdm import tqdm
 
 
@@ -151,12 +152,18 @@ class CalMetric():
             create_folders(per_anomaly_map_dir)
             #cv2.imwrite(file_path+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+path_dir[-2]+'/'+path_dir[-1].replace('png','tiff'),anomaly_map)
             cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1].replace('png','tiff')),anomaly_map)
+            # print(np.max(anomaly_map))
+            # print(anomaly_map.shape)
+            heatmap = cv2heatmap(anomaly_map*255)
+            origin_img_path = self.img_path_list[i][0]
+            origin_img = cv2.imread(origin_img_path)
+            heat_img = heatmap_on_image(heatmap,origin_img)
             if path_dir[-2] == 'good':
                 pass
             elif path_dir[-2] == 'logical_anomalies':
-                cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1]), anomaly_map*255)
+                cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1]), heat_img)
             elif path_dir[-2] == 'structural_anomalies':
-                cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1]), anomaly_map*255)
+                cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1]), heat_img)
                 
         
   
