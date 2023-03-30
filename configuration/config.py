@@ -18,6 +18,7 @@ def parse_arguments_main():
                                                                               'net_igd', 'net_reverse', 'net_favae', 'net_fastflow', 'net_cfa', 'net_devnet',
                                                                               'vig_ti_224_gelu', 'vig_s_224_gelu', 'vig_b_224_gelu']) 
                                                                               #'pvig_ti_224_gelu', 'pvig_s_224_gelu', 'pvig_m_224_gelu', 'pvig_b_224_gelu'])
+
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
