@@ -13,9 +13,23 @@ from metrics.mvtec_loco_ad_evaluation.evaluate_experiment import *
 from data_io.mvtecloco import mvtec_loco_classes
 from data_io.miadloco import miad_loco_classes
 from tools.utils import *
+from tqdm import tqdm
 
 
 __all__ = ['CalMetric']
+
+def delete_tiffs(anomaly_maps_test_dir):
+    anomaly_rel_paths = list(
+    get_available_test_image_rel_paths(anomaly_maps_test_dir))
+
+    anomaly_rel_paths_no_ext = [os.path.splitext(p)[0]
+                            for p in anomaly_rel_paths]
+    
+    for rel_path, rel_path_no_ext in tqdm(
+        zip(anomaly_rel_paths, anomaly_rel_paths_no_ext),
+        total=len(anomaly_rel_paths)):
+        anomaly_map_tiff_path = os.path.join(anomaly_maps_test_dir, rel_path)
+        os.remove(anomaly_map_tiff_path)
 
 class CalMetric():
     def __init__(self, config):
@@ -137,8 +151,15 @@ class CalMetric():
             create_folders(per_anomaly_map_dir)
             #cv2.imwrite(file_path+train_type+'/'+self.config['dataset']+'/'+self.config['model']+append_dir+'/'+path_dir[-4]+'/test/'+path_dir[-2]+'/'+path_dir[-1].replace('png','tiff'),anomaly_map)
             cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1].replace('png','tiff')),anomaly_map)
+            if path_dir[-2] == 'good':
+                pass
+            elif path_dir[-2] == 'logical_anomalies':
+                cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1]), anomaly_map*255)
+            elif path_dir[-2] == 'structural_anomalies':
+                cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1]), anomaly_map*255)
+                
         
-          
+  
     def cal_logical_metrics(self, task_id):
 
         set_niceness(self.config['niceness'])
@@ -203,24 +224,8 @@ class CalMetric():
             with open(results_path, 'w') as results_file:
                 json.dump(results, results_file, indent=4, sort_keys=True)
         
+        #Remove the output diff  
+        delete_tiffs(anomaly_maps_test_dir)
 
-    #def cal_logical_img_auc(self):
-    #    img_pred_logical_list = []
-    #    img_gt_logical_list = []
-    #    img_pred_structural_list = []
-    #    img_gt_structural_list = []
-    #    for i in range(len(self.img_pred_list)):
-    #        path_dir = self.img_path_list[i][0].split('/')
-    #        if(path_dir[-2]=='good'):
-    #            img_gt_logical_list.append(0)
-    #            img_gt_structural_list.append(0)
-    #            img_pred_logical_list.append(self.img_pred_list[i])
-    #            img_pred_structural_list.append(self.img_pred_list[i])
-    #        elif(path_dir[-2]=='logical_anomalies'):
-    #            img_gt_logical_list.append(1)
-    #            img_pred_logical_list.append(1)
-    #        else:
-    #            img_gt_structural_list.append(1)
-    #            img_pred_structural_list.append(1)
-    #            
-    #    return roc_auc_score(img_gt_logical_list, img_pred_logical_list), roc_auc_score(img_gt_structural_list, img_pred_structural_list)
+        
+        
