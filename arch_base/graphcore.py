@@ -38,8 +38,8 @@ class GraphCore(ModelBase):
         def hook_t(module, input, output):
             self.features.append(output)
 
-        self.model.backbone[9][-1].register_forward_hook(hook_t)
-        self.model.backbone[10][-1].register_forward_hook(hook_t)
+        self.model.backbone[3][-1].register_forward_hook(hook_t)
+        self.model.backbone[4][-1].register_forward_hook(hook_t)
 
         #self.model.stem.register_forward_hook(hook_t)
         #self.model.stem.register_forward_hook(hook_t)
