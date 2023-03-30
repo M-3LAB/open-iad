@@ -13,7 +13,7 @@ from metrics.mvtec_loco_ad_evaluation.evaluate_experiment import *
 from data_io.mvtecloco import mvtec_loco_classes
 from data_io.miadloco import miad_loco_classes
 from tools.utils import *
-import tqdm
+from tqdm import tqdm
 
 
 __all__ = ['CalMetric']
@@ -28,7 +28,7 @@ def delete_tiffs(anomaly_maps_test_dir):
     for rel_path, rel_path_no_ext in tqdm(
         zip(anomaly_rel_paths, anomaly_rel_paths_no_ext),
         total=len(anomaly_rel_paths)):
-        anomaly_map_tiff_path = os.path.join(anomaly_maps_test_dir, rel_path, '.tiff')
+        anomaly_map_tiff_path = os.path.join(anomaly_maps_test_dir, rel_path)
         os.remove(anomaly_map_tiff_path)
 
 class CalMetric():
@@ -154,9 +154,9 @@ class CalMetric():
             if path_dir[-2] == 'good':
                 pass
             elif path_dir[-2] == 'logical_anomalies':
-                cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1]), anomaly_map)
+                cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1]), anomaly_map*255)
             elif path_dir[-2] == 'structural_anomalies':
-                cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1]), anomaly_map)
+                cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1]), anomaly_map*255)
                 
         
   
