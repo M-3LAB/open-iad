@@ -164,6 +164,8 @@ class CalMetric():
                 cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1]), heat_img)
             elif path_dir[-2] == 'structural_anomalies':
                 cv2.imwrite(os.path.join(per_anomaly_map_dir, path_dir[-1]), heat_img)
+            else:
+                raise NotImplementedError('No Type Error')
                 
         
   
