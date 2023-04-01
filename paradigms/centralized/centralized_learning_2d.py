@@ -135,6 +135,9 @@ class CentralizedAD2D():
                                                     self.valid_dataset, 
                                                     anomaly_num=self.para_dict['semi_anomaly_num'], 
                                                     anomaly_overlap=self.para_dict['semi_overlap'])                                                    
+        
+        if self.para_dict['transfer']:
+            pass
 
         self.train_loaders, self.valid_loaders = [], []
         self.train_semi_loaders = []
@@ -242,6 +245,9 @@ class CentralizedAD2D():
                 valid_semi_loaders.append(valid_semi_loader)
             self.train_loaders = train_semi_loaders
             self.valid_loaders = valid_semi_loaders
+        
+        if self.para_dict['transfer']:
+            pass
 
         self.chosen_train_loaders, self.chosen_valid_loaders = [], []
         self.chosen_vis_loaders = []
