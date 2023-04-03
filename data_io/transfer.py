@@ -12,3 +12,5 @@ def extract_transfer_data(source_domain_dataset, target_domain_dataset, transfer
 
     if transfer_type == 'inter_class':
         pass
+    elif transfer_type == 'intra_class':
+        pass
