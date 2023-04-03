@@ -19,6 +19,14 @@ def extract_transfer_data(source_dataset, target_dataset, transfer_type='inter_c
     else:
         raise NotImplementedError('Transfer Type Has Not Been Implemented')
 
+    # source normal training dataset 
+
+    # target normal training dataset 
+
+    # source anomaly training dataset 
+
+    # target anomaly training dataset
+
     # obtain target number dataset  
     target_train_dataset = copy.deepcopy(target_dataset)
     for i, num in enumerate(target_dataset.sample_num_in_task): 
