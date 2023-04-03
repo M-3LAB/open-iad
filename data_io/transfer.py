@@ -3,12 +3,14 @@ import random
 
 __all__ = ['extract_transfer_data']
 
-def extract_transfer_data(source_domain_dataset, target_domain_dataset, transfer_type='inter_class'):
-    source_sample_nums = [0] + source_domain_dataset.sample_num_in_task
-    source_sample_indice = source_domain_dataset.sample_indices_in_task
+def extract_transfer_data(source_dataset, target_dataset, transfer_type='inter_class', 
+                          target_train_num=2):
 
-    target_sample_nums = [0] + target_domain_dataset.sample_num_in_task
-    target_sample_indice = target_domain_dataset.sample_indices_in_task
+    source_sample_nums = [0] + source_dataset.sample_num_in_task
+    source_sample_indice = source_dataset.sample_indices_in_task
+
+    target_sample_nums = [0] + target_dataset.sample_num_in_task
+    target_sample_indice = target_dataset.sample_indices_in_task
 
     if transfer_type == 'inter_class':
         pass
@@ -18,4 +20,10 @@ def extract_transfer_data(source_domain_dataset, target_domain_dataset, transfer
         raise NotImplementedError('Transfer Type Has Not Been Implemented')
 
     # obtain target number dataset  
+    target_train_dataset = copy.deepcopy(target_dataset)
+    for i, num in enumerate(target_dataset.sample_num_in_task): 
+        if target_train_num > num:
+            target_train_num = num 
+        chosen_samples = random.sample()
+        pass
 
