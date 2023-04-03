@@ -14,3 +14,8 @@ def extract_transfer_data(source_domain_dataset, target_domain_dataset, transfer
         pass
     elif transfer_type == 'intra_class':
         pass
+    else:
+        raise NotImplementedError('Transfer Type Has Not Been Implemented')
+
+    # obtain target number dataset  
+
