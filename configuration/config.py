@@ -38,7 +38,8 @@ def parse_arguments_main():
     parser.add_argument('--continual', '-c', action='store_true', default=False)
 
     # transfer AD
-    parser.add_argument('--transfer', '-tr', action='store_true', default=False)
+    parser.add_argument('--transfer', '-tr', type=str, action='store_true', default=False)
+    parser.add_argument('--transfer-type', type=str, default='inter_class', choices=['inter_class', 'intra_class'])
 
     # testing-time-training AD
     parser.add_argument('--testing-time-training', '-ttt', action='store_true', default=False)
