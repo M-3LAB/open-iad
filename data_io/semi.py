@@ -25,7 +25,7 @@ def extract_semi_data(train_dataset, valid_dataset, anomaly_num=10, anomaly_over
 
         noisy_indices.append(noise_index)
 
-    # construct train_noisy_dataset
+    # construct valid_noisy_dataset
     valid_noisy_dataset = copy.deepcopy(valid_dataset)
     if not anomaly_overlap:
         for task_id in range(valid_dataset.num_task):
