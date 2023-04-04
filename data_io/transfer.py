@@ -3,7 +3,7 @@ import random
 
 __all__ = ['extract_transfer_data']
 
-def extract_transfer_data(source_dataset, target_dataset, transfer_type='inter_class', 
+def extract_transfer_data(source_train_dataset, target_dataset, transfer_type='inter_class', 
                           target_train_num=2):
 
     source_sample_nums = [0] + source_dataset.sample_num_in_task
