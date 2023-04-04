@@ -40,6 +40,7 @@ def parse_arguments_main():
     # transfer AD
     parser.add_argument('--transfer', '-tr', type=str, action='store_true', default=False)
     parser.add_argument('--transfer-type', type=str, default='inter_class', choices=['inter_class', 'intra_class'])
+    parser.add_argument('--target-train-num', type=int, default=8)
 
     # testing-time-training AD
     parser.add_argument('--testing-time-training', '-ttt', action='store_true', default=False)

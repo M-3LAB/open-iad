@@ -30,17 +30,19 @@ def extract_transfer_data(
         pass
     else:
         raise NotImplementedError('Transfer Type Has Not Been Implemented')
+    
+    # construct source anomaly training dataset 
+    source_anomaly_indices = []
+    for i in range(source_valid_dataset.num_task):
+        pass
+
+    # construct target anomaly training dataset
 
     # construct source normal training dataset 
     
 
     # construct target normal training dataset 
 
-    # construct source anomaly training dataset 
-
-    # construct target anomaly training dataset
-
-    # obtain target number dataset  
 
     #target_train_dataset = copy.deepcopy(target_dataset)
     #for i, num in enumerate(target_dataset.sample_num_in_task): 
