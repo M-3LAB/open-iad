@@ -34,6 +34,18 @@ def extract_transfer_data(
     # construct source anomaly training dataset 
     source_anomaly_indices = []
     for i in range(source_valid_dataset.num_task):
+        source_anomaly_index = []
+        for k, j in enumerate(range(source_valid_sample_nums[i], source_valid_sample_nums[i] + source_valid_sample_nums[i+1])):
+            z = sum(source_valid_sample_nums[:i+1]) + k
+            label = source_valid_dataset.label_list[z]
+            if label == 1:
+                source_anomaly_index.append(source_valid_sample_indice[i][k])
+        
+        source_anomaly_indices.append(source_anomaly_index)
+    
+    source_anomaly_dataset = copy.deepcopy(source_valid_dataset)
+    for task_id in range(source_valid_dataset.num_task):
+        source_anomaly_dataset.sample_indices_in_task[task_id] = source_anomaly_indices[task_id] 
         pass
 
     # construct target anomaly training dataset
