@@ -52,8 +52,15 @@ def extract_transfer_data(
     target_anomaly_indices = []
     for i in range(target_valid_dataset.num_task):
         target_anomaly_index = []
-        for k, j in enumerate(range(target_valid_sample_nums[i], target)):
-            pass
+        for k, j in enumerate(range(target_valid_sample_nums[i], target_valid_sample_nums[i] + target_valid_sample_nums[i+1])):
+            z = sum(target_valid_sample_nums[:i+1]) + k
+            label = target_valid_dataset.label_list[z]
+            if label == 1:
+                target_anomaly_index.append(target_valid_sample_indice[i][k])
+        # control target training number 
+        target_anomaly_index = random.sample(target_anomaly_index, target_train_num)        
+        target_anomaly_indices.append(target_anomaly_index)
+            
 
     # construct source normal training dataset 
     
