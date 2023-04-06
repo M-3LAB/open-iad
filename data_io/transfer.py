@@ -71,6 +71,8 @@ def extract_transfer_data(
         target_fewshot_train_dataset.sample_indices_in_task[i] = chosen_samples
         target_fewshot_train_dataset.sample_num_in_task[i] = target_train_num
         target_train_num = target_train_num_src
+    
+    
         
 
             
@@ -79,10 +81,5 @@ def extract_transfer_data(
 
 
 
-    #target_train_dataset = copy.deepcopy(target_dataset)
-    #for i, num in enumerate(target_dataset.sample_num_in_task): 
-    #    if target_train_num > num:
-    #        target_train_num = num 
-    #    chosen_samples = random.sample()
-    #    pass
+   
 
