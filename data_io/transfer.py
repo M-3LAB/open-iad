@@ -66,7 +66,9 @@ def extract_transfer_data(
     for i, num in enumerate(target_train_dataset.sample_num_in_task):
         if target_train_num > num:
             target_train_num = num
-        chosen_samples = random.sample()
+        chosen_samples = random.sample(target_fewshot_train_dataset.sample_indices_in_task[i], target_train_num)
+        target_fewshot_train_dataset.sample_indices_in_task[i] = chosen_samples
+
             
     # construct source normal training dataset 
     
