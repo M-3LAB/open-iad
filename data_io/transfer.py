@@ -60,12 +60,17 @@ def extract_transfer_data(
         # control target training number 
         target_anomaly_index = random.sample(target_anomaly_index, target_train_num)        
         target_anomaly_indices.append(target_anomaly_index)
-            
 
+    # construct target normal training dataset 
+    target_fewshot_train_dataset = copy.deepcopy(target_train_dataset)
+    for i, num in enumerate(target_train_dataset.sample_num_in_task):
+        if target_train_num > num:
+            target_train_num = num
+        chosen_samples = random.sample()
+            
     # construct source normal training dataset 
     
 
-    # construct target normal training dataset 
 
 
     #target_train_dataset = copy.deepcopy(target_dataset)
