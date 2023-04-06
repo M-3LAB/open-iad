@@ -11,16 +11,19 @@ def extract_transfer_data(
                           transfer_type='inter_class', 
                           target_train_num=2
                           ):
-
+    # source normal dataset is extracted from source train dataset 
     source_train_sample_nums = [0] + source_train_dataset.sample_num_in_task
     source_train_sample_indice = source_train_dataset.sample_indices_in_task
 
+    # source abnormal dataset is extracted from source valid dataset 
     source_valid_sample_nums = [0] + source_valid_dataset.sample_num_in_task
     source_valid_sample_indice = source_valid_dataset.sample_indices_in_task
 
+    # target normal dataset is extracted from target train dataset 
     target_train_sample_nums = [0] + target_train_dataset.sample_num_in_task
     target_train_sample_indice = target_train_dataset.sample_indices_in_task
 
+    # target abnormal dataset is extracted from target valid dataset 
     target_valid_sample_nums = [0] + target_valid_dataset.sample_num_in_task
     target_valid_sample_indice = target_valid_dataset.sample_indices_in_task
 
@@ -60,6 +63,11 @@ def extract_transfer_data(
         # control target training number 
         target_anomaly_index = random.sample(target_anomaly_index, target_train_num)        
         target_anomaly_indices.append(target_anomaly_index)
+    
+    target_anomaly_dataset = copy.deepcopy(target_valid_dataset)
+    for task_id in range(target_valid_dataset.num_task):
+        target_anomaly_dataset.sample_indices_in_task[task_id] = target_anomaly_indices[task_id] 
+        target_anomaly_dataset.sample_num_in_task[task_id] = len(target_anomaly_dataset.sample_indices_in_task[task_id])
 
     # construct target normal training dataset 
     target_train_num_src = target_train_num
