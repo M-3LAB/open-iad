@@ -80,11 +80,9 @@ def extract_transfer_data(
         target_fewshot_train_dataset.sample_num_in_task[i] = target_train_num
         target_train_num = target_train_num_src
     
-    
-        
-
-            
-    # construct source normal training dataset 
+    # construct total training dataset 
+    # total training dataset = source_normal + source_valid + 
+    #                          target_normal(few-shot) + target_valid(few-shot)
     
 
 
