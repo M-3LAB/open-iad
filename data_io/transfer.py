@@ -83,6 +83,14 @@ def extract_transfer_data(
     # construct total training dataset 
     # total training dataset = source_normal + source_valid + 
     #                          target_normal(few-shot) + target_valid(few-shot)
+
+    train_total_dataset = copy.deepcopy(source_train_dataset)
+    #TODO: how to construct train_total_dataset
+    for task_id in range(source_train_dataset.num_task):
+        for img_id in source_anomaly_indices[task_id]:
+            train_total_dataset.imgs_list.append(source_anomaly_dataset.imgs_list[img_id])
+            train_total_dataset.labels_list.append(source_anomaly_dataset.labels_list[img_id])
+        pass
     
 
 
