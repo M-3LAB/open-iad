@@ -90,7 +90,13 @@ def extract_transfer_data(
         for img_id in source_anomaly_indices[task_id]:
             train_total_dataset.imgs_list.append(source_anomaly_dataset.imgs_list[img_id])
             train_total_dataset.labels_list.append(source_anomaly_dataset.labels_list[img_id])
+            train_total_dataset.masks_list.append(source_anomaly_dataset.masks_list[img_id])
+            train_total_dataset.task_ids_list.append(source_anomaly_dataset.task_ids_list[img_id])
+    
+    for task_id in range(source_train_dataset.num_task):
         pass
+
+            
     
 
 
