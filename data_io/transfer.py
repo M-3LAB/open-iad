@@ -86,6 +86,7 @@ def extract_transfer_data(
 
     train_total_dataset = copy.deepcopy(source_train_dataset)
     #TODO: how to construct train_total_dataset
+    # add source abnormal dataset to total training dataset
     for task_id in range(source_train_dataset.num_task):
         for img_id in source_anomaly_indices[task_id]:
             train_total_dataset.imgs_list.append(source_anomaly_dataset.imgs_list[img_id])
@@ -98,8 +99,11 @@ def extract_transfer_data(
         for i in range(source_anomaly_dataset.sample_num_in_task[task_id]):
             local_idx = i + len(train_total_dataset.imgs_list) + sum(source_anomaly_dataset.sample_num_in_task[:task_id])
             anomaly_indices.append(int(local_idx))
-            
-            pass
+        
+        train_total_dataset.sample_indices_in_task[task_id].extend(anomaly_indices)
+        train_total_dataset.sample_num_in_task[task_id] += train_total_dataset.sample_num_in_task[task_id] 
+
+        
 
             
     
