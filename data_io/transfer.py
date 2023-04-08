@@ -94,7 +94,12 @@ def extract_transfer_data(
             train_total_dataset.task_ids_list.append(source_anomaly_dataset.task_ids_list[img_id])
     
     for task_id in range(source_train_dataset.num_task):
-        pass
+        anomaly_indices = [] 
+        for i in range(source_anomaly_dataset.sample_num_in_task[task_id]):
+            local_idx = i + len(train_total_dataset.imgs_list) + sum(source_anomaly_dataset.sample_num_in_task[:task_id])
+            anomaly_indices.append(int(local_idx))
+            
+            pass
 
             
     
