@@ -102,6 +102,8 @@ def extract_transfer_data(
         
         train_total_dataset.sample_indices_in_task[task_id].extend(anomaly_indices)
         train_total_dataset.sample_num_in_task[task_id] += train_total_dataset.sample_num_in_task[task_id] 
+    
+    return train_total_dataset, source_anomaly_dataset, target_anomaly_dataset, target_fewshot_train_dataset
 
         
 
