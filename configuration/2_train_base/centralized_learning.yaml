@@ -21,6 +21,8 @@ fewshot_aug_type: ['normal']
 noisy: false
 noisy_ratio: 0.1
 noisy_overlap: false
+# transfer
+transfer: false
 gpu_id: 0
 gpu_ids:
 - '01234567'
