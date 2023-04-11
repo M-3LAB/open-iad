@@ -137,8 +137,10 @@ class CentralizedAD2D():
                                                     anomaly_num=self.para_dict['semi_anomaly_num'], 
                                                     anomaly_overlap=self.para_dict['semi_overlap'])                                                    
         
-        if self.para_dict['transfer']:
-            pass
+        #if self.para_dict['transfer']:
+        #    self.train_total_dataset, self.source_anomaly_dataset = extract_transfer_data(
+        #                                                                source_train_dataset=self.train_dataset,
+        #                                                                source_valid_dataset=self)
 
         self.train_loaders, self.valid_loaders = [], []
         self.train_semi_loaders = []
