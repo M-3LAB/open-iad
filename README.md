@@ -66,14 +66,16 @@ python3 ./baselines/3d_btf/utils/preprocessing.py
 
 | Prototypes | Marker | Train | Test |
 | ------ | ---| -------|------ |
-| centralized 2d | -p c2d | |
-| centralized 3d | -p c3d | |
-| federated 2d | -p f2d | |
+| *centralized 2d* | -p c2d | |
 | vanilla | -v |all data (id=0) | all data (id=0) |
 | semi | -s | all data (id=0) + anomaly data (id=0) | all data (id=0) - anomaly data (id=0)|
 | continual | -c| all data (id=0 and 1)| all data (id=0 or 1)|
 | fewshot | -f | fewshot (id=0) | all data (id=0) |
 | noisy | -z | all data (id=0) + noisy data (id=0) | all data (id=0) - noisy data (id=0)|
+| transfer | -t | step 1: all data (id=0) | all data (id=0)|
+|  |  | step 2: fewshot data (id=1) | all data (id=1)|
+| *centralized 3d* | -p c3d | To be updated! |
+| *federated 2d* | -p f2d |  To be updated! |
 
 ## 2D Model
 | Method / -m | Net / -n | Paper Title|
