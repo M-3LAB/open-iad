@@ -388,7 +388,7 @@ class CentralizedAD2D():
         for i, train_loader in enumerate(train_loaders):
             print('-> train ...')
             self.para_dict['train_task_id_tmp'] = train_task_ids[i]
-            print('run task: {}'.format(self.para_dict['train_task_id_tmp']))
+            print('run task: {}, {}'.format(self.para_dict['train_task_id_tmp'], train_loader.dataset.class_name[self.para_dict['train_task_id_tmp']]))
             self.trainer.train_model(train_loader, i)
 
             print('-> test ...')

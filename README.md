@@ -44,7 +44,7 @@ pip install opencv-python
 
 ## Dataset (--dataset / -d)
 
-> 2D: mvtec2d, mpdd, mvtecloco, mtd, btad, mvtec2df3d, imad_hardware_parts
+> 2D: mvtec2d, mpdd, mvtecloco, mtd, btad, mvtec2df3d, coad
 
 > 3D: mvtec3d
 
