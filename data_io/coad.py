@@ -10,8 +10,10 @@ from torchvision import transforms as T
 __all__ = ['COAD', 'coad_parts_classes']
 
 def coad_parts_classes():
-    return ['A1','A2','A3','A4','A5','A6','A7','A8','B1','B2','B3','B4','B5','B6','B7','C1','C2','C3','C4','D1','D2']
-
+    return ['screw/A1','screw/A2','screw/A3','screw/A4','screw/A5','screw/A6','screw/A7',
+            'screw/A8','screw/B1','screw/B2','screw/B3','screw/B4','screw/B5','screw/B6','screw/B7',
+            'screw/C1','screw/C2','screw/C3','screw/C4',
+            'screw/D1','screw/D2']
 
 class COAD(Dataset):
     def __init__(self, data_path, learning_mode='centralized', phase='train', 

@@ -97,7 +97,7 @@ class CentralizedAD2D():
                         'mvtec3d': ('data_io.mvtec3d', 'mvtec3d', 'MVTec3D'),
                         'visa': ('data_io.visa', 'visa', 'VisA'),
                         'dagm': ('data_io.dagm', 'dagm', 'DAGM'),
-                        'imad_hardware_parts': ('data_io.imad_hardware_parts', 'imad_hardware_parts', 'iMAD_hardware_parts')
+                        'coad': ('data_io.coad', 'coad', 'COAD')
                         }
 
         dataset_package = __import__(dataset_name[self.para_dict['dataset']][0])
@@ -137,23 +137,16 @@ class CentralizedAD2D():
                                                     anomaly_num=self.para_dict['semi_anomaly_num'], 
                                                     anomaly_overlap=self.para_dict['semi_overlap'])                                                    
         
-        #if self.para_dict['transfer']:
-        #    self.train_total_dataset, self.source_anomaly_dataset = extract_transfer_data(
-        #                                                                source_train_dataset=self.train_dataset,
-        #                                                                source_valid_dataset=self)
+        if self.para_dict['transfer']:
+            self.train_transfer_dataset = extract_fewshot_data(self.train_dataset, self.para_dict['transfer_target_sample_num'])
 
         self.train_loaders, self.valid_loaders = [], []
-        self.train_semi_loaders = []
         self.refer_loaders = []
         self.vis_loaders = []
         
         # vanilla training
-        train_task_data_list = self.train_dataset.sample_indices_in_task
-        valid_task_data_list = self.valid_dataset.sample_indices_in_task
-        refer_task_data_list = self.refer_dataset.sample_indices_in_task
-        vis_task_data_list = self.vis_dataset.sample_indices_in_task
-
         for i in range(self.para_dict['num_task']):
+            train_task_data_list = self.train_dataset.sample_indices_in_task
             train_noisy_loader = DataLoader(self.train_dataset,
                                     batch_size=self.para_dict['train_batch_size'],
                                     num_workers=self.para_dict['num_workers'],
@@ -161,6 +154,7 @@ class CentralizedAD2D():
                                     drop_last=False)
             self.train_loaders.append(train_noisy_loader)
 
+            valid_task_data_list = self.valid_dataset.sample_indices_in_task
             valid_noisy_loader = DataLoader(self.valid_dataset, 
                                     batch_size=self.para_dict['valid_batch_size'], 
                                     num_workers=self.para_dict['num_workers'],
@@ -169,6 +163,7 @@ class CentralizedAD2D():
                                     drop_last=False)
             self.valid_loaders.append(valid_noisy_loader)
 
+            refer_task_data_list = self.refer_dataset.sample_indices_in_task
             refer_loader = DataLoader(self.train_dataset, 
                                     batch_size=self.para_dict['ref_num'], 
                                     num_workers=self.para_dict['num_workers'],
@@ -176,6 +171,7 @@ class CentralizedAD2D():
                                     drop_last=False)
             self.refer_loaders.append(refer_loader) 
 
+            vis_task_data_list = self.vis_dataset.sample_indices_in_task
             vis_loader = DataLoader(self.vis_dataset, 
                                     batch_size=self.para_dict['valid_batch_size'], 
                                     num_workers=self.para_dict['num_workers'],
@@ -248,9 +244,17 @@ class CentralizedAD2D():
                 valid_semi_loaders.append(valid_semi_loader)
             self.train_loaders = train_semi_loaders
             self.valid_loaders = valid_semi_loaders
-        
+
         if self.para_dict['transfer']:
-            pass
+            train_transfer_task_data_list = self.train_transfer_dataset.sample_indices_in_task
+            self.train_transfer_loaders = []
+            for i in range(self.para_dict['num_task']):
+                train_transfer_loader = DataLoader(self.train_transfer_dataset,
+                                        batch_size=self.para_dict['train_batch_size'],
+                                        num_workers=self.para_dict['num_workers'],
+                                        sampler=SubsetRandomSampler(train_transfer_task_data_list[i]),
+                                        drop_last=False)
+                self.train_transfer_loaders.append(train_transfer_loader)
 
         self.chosen_train_loaders, self.chosen_valid_loaders = [], []
         self.chosen_vis_loaders = []
@@ -258,19 +262,41 @@ class CentralizedAD2D():
         if self.para_dict['train_task_id'] == None or self.para_dict['valid_task_id'] == None:
             raise ValueError('Plase Assign Train Task Id!')
 
-        if self.para_dict['model'] == 'dra':
-            for idx in self.para_dict['train_task_id']:
-                self.chosen_train_loaders.append([self.train_loaders[idx], self.refer_loaders[idx]])
-            for idx in self.para_dict['valid_task_id']:
-                self.chosen_valid_loaders.append([self.valid_loaders[idx], self.refer_loaders[idx]])
-                self.chosen_vis_loaders.append([self.vis_loaders[idx], self.refer_loaders[idx]])
-        else:
-            for idx in self.para_dict['train_task_id']:
-                self.chosen_train_loaders.append(self.train_loaders[idx])
-            for idx in self.para_dict['valid_task_id']:
-                self.chosen_valid_loaders.append(self.valid_loaders[idx])
-                self.chosen_vis_loaders.append(self.vis_loaders[idx])
-
+        if self.para_dict['vanilla'] or self.para_dict['semi'] or self.para_dict['fewshot'] or self.para_dict['noisy'] or self.para_dict['continual']:
+            if self.para_dict['model'] == 'dra':
+                for idx in self.para_dict['train_task_id']:
+                    self.chosen_train_loaders.append([self.train_loaders[idx], self.refer_loaders[idx]])
+                for idx in self.para_dict['valid_task_id']:
+                    self.chosen_valid_loaders.append([self.valid_loaders[idx], self.refer_loaders[idx]])
+                    self.chosen_vis_loaders.append([self.vis_loaders[idx], self.refer_loaders[idx]])
+            else:
+                for idx in self.para_dict['train_task_id']:
+                    self.chosen_train_loaders.append(self.train_loaders[idx])
+                for idx in self.para_dict['valid_task_id']:
+                    self.chosen_valid_loaders.append(self.valid_loaders[idx])
+                    self.chosen_vis_loaders.append(self.vis_loaders[idx])
+        elif self.para_dict['transfer']:
+            self.chosen_transfer_train_loaders, self.chosen_transfer_valid_loaders = [], []
+            self.chosen_transfer_vis_loaders = []
+            if self.para_dict['model'] == 'dra':
+                for idx in self.para_dict['train_task_id']: # for step 1, train source task 
+                    self.chosen_train_loaders.append([self.train_loaders[idx], self.refer_loaders[idx]])
+                    self.chosen_valid_loaders.append([self.valid_loaders[idx], self.refer_loaders[idx]])
+                    self.chosen_vis_loaders.append([self.vis_loaders[idx], self.refer_loaders[idx]])
+                for idx in self.para_dict['valid_task_id']: # for step 2, train target task
+                    self.chosen_transfer_train_loaders.append([self.train_transfer_loaders[idx], self.refer_loaders[idx]])
+                    self.chosen_transfer_valid_loaders.append([self.valid_loaders[idx], self.refer_loaders[idx]])
+                    self.chosen_transfer_vis_loaders.append([self.vis_loaders[idx], self.refer_loaders[idx]])
+            else:
+                for idx in self.para_dict['train_task_id']: # for step 1, train source task
+                    self.chosen_train_loaders.append(self.train_loaders[idx])
+                    self.chosen_valid_loaders.append(self.valid_loaders[idx])
+                    self.chosen_vis_loaders.append(self.vis_loaders[idx])
+                for idx in self.para_dict['valid_task_id']: # for step 2, train target task
+                    self.chosen_transfer_train_loaders.append(self.train_transfer_loaders[idx])
+                    self.chosen_transfer_valid_loaders.append(self.valid_loaders[idx])
+                    self.chosen_transfer_vis_loaders.append(self.vis_loaders[idx])
+    
     def init_model(self):
         self.net, self.optimizer, self.scheduler = None, None, None
 
@@ -332,7 +358,6 @@ class CentralizedAD2D():
             self.optimizer = create_optimizer(args, self.net.model)
             self.scheduler = create_scheduler(args, self.optimizer)
 
-
         model_name = {'_patchcore': ('arch_base._patchcore', '_patchcore', 'PatchCore'),
                       'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
                       'padim': ('arch_base.padim', 'padim', 'PaDim'),
@@ -358,7 +383,6 @@ class CentralizedAD2D():
         #print(self.file_path)
         self.trainer = model_class(self.para_dict, self.device, self.file_path, self.net, self.optimizer, self.scheduler)
        
-
     def work_flow(self):
         # train all task in one time
         for i, train_loader in enumerate(self.chosen_train_loaders):

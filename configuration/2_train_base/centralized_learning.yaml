@@ -23,6 +23,7 @@ noisy_ratio: 0.1
 noisy_overlap: false
 # transfer
 transfer: false
+transfer_target_sample_num: 8
 gpu_id: 0
 gpu_ids:
 - '01234567'

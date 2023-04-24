@@ -181,3 +181,8 @@ python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m spade -n resnet18
 python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m stpm -n resnet18 -d mvtec2d -tid 11 -vid 11 -g 7
 python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m igd -n net_igd -d mvtec2d -tid 11 -vid 11 -g 7
 ```
+
+> Transfer / -t
+```bash
+python3 main.py -p c2d -t -ttn 8 -m reverse -n net_reverse -d coad -tid 0 -vid 1 -g 1
+```
