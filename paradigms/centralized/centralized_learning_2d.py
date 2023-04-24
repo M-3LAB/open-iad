@@ -380,24 +380,24 @@ class CentralizedAD2D():
         model_package = __import__(model_name[self.para_dict['model']][0])
         model_module = getattr(model_package, model_name[self.para_dict['model']][1])
         model_class = getattr(model_module, model_name[self.para_dict['model']][2])
-        #print(self.file_path)
+        # print(self.file_path)
         self.trainer = model_class(self.para_dict, self.device, self.file_path, self.net, self.optimizer, self.scheduler)
-       
-    def work_flow(self):
+    
+    def train_and_infer(self, train_loaders, valid_loaders, vis_loaders, train_task_ids, valid_task_ids):
         # train all task in one time
-        for i, train_loader in enumerate(self.chosen_train_loaders):
+        for i, train_loader in enumerate(train_loaders):
             print('-> train ...')
-            self.para_dict['train_task_id_tmp'] = self.para_dict['train_task_id'][i]
+            self.para_dict['train_task_id_tmp'] = train_task_ids[i]
             print('run task: {}'.format(self.para_dict['train_task_id_tmp']))
             self.trainer.train_model(train_loader, i)
 
             print('-> test ...')
             # test each task individually
-            for j, (valid_loader, vis_loader) in enumerate(zip(self.chosen_valid_loaders, self.chosen_vis_loaders)):
+            for j, (valid_loader, vis_loader) in enumerate(zip(valid_loaders, vis_loaders)):
                 # for continual
                 if j > i:
                     break
-                self.para_dict['valid_task_id_tmp'] = self.para_dict['valid_task_id'][j]
+                self.para_dict['valid_task_id_tmp'] = valid_task_ids[j]
                 
                 # calculate time 
                 start_time = time.time()
@@ -426,6 +426,13 @@ class CentralizedAD2D():
                 # save result
                 if self.para_dict['save_log']:
                     self.trainer.recorder.record_result(infor_result)
+
+    def work_flow(self):
+        self.train_and_infer(self.chosen_valid_loaders, self.chosen_valid_loaders, self.chosen_vis_loaders,
+                              self.para_dict['train_task_id'], self.para_dict['train_task_id'])
+        if self.para_dict['transfer']:
+            self.train_and_infer(self.chosen_transfer_valid_loaders, self.chosen_transfer_valid_loaders, self.chosen_transfer_vis_loaders,
+                                  self.para_dict['valid_task_id'], self.para_dict['valid_task_id'])
 
     def run_work_flow(self):
         self.load_config()
