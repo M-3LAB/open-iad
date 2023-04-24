@@ -398,6 +398,7 @@ class CentralizedAD2D():
                 if j > i:
                     break
                 self.para_dict['valid_task_id_tmp'] = valid_task_ids[j]
+                print('run task: {}, {}'.format(self.para_dict['valid_task_id_tmp'], valid_loader.dataset.class_name[self.para_dict['valid_task_id_tmp']]))
                 
                 # calculate time 
                 start_time = time.time()
