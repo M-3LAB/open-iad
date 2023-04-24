@@ -38,7 +38,7 @@ def parse_arguments_main():
     parser.add_argument('--continual', '-c', action='store_true', default=False)
 
     # transfer AD
-    parser.add_argument('--transfer', '-tr', action='store_true', default=False)
+    parser.add_argument('--transfer', '-t', action='store_true', default=False)
     parser.add_argument('--transfer-type', type=str, default='inter_class', choices=['inter_class', 'intra_class'])
     parser.add_argument('--target-train-num', type=int, default=8)
 
@@ -48,18 +48,14 @@ def parse_arguments_main():
     # logical AD
     parser.add_argument('--num-parallel-workers', '-npw', type=int, default=8)
     
-    # graphcore layer number
-    parser.add_argument('--layer_num_1', '-lay_n1', type=int, default=3)
-    parser.add_argument('--layer_num_2', '-lay_n2', type=int, default=4)
-    parser.add_argument('--layer_num_3', '-lay_n3', type=int, default=5)
-
     # fewshot learning
     parser.add_argument('--fewshot', '-f', action='store_true', default=False)
     parser.add_argument('--fewshot-exm', '-fe', type=int, default=1)
     parser.add_argument('--fewshot-data-aug', '-fda', action='store_true', default=False)
     parser.add_argument('--fewshot-feat-aug', '-ffa', action='store_true', default=False)
     parser.add_argument('--fewshot-num-dg', '-fnd', type=int, default=1)
-    parser.add_argument('--fewshot-aug-type', '-fat', choices=['normal', 'rotation', 'scale', 'translate', 'flip', 'color_jitter', 'perspective'], default=['normal'], nargs='+')
+    parser.add_argument('--fewshot-aug-type', '-fat', choices=['normal', 'rotation', 'scale', 'translate', 
+                                                               'flip', 'color_jitter', 'perspective'], default=['normal'], nargs='+')
 
     # noisy label
     parser.add_argument('--noisy', '-z', action='store_true', default=False)
