@@ -1,6 +1,6 @@
 model: reverse
-net: r
-num_epochs: 200 # 200
+net: net_reverse
+num_epochs: 1 # 200
 train_batch_size: 8 # 32
 valid_batch_size: 1
 train_aug_type: normal

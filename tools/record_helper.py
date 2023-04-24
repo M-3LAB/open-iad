@@ -20,14 +20,17 @@ class RecordHelper():
     def paradigm_name(self):
         if self.config['vanilla']:
             return 'vanilla'
-        if self.config['semi']:
+        elif self.config['semi']:
             return 'semi'
-        if self.config['continual']:
+        elif self.config['continual']:
             return 'continual'
-        if self.config['fewshot']:
+        elif self.config['fewshot']:
             return 'fewshot'
-        if self.config['noisy']:
+        elif self.config['noisy']:
             return 'noisy'
+        elif self.config['transfer']:
+            return 'transfer'
+        print('Add new setting in record_helper.py!')
         
         return 'unknown'
 
