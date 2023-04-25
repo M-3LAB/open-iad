@@ -186,5 +186,13 @@ python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m igd -n net_igd -d
 
 > Transfer / -t
 ```bash
-python3 main.py -p c2d -t -ttn 8 -m reverse -n net_reverse -d coad -tid 0 -vid 1 -g 1
+python3 main.py -p c2d -t -ttn 8 -m reverse -n net_reverse -d coad -tid 0 -vid 1 -g 1 -ne 10
+python3 main.py -p c2d -t -ttn 8 -m cfa -n net_cfa -d coad -tid 0 -vid 1 -g 1 -ne 10
+python3 main.py -p c2d -t -ttn 8 -m csflow -n net_csflow -d coad -tid 0 -vid 1 -g 1 -ne 10
+python3 main.py -p c2d -t -ttn 8 -m draem -n net_draem -d coad -tid 0 -vid 1 -g 1 -ne 10
+python3 main.py -p c2d -t -ttn 8 -m fastflow -n net_fastflow -d coad -tid 0 -vid 1 -g 1 -ne 10
+python3 main.py -p c2d -t -ttn 8 -m favae -n net_favae -d coad -tid 0 -vid 1 -g 1 -ne 10
+python3 main.py -p c2d -t -ttn 8 -m padim -n resnet18 -d coad -tid 0 -vid 1 -g 1
+python3 main.py -p c2d -t -ttn 8 -m patchcore -n resnet18 -d coad -tid 0 -vid 1 -g 1
+python3 main.py -p c2d -t -ttn 8 -m stpm -n resnet18 -d coad -tid 0 -vid 1 -g 1
 ```
