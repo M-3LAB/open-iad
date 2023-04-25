@@ -429,9 +429,12 @@ class CentralizedAD2D():
                     self.trainer.recorder.record_result(infor_result)
 
     def work_flow(self):
-        self.train_and_infer(self.chosen_train_loaders, self.chosen_valid_loaders, self.chosen_vis_loaders,
-                              self.para_dict['train_task_id'], self.para_dict['train_task_id'])
+        if self.para_dict['vanilla'] or self.para_dict['semi'] or self.para_dict['fewshot'] or self.para_dict['noisy'] or self.para_dict['continual']:
+            self.train_and_infer(self.chosen_train_loaders, self.chosen_valid_loaders, self.chosen_vis_loaders,
+                                  self.para_dict['train_task_id'], self.para_dict['valid_task_id'])
         if self.para_dict['transfer']:
+            self.train_and_infer(self.chosen_train_loaders, self.chosen_valid_loaders, self.chosen_vis_loaders,
+                                  self.para_dict['train_task_id'], self.para_dict['train_task_id'])
             self.train_and_infer(self.chosen_transfer_train_loaders, self.chosen_transfer_valid_loaders, self.chosen_transfer_vis_loaders,
                                   self.para_dict['valid_task_id'], self.para_dict['valid_task_id'])
 
