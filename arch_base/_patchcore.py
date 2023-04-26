@@ -161,7 +161,6 @@ class PatchCore(ModelBase):
                 self.pixel_gt_list.append(mask_np)
                 self.pixel_pred_list.append(anomaly_map_cv)
                 self.img_gt_list.append(label.cpu().numpy()[0])
-                # print(img_score)
                 self.img_pred_list.append(img_score)
                 self.img_path_list.append(batch['img_src'])
 
