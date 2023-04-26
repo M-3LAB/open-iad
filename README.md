@@ -195,4 +195,5 @@ python3 main.py -p c2d -t -ttn 8 -m favae -n net_favae -d coad -tid 0 -vid 1 -g 
 python3 main.py -p c2d -t -ttn 8 -m padim -n resnet18 -d coad -tid 0 -vid 1 -g 1
 python3 main.py -p c2d -t -ttn 8 -m patchcore -n resnet18 -d coad -tid 0 -vid 1 -g 1
 python3 main.py -p c2d -t -ttn 8 -m stpm -n resnet18 -d coad -tid 0 -vid 1 -g 1
+python3 main.py -p c2d -t -ttn 8 -m graphcore -n vig_ti_224_gelu -d coad -tid 0 -vid 1 -g 1
 ```

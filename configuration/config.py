@@ -42,8 +42,8 @@ def parse_arguments_main():
     parser.add_argument('--fewshot-data-aug', '-fda', action='store_true', default=False)
     parser.add_argument('--fewshot-feat-aug', '-ffa', action='store_true', default=False)
     parser.add_argument('--fewshot-num-dg', '-fnd', type=int, default=1)
-    parser.add_argument('--fewshot-aug-type', '-fat', choices=['normal', 'rotation', 'scale', 'translate', 
-                                                               'flip', 'color_jitter', 'perspective'], default=['normal'], nargs='+')
+    parser.add_argument('--fewshot-aug-type', '-fat', default=['normal'], nargs='+', 
+                        choices=['normal', 'rotation', 'scale', 'translate', 'flip', 'color_jitter', 'perspective'])
 
     # noisy label
     parser.add_argument('--noisy', '-z', action='store_true', default=False)
@@ -55,10 +55,10 @@ def parse_arguments_main():
     parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--vis', action='store_true', default=True)
     parser.add_argument('--vis-em', action='store_true', default=False)
-    parser.add_argument('--guoyang', '-gy', action='store_true', default=True)
+    parser.add_argument('--guoyang', '-gy', action='store_true', default=False)
 
     # transfer 
-    parser.add_argument('--transfer', '-t', action='store_true', default=True)
+    parser.add_argument('--transfer', '-t', action='store_true', default=False)
     parser.add_argument('--transfer-type', type=str, default='inter_class', choices=['inter_class', 'intra_class'])
     parser.add_argument('--transfer-target-sample-num', '-ttn', type=int, default=8)
 

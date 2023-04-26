@@ -184,26 +184,16 @@ class PatchCore(torch.nn.Module):
         _ = self.forward_modules.eval()
 
         scores, masks, labels_gt, masks_gt = [], [], [], []
-        mas, imgs = [], []
-        import cv2
         with tqdm.tqdm(dataloader, desc="Inferring...", leave=False) as data_iterator:
             for image in data_iterator:
                 if isinstance(image, dict):
                     labels_gt.extend(image["label"].numpy().tolist())
                     masks_gt.extend(image["mask"].numpy().tolist())
                     img = image["img"]
-                    mas.append(image["mask"].numpy())
-                    imgs.append(image["img_src"])
-
                 _scores, _masks = self._predict(img)
                 for score, mask in zip(_scores, _masks):
                     scores.append(score)
                     masks.append(mask)
-        for i in range(10):
-            mask1 = np.array(mas[i]).squeeze().astype(int)
-            cv2.imwrite('./work_dir/mask_{}.jpg'.format(i), mask1 * 255)
-            img1 = cv2.imread(imgs[i][0])
-            cv2.imwrite('./work_dir/img_{}.jpg'.format(i), img1)
         return scores, masks, labels_gt, masks_gt
 
     def _predict(self, images):
