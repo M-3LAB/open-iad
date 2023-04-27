@@ -374,7 +374,8 @@ class CentralizedAD2D():
                       'spade': ('arch_base.spade', 'spade', 'SPADE'),
                       'stpm': ('arch_base.stpm', 'stpm', 'STPM'),
                       'cutpaste': ('arch_base.cutpaste', 'cutpaste', 'CutPaste'),
-                      'graphcore': ('arch_base.graphcore', 'graphcore', 'GraphCore') 
+                      'graphcore': ('arch_base.graphcore', 'graphcore', 'GraphCore'),
+                      'simplenet': ('arch_base.simplenet', 'simplenet', 'SimpleNet') 
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])

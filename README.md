@@ -82,12 +82,12 @@ python3 ./baselines/3d_btf/utils/preprocessing.py
 | ------ | ------ | ------ |
 | cfa | net_cfa | CFA: Coupled-hypersphere-based feature adaptation for target-oriented anomaly localization |
 | csflow | net_csflow | Fully convolutional cross-scale-flows for image-based defect detection |
-| cutpaste | vit_b_16 | Cutpaste: Self-supervised learning for anomaly detection and localization |
+| cutpaste | vit_b_16 | Cutpaste: self-supervised learning for anomaly detection and localization |
 | devnet | net_devnet | Explainable deep few-shot anomaly detection with deviation networks |
 | dne | vit_b_16 | Towards continual adaptation in industrial anomaly detection |
 | dra | net_dra | Catching both gray and black swans: open-set supervised anomaly detection |
-| draem | net_draem | Draem: A discriminatively trained reconstruction embedding for surface anomaly detection |
-| fastflow | net_fastflow | Fastflow: Unsupervised anomaly detection and localization via 2d normalizing flows |
+| draem | net_draem | Draem: a discriminatively trained reconstruction embedding for surface anomaly detection |
+| fastflow | net_fastflow | Fastflow: unsupervised anomaly detection and localization via 2d normalizing flows |
 | favae | net_favae | Anomaly localization by modeling perceptual features |
 | igd | net_igd | Deep one-class classification via interpolated gaussian descriptor |
 | padim  | resnet18, wide_resnet50 | Padim: a patch distribution modeling framework for anomaly detection and localization |
@@ -96,6 +96,7 @@ python3 ./baselines/3d_btf/utils/preprocessing.py
 | spade  | resnet18, wide_resnet50 | Sub-image anomaly detection with deep pyramid correspondences |
 | stpm  | resnet18, wide_resnet50 | Student-teacher feature pyramid matching for anomaly detection |
 | graphcore  | vig_ti_224_gelu, vig_s_224_gelu, vig_b_224_gelu | Pushing the limits of few-shot anomaly detection in industrial vision: GraphCore |
+| simplenet  | wide_resnet50 | SimpleNet: a simple network for image anomaly detection and localization |
 
 ## 3D Model
 | Method / -m | Net / -n | Paper Title |

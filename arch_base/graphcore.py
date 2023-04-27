@@ -14,7 +14,6 @@ import os
 __all__ = ['GraphCore']
 
 class GraphCore(ModelBase):
-
     def __init__(self, config, device, file_path, net, optimizer, scheduler):
         super(GraphCore, self).__init__(config, device, file_path, net, optimizer, scheduler)
 
