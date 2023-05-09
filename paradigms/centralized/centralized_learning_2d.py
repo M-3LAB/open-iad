@@ -120,8 +120,8 @@ class CentralizedAD2D():
 
         self.refer_dataset = extract_fewshot_data(self.train_dataset, self.para_dict['ref_num'])
         self.vis_dataset = extract_fewshot_data(self.valid_dataset, self.para_dict['vis_num'])
+        self.class_name = self.train_dataset.class_name
 
-            
         if self.para_dict['fewshot']:
             self.train_fewshot_dataset = extract_fewshot_data(self.train_dataset, self.para_dict['fewshot_exm'])
 
@@ -389,7 +389,7 @@ class CentralizedAD2D():
         for i, train_loader in enumerate(train_loaders):
             print('-> train ...')
             self.para_dict['train_task_id_tmp'] = train_task_ids[i]
-            print('run task: {}, {}'.format(self.para_dict['train_task_id_tmp'], train_loader.dataset.class_name[self.para_dict['train_task_id_tmp']]))
+            print('run task: {}, {}'.format(self.para_dict['train_task_id_tmp'], self.class_name[self.para_dict['train_task_id_tmp']]))
             self.trainer.train_model(train_loader, i)
 
             print('-> test ...')
@@ -399,7 +399,7 @@ class CentralizedAD2D():
                 if j > i:
                     break
                 self.para_dict['valid_task_id_tmp'] = valid_task_ids[j]
-                print('run task: {}, {}'.format(self.para_dict['valid_task_id_tmp'], valid_loader.dataset.class_name[self.para_dict['valid_task_id_tmp']]))
+                print('run task: {}, {}'.format(self.para_dict['valid_task_id_tmp'], self.class_name[self.para_dict['valid_task_id_tmp']]))
                 
                 # calculate time 
                 start_time = time.time()
