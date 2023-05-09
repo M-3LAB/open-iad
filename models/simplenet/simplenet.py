@@ -1,28 +1,21 @@
 """detection methods."""
-import logging
 import os
 import pickle
-from collections import OrderedDict
-
 import math
 import numpy as np
 import torch
 import torch.nn.functional as F
 import tqdm
-from torch.utils.tensorboard import SummaryWriter
 
-import common
+import models.simplenet.common as common
 import metrics
 
-LOGGER = logging.getLogger(__name__)
 
 def init_weight(m):
-
     if isinstance(m, torch.nn.Linear):
         torch.nn.init.xavier_normal_(m.weight)
     elif isinstance(m, torch.nn.Conv2d):
         torch.nn.init.xavier_normal_(m.weight)
-
 
 class Discriminator(torch.nn.Module):
     def __init__(self, in_planes, n_layers=1, hidden=None):
@@ -47,9 +40,7 @@ class Discriminator(torch.nn.Module):
         x = self.tail(x)
         return x
 
-
 class Projection(torch.nn.Module):
-    
     def __init__(self, in_planes, out_planes=None, n_layers=1, layer_type=0):
         super(Projection, self).__init__()
         
@@ -77,16 +68,6 @@ class Projection(torch.nn.Module):
         # x = .1 * self.layers(x) + x
         x = self.layers(x)
         return x
-
-
-class TBWrapper:
-    
-    def __init__(self, log_dir):
-        self.g_iter = 0
-        self.logger = SummaryWriter(log_dir=log_dir)
-    
-    def step(self):
-        self.g_iter += 1
 
 class SimpleNet(torch.nn.Module):
     def __init__(self, device):
@@ -123,10 +104,6 @@ class SimpleNet(torch.nn.Module):
         proj_layer_type=0,
         **kwargs,
     ):
-        pid = os.getpid()
-        def show_mem():
-            return(psutil.Process(pid).memory_info())
-
         self.backbone = backbone.to(device)
         self.layers_to_extract_from = layers_to_extract_from
         self.input_shape = input_shape
@@ -202,8 +179,6 @@ class SimpleNet(torch.nn.Module):
         os.makedirs(self.ckpt_dir, exist_ok=True)
         self.tb_dir = os.path.join(self.ckpt_dir, "tb")
         os.makedirs(self.tb_dir, exist_ok=True)
-        self.logger = TBWrapper(self.tb_dir) #SummaryWriter(log_dir=tb_dir)
-    
 
     def embed(self, data):
         if isinstance(data, torch.utils.data.DataLoader):
@@ -274,12 +249,9 @@ class SimpleNet(torch.nn.Module):
         features = self.forward_modules["preprocessing"](features) # pooling each feature to same channel and stack together
         features = self.forward_modules["preadapt_aggregator"](features) # further pooling        
 
-
         return features, patch_shapes
 
-    
     def test(self, training_data, test_data):
-
         ckpt_path = os.path.join(self.ckpt_dir, "models.ckpt")
         if os.path.exists(ckpt_path):
             state_dicts = torch.load(ckpt_path, map_location=self.device)
@@ -331,7 +303,6 @@ class SimpleNet(torch.nn.Module):
         return auroc, full_pixel_auroc
     
     def _evaluate(self, test_data, scores, segmentations, features, labels_gt, masks_gt):
-        
         scores = np.squeeze(np.array(scores))
         img_min_scores = scores.min(axis=-1)
         img_max_scores = scores.max(axis=-1)
@@ -373,85 +344,18 @@ class SimpleNet(torch.nn.Module):
             pro = -1
 
         return auroc, full_pixel_auroc, pro
-        
-    
-    def train(self, training_data, test_data):
 
-        
-        state_dict = {}
-        ckpt_path = os.path.join(self.ckpt_dir, "ckpt.pth")
-        if os.path.exists(ckpt_path):
-            state_dict = torch.load(ckpt_path, map_location=self.device)
-            if 'discriminator' in state_dict:
-                self.discriminator.load_state_dict(state_dict['discriminator'])
-                if "pre_projection" in state_dict:
-                    self.pre_projection.load_state_dict(state_dict["pre_projection"])
-            else:
-                self.load_state_dict(state_dict, strict=False)
-
-            self.predict(training_data, "train_")
-            scores, segmentations, features, labels_gt, masks_gt = self.predict(test_data)
-            auroc, full_pixel_auroc, anomaly_pixel_auroc = self._evaluate(test_data, scores, segmentations, features, labels_gt, masks_gt)
             
-            return auroc, full_pixel_auroc, anomaly_pixel_auroc
-        
-        def update_state_dict(d):
-            
-            state_dict["discriminator"] = OrderedDict({
-                k:v.detach().cpu() 
-                for k, v in self.discriminator.state_dict().items()})
-            if self.pre_proj > 0:
-                state_dict["pre_projection"] = OrderedDict({
-                    k:v.detach().cpu() 
-                    for k, v in self.pre_projection.state_dict().items()})
-
-        best_record = None
-        for i_mepoch in range(self.meta_epochs):
-
-            self._train_discriminator(training_data)
-
-            # torch.cuda.empty_cache()
-            scores, segmentations, features, labels_gt, masks_gt = self.predict(test_data)
-            auroc, full_pixel_auroc, pro = self._evaluate(test_data, scores, segmentations, features, labels_gt, masks_gt)
-            self.logger.logger.add_scalar("i-auroc", auroc, i_mepoch)
-            self.logger.logger.add_scalar("p-auroc", full_pixel_auroc, i_mepoch)
-            self.logger.logger.add_scalar("pro", pro, i_mepoch)
-
-            if best_record is None:
-                best_record = [auroc, full_pixel_auroc, pro]
-                update_state_dict(state_dict)
-                # state_dict = OrderedDict({k:v.detach().cpu() for k, v in self.state_dict().items()})
-            else:
-                if auroc > best_record[0]:
-                    best_record = [auroc, full_pixel_auroc, pro]
-                    update_state_dict(state_dict)
-                    # state_dict = OrderedDict({k:v.detach().cpu() for k, v in self.state_dict().items()})
-                elif auroc == best_record[0] and full_pixel_auroc > best_record[1]:
-                    best_record[1] = full_pixel_auroc
-                    best_record[2] = pro 
-                    update_state_dict(state_dict)
-                    # state_dict = OrderedDict({k:v.detach().cpu() for k, v in self.state_dict().items()})
-
-            print(f"----- {i_mepoch} I-AUROC:{round(auroc, 4)}(MAX:{round(best_record[0], 4)})"
-                  f"  P-AUROC{round(full_pixel_auroc, 4)}(MAX:{round(best_record[1], 4)}) -----"
-                  f"  PRO-AUROC{round(pro, 4)}(MAX:{round(best_record[2], 4)}) -----")
-        
-        torch.save(state_dict, ckpt_path)
-        
-        return best_record
-            
-
-    def _train_discriminator(self, input_data):
+    def train_discriminator(self, input_data):
         """Computes and sets the support features for SPADE."""
         _ = self.forward_modules.eval()
-        
+
         if self.pre_proj > 0:
             self.pre_projection.train()
         self.discriminator.train()
         # self.feature_enc.eval()
         # self.feature_dec.eval()
         i_iter = 0
-        LOGGER.info(f"Training discriminator...")
         with tqdm.tqdm(total=self.gan_epochs) as pbar:
             for i_epoch in range(self.gan_epochs):
                 all_loss = []
@@ -466,7 +370,7 @@ class SimpleNet(torch.nn.Module):
                     # self.dec_opt.zero_grad()
 
                     i_iter += 1
-                    img = data_item["image"]
+                    img = data_item["img"]
                     img = img.to(torch.float).to(self.device)
                     if self.pre_proj > 0:
                         true_feats = self.pre_projection(self._embed(img, evaluation=False)[0])
@@ -491,12 +395,7 @@ class SimpleNet(torch.nn.Module):
                     true_loss = torch.clip(-true_scores + th, min=0)
                     fake_loss = torch.clip(fake_scores + th, min=0)
 
-                    self.logger.logger.add_scalar(f"p_true", p_true, self.logger.g_iter)
-                    self.logger.logger.add_scalar(f"p_fake", p_fake, self.logger.g_iter)
-
                     loss = true_loss.mean() + fake_loss.mean()
-                    self.logger.logger.add_scalar("loss", loss, self.logger.g_iter)
-                    self.logger.step()
 
                     loss.backward()
                     if self.pre_proj > 0:
@@ -527,8 +426,7 @@ class SimpleNet(torch.nn.Module):
                     pbar_str += f" p_interp:{round(sum(all_p_interp) / len(input_data), 3)}"
                 pbar.set_description_str(pbar_str)
                 pbar.update(1)
-
-
+    
     def predict(self, data, prefix=""):
         if isinstance(data, torch.utils.data.DataLoader):
             return self._predict_dataloader(data, prefix)
@@ -537,30 +435,20 @@ class SimpleNet(torch.nn.Module):
     def _predict_dataloader(self, dataloader, prefix):
         """This function provides anomaly scores/maps for full dataloaders."""
         _ = self.forward_modules.eval()
-
-
-        img_paths = []
-        scores = []
-        masks = []
-        features = []
-        labels_gt = []
-        masks_gt = []
-        from sklearn.manifold import TSNE
-
+        scores, masks, labels_gt, masks_gt = [], [], [], []
         with tqdm.tqdm(dataloader, desc="Inferring...", leave=False) as data_iterator:
             for data in data_iterator:
                 if isinstance(data, dict):
-                    labels_gt.extend(data["is_anomaly"].numpy().tolist())
+                    labels_gt.extend(data["label"].numpy().tolist())
                     if data.get("mask", None) is not None:
                         masks_gt.extend(data["mask"].numpy().tolist())
-                    image = data["image"]
-                    img_paths.extend(data['image_path'])
+                    image = data["img"]
                 _scores, _masks, _feats = self._predict(image)
-                for score, mask, feat, is_anomaly in zip(_scores, _masks, _feats, data["is_anomaly"].numpy().tolist()):
+                for score, mask, feat, is_anomaly in zip(_scores, _masks, _feats, data["label"].numpy().tolist()):
                     scores.append(score)
                     masks.append(mask)
 
-        return scores, masks, features, labels_gt, masks_gt
+        return scores, masks, labels_gt, masks_gt
 
     def _predict(self, images):
         """Infer score and mask for a batch of images."""
@@ -605,7 +493,6 @@ class SimpleNet(torch.nn.Module):
         return os.path.join(filepath, prepend + "params.pkl")
 
     def save_to_path(self, save_path: str, prepend: str = ""):
-        LOGGER.info("Saving data.")
         self.anomaly_scorer.save(
             save_path, save_features_separately=False, prepend=prepend
         )

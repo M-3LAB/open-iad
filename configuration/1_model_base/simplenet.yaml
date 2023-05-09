@@ -1,6 +1,6 @@
 model: simplenet
 net: wide_resnet50
-data_size: 256 # 228
+data_size: 256 # 288
 data_crop_size: 256
 mask_size: 256
 mask_crop_size: 256
@@ -10,24 +10,28 @@ valid_batch_size: 1
 train_aug_type: normal
 valid_aug_type: normal
 
+_input_size: 1
+_layers_to_extract_from:
+- layer2
+- layer3
 _pretrain_embed_dimension: 1536
 _target_embed_dimension: 1536
 _patchsize: 3
 _patchstride: 1 
 _embedding_size: None # 256
-_meta_epochs: 1 # 40
+# _meta_epochs: 40 # num_epochs
 _aed_meta_epochs: 1
-_gan_epochs: 1 # 4
-_noise_std: 0.05
+_gan_epochs: 4 # 4
+_noise_std: 0.015
 _mix_noise: 1
 _noise_type: 'GAU'
 _dsc_layers: 2
-_dsc_hidden: None # 1024
+_dsc_hidden: 1024 # 1024
 _dsc_margin: .8 # .5
 _dsc_lr: 0.0002
 _train_backbone: False
 _auto_noise: 0
 _cos_lr: False
 _lr: 1e-3
-_pre_proj: 0 # 1
+_pre_proj: 1 # 1
 _proj_layer_type: 0

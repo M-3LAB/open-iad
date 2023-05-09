@@ -10,9 +10,9 @@ def parse_arguments_main():
     parser.add_argument('--paradigm', '-p', type=str, default='c2d', choices=['c2d', 'c3d', 'f2d'])
 
     # ----------------------------- centralized learning ----------------------------- #
-    parser.add_argument('--dataset', '-d', type=str, default='coad', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 
+    parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 
                                                                               'btad', 'mvtec2df3d', 'visa', 'dagm', 'coad'])
-    parser.add_argument('--model', '-m', type=str, default='patchcore', choices=['_patchcore', 'patchcore', 'csflow', 'dne', 
+    parser.add_argument('--model', '-m', type=str, default='simplenet', choices=['_patchcore', 'patchcore', 'csflow', 'dne', 
         'draem', 'igd', 'cutpaste', 'devnet', 'dra', 'favae', 'padim', 'reverse', 'spade', 'fastflow', 'softpatch', 'cfa', 'stpm',
         'graphcore', 'simplenet'])
     parser.add_argument('--net', '-n', type=str, default='wide_resnet50', choices=['wide_resnet50', 'resnet18', 'net_csflow',
@@ -23,11 +23,11 @@ def parse_arguments_main():
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
     parser.add_argument('--train-task-id', '-tid', type=int, default=[0], nargs='+')
-    parser.add_argument('--valid-task-id', '-vid', type=int, default=[2], nargs='+')
+    parser.add_argument('--valid-task-id', '-vid', type=int, default=[0], nargs='+')
     parser.add_argument('--sampler-percentage', '-sp', type=float, default= 0.01)
 
     # vanilla 
-    parser.add_argument('--vanilla', '-v', action='store_true', default=True)
+    parser.add_argument('--vanilla', '-v', action='store_true', default=False)
     
     # semi-supervised 
     parser.add_argument('--semi', '-s', action='store_true', default=False)
@@ -56,7 +56,7 @@ def parse_arguments_main():
     parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--vis', action='store_true', default=True)
     parser.add_argument('--vis-em', action='store_true', default=False)
-    parser.add_argument('--guoyang', '-gy', action='store_true', default=True)
+    parser.add_argument('--guoyang', '-gy', action='store_true', default=False)
 
     # transfer 
     parser.add_argument('--transfer', '-t', action='store_true', default=False)
