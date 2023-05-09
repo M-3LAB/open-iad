@@ -54,7 +54,7 @@ def parse_arguments_main():
     parser.add_argument('--gpu-id', '-g', type=str, default=1)
     parser.add_argument('--num-epochs', '-ne', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
-    parser.add_argument('--vis', '-vis', action='store_true', default=False)
+    parser.add_argument('--vis', '-vis', action='store_true', default=True)
     parser.add_argument('--vis-em', action='store_true', default=False)
     parser.add_argument('--guoyang', '-gy', action='store_true', default=False)
 

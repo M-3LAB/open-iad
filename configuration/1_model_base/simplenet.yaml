@@ -10,7 +10,6 @@ valid_batch_size: 1
 train_aug_type: normal
 valid_aug_type: normal
 
-_input_size: 1
 _layers_to_extract_from:
 - layer2
 - layer3
