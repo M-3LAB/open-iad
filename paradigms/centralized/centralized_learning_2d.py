@@ -296,6 +296,8 @@ class CentralizedAD2D():
                     self.chosen_transfer_train_loaders.append(self.train_transfer_loaders[idx])
                     self.chosen_transfer_valid_loaders.append(self.valid_loaders[idx])
                     self.chosen_transfer_vis_loaders.append(self.vis_loaders[idx])
+        else:
+            NotImplementedError('No this setting!')
     
     def init_model(self):
         self.net, self.optimizer, self.scheduler = None, None, None

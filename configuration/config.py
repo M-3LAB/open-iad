@@ -23,7 +23,7 @@ def parse_arguments_main():
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
     parser.add_argument('--train-task-id', '-tid', type=int, default=[0], nargs='+')
-    parser.add_argument('--valid-task-id', '-vid', type=int, default=[0], nargs='+')
+    parser.add_argument('--valid-task-id', '-vid', type=int, default=[1], nargs='+')
     parser.add_argument('--sampler-percentage', '-sp', type=float, default= 0.01)
 
     # vanilla 
@@ -38,7 +38,7 @@ def parse_arguments_main():
     parser.add_argument('--continual', '-c', action='store_true', default=False)
 
     # fewshot 
-    parser.add_argument('--fewshot', '-f', action='store_true', default=True)
+    parser.add_argument('--fewshot', '-f', action='store_true', default=False)
     parser.add_argument('--fewshot-exm', '-fe', type=int, default=1)
     parser.add_argument('--fewshot-data-aug', '-fda', action='store_true', default=False)
     parser.add_argument('--fewshot-feat-aug', '-ffa', action='store_true', default=False)
@@ -54,9 +54,9 @@ def parse_arguments_main():
     parser.add_argument('--gpu-id', '-g', type=str, default=1)
     parser.add_argument('--num-epochs', '-ne', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
-    parser.add_argument('--vis', action='store_true', default=True)
+    parser.add_argument('--vis', '-vis', action='store_true', default=False)
     parser.add_argument('--vis-em', action='store_true', default=False)
-    parser.add_argument('--guoyang', '-gy', action='store_true', default=True)
+    parser.add_argument('--guoyang', '-gy', action='store_true', default=False)
 
     # transfer 
     parser.add_argument('--transfer', '-t', action='store_true', default=False)

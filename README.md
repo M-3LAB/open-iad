@@ -142,6 +142,7 @@ python3 main.py -p c2d -c -m reverse -n net_reverse -d mvtec2d -tid 0 1 -vid 0 1
 python3 main.py -p c2d -c -m spade -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
 python3 main.py -p c2d -c -m stpm -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
 python3 main.py -p c2d -c -m dne -n vit_b_16 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -p c2d -c -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
 ```
 
 > Fewshot / -f
@@ -172,7 +173,7 @@ python3 main.py -p c2d -s -m dra -n net_dra -d mvtecloco -tid 0 -vid 0 -g 1
 
 > Noisy / -z
 ```bash
-python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 1 -sp 0.001 -g 1
+python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m patchcore -n resnet18 -sp 0.001 -g 1
 python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 2
@@ -185,6 +186,7 @@ python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m reverse -n net_re
 python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m spade -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m stpm -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m igd -n net_igd -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m simplenet -n wide_resnet50  -d mvtec2d -tid 0 -vid 0 -g 1
 ```
 
 > Transfer / -t
@@ -199,4 +201,5 @@ python3 main.py -p c2d -t -ttn 8 -m padim -n resnet18 -d coad -tid 0 -vid 1 -g 1
 python3 main.py -p c2d -t -ttn 8 -m patchcore -n resnet18 -d coad -tid 0 -vid 1 -g 1
 python3 main.py -p c2d -t -ttn 8 -m stpm -n resnet18 -d coad -tid 0 -vid 1 -g 1
 python3 main.py -p c2d -t -ttn 8 -m graphcore -n vig_ti_224_gelu -d coad -tid 0 -vid 1 -g 1
+python3 main.py -p c2d -t -ttn 8 -m simplenet -n wide_resnet50 -d coad -tid 0 -vid 1 -g 1
 ```
