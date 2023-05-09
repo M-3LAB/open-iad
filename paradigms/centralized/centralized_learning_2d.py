@@ -147,21 +147,21 @@ class CentralizedAD2D():
         # vanilla training
         for i in range(self.para_dict['num_task']):
             train_task_data_list = self.train_dataset.sample_indices_in_task
-            train_noisy_loader = DataLoader(self.train_dataset,
+            train_loader = DataLoader(self.train_dataset,
                                     batch_size=self.para_dict['train_batch_size'],
                                     num_workers=self.para_dict['num_workers'],
                                     sampler=SubsetRandomSampler(train_task_data_list[i]),
                                     drop_last=False)
-            self.train_loaders.append(train_noisy_loader)
+            self.train_loaders.append(train_loader)
 
             valid_task_data_list = self.valid_dataset.sample_indices_in_task
-            valid_noisy_loader = DataLoader(self.valid_dataset, 
+            valid_loader = DataLoader(self.valid_dataset, 
                                     batch_size=self.para_dict['valid_batch_size'], 
                                     num_workers=self.para_dict['num_workers'],
                                     shuffle=False,
                                     sampler=SubsetRandomSampler(valid_task_data_list[i]),
                                     drop_last=False)
-            self.valid_loaders.append(valid_noisy_loader)
+            self.valid_loaders.append(valid_loader)
 
             refer_task_data_list = self.refer_dataset.sample_indices_in_task
             refer_loader = DataLoader(self.train_dataset, 
