@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 from tools.visualize import save_anomaly_map
 
-
 __all__ = ['RecordHelper']
 
 class RecordHelper():
@@ -30,9 +29,9 @@ class RecordHelper():
             return 'noisy'
         elif self.config['transfer']:
             return 'transfer'
-        print('Add new setting in record_helper.py!')
-        
-        return 'unknown'
+        else:
+            print('Add new setting in record_helper.py!')
+            return 'unknown'
 
     def record_result(self, result):
         paradim = self.paradigm_name()
@@ -52,7 +51,9 @@ class RecordHelper():
             save_path = '{}/result_{}_task.txt'.format(save_dir, self.config['valid_task_id_tmp'])
         if paradim == 'noisy':
             save_path = '{}/result_{}_ratio.txt'.format(save_dir, self.config['noisy_ratio'])
-        
+        if paradim == 'transfer':
+            save_path = '{}/result_from_{}_to_{}.txt'.format(save_dir, self.config['train_task_id'][0], self.config['valid_task_id'][0]) 
+
         with open(save_path, 'a') as f:
             print(result, file=f) 
 
@@ -71,6 +72,8 @@ class RecordHelper():
             save_dir = '{}/vis_{}_task'.format(save_dir, self.config['valid_task_id_tmp'])
         if paradim == 'noisy':
             save_dir = '{}/vis_{}_ratio'.format(save_dir, self.config['noisy_ratio'])
+        if paradim == 'transfer':
+            save_dir = '{}/vis_from_{}_to_{}'.format(save_dir, self.config['train_task_id'][0], self.config['valid_task_id'][0])
 
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
