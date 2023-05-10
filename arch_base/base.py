@@ -8,18 +8,20 @@ class ModelBase():
         self.file_path = file_path
         self.net = net
 
-        self.metric = CalMetric(self.config)
         self.img_pred_list = [] # list<numpy>
         self.img_gt_list = [] # list<numpy>
         self.pixel_pred_list = [] # list<numpy(m,n)>
         self.pixel_gt_list = [] # list<numpy(m,n)>
         self.img_path_list = [] # list<str>
 
+        self.metric = CalMetric(self.config)
         self.recorder = RecordHelper(self.config)
 
+    def train_model(self, train_loader, task_id, inf=''):
+        pass
+    
     def train_epoch(self, train_loader, task_id, inf=''):
         pass
-
 
     def prediction(self, valid_loader, task_id=None):
         pass
