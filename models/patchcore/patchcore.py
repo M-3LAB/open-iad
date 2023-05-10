@@ -182,19 +182,20 @@ class PatchCore(torch.nn.Module):
     def _predict_dataloader(self, dataloader):
         """This function provides anomaly scores/maps for full dataloaders."""
         _ = self.forward_modules.eval()
-
-        scores, masks, labels_gt, masks_gt = [], [], [], []
+        
+        scores, masks, labels_gt, masks_gt, img_srcs = [], [], [], [], []
         with tqdm.tqdm(dataloader, desc="Inferring...", leave=False) as data_iterator:
             for image in data_iterator:
                 if isinstance(image, dict):
                     labels_gt.extend(image["label"].numpy().tolist())
                     masks_gt.extend(image["mask"].numpy().tolist())
                     img = image["img"]
+                    img_srcs.append(image["img_src"])
                 _scores, _masks = self._predict(img)
                 for score, mask in zip(_scores, _masks):
                     scores.append(score)
                     masks.append(mask)
-        return scores, masks, labels_gt, masks_gt
+        return scores, masks, labels_gt, masks_gt, img_srcs
 
     def _predict(self, images):
         """Infer score and mask for a batch of images."""

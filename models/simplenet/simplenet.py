@@ -435,7 +435,7 @@ class SimpleNet(torch.nn.Module):
     def _predict_dataloader(self, dataloader, prefix):
         """This function provides anomaly scores/maps for full dataloaders."""
         _ = self.forward_modules.eval()
-        scores, masks, labels_gt, masks_gt = [], [], [], []
+        scores, masks, labels_gt, masks_gt, img_srcs = [], [], [], [], []
         with tqdm.tqdm(dataloader, desc="Inferring...", leave=False) as data_iterator:
             for data in data_iterator:
                 if isinstance(data, dict):
@@ -443,12 +443,13 @@ class SimpleNet(torch.nn.Module):
                     if data.get("mask", None) is not None:
                         masks_gt.extend(data["mask"].numpy().tolist())
                     image = data["img"]
+                    img_srcs.append(data["img_src"])
                 _scores, _masks, _feats = self._predict(image)
                 for score, mask, feat, is_anomaly in zip(_scores, _masks, _feats, data["label"].numpy().tolist()):
                     scores.append(score)
                     masks.append(mask)
 
-        return scores, masks, labels_gt, masks_gt
+        return scores, masks, labels_gt, masks_gt, img_srcs
 
     def _predict(self, images):
         """Infer score and mask for a batch of images."""

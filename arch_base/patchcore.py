@@ -48,7 +48,7 @@ class PatchCore(ModelBase):
         self.patchcore_instance.eval()
         self.clear_all_list()
 
-        scores, segmentations, labels_gt, masks_gt = self.patchcore_instance.predict(valid_loader)
+        scores, segmentations, labels_gt, masks_gt, img_srcs = self.patchcore_instance.predict(valid_loader)
 
         scores = np.array(scores)
         min_scores = scores.min(axis=-1).reshape(-1, 1)
@@ -70,9 +70,7 @@ class PatchCore(ModelBase):
         self.pixel_pred_list = [seg for seg in segmentations]
         self.img_gt_list = labels_gt
         self.img_pred_list = scores
-
-        for batch in valid_loader:
-            self.img_path_list.append(batch['img_src'])
+        self.img_path_list = img_srcs
 
 
         
