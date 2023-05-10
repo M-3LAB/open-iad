@@ -1,5 +1,6 @@
-# IM-VAD: Vision Anomaly Detection Benchmark in Industrial Manufacturing
-## Preliminary  
+# IM-IAD: Industrial Image Anomaly Detection Benchmark in Manufacturing 
+
+## Envs
 
 ```bash
 pytorch 1.10.1 or 1.8.1
@@ -64,52 +65,52 @@ python3 ./baselines/3d_btf/utils/preprocessing.py
 
 ## Learning Paradigm
 
-| Prototypes | Marker | Train | Test |
-| ------ | ---| -------|------ |
-| *centralized 2d* | -p c2d | |
-| vanilla | -v |all data (id=0) | all data (id=0) |
-| semi | -s | all data (id=0) + anomaly data (id=0) | all data (id=0) - anomaly data (id=0)|
-| continual | -c| all data (id=0 and 1)| all data (id=0 or 1)|
-| fewshot | -f | fewshot (id=0) | all data (id=0) |
-| noisy | -z | all data (id=0) + noisy data (id=0) | all data (id=0) - noisy data (id=0)|
-| transfer | -t | step 1: all data (id=0) | all data (id=0)|
-|  |  | step 2: fewshot data (id=1) | all data (id=1)|
-| *centralized 3d* | -p c3d | To be updated! |
-| *federated 2d* | -p f2d |  To be updated! |
+|| Prototypes | Marker | Train | Test |
+| ------ | ------ | ---| -------|------ |
+| $\bigstar$ | *centralized 2d* | -p c2d | |
+|  | vanilla | -v |all data (id=0) | all data (id=0) |
+|  | semi | -s | all data (id=0) + anomaly data (id=0) | all data (id=0) - anomaly data (id=0)|
+|  | continual | -c| all data (id=0 and 1)| all data (id=0 or 1)|
+|  | fewshot | -f | fewshot (id=0) | all data (id=0) |
+|  | noisy | -z | all data (id=0) + noisy data (id=0) | all data (id=0) - noisy data (id=0)|
+|  | transfer | -t | step 1: all data (id=0) | all data (id=0)|
+|  |  |  | step 2: fewshot data (id=1) | all data (id=1)|
+| $\bigstar$ | *centralized 3d* | -p c3d | To be updated! |
+| $\bigstar$ | *federated 2d* | -p f2d |  To be updated! |
 
 ## 2D Model
-| Method / -m | Net / -n | Paper Title|
-| ------ | ------ | ------ |
-| cfa | net_cfa | CFA: Coupled-hypersphere-based feature adaptation for target-oriented anomaly localization |
-| csflow | net_csflow | Fully convolutional cross-scale-flows for image-based defect detection |
-| cutpaste | vit_b_16 | Cutpaste: self-supervised learning for anomaly detection and localization |
-| devnet | net_devnet | Explainable deep few-shot anomaly detection with deviation networks |
-| dne | vit_b_16 | Towards continual adaptation in industrial anomaly detection |
-| dra | net_dra | Catching both gray and black swans: open-set supervised anomaly detection |
-| draem | net_draem | Draem: a discriminatively trained reconstruction embedding for surface anomaly detection |
-| fastflow | net_fastflow | Fastflow: unsupervised anomaly detection and localization via 2d normalizing flows |
-| favae | net_favae | Anomaly localization by modeling perceptual features |
-| igd | net_igd | Deep one-class classification via interpolated gaussian descriptor |
-| padim  | resnet18, wide_resnet50 | Padim: a patch distribution modeling framework for anomaly detection and localization |
-| patchcore  | resnet18, wide_resnet50 | Towards total recall in industrial anomaly detection |
-| reverse (rd4ad) | net_reverse | Anomaly detection via reverse distillation from one-class embedding |
-| spade  | resnet18, wide_resnet50 | Sub-image anomaly detection with deep pyramid correspondences |
-| stpm  | resnet18, wide_resnet50 | Student-teacher feature pyramid matching for anomaly detection |
-| graphcore  | vig_ti_224_gelu, vig_s_224_gelu, vig_b_224_gelu | Pushing the limits of few-shot anomaly detection in industrial vision: GraphCore |
-| simplenet  | wide_resnet50 | SimpleNet: a simple network for image anomaly detection and localization |
+| No. | Method / -m | Net / -n | Paper Title|
+| ------ | ------ | ------ | ------ |
+| 1 | cfa | net_cfa | CFA: Coupled-hypersphere-based feature adaptation for target-oriented anomaly localization |
+| 2 | csflow | net_csflow | Fully convolutional cross-scale-flows for image-based defect detection |
+| 3 | cutpaste | vit_b_16 | Cutpaste: self-supervised learning for anomaly detection and localization |
+| 4 | devnet | net_devnet | Explainable deep few-shot anomaly detection with deviation networks |
+| 5 | dne | vit_b_16 | Towards continual adaptation in industrial anomaly detection |
+| 6 | dra | net_dra | Catching both gray and black swans: open-set supervised anomaly detection |
+| 7 | draem | net_draem | Draem: a discriminatively trained reconstruction embedding for surface anomaly detection |
+| 8 | fastflow | net_fastflow | Fastflow: unsupervised anomaly detection and localization via 2d normalizing flows |
+| 9 | favae | net_favae | Anomaly localization by modeling perceptual features |
+| 10 | igd | net_igd | Deep one-class classification via interpolated gaussian descriptor |
+| 11 | padim  | resnet18, wide_resnet50 | Padim: a patch distribution modeling framework for anomaly detection and localization |
+| 12 | patchcore  | resnet18, wide_resnet50 | Towards total recall in industrial anomaly detection |
+| 13 | reverse (rd4ad) | net_reverse | Anomaly detection via reverse distillation from one-class embedding |
+| 14 | spade  | resnet18, wide_resnet50 | Sub-image anomaly detection with deep pyramid correspondences |
+| 15 | stpm  | resnet18, wide_resnet50 | Student-teacher feature pyramid matching for anomaly detection |
+| 16 | graphcore  | vig_ti_224_gelu, vig_s_224_gelu, vig_b_224_gelu | Pushing the limits of few-shot anomaly detection in industrial vision: GraphCore |
+| 17 | simplenet  | wide_resnet50 | SimpleNet: a simple network for image anomaly detection and localization |
 
 ## 3D Model
-| Method / -m | Net / -n | Paper Title |
-| ------ | ------ | ------ |
-| 3d_btf | -- | Back to the feature: classical 3D features are (almost) all you need for 3D anomaly detection | 
-| 3d_ast | | AST: Asymmetric student-teacher networks for industrial anomaly detection |
+| No. | Method / -m | Net / -n | Paper Title |
+| ------ | ------ | ------ | ------ |
+| 1 | 3d_btf | -- | Back to the feature: classical 3D features are (almost) all you need for 3D anomaly detection | 
+| 2 | 3d_ast | | AST: Asymmetric student-teacher networks for industrial anomaly detection |
 
 
 ## Run Example
 
 > Vanilla / -v
 ```bash
-python3 main.py -p c2d -v -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
+python3 main.py -p c2d -v -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
 python3 main.py -p c2d -v -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -v -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -v -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 1
@@ -149,7 +150,6 @@ python3 main.py -p c2d -c -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 1 -vid
 ```bash
 python3 main.py -p c2d -f --fewshot-exm 1 -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -sp 0.1 -g 1 -fda -fnd 4 -fat rotation
 python3 main.py -p c2d -f --fewshot-exm 1 -m _patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 -sp 1 -fda -fnd 4 -g 1
-python3 main.py -p c2d -f --fewshot-exm 1 -m patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 -sp 1 -g 1
 python3 main.py -p c2d -f --fewshot-exm 1 -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -f --fewshot-exm 1 -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -f --fewshot-exm 1 -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 1
