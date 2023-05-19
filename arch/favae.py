@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from arch_base.base import ModelBase
+from arch.base import ModelBase
 from torchvision import models
 from models.favae.func import EarlyStop, AverageMeter
 import torch.nn.functional as F

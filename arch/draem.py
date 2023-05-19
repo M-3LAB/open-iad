@@ -2,7 +2,7 @@ import torch
 from torch import nn
 import numpy as np
 import argparse
-from arch_base.base import ModelBase
+from arch.base import ModelBase
 from loss_function.focal_loss import FocalLoss
 from loss_function.ssim_loss import SSIMLoss
 from augmentation.draem_aug import DraemAugData

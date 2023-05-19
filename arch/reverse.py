@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 from torch.nn import functional as F
-from arch_base.base import ModelBase
+from arch.base import ModelBase
 from scipy.ndimage import gaussian_filter
 from loss_function.reverse_loss import reverse_loss
 

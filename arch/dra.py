@@ -3,7 +3,7 @@ from torch import nn
 import numpy as np
 import argparse
 import torch.nn.functional as F
-from arch_base.base import ModelBase
+from arch.base import ModelBase
 from models.dra.dra_resnet18 import *
 from loss_function.deviation_loss import DeviationLoss
 from loss_function.binaryfocal_loss import BinaryFocalLoss

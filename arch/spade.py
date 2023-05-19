@@ -2,7 +2,7 @@ import torch
 from collections import OrderedDict
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
-from arch_base.base import ModelBase
+from arch.base import ModelBase
 
 
 __all__ = ['SPADE']

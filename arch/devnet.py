@@ -2,7 +2,7 @@ import torch
 from torch import nn
 import argparse
 import torch.nn.functional as F
-from arch_base.base import ModelBase
+from arch.base import ModelBase
 from loss_function.deviation_loss import DeviationLoss
 from loss_function.binaryfocal_loss import BinaryFocalLoss
 

@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional as F
-from arch_base.base import ModelBase
+from arch.base import ModelBase
 import numpy as np
 import copy
 

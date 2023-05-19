@@ -1,5 +1,5 @@
 import numpy as np
-from arch_base.base import ModelBase
+from arch.base import ModelBase
 from models.patchcore.patchcore import PatchCore as patchcore_official
 from models.patchcore import common
 from models.patchcore import sampler

@@ -3,7 +3,7 @@ from collections import OrderedDict
 from random import sample
 import torch.nn.functional as F
 import numpy as np
-from arch_base.base import ModelBase
+from arch.base import ModelBase
 from tools.utils import *
 from scipy.spatial.distance import mahalanobis
 from scipy.ndimage import gaussian_filter

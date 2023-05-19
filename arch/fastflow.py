@@ -1,5 +1,5 @@
 import torch
-from arch_base.base import ModelBase
+from arch.base import ModelBase
 from models.fastflow.func import AverageMeter
 import numpy as np
 

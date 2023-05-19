@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from arch_base.base import ModelBase
+from arch.base import ModelBase
 from models.simplenet import simplenet
 
 __all__ = ['SimpleNet']

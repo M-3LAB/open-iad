@@ -1,5 +1,5 @@
 import torch
-from arch_base.base import ModelBase
+from arch.base import ModelBase
 from models.igd.ssim_module import *
 from models.igd.mvtec_module import *
 from pytorch_msssim import ms_ssim

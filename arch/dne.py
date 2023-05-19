@@ -3,8 +3,8 @@ from torch import nn
 import numpy as np
 import argparse
 import torch.nn.functional as F
-from arch_base.base import ModelBase
-from tools.density import GaussianDensityTorch
+from arch.base import ModelBase
+from models.cutpaste.density import GaussianDensityTorch
 
 
 __all__ = ['DNE']

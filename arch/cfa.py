@@ -1,5 +1,5 @@
 import torch
-from arch_base.base import ModelBase
+from arch.base import ModelBase
 from models.cfa.metrics import  upsample, rescale, gaussian_smooth
 from models.cfa.cfa import DSVDD
 import torch.nn.functional as F
