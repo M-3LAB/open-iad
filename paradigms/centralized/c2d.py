@@ -58,7 +58,7 @@ class CentralizedAD2D():
         self.para_dict = merge_config(config, self.args)
         self.args = extract_config(self.args)
 
-        ip, root_path = assign_service(self.para_dict['guoyang'])
+        ip, root_path = assign_service(self.para_dict['server_moda'])
         print('local ip: {}, root_path: {}'.format(ip, root_path))
 
         self.para_dict['root_path'] = root_path

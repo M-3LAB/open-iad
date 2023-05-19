@@ -46,4 +46,4 @@ vis: false
 vis_num: 10
 # vis embedding
 vis_em: false
-guoyang: false
+server_moda: eno1

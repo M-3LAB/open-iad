@@ -56,7 +56,7 @@ def parse_arguments_main():
     parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--vis', '-vis', action='store_true', default=True)
     parser.add_argument('--vis-em', action='store_true', default=False)
-    parser.add_argument('--guoyang', '-gy', action='store_true', default=False)
+    parser.add_argument('--server-moda', '-sm', type=str, default='eno1', choices=['eno1', 'lo'])
 
     # transfer 
     parser.add_argument('--transfer', '-t', action='store_true', default=False)

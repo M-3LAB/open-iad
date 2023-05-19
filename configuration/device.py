@@ -8,11 +8,9 @@ def get_ip_address(ifname):
 
     return socket.inet_ntoa(info[20:24])
 
-def assign_service(guoyang):
-    if guoyang:
-        ip = get_ip_address('lo')
-    else:
-        ip = get_ip_address('eno1')
+def assign_service(moda='eno1'):
+    # moda: eno1, lo
+    ip = get_ip_address(moda)
 
     root_path = None
 
