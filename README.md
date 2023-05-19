@@ -50,20 +50,6 @@ pip install opencv-python
 
 > 3D: mvtec3d
 
-## MVTec3D Preprocessing
-
-> 3d_ast
-```bash
-cp -r ../zip/mvtec3d_official ./mvtec3d_ast
-python3 ./baselines/3d_ast/preprocess.py
-```
-> 3d_btf
-```bash
-cp -r ../zip/mvtec3d_official ./mvtec3d_btf
-python3 ./baselines/3d_btf/utils/preprocessing.py
-```
-
-
 ## Learning Paradigm
 
 || Prototypes | Marker | Train | Test |
