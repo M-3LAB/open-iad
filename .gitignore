@@ -4,8 +4,5 @@
 work_dir/
 checkpoints/
 .vscode/
-test/
-results/
-save_results/
 .idea/
 .history/
