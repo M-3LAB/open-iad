@@ -5,7 +5,6 @@ from xml.dom.minidom import DOMImplementation
 import torch
 import yaml
 import argparse
-import os
 from tools.utils import *
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
@@ -26,9 +25,9 @@ from models.reverse.net_reverse import NetReverse
 from models.fastflow.net import NetFastFlow
 from models.cfa.net_cfa import NetCFA
 from models.graphcore.net_graphcore import NetGraphCore
+from models.favae.net_favae import NetFAVAE
  
 from optimizer.optimizer import get_optimizer
-from models.favae.net_favae import NetFAVAE
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
 from timm.optim import create_optimizer
@@ -360,24 +359,24 @@ class CentralizedAD2D():
             self.optimizer = create_optimizer(args, self.net.model)
             self.scheduler = create_scheduler(args, self.optimizer)
 
-        model_name = {'_patchcore': ('arch_base._patchcore', '_patchcore', 'PatchCore'),
-                      'patchcore': ('arch_base.patchcore', 'patchcore', 'PatchCore'),
-                      'padim': ('arch_base.padim', 'padim', 'PaDim'),
-                      'csflow': ('arch_base.csflow', 'csflow', 'CSFlow'),
-                      'dne': ('arch_base.dne', 'dne', 'DNE'),
-                      'draem': ('arch_base.draem', 'draem', 'DRAEM'),
-                      'igd': ('arch_base.igd', 'igd', 'IGD'),
-                      'dra': ('arch_base.dra', 'dra', 'DRA'),
-                      'devnet': ('arch_base.devnet', 'devnet', 'DevNet'),
-                      'favae': ('arch_base.favae', 'favae', 'FAVAE'),
-                      'fastflow': ('arch_base.fastflow', 'fastflow', 'FastFlow'),
-                      'cfa': ('arch_base.cfa', 'cfa', 'CFA'),
-                      'reverse': ('arch_base.reverse', 'reverse', 'REVERSE'),
-                      'spade': ('arch_base.spade', 'spade', 'SPADE'),
-                      'stpm': ('arch_base.stpm', 'stpm', 'STPM'),
-                      'cutpaste': ('arch_base.cutpaste', 'cutpaste', 'CutPaste'),
-                      'graphcore': ('arch_base.graphcore', 'graphcore', 'GraphCore'),
-                      'simplenet': ('arch_base.simplenet', 'simplenet', 'SimpleNet') 
+        model_name = {'_patchcore': ('arch._patchcore', '_patchcore', 'PatchCore'),
+                      'patchcore': ('arch.patchcore', 'patchcore', 'PatchCore'),
+                      'padim': ('arch.padim', 'padim', 'PaDim'),
+                      'csflow': ('arch.csflow', 'csflow', 'CSFlow'),
+                      'dne': ('arch.dne', 'dne', 'DNE'),
+                      'draem': ('arch.draem', 'draem', 'DRAEM'),
+                      'igd': ('arch.igd', 'igd', 'IGD'),
+                      'dra': ('arch.dra', 'dra', 'DRA'),
+                      'devnet': ('arch.devnet', 'devnet', 'DevNet'),
+                      'favae': ('arch.favae', 'favae', 'FAVAE'),
+                      'fastflow': ('arch.fastflow', 'fastflow', 'FastFlow'),
+                      'cfa': ('arch.cfa', 'cfa', 'CFA'),
+                      'reverse': ('arch.reverse', 'reverse', 'REVERSE'),
+                      'spade': ('arch.spade', 'spade', 'SPADE'),
+                      'stpm': ('arch.stpm', 'stpm', 'STPM'),
+                      'cutpaste': ('arch.cutpaste', 'cutpaste', 'CutPaste'),
+                      'graphcore': ('arch.graphcore', 'graphcore', 'GraphCore'),
+                      'simplenet': ('arch.simplenet', 'simplenet', 'SimpleNet') 
                      }
 
         model_package = __import__(model_name[self.para_dict['model']][0])
