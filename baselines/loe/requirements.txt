@@ -1,7 +1,0 @@
-pandas
-numpy
-scikit-learn
-scipy
-torch
-torchvision
-pyyaml

@@ -1,7 +1,0 @@
-torch
-torchvision
-sklearn
-pandas
-seaborn
-tqdm
-tensorboard
