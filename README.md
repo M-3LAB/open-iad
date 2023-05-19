@@ -24,6 +24,7 @@ pip install opencv-python
 │   ├── 3_dataset_base # lowest priority
 │   ├── config.py # for main.py
 │   └── device.py # for device
+│   └── registeration.py # register new model, dataset, server
 ├── data_io # dataset processing and loading data interface
 ├── legacy_code # old code, not used
 ├── loss_function
