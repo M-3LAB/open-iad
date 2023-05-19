@@ -3,8 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from arch_base.base import ModelBase
-from tools.density import GaussianDensityTorch
-
+from models.cutpaste.density import GaussianDensityTorch
 
 __all__ = ['CutPaste']
 
