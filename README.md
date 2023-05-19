@@ -15,8 +15,9 @@ pip install opencv-python
 
 ## Project Instruction
 ```bash
-├── arch_base # model base class
-├── baselines # source code 
+.
+├── arch # model base class
+├── augmentation # data augmentation
 ├── checkpoints # pretrained or requirements
 ├── configuration
 │   ├── 1_model_base # highest priority
@@ -26,18 +27,16 @@ pip install opencv-python
 │   └── device.py # for device
 │   └── registeration.py # register new model, dataset, server
 ├── data_io # dataset processing and loading data interface
-├── legacy_code # old code, not used
 ├── loss_function
 ├── metrics
 ├── models # basic layers for model class in arch_base
 ├── optimizer
 ├── paradigms # learning paradigms
 │   ├── centralized
-│   │   ├── centralized_learning_2d.py # 2D
-│   │   ├── centralized_learning_3d.py # 3D
+│   │   ├── c2d.py # 2D
+│   │   ├── c3d.py # 3D
 │   └── federated
-│       └── federated_learning_2d.py # 2D
-├── run_scripts # shell code
+│       └── f2d.py # 2D
 ├── tools
 ├── work_dir # save results
 ├── main.py # run start, with configuration/config.py
