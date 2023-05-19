@@ -6,8 +6,10 @@ import yaml
 import warnings
 warnings.filterwarnings("ignore")
 
-class CentralizedAD3D():
+class FederatedAD2D():
     def __init__(self, args):
         self.args = args
     
-    # TODO
+
+    def run_work_flow(self):
+        pass
