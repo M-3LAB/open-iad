@@ -17,7 +17,7 @@ def parse_arguments_main():
         'graphcore', 'simplenet'])
     parser.add_argument('--net', '-n', type=str, default='wide_resnet50', choices=['wide_resnet50', 'resnet18', 'net_csflow',
         'vit_b_16', 'net_draem', 'net_dra', 'net_igd', 'net_reverse', 'net_favae', 'net_fastflow', 'net_cfa', 'net_devnet', 
-        'vig_ti_224_gelu', 'vig_s_224_gelu', 'vig_b_224_gelu']) 
+        'vig_ti_224_gelu']) 
 
     parser.add_argument('--root-path', '-rp', type=str, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)

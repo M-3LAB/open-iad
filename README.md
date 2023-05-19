@@ -96,7 +96,7 @@ python3 ./baselines/3d_btf/utils/preprocessing.py
 | 13 | reverse | net_reverse | Anomaly detection via reverse distillation from one-class embedding |
 | 14 | spade  | resnet18, wide_resnet50 | Sub-image anomaly detection with deep pyramid correspondences |
 | 15 | stpm  | resnet18, wide_resnet50 | Student-teacher feature pyramid matching for anomaly detection |
-| 16 | graphcore  | vig_s_224_gelu | Pushing the limits of few-shot anomaly detection in industrial vision: GraphCore |
+| 16 | graphcore  | vig_ti_224_gelu | Pushing the limits of few-shot anomaly detection in industrial vision: GraphCore |
 | 17 | simplenet  | wide_resnet50 | SimpleNet: a simple network for image anomaly detection and localization |
 
 ## 3D Model

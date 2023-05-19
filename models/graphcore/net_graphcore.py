@@ -9,7 +9,7 @@ from torchprofile import profile_macs
 __all__ = ['NetGraphCore']
 
 def graphcore_ck_name(model_name, ck_path):
-    model_name_splits = ck_name_parsing(model_name)
+    model_name_splits = model_name.split('_')
     print(model_name_splits)
     if model_name_splits[0] == 'pvig':
         ck_name = ck_path+model_name_splits[0]+ '_' + model_name_splits[1] + '.pth.tar'
