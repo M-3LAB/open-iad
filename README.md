@@ -93,10 +93,10 @@ python3 ./baselines/3d_btf/utils/preprocessing.py
 | 10 | igd | net_igd | Deep one-class classification via interpolated gaussian descriptor |
 | 11 | padim  | resnet18, wide_resnet50 | Padim: a patch distribution modeling framework for anomaly detection and localization |
 | 12 | patchcore  | resnet18, wide_resnet50 | Towards total recall in industrial anomaly detection |
-| 13 | reverse (rd4ad) | net_reverse | Anomaly detection via reverse distillation from one-class embedding |
+| 13 | reverse | net_reverse | Anomaly detection via reverse distillation from one-class embedding |
 | 14 | spade  | resnet18, wide_resnet50 | Sub-image anomaly detection with deep pyramid correspondences |
 | 15 | stpm  | resnet18, wide_resnet50 | Student-teacher feature pyramid matching for anomaly detection |
-| 16 | graphcore  | vig_ti_224_gelu, vig_s_224_gelu, vig_b_224_gelu | Pushing the limits of few-shot anomaly detection in industrial vision: GraphCore |
+| 16 | graphcore  | vig_s_224_gelu | Pushing the limits of few-shot anomaly detection in industrial vision: GraphCore |
 | 17 | simplenet  | wide_resnet50 | SimpleNet: a simple network for image anomaly detection and localization |
 
 ## 3D Model
