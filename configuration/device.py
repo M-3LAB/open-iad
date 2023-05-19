@@ -18,8 +18,6 @@ def assign_service(moda='eno1'):
         root_path = '/disk4/xgy' 
     if ip == '127.0.0.1':
         root_path = '/home/robot/data'
-    if ip == '172.18.34.25':
-        root_path = '/home/zhengf_lab/cse30010351/m3lab/data'
     if ip == '172.18.36.107':
         root_path = '/ssd-sata1/wjb/data/open-ad'
     if ip == '172.18.36.108':
