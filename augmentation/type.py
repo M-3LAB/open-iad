@@ -1,5 +1,5 @@
 from torchvision import transforms as T
-from data_io.augmentation.cutpaste_aug import *
+from augmentation.cutpaste_aug import *
 
 __all__ = ['aug_type']
 

@@ -3,7 +3,7 @@ from PIL import Image
 from torchvision import transforms as T
 import kornia.geometry.transform as kt
 import numpy as np
-from data_io.augmentation.cutpaste_aug import *
+from augmentation.cutpaste_aug import *
 
 
 def domain_gen(config, data):

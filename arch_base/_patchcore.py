@@ -7,7 +7,7 @@ from sklearn.random_projection import SparseRandomProjection
 import faiss
 import math
 from scipy.ndimage import gaussian_filter
-from data_io.augmentation.domain_generalization import feature_augmentation
+from augmentation.domain_generalization import feature_augmentation
 from arch_base.base import ModelBase
 from tools.utils import *
 import os

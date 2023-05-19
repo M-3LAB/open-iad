@@ -3,7 +3,7 @@ import numpy as np
 import glob
 import cv2
 import imgaug.augmenters as iaa
-from data_io.augmentation.perlin import rand_perlin_2d_np
+from augmentation.perlin import rand_perlin_2d_np
 
 
 __all__ = ['DraemAugData']

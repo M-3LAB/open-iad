@@ -13,8 +13,8 @@ from data_io.fewshot import FewShot, extract_fewshot_data
 from data_io.noisy import extract_noisy_data
 from data_io.semi import extract_semi_data
 from data_io.transfer import extract_transfer_data
-from data_io.augmentation.domain_generalization import domain_gen
-from data_io.augmentation.type import aug_type 
+from augmentation.domain_generalization import domain_gen
+from augmentation.type import aug_type 
 
 from models.net_csflow.net_csflow import NetCSFlow
 from models.vit.vit import ViT

@@ -5,7 +5,7 @@ import argparse
 from arch_base.base import ModelBase
 from loss_function.focal_loss import FocalLoss
 from loss_function.ssim_loss import SSIMLoss
-from data_io.augmentation.draem_aug import DraemAugData
+from augmentation.draem_aug import DraemAugData
 
 
 __all__ = ['DRAEM', 'weights_init']
