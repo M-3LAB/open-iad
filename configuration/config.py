@@ -51,29 +51,23 @@ def parse_arguments_main():
     parser.add_argument('--noisy-overlap', '-no', action='store_true', default=False)
     parser.add_argument('--noisy-ratio', '-nr', type=float, default=0.1)
 
-    parser.add_argument('--gpu-id', '-g', type=str, default=1)
-    parser.add_argument('--num-epochs', '-ne', type=int, default=None)
-    parser.add_argument('--debug', action='store_true', default=False)
-    parser.add_argument('--vis', '-vis', action='store_true', default=True)
-    parser.add_argument('--vis-em', action='store_true', default=False)
-    parser.add_argument('--server-moda', '-sm', type=str, default='eno1', choices=['eno1', 'lo'])
-
     # transfer 
     parser.add_argument('--transfer', '-t', action='store_true', default=False)
     parser.add_argument('--transfer-type', type=str, default='inter_class', choices=['inter_class', 'intra_class'])
     parser.add_argument('--transfer-target-sample-num', '-ttn', type=int, default=8)
 
-    # testing-time-training 
-    parser.add_argument('--testing-time-training', '-ttt', action='store_true', default=False)
-
-    # logical
-    parser.add_argument('--num-parallel-workers', '-npw', type=int, default=8)
-
     # data augmentation type
     parser.add_argument('--train-aug-type', '-tag', choices=['normal', 'cutpaste'], help='data augmentation type')
     parser.add_argument('--valid-aug-type', '-vag', choices=['normal', 'cutpaste'], help='data augmentation type')
 
-    # not used
+    # univerisal
+    parser.add_argument('--gpu-id', '-g', type=str, default=1)
+    parser.add_argument('--server-moda', '-sm', type=str, default='eno1', choices=['eno1', 'lo'])
+    parser.add_argument('--num-epochs', '-ne', type=int, default=None)
+    parser.add_argument('--debug', action='store_true', default=False)
+    parser.add_argument('--vis', '-vis', action='store_true', default=True)
+    parser.add_argument('--vis-em', action='store_true', default=False)
+
     parser.add_argument('--save-model', action='store_true', default=False)
     parser.add_argument('--load-model', action='store_true', default=False)
     parser.add_argument('--load-model-dir', type=str, default=None)
@@ -82,7 +76,6 @@ def parse_arguments_main():
     parser.add_argument('--fed-aggregate-method', '-fam', type=str, default=None)
     parser.add_argument('--num-round', type=int, default=None)
 
-    # TODO
 
     args = parser.parse_args()
     return args
