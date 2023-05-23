@@ -148,6 +148,7 @@ python3 main.py -p c2d -f --fewshot-exm 1 -m igd -n net_igd -d mvtec2d -tid 0 -v
 python3 main.py -p c2d -f --fewshot-exm 1 -m reverse -n net_reverse -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -f --fewshot-exm 1 -m spade -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -f --fewshot-exm 1 -m stpm -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -f --fewshot-exm 1 -m graphcore -n vig_ti_224_gelu -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
 python3 main.py -p c2d -f --fewshot-exm 1 -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -g 1
 ```
 
