@@ -1,20 +1,20 @@
 import torch
-from collections import OrderedDict
 import torch.nn.functional as F
+from collections import OrderedDict
 from scipy.ndimage import gaussian_filter
 from arch.base import ModelBase
-
+from torchvision import models
 
 __all__ = ['SPADE']
 
 class SPADE(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(SPADE, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(SPADE, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net.to(self.device) 
- 
+
+        if self.config['net'] == 'resnet18': 
+            self.net = models.resnet18(pretrained=True, progress=True).to(self.device) 
+            
         self.features = []
         self.get_layer_features()
         
