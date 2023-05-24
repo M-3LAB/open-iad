@@ -7,24 +7,22 @@ from arch.base import ModelBase
 from tools.utils import *
 from scipy.spatial.distance import mahalanobis
 from scipy.ndimage import gaussian_filter
-from tools.utils import save_feat_pickle
-
+from torchvision import models
 
 __all__ = ['PaDim']
 
 class PaDim(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(PaDim, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(PaDim, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net.to(self.device)
-        
-        if self.config['net'] == 'resnet18':
-            t_d, d = 448, 100
-        elif self.config['net'] == 'wide_resnet50':
-            t_d, d = 1792, 550
 
+        if self.config['net'] == 'resnet18': 
+            self.net = models.resnet18(pretrained=True, progress=True).to(self.device)
+            t_d, d = 448, 100
+        if self.config['net'] == 'wide_resnet50':
+            self.net = models.wide_resnet50_2(pretrained=True, progress=True).to(self.device)
+            t_d, d = 1792, 550
+            
         # random select d dimension 
         self.idx = torch.tensor(sample(range(0, t_d), d))
         self.features = []
