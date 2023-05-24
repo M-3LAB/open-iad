@@ -1,23 +1,25 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
 from arch.base import ModelBase
+from models.favae.net_favae import NetFAVAE
 from torchvision import models
 from models.favae.func import EarlyStop, AverageMeter
-import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
-import numpy as np
+from optimizer.optimizer import get_optimizer
 
 
 __all__ = ['FAVAE']
 
 class FAVAE(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(FAVAE, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(FAVAE, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
 
-        self.vaenet = net.to(self.device)
+        self.vaenet = NetFAVAE().to(self.device)
+        self.optimizer = get_optimizer(self.config, self.vaenet.parameters())
+        self.scheduler = None
         self.teacher = models.vgg16(pretrained=True).to(self.device)
         for param in self.teacher.parameters():
             param.requires_grad = False
@@ -25,8 +27,6 @@ class FAVAE(ModelBase):
         self.early_stop = EarlyStop(patience=20, save_name='favae.pt')
         self.criterion_1 = nn.MSELoss(reduction='sum')
         self.criterion_2 = nn.MSELoss(reduction='none')
-        self.optimizer = optimizer
-        self.scheduler = scheduler
 
     def feature_extractor(self, x, model, target_layers):
         target_activations = list()
