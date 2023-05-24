@@ -12,7 +12,7 @@ class CFA(ModelBase):
     def __init__(self, config):
         super(CFA, self).__init__(config)
         self.config = config
-        self.net = NetCFA(config).resnet18.to(self.device)
+        self.net = NetCFA(self.config).resnet18.to(self.device)
     
     @staticmethod 
     def upsample(x, size, mode):

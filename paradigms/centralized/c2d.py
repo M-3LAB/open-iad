@@ -316,10 +316,10 @@ class CentralizedAD2D():
             self.net = DraResNet18()
             self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)
-        if self.para_dict['net'] == 'net_devnet':
-            self.net = DevNetResNet18()
-            self.optimizer = get_optimizer(args, self.net.parameters())
-            self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)       
+        # if self.para_dict['net'] == 'net_devnet':
+        #     self.net = DevNetResNet18()
+        #     self.optimizer = get_optimizer(args, self.net.parameters())
+        #     self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)       
         if self.para_dict['net'] == 'net_favae':
             self.net = NetFAVAE() 
             self.optimizer = get_optimizer(args, self.net.parameters())

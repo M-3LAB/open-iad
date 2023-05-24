@@ -5,7 +5,8 @@ import torch.nn.functional as F
 from arch.base import ModelBase
 from loss_function.deviation_loss import DeviationLoss
 from loss_function.binaryfocal_loss import BinaryFocalLoss
-
+from models.devnet.devnet_resnet18 import DevNetResNet18
+from optimizer.optimizer import get_optimizer
 
 __all__ = ['DevNet']
 
@@ -54,19 +55,16 @@ class _DevNet(nn.Module):
         return score.view(-1, 1)
 
 class DevNet(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(DevNet, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(DevNet, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net
 
-        self.args = argparse.Namespace(**self.config)
-        self.model = _DevNet(self.args, self.net).to(self.device)
-        
-        self.criterion = build_criterion(self.args._criterion) 
-        self.optimizer = optimizer
-        self.scheduler = scheduler
+        self.net = DevNetResNet18()
+        self.optimizer = get_optimizer(self.config, self.net.parameters())
+        self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=self.config['_step_size'], gamma=self.config['_gamma'])  
+        args = argparse.Namespace(**self.config)
+        self.model = _DevNet(args, self.net).to(self.device)
+        self.criterion = build_criterion(self.config['_criterion']) 
 
     def train_model(self, train_loader, task_id, inf=''):
         self.model.train()
