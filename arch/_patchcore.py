@@ -1,35 +1,36 @@
 import torch
-from models._patchcore.kcenter_greedy import KCenterGreedy 
 import cv2
 import torch.nn.functional as F
 import numpy as np
-from sklearn.random_projection import SparseRandomProjection
 import faiss
 import math
-from scipy.ndimage import gaussian_filter
-from augmentation.domain_generalization import feature_augmentation
-from arch.base import ModelBase
-from tools.utils import *
 import os
-
+from arch.base import ModelBase
+from torchvision import models
+from sklearn.random_projection import SparseRandomProjection
+from models._patchcore.kcenter_greedy import KCenterGreedy 
+from augmentation.domain_generalization import feature_augmentation
+from scipy.ndimage import gaussian_filter
+from tools.utils import *
 
 __all__ = ['PatchCore']
 
 class PatchCore(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(PatchCore, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(PatchCore, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net
 
-        self.net.to(self.device)
+        if self.config['net'] == 'resnet18': 
+            self.net = models.resnet18(pretrained=True, progress=True).to(self.device)
+        if self.config['net'] == 'wide_resnet50':
+            self.net = models.wide_resnet50_2(pretrained=True, progress=True).to(self.device)
+
         self.features = [] 
         self.get_layer_features()
 
         self.random_projector = SparseRandomProjection(n_components='auto', eps=0.9)
         self.embedding_coreset = np.array([])
-        self.embedding_path = self.file_path + '/embed'
+        self.embedding_path = self.config['file_path'] + '/embed'
         create_folders(self.embedding_path)
         
     def get_layer_features(self):

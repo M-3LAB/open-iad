@@ -3,16 +3,20 @@ from arch.base import ModelBase
 from models.patchcore.patchcore import PatchCore as patchcore_official
 from models.patchcore import common
 from models.patchcore import sampler
+from torchvision import models
 
 __all__ = ['PatchCore']
 
 class PatchCore(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(PatchCore, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(PatchCore, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net
+
+        if self.config['net'] == 'resnet18': 
+            self.net = models.resnet18(pretrained=True, progress=True).to(self.device)
+        if self.config['net'] == 'wide_resnet50':
+            self.net = models.wide_resnet50_2(pretrained=True, progress=True).to(self.device)
+
         self.sampler = self.get_sampler(self.config['_sampler_name'])
         self.nn_method = common.FaissNN(self.config['_faiss_on_gpu'], self.config['_faiss_num_workers'])
 
