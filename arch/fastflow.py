@@ -1,21 +1,21 @@
 import torch
-from arch.base import ModelBase
-from models.fastflow.func import AverageMeter
 import numpy as np
+from arch.base import ModelBase
+from models.fastflow.net import NetFastFlow
+from models.fastflow.func import AverageMeter
+from optimizer.optimizer import get_optimizer
 
 
 __all__ = ['FastFlow']
 
 class FastFlow(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(FastFlow, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(FastFlow, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net
-        self.net.to(self.device)
-        self.optimizer = optimizer
-        self.scheduler = scheduler
+
+        self.net = NetFastFlow(self.config).to(self.device) 
+        self.optimizer = get_optimizer(self.config, self.net.parameters())
+        self.scheduler = None
 
     def train_model(self, train_loader, inf=''):
         self.net.train()
