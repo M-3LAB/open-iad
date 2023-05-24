@@ -27,7 +27,7 @@ from models.cfa.net_cfa import NetCFA
 from models.graphcore.net_graphcore import NetGraphCore
 from models.favae.net_favae import NetFAVAE
  
-from optimizer.optimizer import get_optimizer
+
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torchvision import models
 from timm.optim import create_optimizer
@@ -293,9 +293,9 @@ class CentralizedAD2D():
             self.net = models.wide_resnet50_2(pretrained=True, progress=True)
 
         args = argparse.Namespace(**self.para_dict)
-        if self.para_dict['net'] == 'net_csflow': 
-            self.net = NetCSFlow(args)
-            self.optimizer = get_optimizer(args, self.net.density_estimator.parameters())
+        # if self.para_dict['net'] == 'net_csflow': 
+        #     self.net = NetCSFlow(args)
+        #     self.optimizer = get_optimizer(args, self.net.density_estimator.parameters())
         if self.para_dict['net'] == 'vit_b_16':
             self.net = ViT(num_classes=args._num_classes, pretrained=args._pretrained, checkpoint_path='./checkpoints/vit/vit_b_16.npz')
             self.optimizer = get_optimizer(args, self.net.parameters())

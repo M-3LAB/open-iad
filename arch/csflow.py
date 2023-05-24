@@ -2,9 +2,11 @@ from __future__ import nested_scopes
 import torch
 from torch import nn
 import numpy as np
+import argparse
 
-from arch_base.base import ModelBase
-
+from arch.base import ModelBase
+from models.net_csflow.net_csflow import NetCSFlow
+from optimizer.optimizer import get_optimizer
 
 __all__ = ['CSFlow']
 
@@ -29,13 +31,13 @@ class _CSFlow(nn.Module):
             self.scheduler.step(epoch)
 
 class CSFlow(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(CSFlow, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(CSFlow, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net
-        self.model = _CSFlow(self.config, self.net, optimizer, scheduler).to(self.device)
+        args = argparse.Namespace(**self.config)
+        self.net = NetCSFlow(args)
+        self.optimizer = get_optimizer(self.config, self.net.density_estimator.parameters())
+        self.model = _CSFlow(args, self.net, self.optimizer, self.scheduler).to(self.device)
         
     def train_model(self, train_loader, task_id, inf=''):
         self.net.density_estimator.train()
