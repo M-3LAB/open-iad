@@ -296,10 +296,10 @@ class CentralizedAD2D():
         # if self.para_dict['net'] == 'net_csflow': 
         #     self.net = NetCSFlow(args)
         #     self.optimizer = get_optimizer(args, self.net.density_estimator.parameters())
-        if self.para_dict['net'] == 'vit_b_16':
-            self.net = ViT(num_classes=args._num_classes, pretrained=args._pretrained, checkpoint_path='./checkpoints/vit/vit_b_16.npz')
-            self.optimizer = get_optimizer(args, self.net.parameters())
-            self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs)
+        # if self.para_dict['net'] == 'vit_b_16':
+        #     self.net = ViT(num_classes=args._num_classes, pretrained=args._pretrained, checkpoint_path='./checkpoints/vit/vit_b_16.npz')
+        #     self.optimizer = get_optimizer(args, self.net.parameters())
+        #     self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs)
         if self.para_dict['net'] == 'net_draem':
             self.net = NetDRAEM(args)
             self.optimizer = get_optimizer(args, list(self.net.reconstructive_subnetwork.parameters()) + list(self.net.discriminative_subnetwork.parameters()))
@@ -337,9 +337,9 @@ class CentralizedAD2D():
         #     self.net = NetCFA(args)
         #     self.optimizer = None
         #     self.scheduler = None
-        if self.para_dict['model'] == 'cutpaste':
-            self.optimizer = get_optimizer(args, self.net.parameters())
-            self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs) 
+        # if self.para_dict['model'] == 'cutpaste':
+        #     self.optimizer = get_optimizer(args, self.net.parameters())
+        #     self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs) 
         if self.para_dict['model'] == 'graphcore':
             self.net = NetGraphCore(args)
             self.optimizer = create_optimizer(args, self.net.model)

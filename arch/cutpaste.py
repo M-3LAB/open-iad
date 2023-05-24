@@ -1,9 +1,13 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import argparse
 
 from arch.base import ModelBase
+from models.vit.vit import ViT
 from models.cutpaste.density import GaussianDensityTorch
+from optimizer.optimizer import get_optimizer
+from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 
 __all__ = ['CutPaste']
 
@@ -35,15 +39,15 @@ class _CutPaste(nn.Module):
         return density
 
 class CutPaste(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(CutPaste, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(CutPaste, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net
-        self.optimizer = optimizer
-        self.scheduler = scheduler
-        self.model = _CutPaste(self.config, self.net, optimizer, scheduler).to(self.device)
+        args = argparse.Namespace(**self.config)
+        self.net = ViT(num_classes=args._num_classes, pretrained=args._pretrained, checkpoint_path='./checkpoints/vit/vit_b_16.npz')
+        self.optimizer = get_optimizer(self.config, self.net.parameters())
+        self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs)
+        
+        self.model = _CutPaste(args, self.net, self.optimizer, self.scheduler).to(self.device)
         self.density = GaussianDensityTorch()
         self.one_epoch_embeds = []
     
