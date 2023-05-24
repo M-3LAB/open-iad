@@ -35,7 +35,7 @@ class _CutPaste(nn.Module):
     def training_epoch(self, density, one_epoch_embeds, *args):
         one_epoch_embeds = torch.cat(one_epoch_embeds)
         one_epoch_embeds = F.normalize(one_epoch_embeds, p=2, dim=1)
-        _, _ = density.fit(one_epoch_embeds)
+        density.fit(one_epoch_embeds)
         return density
 
 class CutPaste(ModelBase):
@@ -43,9 +43,9 @@ class CutPaste(ModelBase):
         super(CutPaste, self).__init__(config)
         self.config = config
         args = argparse.Namespace(**self.config)
-        self.net = ViT(num_classes=args._num_classes, pretrained=args._pretrained, checkpoint_path='./checkpoints/vit/vit_b_16.npz')
+        self.net = ViT(num_classes=self.config['_num_classes'], pretrained=self.config['_pretrained'], checkpoint_path='./checkpoints/vit/vit_b_16.npz')
         self.optimizer = get_optimizer(self.config, self.net.parameters())
-        self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs)
+        self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, self.config['num_epochs'])
         
         self.model = _CutPaste(args, self.net, self.optimizer, self.scheduler).to(self.device)
         self.density = GaussianDensityTorch()
