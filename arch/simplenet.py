@@ -2,23 +2,20 @@ import torch
 import torch.nn as nn
 import numpy as np
 from arch.base import ModelBase
-from models.simplenet import simplenet
+from models.simplenet.simplenet import SimpleNet as _SimpleNet 
+from torchvision import models
 
 __all__ = ['SimpleNet']
 
 class SimpleNet(ModelBase):
-
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(SimpleNet, self).__init__(config, device, file_path, net, optimizer, scheduler)
-
+    def __init__(self, config):
+        super(SimpleNet, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net
-        self.optimizer = optimizer
-        self.scheduler = scheduler
-    
-        self.simplenet = simplenet.SimpleNet(self.device)
+
+        if self.config['net'] == 'wide_resnet50':
+            self.net = models.wide_resnet50_2(pretrained=True, progress=True).to(self.device) 
+
+        self.simplenet = _SimpleNet(self.device)
         self.simplenet.load(
             backbone=self.net,
             layers_to_extract_from=self.config['_layers_to_extract_from'],
