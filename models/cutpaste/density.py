@@ -19,6 +19,7 @@ class GaussianDensityTorch(object):
     def fit(self, embeddings):
         self.mean = torch.mean(embeddings, axis=0)
         self.inv_cov = torch.Tensor(LedoitWolf().fit(embeddings.cpu()).precision_,device="cpu")
+        return self.mean, self.inv_cov
 
     def predict(self, embeddings):
         distances = self.mahalanobis_distance(embeddings, self.mean, self.inv_cov)

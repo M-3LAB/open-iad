@@ -35,7 +35,7 @@ class _CutPaste(nn.Module):
     def training_epoch(self, density, one_epoch_embeds, *args):
         one_epoch_embeds = torch.cat(one_epoch_embeds)
         one_epoch_embeds = F.normalize(one_epoch_embeds, p=2, dim=1)
-        density.fit(one_epoch_embeds)
+        _, _ = density.fit(one_epoch_embeds)
         return density
 
 class CutPaste(ModelBase):

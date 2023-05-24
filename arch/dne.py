@@ -63,7 +63,7 @@ class _DNE(nn.Module):
                 task_wise_embeds.append(one_epoch_embeds)
         for_eval_embeds = torch.cat(task_wise_embeds, dim=0)
         for_eval_embeds = F.normalize(for_eval_embeds, p=2, dim=1)
-        density.fit(for_eval_embeds)
+        _, _ = density.fit(for_eval_embeds)
         
         return density
 
