@@ -5,7 +5,9 @@ import argparse
 import torch.nn.functional as F
 from arch.base import ModelBase
 from models.cutpaste.density import GaussianDensityTorch
-
+from models.vit.vit import ViT
+from optimizer.optimizer import get_optimizer
+from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 
 __all__ = ['DNE']
 
@@ -61,20 +63,21 @@ class _DNE(nn.Module):
                 task_wise_embeds.append(one_epoch_embeds)
         for_eval_embeds = torch.cat(task_wise_embeds, dim=0)
         for_eval_embeds = F.normalize(for_eval_embeds, p=2, dim=1)
-        _, _ = density.fit(for_eval_embeds)
+        density.fit(for_eval_embeds)
+        
         return density
 
 class DNE(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(DNE, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(DNE, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net
 
+        self.net = ViT(num_classes=self.config['_num_classes'], pretrained=self.config['_pretrained'], checkpoint_path='./checkpoints/vit/vit_b_16.npz')
+        self.optimizer = get_optimizer(self.config, self.net.parameters())
+        self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, self.config['num_epochs'])
         self.args = argparse.Namespace(**self.config)
-        self.model = _DNE(self.args, self.net, optimizer, scheduler).to(self.device)
-        
+        self.model = _DNE(self.args, self.net, self.optimizer, self.scheduler).to(self.device)
+
         self.density = GaussianDensityTorch()
         self.one_epoch_embeds = []
         self.task_wise_mean = []
