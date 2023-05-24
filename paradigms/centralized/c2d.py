@@ -340,10 +340,10 @@ class CentralizedAD2D():
         # if self.para_dict['model'] == 'cutpaste':
         #     self.optimizer = get_optimizer(args, self.net.parameters())
         #     self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs) 
-        if self.para_dict['model'] == 'graphcore':
-            self.net = NetGraphCore(args)
-            self.optimizer = create_optimizer(args, self.net.model)
-            self.scheduler = create_scheduler(args, self.optimizer)
+        # if self.para_dict['model'] == 'graphcore':
+        #     self.net = NetGraphCore(args)
+        #     self.optimizer = create_optimizer(args, self.net.model)
+        #     self.scheduler = create_scheduler(args, self.optimizer)
 
         model_package = __import__(model_name[self.para_dict['model']][0])
         model_module = getattr(model_package, model_name[self.para_dict['model']][1])

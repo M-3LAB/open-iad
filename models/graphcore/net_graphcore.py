@@ -19,7 +19,6 @@ def graphcore_ck_name(model_name, ck_path):
         raise FileNotFoundError
 
     return ck_name
-    
 
 class NetGraphCore(nn.Module):
     def __init__(self, config):

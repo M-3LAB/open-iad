@@ -1,35 +1,38 @@
 import torch
-from models._patchcore.kcenter_greedy import KCenterGreedy 
-import cv2
 import torch.nn.functional as F
+import cv2
 import numpy as np
-from sklearn.random_projection import SparseRandomProjection
+import os
 import faiss
 import math
+import argparse
+from models._patchcore.kcenter_greedy import KCenterGreedy 
+from sklearn.random_projection import SparseRandomProjection
 from scipy.ndimage import gaussian_filter
 from arch.base import ModelBase
+from models.graphcore.net_graphcore import NetGraphCore
+from timm.optim import create_optimizer
+from timm.scheduler import create_scheduler
 from tools.utils import *
-import os
 
 __all__ = ['GraphCore']
 
 class GraphCore(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(GraphCore, self).__init__(config, device, file_path, net, optimizer, scheduler)
-
+    def __init__(self, config):
+        super(GraphCore, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net
 
-        self.model = self.net.model
-        self.model.to(self.device)
+        args = argparse.Namespace(**self.config)
+        self.net = NetGraphCore(args)
+        self.optimizer = create_optimizer(args, self.net.model)
+        self.scheduler = create_scheduler(args, self.optimizer)
+        self.model = self.net.model.to(self.device)
         self.features = []
         self.get_layer_features()
 
         self.random_projector = SparseRandomProjection(n_components='auto', eps=0.9)
         self.embedding_coreset = np.array([])
-        self.embedding_path = self.file_path + '/embed'
+        self.embedding_path = self.config['file_path'] + '/embed'
         create_folders(self.embedding_path)
 
     def get_layer_features(self):
