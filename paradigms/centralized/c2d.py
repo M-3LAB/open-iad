@@ -285,14 +285,14 @@ class CentralizedAD2D():
             NotImplementedError('No this setting!')
     
     def init_model(self):
-        self.net, self.optimizer, self.scheduler = None, None, None
+        # self.net, self.optimizer, self.scheduler = None, None, None
 
-        if self.para_dict['net'] == 'resnet18': 
-            self.net = models.resnet18(pretrained=True, progress=True)
-        if self.para_dict['net'] == 'wide_resnet50':
-            self.net = models.wide_resnet50_2(pretrained=True, progress=True)
+        # if self.para_dict['net'] == 'resnet18': 
+        #     self.net = models.resnet18(pretrained=True, progress=True)
+        # if self.para_dict['net'] == 'wide_resnet50':
+        #     self.net = models.wide_resnet50_2(pretrained=True, progress=True)
 
-        args = argparse.Namespace(**self.para_dict)
+        # args = argparse.Namespace(**self.para_dict)
         # if self.para_dict['net'] == 'net_csflow': 
         #     self.net = NetCSFlow(args)
         #     self.optimizer = get_optimizer(args, self.net.density_estimator.parameters())
@@ -331,8 +331,8 @@ class CentralizedAD2D():
         #     self.net = NetFastFlow(self.para_dict) 
         #     self.optimizer = get_optimizer(args, self.net.parameters())
         #     self.scheduler = None
-        if self.para_dict['model'] == 'stpm':
-            self.optimizer = get_optimizer(args, self.net.parameters())
+        # if self.para_dict['model'] == 'stpm':
+        #     self.optimizer = get_optimizer(args, self.net.parameters())
         # if self.para_dict['net'] == 'net_cfa':
         #     self.net = NetCFA(args)
         #     self.optimizer = None

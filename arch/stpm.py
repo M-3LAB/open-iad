@@ -1,26 +1,29 @@
 import torch
 import torch.nn.functional as F
-from arch.base import ModelBase
 import numpy as np
 import copy
+from arch.base import ModelBase
+from torchvision import models
+from optimizer.optimizer import get_optimizer
 
 __all__ = ['STPM']
 
 class STPM(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(STPM, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(STPM, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net_student = net.to(self.device) 
-        self.net_teacher = copy.deepcopy(net).to(self.device) 
 
+        if self.config['net'] == 'resnet18': 
+            self.net = models.resnet18(pretrained=True, progress=True).to(self.device) 
+        self.net_student = self.net
+        self.net_teacher = copy.deepcopy(self.net).to(self.device) 
+        self.optimizer = get_optimizer(self.config, self.net_student.parameters())
+        
         self.features_teacher = []
         self.features_student = []
         self.get_layer_features()
 
         self.criterion = torch.nn.MSELoss(reduction='sum')
-        self.optimizer = optimizer
 
     def cal_anomaly_map(self, feat_teachers, feat_students, out_size=224):
         anomaly_map = np.ones([out_size, out_size])

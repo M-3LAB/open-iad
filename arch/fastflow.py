@@ -5,7 +5,6 @@ from models.fastflow.net import NetFastFlow
 from models.fastflow.func import AverageMeter
 from optimizer.optimizer import get_optimizer
 
-
 __all__ = ['FastFlow']
 
 class FastFlow(ModelBase):
