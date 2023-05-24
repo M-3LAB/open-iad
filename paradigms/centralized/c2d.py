@@ -324,9 +324,9 @@ class CentralizedAD2D():
         #     self.net = NetFAVAE() 
         #     self.optimizer = get_optimizer(args, self.net.parameters())
         #     self.scheduler = None
-        if self.para_dict['net'] == 'net_reverse':
-            self.net = NetReverse(args) 
-            self.optimizer = get_optimizer(args, list(self.net.decoder.parameters()) + list(self.net.bn.parameters()))
+        # if self.para_dict['net'] == 'net_reverse':
+        #     self.net = NetReverse(args) 
+        #     self.optimizer = get_optimizer(args, list(self.net.decoder.parameters()) + list(self.net.bn.parameters()))
         # if self.para_dict['model'] == 'fastflow':
         #     self.net = NetFastFlow(self.para_dict) 
         #     self.optimizer = get_optimizer(args, self.net.parameters())

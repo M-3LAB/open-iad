@@ -1,26 +1,26 @@
 import torch
 import numpy as np
+import argparse
 from torch.nn import functional as F
 from arch.base import ModelBase
 from scipy.ndimage import gaussian_filter
 from loss_function.reverse_loss import reverse_loss
-
+from models.reverse.net_reverse import NetReverse
+from optimizer.optimizer import get_optimizer
 
 __all__ = ['REVERSE']
 
 class REVERSE(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(REVERSE, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(REVERSE, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net 
 
+        args = argparse.Namespace(**self.config) 
+        self.net = NetReverse(args) 
+        self.optimizer = get_optimizer(self.config, list(self.net.decoder.parameters()) + list(self.net.bn.parameters()))
         self.encoder = self.net.encoder.to(self.device)
         self.decoder = self.net.decoder.to(self.device)
         self.bn = self.net.bn.to(self.device)
-
-        self.optimizer = optimizer
 
     def train_model(self, train_loader, task_id, inf=''):
         self.encoder.eval() 
