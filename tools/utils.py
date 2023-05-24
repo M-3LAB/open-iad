@@ -28,6 +28,7 @@ def parse_device_list(device_ids_string, id_choice=None):
     device_ids = [int(i) for i in device_ids_string[0]]
     id_choice = 0 if id_choice is None else id_choice
     device = device_ids[id_choice]
+    device = torch.device("cuda", device)
     return device, device_ids
 
 

@@ -75,12 +75,9 @@ class CentralizedAD2D():
         print(self.para_dict)
         print('---------------------')
 
-        seed_everything(self.para_dict['seed'])
-
-        device, device_ids = parse_device_list(self.para_dict['gpu_ids'], int(self.para_dict['gpu_id']))
-        self.device = torch.device("cuda", device)
-
         self.file_path = record_path(self.para_dict)
+        self.para_dict['file_path'] = self.file_path
+
         if self.para_dict['save_log']:
             save_arg(self.para_dict, self.file_path)
             save_script(__file__, self.file_path)
@@ -336,10 +333,10 @@ class CentralizedAD2D():
             self.scheduler = None
         if self.para_dict['model'] == 'stpm':
             self.optimizer = get_optimizer(args, self.net.parameters())
-        if self.para_dict['net'] == 'net_cfa':
-            self.net = NetCFA(args)
-            self.optimizer = None
-            self.scheduler = None
+        # if self.para_dict['net'] == 'net_cfa':
+        #     self.net = NetCFA(args)
+        #     self.optimizer = None
+        #     self.scheduler = None
         if self.para_dict['model'] == 'cutpaste':
             self.optimizer = get_optimizer(args, self.net.parameters())
             self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs) 
@@ -352,7 +349,7 @@ class CentralizedAD2D():
         model_module = getattr(model_package, model_name[self.para_dict['model']][1])
         model_class = getattr(model_module, model_name[self.para_dict['model']][2])
         # print(self.file_path)
-        self.trainer = model_class(self.para_dict, self.device, self.file_path, self.net, self.optimizer, self.scheduler)
+        self.trainer = model_class(self.para_dict)
     
     def train_and_infer(self, train_loaders, valid_loaders, vis_loaders, train_task_ids, valid_task_ids):
         # train all task in one time
@@ -379,8 +376,7 @@ class CentralizedAD2D():
 
                 # calculate result
                 pixel_auroc, img_auroc, pixel_ap, img_ap, pixel_aupro = self.trainer.cal_metric_all(
-                    task_id=int(self.para_dict['train_task_id_tmp']),
-                    file_path=self.file_path)
+                    task_id=int(self.para_dict['train_task_id_tmp']))
                 self.trainer.recorder.update(self.para_dict)
 
                 paradim = self.trainer.recorder.paradigm_name()

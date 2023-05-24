@@ -1,5 +1,6 @@
 import torch
 from arch.base import ModelBase
+from models.cfa.net_cfa import NetCFA
 from models.cfa.metrics import  upsample, rescale, gaussian_smooth
 from models.cfa.cfa import DSVDD
 import torch.nn.functional as F
@@ -8,12 +9,10 @@ from scipy.ndimage import gaussian_filter
 __all__ = ['CFA']
 
 class CFA(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(CFA, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(CFA, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net.resnet18.to(self.device)
+        self.net = NetCFA(config).resnet18.to(self.device)
     
     @staticmethod 
     def upsample(x, size, mode):
