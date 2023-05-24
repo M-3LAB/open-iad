@@ -1,31 +1,35 @@
 import torch
+import argparse
 from arch.base import ModelBase
+from models.igd.net_igd import NetIGD
 from models.igd.ssim_module import *
 from models.igd.mvtec_module import *
 from pytorch_msssim import ms_ssim
-
+from optimizer.optimizer import get_optimizer
 
 __all__ = ['IGD']
 
 class IGD(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(IGD, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(IGD, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net
-        self.scheduler = scheduler
+
+        args = argparse.Namespace(**self.config) 
+        self.net = NetIGD(args)
+        self.optimizer_g = get_optimizer(self.config, self.net.g.parameters())
+        self.optimizer_d = get_optimizer(self.config, self.net.d.parameters())
+        self.scheduler_g = torch.optim.lr_scheduler.MultiStepLR(self.optimizer_g, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
+        self.scheduler_d = torch.optim.lr_scheduler.MultiStepLR(self.optimizer_d, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
+        self.optimizer = [self.optimizer_g, self.optimizer_d]
+        self.scheduler = [self.scheduler_g, self.scheduler_d] 
         
         self.generator = self.net.g.to(self.device)
         self.discriminator = self.net.d.to(self.device)
-        self.optimizer_g = optimizer[0]
-        self.optimizer_d = optimizer[1]
+
         self.mse_criterion = torch.nn.MSELoss()
         self.l1_criterion = torch.nn.L1Loss()
         self.bce_criterion = torch.nn.BCELoss()
         self.sigbce_criterion = torch.nn.BCEWithLogitsLoss()
-        self.img_gt_list = []
-        self.img_pred_list = []
 
     def init_c(self, data_loader, generator, eps=0.1):
         generator.c = None
