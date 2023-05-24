@@ -155,7 +155,7 @@ python3 main.py -p c2d -f --fewshot-exm 1 -m simplenet -n wide_resnet50 -d mvtec
 > Semi / -s
 ```bash
 python3 main.py -p c2d -s -m devnet -n net_devnet -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -s -m dra -n net_dra -d mvtecloco -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -s -m dra -n net_dra -d mvtec2d -tid 0 -vid 0 -g 1
 ```
 
 > Noisy / -z

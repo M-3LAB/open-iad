@@ -3,10 +3,11 @@ from torch import nn
 import numpy as np
 import argparse
 from arch.base import ModelBase
+from models.dream.draem import NetDRAEM
 from loss_function.focal_loss import FocalLoss
 from loss_function.ssim_loss import SSIMLoss
 from augmentation.draem_aug import DraemAugData
-
+from optimizer.optimizer import get_optimizer
 
 __all__ = ['DRAEM', 'weights_init']
 
@@ -19,17 +20,15 @@ def weights_init(m):
         m.bias.data.fill_(0)
 
 class DRAEM(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(DRAEM, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(DRAEM, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net.to(self.device)
-        self.optimizer = optimizer
-        self.scheduler = scheduler
 
-        self.args = argparse.Namespace(**self.config)
-        self.dream_aug = DraemAugData(self.args.root_path + '/dtd/images', [self.args.data_size, self.args.data_size])
+        args = argparse.Namespace(**self.config)
+        self.net = NetDRAEM(args).to(self.device)
+        self.optimizer = get_optimizer(self.config, list(self.net.reconstructive_subnetwork.parameters()) + list(self.net.discriminative_subnetwork.parameters()))
+        self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
+        self.dream_aug = DraemAugData(self.config['root_path'] + '/dtd/images', [args.data_size, args.data_size])
 
         self.net.reconstructive_subnetwork.apply(weights_init)
         self.net.discriminative_subnetwork.apply(weights_init)
