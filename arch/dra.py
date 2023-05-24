@@ -7,7 +7,7 @@ from arch.base import ModelBase
 from models.dra.dra_resnet18 import *
 from loss_function.deviation_loss import DeviationLoss
 from loss_function.binaryfocal_loss import BinaryFocalLoss
-
+from optimizer.optimizer import get_optimizer
 
 __all__ = ['DRA']
 
@@ -66,20 +66,16 @@ class _DRA(nn.Module):
 
 
 class DRA(ModelBase):
-    def __init__(self, config, device, file_path, net, optimizer, scheduler):
-        super(DRA, self).__init__(config, device, file_path, net, optimizer, scheduler)
+    def __init__(self, config):
+        super(DRA, self).__init__(config)
         self.config = config
-        self.device = device
-        self.file_path = file_path
-        self.net = net
 
+        self.net = DraResNet18()
+        self.optimizer = get_optimizer(self.config, self.net.parameters())
+        self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=self.config['_step_size'], gamma=self.config['_gamma'])
         self.args = argparse.Namespace(**self.config)
         self.model = _DRA(self.args, self.net).to(self.device)
-        
-        self.criterion = build_criterion(self.args._criterion) 
-        
-        self.optimizer = optimizer
-        self.scheduler = scheduler
+        self.criterion = build_criterion(self.config['_criterion']) 
 
     def generate_target(self, target, eval=False):
         targets = []

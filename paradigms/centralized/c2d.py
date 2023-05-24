@@ -312,10 +312,10 @@ class CentralizedAD2D():
             self.scheduler_d = torch.optim.lr_scheduler.MultiStepLR(self.optimizer_d, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
             self.optimizer = [self.optimizer_g, self.optimizer_d]
             self.scheduler = [self.scheduler_g, self.scheduler_d]
-        if self.para_dict['net'] == 'net_dra':
-            self.net = DraResNet18()
-            self.optimizer = get_optimizer(args, self.net.parameters())
-            self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)
+        # if self.para_dict['net'] == 'net_dra':
+        #     self.net = DraResNet18()
+        #     self.optimizer = get_optimizer(args, self.net.parameters())
+        #     self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)
         # if self.para_dict['net'] == 'net_devnet':
         #     self.net = DevNetResNet18()
         #     self.optimizer = get_optimizer(args, self.net.parameters())
