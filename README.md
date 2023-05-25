@@ -4,7 +4,7 @@
 
 ```bash
 pytorch 1.10.1 or 1.8.1
-conda activate ad-3d
+conda activate open-ad
 pip3 install -r requirements.txt
 
 # example
