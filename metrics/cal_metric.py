@@ -8,11 +8,11 @@ import os
 import numpy as np
 from metrics.mvtec_loco.src.aggregation import MetricsAggregator, ThresholdMetrics
 from metrics.mvtec_loco.src.image import GroundTruthMap, AnomalyMap, DefectsConfig
-from metrics.mvtec_loco.src.util import get_auc_for_max_fpr,listdir, set_niceness, compute_classification_auc_roc
+from metrics.mvtec_loco.src.util import get_auc_for_max_fpr, listdir, set_niceness, compute_classification_auc_roc
 from metrics.mvtec_loco.evaluate_experiment import * 
 from dataset.mvtecloco import mvtec_loco_classes
 from tools.utils import *
-from tools.visualize import cv2heatmap,heatmap_on_image
+from tools.visualize import cv2heatmap, heatmap_on_image
 from tqdm import tqdm
 
 
