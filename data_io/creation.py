@@ -73,6 +73,25 @@ class Creation(object):
                                     drop_last=False)
             self.vis_loaders.append(vis_loader) 
 
+    def create(self):
+        if self.config['vanilla']:
+            self.create_vanilla()
+
+        if self.config['fewshot']:
+            self.create_fewshot()
+
+        if self.config['noisy']:
+            self.create_noisy()
+
+        if self.config['semi']:
+            self.create_semi()
+
+        if self.config['continual']:
+            self.create_continual()
+
+        if self.config['transfer']:
+            self.create_transfer()
+
     def create_vanilla(self):
         self.create_chosen_dataloaders()
 

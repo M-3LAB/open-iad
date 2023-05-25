@@ -1,19 +1,10 @@
 import yaml
 import time
-from tools.utils import *
-from torch.utils.data import DataLoader
-from torch.utils.data.sampler import SubsetRandomSampler
-from data_io.fewshot import FewShot, extract_fewshot_data
-from data_io.noisy import extract_noisy_data
-from data_io.semi import extract_semi_data
-from data_io.transfer import extract_transfer_data
-from augmentation.domain_generalization import domain_gen
-from augmentation.type import aug_type 
-from data_io.creation import Creation
 
 from configuration.device import assign_service
 from configuration.registration import dataset_name, model_name
-
+from data_io.creation import Creation
+from tools.utils import *
 from rich import print
 
 import warnings
@@ -41,54 +32,39 @@ class CentralizedAD2D():
 
         self.para_dict['root_path'] = root_path
         self.para_dict['data_path'] = '{}{}'.format(root_path, self.para_dict['data_path'])
+        self.para_dict['file_path'] = record_path(self.para_dict)
+
+        if self.para_dict['save_log']:
+            save_arg(self.para_dict, self.para_dict['file_path'])
+            save_script(__file__, self.para_dict['file_path'])
 
         if not (self.para_dict['vanilla'] or self.para_dict['transfer'] or self.para_dict['semi'] or self.para_dict['fewshot'] or self.para_dict['noisy'] or self.para_dict['continual']):
             raise ValueError('Please Assign Learning Paradigm, --vanilla, --transfer, --semi, --noisy, --fewshot, --continual')
 
-    def preliminary(self):
+    def print_info(self):
         print('---------------------')
         print(self.args)
         print('---------------------')
         print(self.para_dict)
         print('---------------------')
 
-        self.file_path = record_path(self.para_dict)
-        self.para_dict['file_path'] = self.file_path
-
-        if self.para_dict['save_log']:
-            save_arg(self.para_dict, self.file_path)
-            save_script(__file__, self.file_path)
-
-        print('work dir: {}'.format(self.file_path))
-
     def load_data(self):
         dataset_package = __import__(dataset_name[self.para_dict['dataset']][0])
         dataset_module = getattr(dataset_package, dataset_name[self.para_dict['dataset']][1])
         dataset_class = getattr(dataset_module, dataset_name[self.para_dict['dataset']][2])
         
-        create_dataloder = Creation(dataset_class, self.para_dict)
-        if self.para_dict['vanilla']:
-            create_dataloder.create_vanilla()
-        if self.para_dict['fewshot']:
-            create_dataloder.create_fewshot()
-        if self.para_dict['noisy']:
-            create_dataloder.create_noisy()
-        if self.para_dict['semi']:
-            create_dataloder.create_semi()
-        if self.para_dict['continual']:
-            create_dataloder.create_continual()
-        if self.para_dict['transfer']:
-            create_dataloder.create_transfer()
+        dataloader = Creation(dataset_class, self.para_dict)
+        dataloader.create()
 
-        self.chosen_train_loaders = create_dataloder.chosen_train_loaders
-        self.chosen_valid_loaders = create_dataloder.chosen_valid_loaders
-        self.chosen_vis_loaders = create_dataloder.chosen_vis_loaders
+        self.chosen_train_loaders = dataloader.chosen_train_loaders
+        self.chosen_valid_loaders = dataloader.chosen_valid_loaders
+        self.chosen_vis_loaders = dataloader.chosen_vis_loaders
 
-        self.chosen_transfer_train_loaders = create_dataloder.chosen_transfer_train_loaders
-        self.chosen_transfer_valid_loaders = create_dataloder.chosen_transfer_valid_loaders
-        self.chosen_transfer_vis_loaders = create_dataloder.chosen_transfer_vis_loaders
+        self.chosen_transfer_train_loaders = dataloader.chosen_transfer_train_loaders
+        self.chosen_transfer_valid_loaders = dataloader.chosen_transfer_valid_loaders
+        self.chosen_transfer_vis_loaders = dataloader.chosen_transfer_vis_loaders
 
-        self.class_name = create_dataloder.class_name
+        self.class_name = dataloader.class_name
     
     def init_model(self):
         model_package = __import__(model_name[self.para_dict['model']][0])
@@ -152,16 +128,9 @@ class CentralizedAD2D():
 
     def run_work_flow(self):
         self.load_config()
-        self.preliminary()
+        self.print_info()
+        
         self.load_data()
         self.init_model()
-        print('---------------------')
 
         self.work_flow()
-            
-        print('work dir: {}'.format(self.file_path))
-        with open('{}/log_finished.txt'.format(self.para_dict['work_dir']), 'a') as f:
-            print('\n---> work dir {}'.format(self.file_path), file=f)
-            print(self.args, file=f)
-        print('---------------------')
-
