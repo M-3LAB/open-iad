@@ -24,7 +24,7 @@ pip install opencv-python
 │   ├── 2_train_base # middle priority
 │   ├── 3_dataset_base # lowest priority
 │   ├── config.py # for main.py
-│   └── device.py # for device
+│   ├── device.py # for device
 │   └── registeration.py # register new model, dataset, server
 ├── data_io # loading data interface
 ├── dataset # dataset interface
