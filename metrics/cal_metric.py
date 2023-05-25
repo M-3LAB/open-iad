@@ -10,7 +10,7 @@ from metrics.mvtec_loco_ad_evaluation.src.aggregation import MetricsAggregator, 
 from metrics.mvtec_loco_ad_evaluation.src.image import GroundTruthMap, AnomalyMap, DefectsConfig
 from metrics.mvtec_loco_ad_evaluation.src.util import get_auc_for_max_fpr,listdir, set_niceness, compute_classification_auc_roc
 from metrics.mvtec_loco_ad_evaluation.evaluate_experiment import * 
-from data_io.mvtecloco import mvtec_loco_classes
+from dataset.mvtecloco import mvtec_loco_classes
 from tools.utils import *
 from tools.visualize import cv2heatmap,heatmap_on_image
 from tqdm import tqdm

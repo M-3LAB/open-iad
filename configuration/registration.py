@@ -1,14 +1,14 @@
 # add new dataset
-dataset_name = {'mvtec2d': ('data_io.mvtec2d', 'mvtec2d', 'MVTec2D'),
-                'mvtec2df3d': ('data_io.mvtec2df3d', 'mvtec2df3d', 'MVTec2DF3D'),
-                'mvtecloco': ('data_io.mvtecloco', 'mvtecloco', 'MVTecLoco'),
-                'mpdd': ('data_io.mpdd', 'mpdd', 'MPDD'),
-                'btad': ('data_io.btad', 'btad', 'BTAD'),
-                'mtd': ('data_io.mtd', 'mtd', 'MTD'),
-                'mvtec3d': ('data_io.mvtec3d', 'mvtec3d', 'MVTec3D'),
-                'visa': ('data_io.visa', 'visa', 'VisA'),
-                'dagm': ('data_io.dagm', 'dagm', 'DAGM'),
-                'coad': ('data_io.coad', 'coad', 'COAD')
+dataset_name = {'mvtec2d': ('dataset.mvtec2d', 'mvtec2d', 'MVTec2D'),
+                'mvtec2df3d': ('dataset.mvtec2df3d', 'mvtec2df3d', 'MVTec2DF3D'),
+                'mvtecloco': ('dataset.mvtecloco', 'mvtecloco', 'MVTecLoco'),
+                'mpdd': ('dataset.mpdd', 'mpdd', 'MPDD'),
+                'btad': ('dataset.btad', 'btad', 'BTAD'),
+                'mtd': ('dataset.mtd', 'mtd', 'MTD'),
+                'mvtec3d': ('dataset.mvtec3d', 'mvtec3d', 'MVTec3D'),
+                'visa': ('dataset.visa', 'visa', 'VisA'),
+                'dagm': ('dataset.dagm', 'dagm', 'DAGM'),
+                'coad': ('dataset.coad', 'coad', 'COAD')
                 }
 
 # add new model

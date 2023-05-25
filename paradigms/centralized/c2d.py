@@ -1,10 +1,5 @@
-from distutils.log import info
-import imp
-from re import I
-from xml.dom.minidom import DOMImplementation
-import torch
 import yaml
-import argparse
+import time
 from tools.utils import *
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
@@ -15,29 +10,10 @@ from data_io.transfer import extract_transfer_data
 from augmentation.domain_generalization import domain_gen
 from augmentation.type import aug_type 
 
-from models.net_csflow.net_csflow import NetCSFlow
-from models.vit.vit import ViT
-from models.dream.draem import NetDRAEM
-from models.dra.dra_resnet18 import DraResNet18
-from models.devnet.devnet_resnet18 import DevNetResNet18
-from models.igd.net_igd import NetIGD
-from models.reverse.net_reverse import NetReverse
-from models.fastflow.net import NetFastFlow
-from models.cfa.net_cfa import NetCFA
-from models.graphcore.net_graphcore import NetGraphCore
-from models.favae.net_favae import NetFAVAE
- 
-
-from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
-from torchvision import models
-from timm.optim import create_optimizer
-from timm.scheduler import create_scheduler
-
 from configuration.device import assign_service
 from configuration.registration import dataset_name, model_name
 
 from rich import print
-import time
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -285,70 +261,9 @@ class CentralizedAD2D():
             NotImplementedError('No this setting!')
     
     def init_model(self):
-        # self.net, self.optimizer, self.scheduler = None, None, None
-
-        # if self.para_dict['net'] == 'resnet18': 
-        #     self.net = models.resnet18(pretrained=True, progress=True)
-        # if self.para_dict['net'] == 'wide_resnet50':
-        #     self.net = models.wide_resnet50_2(pretrained=True, progress=True)
-
-        # args = argparse.Namespace(**self.para_dict)
-        # if self.para_dict['net'] == 'net_csflow': 
-        #     self.net = NetCSFlow(args)
-        #     self.optimizer = get_optimizer(args, self.net.density_estimator.parameters())
-        # if self.para_dict['net'] == 'vit_b_16':
-        #     self.net = ViT(num_classes=args._num_classes, pretrained=args._pretrained, checkpoint_path='./checkpoints/vit/vit_b_16.npz')
-        #     self.optimizer = get_optimizer(args, self.net.parameters())
-        #     self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs)
-        # if self.para_dict['net'] == 'net_draem':
-        #     self.net = NetDRAEM(args)
-        #     self.optimizer = get_optimizer(args, list(self.net.reconstructive_subnetwork.parameters()) + list(self.net.discriminative_subnetwork.parameters()))
-        #     self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
-        # if self.para_dict['net'] == 'net_igd':
-        #     self.net = NetIGD(args)
-        #     self.optimizer_g = get_optimizer(args, self.net.g.parameters())
-        #     self.optimizer_d = get_optimizer(args, self.net.d.parameters())
-        #     self.scheduler_g = torch.optim.lr_scheduler.MultiStepLR(self.optimizer_g, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
-        #     self.scheduler_d = torch.optim.lr_scheduler.MultiStepLR(self.optimizer_d, [args.num_epochs * 0.8, args.num_epochs * 0.9], gamma=args._gamma, last_epoch=-1)
-        #     self.optimizer = [self.optimizer_g, self.optimizer_d]
-        #     self.scheduler = [self.scheduler_g, self.scheduler_d]
-        # if self.para_dict['net'] == 'net_dra':
-        #     self.net = DraResNet18()
-        #     self.optimizer = get_optimizer(args, self.net.parameters())
-        #     self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)
-        # if self.para_dict['net'] == 'net_devnet':
-        #     self.net = DevNetResNet18()
-        #     self.optimizer = get_optimizer(args, self.net.parameters())
-        #     self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=args._step_size, gamma=args._gamma)       
-        # if self.para_dict['net'] == 'net_favae':
-        #     self.net = NetFAVAE() 
-        #     self.optimizer = get_optimizer(args, self.net.parameters())
-        #     self.scheduler = None
-        # if self.para_dict['net'] == 'net_reverse':
-        #     self.net = NetReverse(args) 
-        #     self.optimizer = get_optimizer(args, list(self.net.decoder.parameters()) + list(self.net.bn.parameters()))
-        # if self.para_dict['model'] == 'fastflow':
-        #     self.net = NetFastFlow(self.para_dict) 
-        #     self.optimizer = get_optimizer(args, self.net.parameters())
-        #     self.scheduler = None
-        # if self.para_dict['model'] == 'stpm':
-        #     self.optimizer = get_optimizer(args, self.net.parameters())
-        # if self.para_dict['net'] == 'net_cfa':
-        #     self.net = NetCFA(args)
-        #     self.optimizer = None
-        #     self.scheduler = None
-        # if self.para_dict['model'] == 'cutpaste':
-        #     self.optimizer = get_optimizer(args, self.net.parameters())
-        #     self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, args.num_epochs) 
-        # if self.para_dict['model'] == 'graphcore':
-        #     self.net = NetGraphCore(args)
-        #     self.optimizer = create_optimizer(args, self.net.model)
-        #     self.scheduler = create_scheduler(args, self.optimizer)
-
         model_package = __import__(model_name[self.para_dict['model']][0])
         model_module = getattr(model_package, model_name[self.para_dict['model']][1])
         model_class = getattr(model_module, model_name[self.para_dict['model']][2])
-        # print(self.file_path)
         self.trainer = model_class(self.para_dict)
     
     def train_and_infer(self, train_loaders, valid_loaders, vis_loaders, train_task_ids, valid_task_ids):
