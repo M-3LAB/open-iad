@@ -16,9 +16,9 @@ from typing import Optional, Iterable
 import numpy as np
 from tqdm import tqdm
 
-from metrics.mvtec_loco_ad_evaluation.src.aggregation import MetricsAggregator, ThresholdMetrics
-from metrics.mvtec_loco_ad_evaluation.src.image import GroundTruthMap, AnomalyMap, DefectsConfig
-from metrics.mvtec_loco_ad_evaluation.src.util import get_auc_for_max_fpr, listdir, set_niceness, \
+from metrics.mvtec_loco.src.aggregation import MetricsAggregator, ThresholdMetrics
+from metrics.mvtec_loco.src.image import GroundTruthMap, AnomalyMap, DefectsConfig
+from metrics.mvtec_loco.src.util import get_auc_for_max_fpr, listdir, set_niceness, \
     compute_classification_auc_roc
 
 TIFF_EXTS = ['.tif', '.tiff', '.TIF', '.TIFF']

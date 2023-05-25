@@ -12,8 +12,8 @@ from typing import Sequence, Optional, MutableMapping
 import numpy as np
 from tqdm import tqdm
 
-from metrics.mvtec_loco_ad_evaluation.src.image import AnomalyMap, GroundTruthMap, GroundTruthChannel
-from metrics.mvtec_loco_ad_evaluation.src.util import set_niceness
+from metrics.mvtec_loco.src.image import AnomalyMap, GroundTruthMap, GroundTruthChannel
+from metrics.mvtec_loco.src.util import set_niceness
 
 
 def get_spro(gt_channel: GroundTruthChannel,

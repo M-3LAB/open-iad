@@ -7,11 +7,11 @@ from typing import Sequence, Optional, Callable, Iterable
 
 import numpy as np
 
-from metrics.mvtec_loco_ad_evaluation.src.image import GroundTruthMap, AnomalyMap, get_file_path_repr
-from metrics.mvtec_loco_ad_evaluation.src.metrics import get_fp_tn_areas_per_image, get_fp_rates
-from metrics.mvtec_loco_ad_evaluation.src.metrics import get_spros_of_defects_of_images
-from metrics.mvtec_loco_ad_evaluation.src.util import get_auc_for_max_fpr, take, flatten_2d
-from metrics.mvtec_loco_ad_evaluation.src.util import get_sorted_nested_arrays, concat_nested_arrays
+from metrics.mvtec_loco.src.image import GroundTruthMap, AnomalyMap, get_file_path_repr
+from metrics.mvtec_loco.src.metrics import get_fp_tn_areas_per_image, get_fp_rates
+from metrics.mvtec_loco.src.metrics import get_spros_of_defects_of_images
+from metrics.mvtec_loco.src.util import get_auc_for_max_fpr, take, flatten_2d
+from metrics.mvtec_loco.src.util import get_sorted_nested_arrays, concat_nested_arrays
 
 
 def binary_refinement(init_queries: Sequence,
