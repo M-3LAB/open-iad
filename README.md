@@ -26,7 +26,8 @@ pip install opencv-python
 │   ├── config.py # for main.py
 │   └── device.py # for device
 │   └── registeration.py # register new model, dataset, server
-├── data_io # dataset processing and loading data interface
+├── data_io # loading data interface
+├── dataset # dataset interface
 ├── loss_function
 ├── metrics
 ├── models # basic layers for model class in arch_base
@@ -56,8 +57,8 @@ pip install opencv-python
 | $\bigstar$ | *centralized 2d* | -p c2d | |
 |  | vanilla | -v |all data (id=0) | all data (id=0) |
 |  | semi | -s | all data (id=0) + anomaly data (id=0) | all data (id=0) - anomaly data (id=0)|
-|  | continual | -c| all data (id=0 and 1)| all data (id=0 or 1)|
 |  | fewshot | -f | fewshot (id=0) | all data (id=0) |
+|  | continual | -c| all data (id=0 and 1)| all data (id=0 or 1)|
 |  | noisy | -z | all data (id=0) + noisy data (id=0) | all data (id=0) - noisy data (id=0)|
 |  | transfer | -t | step 1: all data (id=0) | all data (id=0)|
 |  |  |  | step 2: fewshot data (id=1) | all data (id=1)|
@@ -76,14 +77,14 @@ pip install opencv-python
 | 7 | draem | net_draem | Draem: a discriminatively trained reconstruction embedding for surface anomaly detection |
 | 8 | fastflow | net_fastflow | Fastflow: unsupervised anomaly detection and localization via 2d normalizing flows |
 | 9 | favae | net_favae | Anomaly localization by modeling perceptual features |
-| 10 | igd | net_igd | Deep one-class classification via interpolated gaussian descriptor |
-| 11 | padim  | resnet18, wide_resnet50 | Padim: a patch distribution modeling framework for anomaly detection and localization |
-| 12 | patchcore  | resnet18, wide_resnet50 | Towards total recall in industrial anomaly detection |
-| 13 | reverse | net_reverse | Anomaly detection via reverse distillation from one-class embedding |
-| 14 | spade  | resnet18, wide_resnet50 | Sub-image anomaly detection with deep pyramid correspondences |
-| 15 | stpm  | resnet18, wide_resnet50 | Student-teacher feature pyramid matching for anomaly detection |
-| 16 | graphcore  | vig_ti_224_gelu | Pushing the limits of few-shot anomaly detection in industrial vision: GraphCore |
-| 17 | simplenet  | wide_resnet50 | SimpleNet: a simple network for image anomaly detection and localization |
+| 10 | graphcore  | vig_ti_224_gelu | Pushing the limits of few-shot anomaly detection in industrial vision: GraphCore |
+| 11 | igd | net_igd | Deep one-class classification via interpolated gaussian descriptor |
+| 12 | padim  | resnet18, wide_resnet50 | Padim: a patch distribution modeling framework for anomaly detection and localization |
+| 13 | patchcore  | resnet18, wide_resnet50 | Towards total recall in industrial anomaly detection |
+| 14 | reverse | net_reverse | Anomaly detection via reverse distillation from one-class embedding |
+| 15 | simplenet  | wide_resnet50 | SimpleNet: a simple network for image anomaly detection and localization |
+| 16 | spade  | resnet18, wide_resnet50 | Sub-image anomaly detection with deep pyramid correspondences |
+| 17 | stpm  | resnet18, wide_resnet50 | Student-teacher feature pyramid matching for anomaly detection |
 
 ## 3D Model
 | No. | Method / -m | Net / -n | Paper Title |
@@ -96,40 +97,27 @@ pip install opencv-python
 
 > Vanilla / -v
 ```bash
-python3 main.py -p c2d -v -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
-python3 main.py -p c2d -v -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -v -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -v -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -v -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 -vid 0  -g 1
 python3 main.py -p c2d -v -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -v -m fastflow -n net_fastflow -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -v -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 -vid 0  -g 1
-python3 main.py -p c2d -v -m padim -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -v -m favae -n net_favae -d mvtec2d -tid 0 -vid 0  -g 1
-python3 main.py -p c2d -v -m cutpaste -n vit_b_16 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -v -m graphcore -n vig_ti_224_gelu -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
 python3 main.py -p c2d -v -m igd -n net_igd -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -v -m padim -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -v -m cutpaste -n vit_b_16 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -v -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
 python3 main.py -p c2d -v -m reverse -n net_reverse -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -v -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -v -m spade -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -v -m stpm -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -v -m graphcore -n vig_ti_224_gelu -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
-python3 main.py -p c2d -v -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -g 1
 ```
 
-> Continual / -c
+> Semi / -s
 ```bash
-python3 main.py -p c2d -c -m patchcore -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -sp 0.001 -g 1
-python3 main.py -p c2d -c -m csflow -n net_csflow -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m cfa -n net_cfa -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m draem -n net_draem -d mvtec2d -tid 0 1 -vid 0 1 -g 2
-python3 main.py -p c2d -c -m fastflow -n net_fastflow -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 1 -vid 0 1  -g 1
-python3 main.py -p c2d -c -m padim -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m favae -n net_favae -d mvtec2d -tid 0 1 -vid 0 1  -g 1
-python3 main.py -p c2d -c -m cutpaste -n vit_b_16 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m igd -n net_igd -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m reverse -n net_reverse -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m spade -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m stpm -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m dne -n vit_b_16 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -p c2d -s -m devnet -n net_devnet -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -s -m dra -n net_dra -d mvtec2d -tid 0 -vid 0 -g 1
 ```
 
 > Fewshot / -f
@@ -152,10 +140,23 @@ python3 main.py -p c2d -f --fewshot-exm 1 -m graphcore -n vig_ti_224_gelu -d mvt
 python3 main.py -p c2d -f --fewshot-exm 1 -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -g 1
 ```
 
-> Semi / -s
+> Continual / -c
 ```bash
-python3 main.py -p c2d -s -m devnet -n net_devnet -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -s -m dra -n net_dra -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -p c2d -c -m patchcore -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -sp 0.001 -g 1
+python3 main.py -p c2d -c -m csflow -n net_csflow -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -p c2d -c -m cfa -n net_cfa -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -p c2d -c -m draem -n net_draem -d mvtec2d -tid 0 1 -vid 0 1 -g 2
+python3 main.py -p c2d -c -m fastflow -n net_fastflow -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -p c2d -c -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 1 -vid 0 1  -g 1
+python3 main.py -p c2d -c -m padim -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -p c2d -c -m favae -n net_favae -d mvtec2d -tid 0 1 -vid 0 1  -g 1
+python3 main.py -p c2d -c -m cutpaste -n vit_b_16 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -p c2d -c -m igd -n net_igd -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -p c2d -c -m reverse -n net_reverse -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -p c2d -c -m spade -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -p c2d -c -m stpm -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -p c2d -c -m dne -n vit_b_16 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -p c2d -c -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
 ```
 
 > Noisy / -z
