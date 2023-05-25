@@ -27,7 +27,7 @@ def parse_arguments_main():
     parser.add_argument('--sampler-percentage', '-sp', type=float, default= 0.01)
 
     # vanilla 
-    parser.add_argument('--vanilla', '-v', action='store_true', default=True)
+    parser.add_argument('--vanilla', '-v', action='store_true', default=False)
     
     # semi-supervised 
     parser.add_argument('--semi', '-s', action='store_true', default=False)

@@ -115,7 +115,7 @@ python3 main.py -p c2d -v -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 -vid 0
 
 > Continual / -c
 ```bash
-python3 main.py -p c2d -c -m patchcore -n resent18 -d mvtec2d -tid 0 1 -vid 0 1 -sp 0.001 -g 1
+python3 main.py -p c2d -c -m patchcore -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -sp 0.001 -g 1
 python3 main.py -p c2d -c -m csflow -n net_csflow -d mvtec2d -tid 0 1 -vid 0 1 -g 1
 python3 main.py -p c2d -c -m cfa -n net_cfa -d mvtec2d -tid 0 1 -vid 0 1 -g 1
 python3 main.py -p c2d -c -m draem -n net_draem -d mvtec2d -tid 0 1 -vid 0 1 -g 2
@@ -160,7 +160,7 @@ python3 main.py -p c2d -s -m dra -n net_dra -d mvtec2d -tid 0 -vid 0 -g 1
 
 > Noisy / -z
 ```bash
-python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m patchcore -n resnet18 -sp 0.001 -g 1
+python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m patchcore -n resnet18  -d mvtec2d -tid 0 -vid 0  -sp 0.001 -g 1
 python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -z --noisy-ratio 0.1 --noisy-overlap -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 2
