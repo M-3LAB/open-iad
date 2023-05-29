@@ -1,6 +1,6 @@
 import torch
 from tools.utils import parse_device_list, seed_everything
-from metrics.cal_metric import CalMetric
+from metric.cal_metric import CalMetric
 from tools.record_helper import RecordHelper
 
 class ModelBase():

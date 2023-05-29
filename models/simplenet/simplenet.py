@@ -8,7 +8,7 @@ import torch.nn.functional as F
 import tqdm
 
 import models.simplenet.common as common
-import metrics
+import metric
 
 
 def init_weight(m):
@@ -290,12 +290,12 @@ class SimpleNet(torch.nn.Module):
             x[1] != "good" for x in test_data.dataset.data_to_iterate
         ]
             
-        auroc = metrics.compute_imagewise_retrieval_metrics(
+        auroc = metric.compute_imagewise_retrieval_metrics(
             scores, anomaly_labels
         )["auroc"]
 
         # Compute PRO score & PW Auroc for all images
-        pixel_scores = metrics.compute_pixelwise_retrieval_metrics(
+        pixel_scores = metric.compute_pixelwise_retrieval_metrics(
             segmentations, masks_gt
         )
         full_pixel_auroc = pixel_scores["auroc"]
@@ -309,7 +309,7 @@ class SimpleNet(torch.nn.Module):
         scores = (scores - img_min_scores) / (img_max_scores - img_min_scores)
         # scores = np.mean(scores, axis=0)
 
-        auroc = metrics.compute_imagewise_retrieval_metrics(
+        auroc = metric.compute_imagewise_retrieval_metrics(
             scores, labels_gt 
         )["auroc"]
 
@@ -332,12 +332,12 @@ class SimpleNet(torch.nn.Module):
 
 
             # Compute PRO score & PW Auroc for all images
-            pixel_scores = metrics.compute_pixelwise_retrieval_metrics(
+            pixel_scores = metric.compute_pixelwise_retrieval_metrics(
                 norm_segmentations, masks_gt)
                 # segmentations, masks_gt
             full_pixel_auroc = pixel_scores["auroc"]
 
-            pro = metrics.compute_pro(np.squeeze(np.array(masks_gt)), 
+            pro = metric.compute_pro(np.squeeze(np.array(masks_gt)), 
                                             norm_segmentations)
         else:
             full_pixel_auroc = -1 

@@ -2,14 +2,14 @@ import numpy as np
 import cv2
 import os
 from sklearn.metrics import roc_auc_score, average_precision_score
-from metrics.mvtec3d.au_pro import calculate_au_pro
+from metric.mvtec3d.au_pro import calculate_au_pro
 import json
 import os
 import numpy as np
-from metrics.mvtec_loco.src.aggregation import MetricsAggregator, ThresholdMetrics
-from metrics.mvtec_loco.src.image import GroundTruthMap, AnomalyMap, DefectsConfig
-from metrics.mvtec_loco.src.util import get_auc_for_max_fpr, listdir, set_niceness, compute_classification_auc_roc
-from metrics.mvtec_loco.evaluate_experiment import * 
+from metric.mvtec_loco.src.aggregation import MetricsAggregator, ThresholdMetrics
+from metric.mvtec_loco.src.image import GroundTruthMap, AnomalyMap, DefectsConfig
+from metric.mvtec_loco.src.util import get_auc_for_max_fpr, listdir, set_niceness, compute_classification_auc_roc
+from metric.mvtec_loco.evaluate_experiment import * 
 from dataset.mvtecloco import mvtec_loco_classes
 from tools.utils import *
 from tools.visualize import cv2heatmap, heatmap_on_image
