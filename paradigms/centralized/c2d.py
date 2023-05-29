@@ -3,7 +3,7 @@ import time
 
 from configuration.device import assign_service
 from configuration.registration import dataset_name, model_name
-from data_io.creation import Creation
+from data_io.data_holder import DataHolder
 from tools.utils import *
 from rich import print
 
@@ -53,7 +53,7 @@ class CentralizedAD2D():
         dataset_module = getattr(dataset_package, dataset_name[self.para_dict['dataset']][1])
         dataset_class = getattr(dataset_module, dataset_name[self.para_dict['dataset']][2])
         
-        dataloader = Creation(dataset_class, self.para_dict)
+        dataloader = DataHolder(dataset_class, self.para_dict)
         dataloader.create()
 
         self.chosen_train_loaders = dataloader.chosen_train_loaders

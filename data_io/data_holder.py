@@ -7,7 +7,7 @@ from data_io.transfer import extract_transfer_data
 from augmentation.domain_generalization import domain_gen
 from augmentation.type import aug_type 
 
-class Creation(object):
+class DataHolder(object):
     def __init__(self, dataset_class, config):
         self.config = config
         self.dataset_class = dataset_class
