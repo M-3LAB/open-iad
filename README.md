@@ -50,6 +50,33 @@ pip install opencv-python
 
 > 3D: mvtec3d
 
+The dataset's structure can be organized as follows (i.e., mvtec2d).
+```bash
+.
+├── bottle
+│   ├── ground_truth
+│   │   ├── broken_large
+│   │   │   ├── 000_mask.png
+│   │   │   ├── 001_mask.png
+│   │   │   ├── ...
+│   ├── test
+│   │   ├── broken_large
+│   │   │   ├── 000.png
+│   │   │   ├── 001.png
+│   │   │   ├── ...
+│   │   └── good
+│   │       ├── 000.png
+│   │       ├── 001.png
+│   │       ├── ...
+│   └── train
+│       └── good
+│           ├── 000.png
+│           ├── 001.png
+│           ├── ...
+├── cable
+├── screw
+└── ...
+```
 ## Learning Paradigm
 
 || Prototypes | Marker | Train | Test |
