@@ -29,7 +29,8 @@ model_name = {'_patchcore': ('arch._patchcore', '_patchcore', 'PatchCore'),
                 'stpm': ('arch.stpm', 'stpm', 'STPM'),
                 'cutpaste': ('arch.cutpaste', 'cutpaste', 'CutPaste'),
                 'graphcore': ('arch.graphcore', 'graphcore', 'GraphCore'),
-                'simplenet': ('arch.simplenet', 'simplenet', 'SimpleNet') 
+                'simplenet': ('arch.simplenet', 'simplenet', 'SimpleNet'), 
+                'softpatch': ('arch.softpatch', 'softpatch', 'SoftPatch') 
                 }
 
 # server config

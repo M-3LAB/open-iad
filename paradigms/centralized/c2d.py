@@ -34,12 +34,20 @@ class CentralizedAD2D():
         self.para_dict['data_path'] = '{}{}'.format(root_path, self.para_dict['data_path'])
         self.para_dict['file_path'] = record_path(self.para_dict)
 
+        self.check_args()
+
         if self.para_dict['save_log']:
             save_arg(self.para_dict, self.para_dict['file_path'])
             save_script(__file__, self.para_dict['file_path'])
-
-        if not (self.para_dict['vanilla'] or self.para_dict['transfer'] or self.para_dict['semi'] or self.para_dict['fewshot'] or self.para_dict['noisy'] or self.para_dict['continual']):
-            raise ValueError('Please Assign Learning Paradigm, --vanilla, --transfer, --semi, --noisy, --fewshot, --continual')
+        
+    def check_args(self):
+        n = self.para_dict['vanilla'] + self.para_dict['transfer'] + self.para_dict['semi'] \
+            + self.para_dict['fewshot'] + self.para_dict['noisy'] + self.para_dict['continual']
+        if n == 0:
+            raise ValueError('Please Assign Learning Paradigm, --vanilla, --transfer,\
+                              --semi, --noisy, --fewshot, --continual')
+        elif n >= 2:
+            raise ValueError('There Are Multiple Flags of Paradigm!')
 
     def print_info(self):
         print('---------------------')

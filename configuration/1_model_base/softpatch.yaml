@@ -1,0 +1,28 @@
+model: softpatch
+net: wide_resnet50 # resnet18/wide_resnet50
+data_size: 256
+data_crop_size: 256
+mask_size: 256
+mask_crop_size: 256
+num_epochs: 50
+train_batch_size: 4
+valid_batch_size: 1
+train_aug_type: normal
+valid_aug_type: normal
+
+_input_shape:
+- 3
+- 256
+- 256
+_faiss_on_gpu: True
+_faiss_num_workers: 8
+_layers_to_extract_from:
+- layer2
+- layer3
+_pretrain_embed_dimension: 1024
+_target_embed_dimension: 1024
+_anomaly_scorer_num_nn: 1
+_patch_size: 3
+
+_sampler_name: approx_greedy_coreset # identity, greedy_coreset, approx_greedy_coreset
+sampler_percentage: 0.001

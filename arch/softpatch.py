@@ -1,15 +1,15 @@
 import numpy as np
 from arch.base import ModelBase
-from models.patchcore.patchcore import PatchCore as patchcore_official
+from models.softpatch.softpatch import SoftPatch as softpatch
 from models.patchcore import common
 from models.patchcore import sampler
 from torchvision import models
 
-__all__ = ['PatchCore']
+__all__ = ['SoftPatch']
 
-class PatchCore(ModelBase):
+class SoftPatch(ModelBase):
     def __init__(self, config):
-        super(PatchCore, self).__init__(config)
+        super(SoftPatch, self).__init__(config)
         self.config = config
 
         if self.config['net'] == 'resnet18': 
@@ -20,7 +20,7 @@ class PatchCore(ModelBase):
         self.sampler = self.get_sampler(self.config['_sampler_name'])
         self.nn_method = common.FaissNN(self.config['_faiss_on_gpu'], self.config['_faiss_num_workers'])
 
-        self.patchcore_instance = patchcore_official(self.device)
+        self.patchcore_instance = softpatch(self.device)
         self.patchcore_instance.load(
             backbone=self.net,
             layers_to_extract_from=self.config['_layers_to_extract_from'],

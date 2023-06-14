@@ -12,7 +12,6 @@ class IdentitySampler:
     ) -> Union[torch.Tensor, np.ndarray]:
         return features
 
-
 class BaseSampler(abc.ABC):
     def __init__(self, percentage: float):
         if not 0 < percentage < 1:
@@ -34,7 +33,6 @@ class BaseSampler(abc.ABC):
         if self.features_is_numpy:
             return features.cpu().numpy()
         return features.to(self.features_device)
-
 
 class GreedyCoresetSampler(BaseSampler):
     def __init__(
@@ -114,7 +112,6 @@ class GreedyCoresetSampler(BaseSampler):
 
         return np.array(coreset_indices)
 
-
 class ApproximateGreedyCoresetSampler(GreedyCoresetSampler):
     def __init__(
         self,
@@ -189,3 +186,19 @@ class RandomSampler(BaseSampler):
         )
         subset_indices = np.array(subset_indices)
         return features[subset_indices]
+
+class WeightedGreedyCoresetSampler(ApproximateGreedyCoresetSampler):
+    def __init__(
+        self,
+        percentage: float,
+        device: torch.device,
+        number_of_starting_points: int = 10,
+        dimension_to_project_features_to: int = 128,
+    ):
+        """Approximate Greedy Coreset sampling base class."""
+        self.number_of_starting_points = number_of_starting_points
+        super().__init__(percentage, device, dimension_to_project_features_to)
+        self.sampling_weight = None
+
+    def set_sampling_weight(self, sampling_weight):
+        self.sampling_weight = sampling_weight

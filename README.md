@@ -110,8 +110,9 @@ The dataset's structure can be organized as follows (i.e., mvtec2d).
 | 13 | patchcore  | resnet18, wide_resnet50 | Towards total recall in industrial anomaly detection |
 | 14 | reverse | net_reverse | Anomaly detection via reverse distillation from one-class embedding |
 | 15 | simplenet  | wide_resnet50 | SimpleNet: a simple network for image anomaly detection and localization |
-| 16 | spade  | resnet18, wide_resnet50 | Sub-image anomaly detection with deep pyramid correspondences |
-| 17 | stpm  | resnet18, wide_resnet50 | Student-teacher feature pyramid matching for anomaly detection |
+| 16 | softpatch  | resnet18, wide_resnet50 | SoftPatch: unsupervised anomaly detection with noisy data |
+| 17 | spade  | resnet18, wide_resnet50 | Sub-image anomaly detection with deep pyramid correspondences |
+| 18 | stpm  | resnet18, wide_resnet50 | Student-teacher feature pyramid matching for anomaly detection |
 
 ## 3D Model
 | No. | Method / -m | Net / -n | Paper Title |
@@ -188,6 +189,7 @@ python3 main.py -p c2d -c -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 1 -vid
 
 > Noisy / -z
 ```bash
+python3 main.py -p c2d -z -nr 0.1 -no -m softpatch -n resnet18  -d mvtec2d -sp 0.001 -g 1
 python3 main.py -p c2d -z -nr 0.1 -no -m patchcore -n resnet18  -d mvtec2d -sp 0.001 -g 1
 python3 main.py -p c2d -z -nr 0.1 -no -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -z -nr 0.1 -no -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
