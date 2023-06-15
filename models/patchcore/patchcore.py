@@ -112,7 +112,6 @@ class PatchCore(torch.nn.Module):
             _features = features[i]
             patch_dims = patch_shapes[i]
 
-            # TODO(pgehler): Add comments
             _features = _features.reshape(
                 _features.shape[0], patch_dims[0], patch_dims[1], *_features.shape[2:]
             )

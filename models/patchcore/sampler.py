@@ -5,7 +5,6 @@ import numpy as np
 import torch
 import tqdm
 
-
 class IdentitySampler:
     def run(
         self, features: Union[torch.Tensor, np.ndarray]
@@ -73,6 +72,7 @@ class GreedyCoresetSampler(BaseSampler):
         reduced_features = self._reduce_features(features)
         sample_indices = self._compute_greedy_coreset_indices(reduced_features)
         features = features[sample_indices]
+
         return self._restore_type(features)
 
     @staticmethod
@@ -166,7 +166,6 @@ class ApproximateGreedyCoresetSampler(GreedyCoresetSampler):
                 ).values.reshape(-1, 1)
 
         return np.array(coreset_indices)
-
 
 class RandomSampler(BaseSampler):
     def __init__(self, percentage: float):
