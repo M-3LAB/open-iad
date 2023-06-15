@@ -26,10 +26,10 @@ _patch_size: 3
 
 # identity, greedy_coreset, approx_greedy_coreset, weighted_greedy_coreset
 _sampler_name: weighted_greedy_coreset 
-sampler_percentage: 0.001
+sampler_percentage: 0.1
 
 _lof_k: 5
 _threshold: 0.15
 # 'lof', 'nearest', 'gaussian' or 'lof_gpu'
 _weight_method: gaussian
-_soft_weight_flag: False
+_soft_weight_flag: True

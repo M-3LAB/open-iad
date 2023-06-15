@@ -33,6 +33,7 @@ work_dir: ./work_dir
 save_log: true
 debug: false 
 batch_limit: 2
+seed: 66
 # chosen task ids
 train_task_id:
   - 0

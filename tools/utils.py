@@ -23,7 +23,6 @@ def seed_everything(seed):
     # unless you tell it to be deterministic
     torch.backends.cudnn.deterministic = True
 
-
 def parse_device_list(device_ids_string, id_choice=None):
     device_ids = [int(i) for i in device_ids_string[0]]
     id_choice = 0 if id_choice is None else id_choice
@@ -31,21 +30,21 @@ def parse_device_list(device_ids_string, id_choice=None):
     device = torch.device("cuda", device)
     return device, device_ids
 
-
 def override_config(previous, new):
     config = previous
     for new_key in new.keys():
-            config[new_key] = new[new_key]
+        config[new_key] = new[new_key]
 
     return config
-
 
 def merge_config(config, args):
     """
     args overlaps config, the args is given a high priority 
     """
     for key_arg in dir(args):
-        if (getattr(args, key_arg)) and (key_arg in config.keys()):
+        value = getattr(args, key_arg)
+        is_int = (type(value)==int)
+        if (getattr(args, key_arg) or is_int) and (key_arg in config.keys()):
             config[key_arg] = getattr(args, key_arg)
 
     return config
@@ -53,11 +52,12 @@ def merge_config(config, args):
 def extract_config(args):
     config = dict()
     for key_arg in vars(args):
-        if vars(args)[key_arg]:
+        value = getattr(args, key_arg)
+        is_int = (type(value)==int)
+        if vars(args)[key_arg] or is_int:
             config[key_arg] = vars(args)[key_arg]
 
     return config
-
 
 def record_path(para_dict):
     # mkdir ./work_dir/fed/brats/time-dir
@@ -69,11 +69,9 @@ def record_path(para_dict):
 
     return file_path
 
-
 def save_arg(para_dict, file_path):
     with open('{}/config.yaml'.format(file_path), 'w') as f:
         yaml.dump(para_dict, f)
-
 
 def save_log(infor, file_path, description=None):
     localtime = time.asctime(time.localtime(time.time()))
@@ -82,17 +80,14 @@ def save_log(infor, file_path, description=None):
     with open('{}/log{}.txt'.format(file_path, description), 'a') as f:
         print(infor, file=f)
 
-
 def save_script(src_file, file_path):
     shutil.copy2(src_file, file_path)
-
 
 def save_image(image, name, image_path):
     if not os.path.exists(image_path):
         os.makedirs(image_path)
 
     torchvision.utils.save_image(image, '{}/{}'.format(image_path, name), normalize=False)
-
 
 def create_folders(tag_path):
     if not os.path.exists(tag_path):

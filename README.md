@@ -125,98 +125,98 @@ The dataset's structure can be organized as follows (i.e., mvtec2d).
 
 > Vanilla / -v
 ```bash
-python3 main.py -p c2d -v -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -v -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -v -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 -vid 0  -g 1
-python3 main.py -p c2d -v -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -v -m fastflow -n net_fastflow -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -v -m favae -n net_favae -d mvtec2d -tid 0 -vid 0  -g 1
-python3 main.py -p c2d -v -m graphcore -n vig_ti_224_gelu -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
-python3 main.py -p c2d -v -m igd -n net_igd -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -v -m padim -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -v -m cutpaste -n vit_b_16 -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -v -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
-python3 main.py -p c2d -v -m reverse -n net_reverse -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -v -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -v -m spade -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -v -m stpm -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -v -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -v -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -v -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 -vid 0  -g 1
+python3 main.py -v -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -v -m fastflow -n net_fastflow -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -v -m favae -n net_favae -d mvtec2d -tid 0 -vid 0  -g 1
+python3 main.py -v -m graphcore -n vig_ti_224_gelu -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
+python3 main.py -v -m igd -n net_igd -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -v -m padim -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -v -m cutpaste -n vit_b_16 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -v -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
+python3 main.py -v -m reverse -n net_reverse -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -v -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -v -m spade -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -v -m stpm -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
 ```
 
 > Semi / -s
 ```bash
-python3 main.py -p c2d -s -m devnet -n net_devnet -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -s -m dra -n net_dra -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -s -m devnet -n net_devnet -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -s -m dra -n net_dra -d mvtec2d -tid 0 -vid 0 -g 1
 ```
 
 > Fewshot / -f
 ```bash
-python3 main.py -p c2d -f -fe 1 -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -sp 0.1 -g 1 -fda -fnd 4 -fat rotation
-python3 main.py -p c2d -f -fe 1 -m _patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 -sp 1 -fda -fnd 4 -g 1
-python3 main.py -p c2d -f -fe 1 -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -f -fe 1 -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -f -fe 1 -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -f -fe 1 -m fastflow -n net_fastflow -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -f -fe 1 -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 -vid 0  -g 1
-python3 main.py -p c2d -f -fe 1 -m padim -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -f -fe 1 -m favae -n net_favae -d mvtec2d -tid 0 -vid 0  -g 1
-python3 main.py -p c2d -f -fe 1 -m cutpaste -n vit_b_16 -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -f -fe 1 -m igd -n net_igd -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -f -fe 1 -m reverse -n net_reverse -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -f -fe 1 -m spade -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -f -fe 1 -m stpm -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -f -fe 1 -m graphcore -n vig_ti_224_gelu -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
-python3 main.py -p c2d -f -fe 1 -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -f -fe 1 -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -sp 0.1 -g 1 -fda -fnd 4 -fat rotation
+python3 main.py -f -fe 1 -m _patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 -sp 1 -fda -fnd 4 -g 1
+python3 main.py -f -fe 1 -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -f -fe 1 -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -f -fe 1 -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -f -fe 1 -m fastflow -n net_fastflow -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -f -fe 1 -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 -vid 0  -g 1
+python3 main.py -f -fe 1 -m padim -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -f -fe 1 -m favae -n net_favae -d mvtec2d -tid 0 -vid 0  -g 1
+python3 main.py -f -fe 1 -m cutpaste -n vit_b_16 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -f -fe 1 -m igd -n net_igd -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -f -fe 1 -m reverse -n net_reverse -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -f -fe 1 -m spade -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -f -fe 1 -m stpm -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -f -fe 1 -m graphcore -n vig_ti_224_gelu -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
+python3 main.py -f -fe 1 -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -g 1
 ```
 
 > Continual / -c
 ```bash
-python3 main.py -p c2d -c -m patchcore -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -sp 0.001 -g 1
-python3 main.py -p c2d -c -m csflow -n net_csflow -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m cfa -n net_cfa -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m draem -n net_draem -d mvtec2d -tid 0 1 -vid 0 1 -g 2
-python3 main.py -p c2d -c -m fastflow -n net_fastflow -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 1 -vid 0 1  -g 1
-python3 main.py -p c2d -c -m padim -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m favae -n net_favae -d mvtec2d -tid 0 1 -vid 0 1  -g 1
-python3 main.py -p c2d -c -m cutpaste -n vit_b_16 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m igd -n net_igd -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m reverse -n net_reverse -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m spade -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m stpm -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m dne -n vit_b_16 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -p c2d -c -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -c -m patchcore -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -sp 0.001 -g 1
+python3 main.py -c -m csflow -n net_csflow -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -c -m cfa -n net_cfa -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -c -m draem -n net_draem -d mvtec2d -tid 0 1 -vid 0 1 -g 2
+python3 main.py -c -m fastflow -n net_fastflow -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -c -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 1 -vid 0 1  -g 1
+python3 main.py -c -m padim -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -c -m favae -n net_favae -d mvtec2d -tid 0 1 -vid 0 1  -g 1
+python3 main.py -c -m cutpaste -n vit_b_16 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -c -m igd -n net_igd -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -c -m reverse -n net_reverse -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -c -m spade -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -c -m stpm -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -c -m dne -n vit_b_16 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
+python3 main.py -c -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
 ```
 
 > Noisy / -z
 ```bash
-python3 main.py -p c2d -z -nr 0.1 -no -m softpatch -n resnet18  -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
-python3 main.py -p c2d -z -nr 0.1 -no -m patchcore -n resnet18  -d mvtec2d  -tid 0 -vid 0 -sp 0.001 -g 1
-python3 main.py -p c2d -z -nr 0.1 -no -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -z -nr 0.1 -no -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -z -nr 0.1 -no -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 2
-python3 main.py -p c2d -z -nr 0.1 -no -m fastflow -n net_fastflow -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -z -nr 0.1 -no -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 -vid 0  -g 1
-python3 main.py -p c2d -z -nr 0.1 -no -m padim -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -z -nr 0.1 -no -m favae -n net_favae -d mvtec2d -tid 0 -vid 0  -g 1
-python3 main.py -p c2d -z -nr 0.1 -no -m cutpaste -n vit_b_16 -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -z -nr 0.1 -no -m reverse -n net_reverse -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -z -nr 0.1 -no -m spade -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -z -nr 0.1 -no -m stpm -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -z -nr 0.1 -no -m igd -n net_igd -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -p c2d -z -nr 0.1 -no -m simplenet -n wide_resnet50  -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -z -nr 0.1 -no -m softpatch -n resnet18  -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
+python3 main.py -z -nr 0.1 -no -m patchcore -n resnet18  -d mvtec2d  -tid 0 -vid 0 -sp 0.001 -g 1
+python3 main.py -z -nr 0.1 -no -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -z -nr 0.1 -no -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -z -nr 0.1 -no -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 2
+python3 main.py -z -nr 0.1 -no -m fastflow -n net_fastflow -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -z -nr 0.1 -no -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 -vid 0  -g 1
+python3 main.py -z -nr 0.1 -no -m padim -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -z -nr 0.1 -no -m favae -n net_favae -d mvtec2d -tid 0 -vid 0  -g 1
+python3 main.py -z -nr 0.1 -no -m cutpaste -n vit_b_16 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -z -nr 0.1 -no -m reverse -n net_reverse -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -z -nr 0.1 -no -m spade -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -z -nr 0.1 -no -m stpm -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -z -nr 0.1 -no -m igd -n net_igd -d mvtec2d -tid 0 -vid 0 -g 1
+python3 main.py -z -nr 0.1 -no -m simplenet -n wide_resnet50  -d mvtec2d -tid 0 -vid 0 -g 1
 ```
 
 > Transfer / -t
 ```bash
-python3 main.py -p c2d -t -ttn 8 -m reverse -n net_reverse -d coad -tid 0 -vid 1 -g 1 -ne 10
-python3 main.py -p c2d -t -ttn 8 -m cfa -n net_cfa -d coad -tid 0 -vid 1 -g 1 -ne 10
-python3 main.py -p c2d -t -ttn 8 -m csflow -n net_csflow -d coad -tid 0 -vid 1 -g 1 -ne 10
-python3 main.py -p c2d -t -ttn 8 -m draem -n net_draem -d coad -tid 0 -vid 1 -g 1 -ne 10
-python3 main.py -p c2d -t -ttn 8 -m fastflow -n net_fastflow -d coad -tid 0 -vid 1 -g 1 -ne 10
-python3 main.py -p c2d -t -ttn 8 -m favae -n net_favae -d coad -tid 0 -vid 1 -g 1 -ne 10
-python3 main.py -p c2d -t -ttn 8 -m padim -n resnet18 -d coad -tid 0 -vid 1 -g 1
-python3 main.py -p c2d -t -ttn 8 -m patchcore -n resnet18 -d coad -tid 0 -vid 1 -g 1
-python3 main.py -p c2d -t -ttn 8 -m stpm -n resnet18 -d coad -tid 0 -vid 1 -g 1
-python3 main.py -p c2d -t -ttn 8 -m graphcore -n vig_ti_224_gelu -d coad -tid 0 -vid 1 -g 1
-python3 main.py -p c2d -t -ttn 8 -m simplenet -n wide_resnet50 -d coad -tid 0 -vid 1 -g 1
+python3 main.py -t -ttn 8 -m reverse -n net_reverse -d coad -tid 0 -vid 1 -g 1 -ne 10
+python3 main.py -t -ttn 8 -m cfa -n net_cfa -d coad -tid 0 -vid 1 -g 1 -ne 10
+python3 main.py -t -ttn 8 -m csflow -n net_csflow -d coad -tid 0 -vid 1 -g 1 -ne 10
+python3 main.py -t -ttn 8 -m draem -n net_draem -d coad -tid 0 -vid 1 -g 1 -ne 10
+python3 main.py -t -ttn 8 -m fastflow -n net_fastflow -d coad -tid 0 -vid 1 -g 1 -ne 10
+python3 main.py -t -ttn 8 -m favae -n net_favae -d coad -tid 0 -vid 1 -g 1 -ne 10
+python3 main.py -t -ttn 8 -m padim -n resnet18 -d coad -tid 0 -vid 1 -g 1
+python3 main.py -t -ttn 8 -m patchcore -n resnet18 -d coad -tid 0 -vid 1 -g 1
+python3 main.py -t -ttn 8 -m stpm -n resnet18 -d coad -tid 0 -vid 1 -g 1
+python3 main.py -t -ttn 8 -m graphcore -n vig_ti_224_gelu -d coad -tid 0 -vid 1 -g 1
+python3 main.py -t -ttn 8 -m simplenet -n wide_resnet50 -d coad -tid 0 -vid 1 -g 1
 ```

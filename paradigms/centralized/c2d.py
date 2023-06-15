@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore")
 class CentralizedAD2D():
     def __init__(self, args):
         self.args = args
-
+        
     def load_config(self):
         with open('./configuration/3_dataset_base/{}.yaml'.format(self.args.dataset), 'r') as f:
             config_dataset = yaml.load(f, Loader=yaml.SafeLoader)
@@ -21,7 +21,7 @@ class CentralizedAD2D():
             config_train = yaml.load(f, Loader=yaml.SafeLoader)
         with open('./configuration/1_model_base/{}.yaml'.format(self.args.model), 'r') as f:
             config_model = yaml.load(f, Loader=yaml.SafeLoader)
-
+        
         config = override_config(config_dataset, config_train)
         config = override_config(config, config_model)
         self.para_dict = merge_config(config, self.args)

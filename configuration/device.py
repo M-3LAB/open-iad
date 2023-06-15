@@ -13,7 +13,6 @@ def get_ip_address(ifname):
 def assign_service(moda='eno1'):
     # moda: eno1, lo
     ip = get_ip_address(moda)
-
     root_path = server_data[ip]
 
     return ip, root_path

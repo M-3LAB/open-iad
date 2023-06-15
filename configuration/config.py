@@ -23,15 +23,15 @@ def parse_arguments_main():
     parser.add_argument('--data-path', '-dp', type=str, default=None)
 
     parser.add_argument('--train-task-id', '-tid', type=int, default=[0], nargs='+')
-    parser.add_argument('--valid-task-id', '-vid', type=int, default=[1], nargs='+')
-    parser.add_argument('--sampler-percentage', '-sp', type=float, default= 0.01)
+    parser.add_argument('--valid-task-id', '-vid', type=int, default=[0], nargs='+')
+    parser.add_argument('--sampler-percentage', '-sp', type=float, default=None)
 
     # vanilla 
     parser.add_argument('--vanilla', '-v', action='store_true', default=False)
     
     # semi-supervised 
     parser.add_argument('--semi', '-s', action='store_true', default=False)
-    parser.add_argument('--semi-anomaly-num', '-san', type=int, default=5)
+    parser.add_argument('--semi-anomaly-num', '-san', type=int, default=None)
     parser.add_argument('--semi-overlap', '-so', action='store_true', default=False)
     
     # continual 
@@ -39,31 +39,31 @@ def parse_arguments_main():
 
     # fewshot 
     parser.add_argument('--fewshot', '-f', action='store_true', default=False)
-    parser.add_argument('--fewshot-exm', '-fe', type=int, default=1)
+    parser.add_argument('--fewshot-exm', '-fe', type=int, default=None)
     parser.add_argument('--fewshot-data-aug', '-fda', action='store_true', default=False)
     parser.add_argument('--fewshot-feat-aug', '-ffa', action='store_true', default=False)
-    parser.add_argument('--fewshot-num-dg', '-fnd', type=int, default=1)
-    parser.add_argument('--fewshot-aug-type', '-fat', default=['normal'], nargs='+', 
+    parser.add_argument('--fewshot-num-dg', '-fnd', type=int, default=None)
+    parser.add_argument('--fewshot-aug-type', '-fat', default=None, nargs='+', 
                         choices=['normal', 'rotation', 'scale', 'translate', 'flip', 'color_jitter', 'perspective'])
 
     # noisy label
     parser.add_argument('--noisy', '-z', action='store_true', default=True)
     parser.add_argument('--noisy-overlap', '-no', action='store_true', default=False)
-    parser.add_argument('--noisy-ratio', '-nr', type=float, default=0.1)
+    parser.add_argument('--noisy-ratio', '-nr', type=float, default=None)
 
     # transfer 
     parser.add_argument('--transfer', '-t', action='store_true', default=False)
-    parser.add_argument('--transfer-type', type=str, default='inter_class', choices=['inter_class', 'intra_class'])
-    parser.add_argument('--transfer-target-sample-num', '-ttn', type=int, default=8)
+    parser.add_argument('--transfer-target-sample-num', '-ttn', type=int, default=None)
 
     # data augmentation type
-    parser.add_argument('--train-aug-type', '-tag', choices=['normal', 'cutpaste'], help='data augmentation type')
-    parser.add_argument('--valid-aug-type', '-vag', choices=['normal', 'cutpaste'], help='data augmentation type')
+    parser.add_argument('--train-aug-type', '-tag', default=None, choices=['normal', 'cutpaste'], help='data augmentation type')
+    parser.add_argument('--valid-aug-type', '-vag', default=None, choices=['normal', 'cutpaste'], help='data augmentation type')
 
     # univerisal
     parser.add_argument('--gpu-id', '-g', type=str, default=1)
-    parser.add_argument('--server-moda', '-sm', type=str, default='lo', choices=['eno1', 'lo'])
-    parser.add_argument('--num-epochs', '-ne', type=int, default=1)
+    parser.add_argument('--server-moda', '-sm', type=str, default=None, choices=['eno1', 'lo'])
+    parser.add_argument('--num-epochs', '-ne', type=int, default=None)
+    parser.add_argument('--seed', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--vis', '-vis', action='store_true', default=True)
     parser.add_argument('--vis-em', action='store_true', default=False)
