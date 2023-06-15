@@ -2,7 +2,7 @@ import numpy as np
 from arch.base import ModelBase
 from models.softpatch.softpatch import SoftPatch as softpatch
 from models.patchcore import common
-from models.patchcore import sampler
+from models.softpatch import sampler
 from torchvision import models
 
 __all__ = ['SoftPatch']
@@ -32,7 +32,11 @@ class SoftPatch(ModelBase):
             featuresampler=self.sampler,
             anomaly_scorer_num_nn=self.config['_anomaly_scorer_num_nn'],
             nn_method=self.nn_method,
-        )
+            lof_k=self.config['_lof_k'],
+            threshold=self.config['_threshold'],
+            weight_method=self.config['_weight_method'],
+            soft_weight_flag=self.config['_soft_weight_flag'],
+            )
 
     def get_sampler(self, name):
         if name == 'identity':
@@ -41,6 +45,8 @@ class SoftPatch(ModelBase):
             return sampler.GreedyCoresetSampler(self.config['sampler_percentage'], self.device)
         elif name == 'approx_greedy_coreset':
             return sampler.ApproximateGreedyCoresetSampler(self.config['sampler_percentage'], self.device)
+        elif name == 'weighted_greedy_coreset':
+            return sampler.WeightedGreedyCoresetSampler(self.config['sampler_percentage'], self.device)
         else:
             raise ValueError('No This Sampler: {}'.format(name))
 

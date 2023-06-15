@@ -11,9 +11,6 @@ import models.patchcore.sampler as sampler
 from sklearn.neighbors import LocalOutlierFactor
 from models.softpatch.multi_variate_gaussian import MultiVariateGaussian
 
-# from torch_cluster import graclus_cluster
-
-
 class SoftPatch(torch.nn.Module):
     def __init__(self, device):
         super(SoftPatch, self).__init__()
@@ -30,12 +27,12 @@ class SoftPatch(torch.nn.Module):
         patchsize=3,
         patchstride=1,
         anomaly_score_num_nn=1,
-        featuresampler=sampler.ApproximateGreedyCoresetSampler(percentage=0.1, device=torch.device("cuda")),
+        featuresampler=sampler.IdentitySampler(),
         nn_method=common.FaissNN(False, 4),
-            lof_k=5,
-            threshold=0.15,
-            weight_method="lof",
-            soft_weight_flag=True,
+        lof_k=5,
+        threshold=0.15,
+        weight_method="lof",
+        soft_weight_flag=True,
         **kwargs,
     ):
         self.backbone = backbone.to(device)
@@ -78,8 +75,6 @@ class SoftPatch(torch.nn.Module):
         self.featuresampler = featuresampler
 
         ############SoftPatch ##########
-        self.featuresampler = sampler.WeightedGreedyCoresetSampler(featuresampler.percentage,
-                                                                   featuresampler.device)
         self.patch_weight = None
         self.feature_shape = []
         self.lof_k = lof_k
@@ -195,7 +190,6 @@ class SoftPatch(torch.nn.Module):
             sampling_weight = torch.where(patch_weight > threshold, 0, 1)
             self.featuresampler.set_sampling_weight(sampling_weight)
             self.patch_weight = patch_weight.clamp(min=0)
-
             sample_features, sample_indices = self.featuresampler.run(features)
             features = sample_features
             self.coreset_weight = self.patch_weight[sample_indices].cpu().numpy()
@@ -400,7 +394,6 @@ class SoftPatch(torch.nn.Module):
         return os.path.join(filepath, prepend + "params.pkl")
 
     def save_to_path(self, save_path: str, prepend: str = "") -> None:
-        LOGGER.info("Saving data.")
         self.anomaly_scorer.save(
             save_path, save_features_separately=False, prepend=prepend
         )
@@ -428,7 +421,6 @@ class SoftPatch(torch.nn.Module):
         nn_method: common.FaissNN(False, 4),
         prepend: str = "",
     ) -> None:
-        LOGGER.info("Loading and initializing.")
         with open(self._params_file(load_path, prepend), "rb") as load_file:
             params = pickle.load(load_file)
         params["backbone"] = backbones.load(
@@ -439,7 +431,6 @@ class SoftPatch(torch.nn.Module):
         self.load(**params, device=device, nn_method=nn_method)
 
         self.anomaly_scorer.load(load_path, prepend)
-
 
 # Image handling classes.
 class PatchMaker:

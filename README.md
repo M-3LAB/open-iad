@@ -189,8 +189,8 @@ python3 main.py -p c2d -c -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 1 -vid
 
 > Noisy / -z
 ```bash
-python3 main.py -p c2d -z -nr 0.1 -no -m softpatch -n resnet18  -d mvtec2d -sp 0.001 -g 1
-python3 main.py -p c2d -z -nr 0.1 -no -m patchcore -n resnet18  -d mvtec2d -sp 0.001 -g 1
+python3 main.py -p c2d -z -nr 0.1 -no -m softpatch -n resnet18  -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
+python3 main.py -p c2d -z -nr 0.1 -no -m patchcore -n resnet18  -d mvtec2d  -tid 0 -vid 0 -sp 0.001 -g 1
 python3 main.py -p c2d -z -nr 0.1 -no -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -z -nr 0.1 -no -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -p c2d -z -nr 0.1 -no -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 2
