@@ -151,7 +151,7 @@ python3 main.py -s -m dra -n net_dra -d mvtec2d -tid 0 -vid 0 -g 1
 > Fewshot / -f
 ```bash
 python3 main.py -f -fe 1 -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -sp 0.1 -g 1 -fda -fnd 4 -fat rotation
-python3 main.py -f -fe 1 -m _patchcore -n resnet18 -d mvtec2d -tid 0 -vid 0 -sp 1 -fda -fnd 4 -g 1
+python3 main.py -f -fe 1 -m _patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -sp 1 -fda -fnd 4 -g 1
 python3 main.py -f -fe 1 -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -f -fe 1 -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -f -fe 1 -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 1
@@ -170,7 +170,7 @@ python3 main.py -f -fe 1 -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 
 
 > Continual / -c
 ```bash
-python3 main.py -c -m patchcore -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -sp 0.001 -g 1
+python3 main.py -c -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 1 -vid 0 1 -sp 0.001 -g 1
 python3 main.py -c -m csflow -n net_csflow -d mvtec2d -tid 0 1 -vid 0 1 -g 1
 python3 main.py -c -m cfa -n net_cfa -d mvtec2d -tid 0 1 -vid 0 1 -g 1
 python3 main.py -c -m draem -n net_draem -d mvtec2d -tid 0 1 -vid 0 1 -g 2
@@ -189,8 +189,8 @@ python3 main.py -c -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 1 -vid 0 1 -g
 
 > Noisy / -z
 ```bash
-python3 main.py -z -nr 0.1 -no -m softpatch -n resnet18  -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
-python3 main.py -z -nr 0.1 -no -m patchcore -n resnet18  -d mvtec2d  -tid 0 -vid 0 -sp 0.001 -g 1
+python3 main.py -z -nr 0.1 -no -m softpatch -n wide_resnet50  -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
+python3 main.py -z -nr 0.1 -no -m patchcore -n wide_resnet50  -d mvtec2d  -tid 0 -vid 0 -sp 0.001 -g 1
 python3 main.py -z -nr 0.1 -no -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -z -nr 0.1 -no -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -z -nr 0.1 -no -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 2
@@ -215,7 +215,7 @@ python3 main.py -t -ttn 8 -m draem -n net_draem -d coad -tid 0 -vid 1 -g 1 -ne 1
 python3 main.py -t -ttn 8 -m fastflow -n net_fastflow -d coad -tid 0 -vid 1 -g 1 -ne 10
 python3 main.py -t -ttn 8 -m favae -n net_favae -d coad -tid 0 -vid 1 -g 1 -ne 10
 python3 main.py -t -ttn 8 -m padim -n resnet18 -d coad -tid 0 -vid 1 -g 1
-python3 main.py -t -ttn 8 -m patchcore -n resnet18 -d coad -tid 0 -vid 1 -g 1
+python3 main.py -t -ttn 8 -m patchcore -n wide_resnet50 -d coad -tid 0 -vid 1 -g 1
 python3 main.py -t -ttn 8 -m stpm -n resnet18 -d coad -tid 0 -vid 1 -g 1
 python3 main.py -t -ttn 8 -m graphcore -n vig_ti_224_gelu -d coad -tid 0 -vid 1 -g 1
 python3 main.py -t -ttn 8 -m simplenet -n wide_resnet50 -d coad -tid 0 -vid 1 -g 1

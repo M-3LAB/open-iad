@@ -47,7 +47,7 @@ def parse_arguments_main():
                         choices=['normal', 'rotation', 'scale', 'translate', 'flip', 'color_jitter', 'perspective'])
 
     # noisy label
-    parser.add_argument('--noisy', '-z', action='store_true', default=True)
+    parser.add_argument('--noisy', '-z', action='store_true', default=False)
     parser.add_argument('--noisy-overlap', '-no', action='store_true', default=False)
     parser.add_argument('--noisy-ratio', '-nr', type=float, default=None)
 
@@ -60,7 +60,7 @@ def parse_arguments_main():
     parser.add_argument('--valid-aug-type', '-vag', default=None, choices=['normal', 'cutpaste'], help='data augmentation type')
 
     # univerisal
-    parser.add_argument('--gpu-id', '-g', type=str, default=1)
+    parser.add_argument('--gpu-id', '-g', type=str, default=None)
     parser.add_argument('--server-moda', '-sm', type=str, default=None, choices=['eno1', 'lo'])
     parser.add_argument('--num-epochs', '-ne', type=int, default=None)
     parser.add_argument('--seed', type=int, default=None)
