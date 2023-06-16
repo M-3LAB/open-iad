@@ -1,5 +1,5 @@
-model: base
-net: net_base
+model: example
+net: net_example
 data_size: 256
 data_crop_size: 256
 mask_size: 256

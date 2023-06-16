@@ -220,3 +220,17 @@ python3 main.py -t -ttn 8 -m stpm -n resnet18 -d coad -tid 0 -vid 1 -g 1
 python3 main.py -t -ttn 8 -m graphcore -n vig_ti_224_gelu -d coad -tid 0 -vid 1 -g 1
 python3 main.py -t -ttn 8 -m simplenet -n wide_resnet50 -d coad -tid 0 -vid 1 -g 1
 ```
+
+
+## Tutorial
+
+### How to implement your own methods or datasets, i.e, integrating new methods into the open-iad project?
+
+> Please refer to the following steps:
+
++ register your new method (e.g., MODEL, NET, DATASET) in [configuration/registration.py](configuration/registration.py)
++ add MODEL NAME, NET NAME, DATASET NAME into [configuration/config.py](configuration/config.py)
++ implement MODEL in [arch/MODEL](arch/MODEL) and [models/MODEL](models/MODEL)
++ put your YAML in [configuration/1_model_base](configuration/1_model_base)
++ put your DATASET in [dataset/DATASET](dataset/DATASET)
++ add NEW METHOD in [README](README)
