@@ -1,7 +1,7 @@
 import torch
 from arch.base import ModelBase
 from models.cfa.net_cfa import NetCFA
-from models.cfa.metrics import  upsample, rescale, gaussian_smooth
+from models.cfa.metrics import upsample, rescale, gaussian_smooth
 from models.cfa.cfa import DSVDD
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
