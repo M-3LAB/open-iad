@@ -57,7 +57,6 @@ class CentralizedAD2D():
         print(self.para_dict)
         print('---------------------')
 
-
     def load_data(self):
         dataset_package = __import__(dataset_name[self.para_dict['dataset']][0])
         dataset_module = getattr(dataset_package, dataset_name[self.para_dict['dataset']][1])
