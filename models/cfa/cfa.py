@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 from einops import rearrange
 from sklearn.cluster import KMeans
-from models.cfa.metrics import *
 from models.cfa.coordconv import CoordConv2d
 import torch.nn.functional as F
 
