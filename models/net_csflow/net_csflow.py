@@ -2,7 +2,6 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 from efficientnet_pytorch import EfficientNet
-import numpy as np
 from models.net_csflow.freia_funcs import *
 
 class NetCSFlow(nn.Module):
