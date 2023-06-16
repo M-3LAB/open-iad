@@ -5,8 +5,8 @@ import argparse
 import torch.nn.functional as F
 from arch.base import ModelBase
 from models.dra.dra_resnet18 import *
-from loss_function.deviation_loss import DeviationLoss
-from loss_function.binaryfocal_loss import BinaryFocalLoss
+from loss_function.deviation import DeviationLoss
+from loss_function.binaryfocal import BinaryFocalLoss
 from optimizer.optimizer import get_optimizer
 
 __all__ = ['DRA']

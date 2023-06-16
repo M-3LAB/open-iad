@@ -4,7 +4,7 @@ import argparse
 from torch.nn import functional as F
 from arch.base import ModelBase
 from scipy.ndimage import gaussian_filter
-from loss_function.reverse_loss import reverse_loss
+from loss_function.reverse import reverse_loss
 from models.reverse.net_reverse import NetReverse
 from optimizer.optimizer import get_optimizer
 

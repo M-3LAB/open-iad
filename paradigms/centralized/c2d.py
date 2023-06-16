@@ -34,12 +34,13 @@ class CentralizedAD2D():
         self.para_dict['data_path'] = '{}{}'.format(root_path, self.para_dict['data_path'])
         self.para_dict['file_path'] = record_path(self.para_dict)
 
-        self.check_args()
-
         if self.para_dict['save_log']:
             save_arg(self.para_dict, self.para_dict['file_path'])
             save_script(__file__, self.para_dict['file_path'])
-        
+
+        self.print_info()
+        self.check_args()
+
     def check_args(self):
         n = self.para_dict['vanilla'] + self.para_dict['transfer'] + self.para_dict['semi'] \
             + self.para_dict['fewshot'] + self.para_dict['noisy'] + self.para_dict['continual']
@@ -55,6 +56,7 @@ class CentralizedAD2D():
         print('---------------------')
         print(self.para_dict)
         print('---------------------')
+
 
     def load_data(self):
         dataset_package = __import__(dataset_name[self.para_dict['dataset']][0])
@@ -136,7 +138,6 @@ class CentralizedAD2D():
 
     def run_work_flow(self):
         self.load_config()
-        self.print_info()
         
         self.load_data()
         self.init_model()

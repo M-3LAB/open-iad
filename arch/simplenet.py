@@ -1,5 +1,3 @@
-import torch
-import torch.nn as nn
 import numpy as np
 from arch.base import ModelBase
 from models.simplenet.simplenet import SimpleNet as _SimpleNet 

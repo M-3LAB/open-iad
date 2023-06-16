@@ -4,8 +4,8 @@ import numpy as np
 import argparse
 from arch.base import ModelBase
 from models.dream.draem import NetDRAEM
-from loss_function.focal_loss import FocalLoss
-from loss_function.ssim_loss import SSIMLoss
+from loss_function.focal import FocalLoss
+from loss_function.ssim import SSIMLoss
 from augmentation.draem_aug import DraemAugData
 from optimizer.optimizer import get_optimizer
 
