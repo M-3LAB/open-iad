@@ -1,7 +1,6 @@
 import torch
 from arch.base import ModelBase
 from models.cfa.net_cfa import NetCFA
-from models.cfa.metrics import upsample, rescale, gaussian_smooth
 from models.cfa.cfa import DSVDD
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
@@ -77,10 +76,10 @@ class CFA(ModelBase):
                 heatmap = torch.mean(heatmap, dim=1) 
                 heatmaps = torch.cat((heatmaps, heatmap), dim=0) if heatmaps != None else heatmap
        
-        heatmaps = upsample(heatmaps, size=img.size(2), mode='bilinear') 
-        heatmaps = gaussian_smooth(heatmaps, sigma=4)
+        heatmaps = self.upsample(heatmaps, size=img.size(2), mode='bilinear') 
+        heatmaps = self.gaussian_smooth(heatmaps, sigma=4)
         
-        scores = rescale(heatmaps)
+        scores = self.rescale(heatmaps)
         for i in range(scores.shape[0]):
             self.pixel_pred_list.append(scores[i])
         img_scores = scores.reshape(scores.shape[0], -1).max(axis=1)
