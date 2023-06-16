@@ -1,18 +1,12 @@
 """PatchCore and PatchCore detection methods."""
-import logging
 import os
-import pickle
-
 import numpy as np
 import torch
 import torch.nn.functional as F
 import tqdm
 
-import models.patchcore.backbones as backbones
 import models.patchcore.common as common
 import models.patchcore.sampler as sampler
-
-LOGGER = logging.getLogger(__name__)
 
 
 class PatchCore(torch.nn.Module):
@@ -226,47 +220,6 @@ class PatchCore(torch.nn.Module):
     @staticmethod
     def _params_file(filepath, prepend=""):
         return os.path.join(filepath, prepend + "patchcore_params.pkl")
-
-    def save_to_path(self, save_path: str, prepend: str = "") -> None:
-        LOGGER.info("Saving PatchCore data.")
-        self.anomaly_scorer.save(
-            save_path, save_features_separately=False, prepend=prepend
-        )
-        patchcore_params = {
-            "backbone.name": self.backbone.name,
-            "layers_to_extract_from": self.layers_to_extract_from,
-            "input_shape": self.input_shape,
-            "pretrain_embed_dimension": self.forward_modules[
-                "preprocessing"
-            ].output_dim,
-            "target_embed_dimension": self.forward_modules[
-                "preadapt_aggregator"
-            ].target_dim,
-            "patchsize": self.patch_maker.patchsize,
-            "patchstride": self.patch_maker.stride,
-            "anomaly_scorer_num_nn": self.anomaly_scorer.n_nearest_neighbours,
-        }
-        with open(self._params_file(save_path, prepend), "wb") as save_file:
-            pickle.dump(patchcore_params, save_file, pickle.HIGHEST_PROTOCOL)
-
-    def load_from_path(
-        self,
-        load_path: str,
-        device: torch.device,
-        nn_method: common.FaissNN(False, 4),
-        prepend: str = "",
-    ) -> None:
-        LOGGER.info("Loading and initializing ")
-        with open(self._params_file(load_path, prepend), "rb") as load_file:
-            patchcore_params = pickle.load(load_file)
-        patchcore_params["backbone"] = backbones.load(
-            patchcore_params["backbone.name"]
-        )
-        patchcore_params["backbone"].name = patchcore_params["backbone.name"]
-        del patchcore_params["backbone.name"]
-        self.load(**patchcore_params, device=device, nn_method=nn_method)
-
-        self.anomaly_scorer.load(load_path, prepend)
 
 
 # Image handling classes.
