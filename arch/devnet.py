@@ -3,8 +3,8 @@ from torch import nn
 import argparse
 import torch.nn.functional as F
 from arch.base import ModelBase
-from loss_function.deviation_loss import DeviationLoss
-from loss_function.binaryfocal_loss import BinaryFocalLoss
+from loss_function.deviation import DeviationLoss
+from loss_function.binaryfocal import BinaryFocalLoss
 from models.devnet.devnet_resnet18 import DevNetResNet18
 from optimizer.optimizer import get_optimizer
 
