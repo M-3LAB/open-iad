@@ -1,10 +1,14 @@
 # IM-IAD: Industrial Image Anomaly Detection Benchmark in Manufacturing 
 
+
+We are dedicated to provide researchers a uniform verification environment of image anomaly detection with standard settings and methods. Furthermore, we warmly invite everyone to integrate their algorithms into our project in order to continuously enhance and complement IM-IAD.
+Let's together maintain and contribute this community.
+
 ## Envs
 
 ```bash
 pytorch 1.10.1 or 1.8.1
-conda activate open-ad
+conda activate open-iad
 pip3 install -r requirements.txt
 
 # example
