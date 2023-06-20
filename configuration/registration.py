@@ -1,5 +1,5 @@
 # add new dataset
-dataset_name = {'_example': ('dataset._example', '_example', 'Example'),
+dataset_name = {'dataset_example': ('dataset._example', '_example', 'DatasetExample'),
                 'mvtec2d': ('dataset.mvtec2d', 'mvtec2d', 'MVTec2D'),
                 'mvtec2df3d': ('dataset.mvtec2df3d', 'mvtec2df3d', 'MVTec2DF3D'),
                 'mvtecloco': ('dataset.mvtecloco', 'mvtecloco', 'MVTecLoco'),
@@ -9,7 +9,7 @@ dataset_name = {'_example': ('dataset._example', '_example', 'Example'),
                 'mvtec3d': ('dataset.mvtec3d', 'mvtec3d', 'MVTec3D'),
                 'visa': ('dataset.visa', 'visa', 'VisA'),
                 'dagm': ('dataset.dagm', 'dagm', 'DAGM'),
-                'coad': ('dataset.coad', 'coad', 'COAD')
+                'coad': ('dataset.coad', 'coad', 'COAD'),
                 }
 
 # add new model
@@ -32,7 +32,7 @@ model_name = {'_example': ('arch._example', '_example', 'Example'),
               'cutpaste': ('arch.cutpaste', 'cutpaste', 'CutPaste'),
               'graphcore': ('arch.graphcore', 'graphcore', 'GraphCore'),
               'simplenet': ('arch.simplenet', 'simplenet', 'SimpleNet'), 
-              'softpatch': ('arch.softpatch', 'softpatch', 'SoftPatch') 
+              'softpatch': ('arch.softpatch', 'softpatch', 'SoftPatch'),
               }
 
 # server config

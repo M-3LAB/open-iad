@@ -1,4 +1,4 @@
-model: example
+model: _example
 net: net_example
 data_size: 256
 data_crop_size: 256

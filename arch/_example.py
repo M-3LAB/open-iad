@@ -1,12 +1,12 @@
 from arch.base import ModelBase
-from models._example.net_model import NetExample
+from models._example.net_example import NetExample
 
 
 __all__ = ['Example']
 
-class MODEL(ModelBase):
+class ModelExample(ModelBase):
     def __init__(self, config):
-        super(MODEL, self).__init__(config)
+        super(ModelExample, self).__init__(config)
         self.config = config
         self.net = NetExample(self.config)
     
