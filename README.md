@@ -241,4 +241,4 @@ python3 main.py -t -ttn 8 -m simplenet -n wide_resnet50 -d coad -tid 0 -vid 1 -g
 + implement NEW SETTING in [data_io/data_holder.py](data_io/data_holder.py)
 + update output path of results in [tools/record_helper.py](tools/record_helper.py)
 + add NEW METHOD in [README.md](README.md)
-+ shell commend, "python3 main.py -v -m _example -n net_example -d _example -tid 0 -vid 0 -g 1"
++ shell command, "python3 main.py -v -m _example -n net_example -d _example -tid 0 -vid 0 -g 1"
