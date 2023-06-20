@@ -119,11 +119,11 @@ The dataset's structure can be organized as follows (i.e., mvtec2d).
 | 17 | spade  | resnet18, wide_resnet50 | Sub-image anomaly detection with deep pyramid correspondences |
 | 18 | stpm  | resnet18, wide_resnet50 | Student-teacher feature pyramid matching for anomaly detection |
 
-## 3D Model
+<!-- ## 3D Model
 | No. | Method / -m | Net / -n | Paper Title |
 | ------ | ------ | ------ | ------ |
 | 1 | 3d_btf | -- | Back to the feature: classical 3D features are (almost) all you need for 3D anomaly detection | 
-| 2 | 3d_ast | | AST: Asymmetric student-teacher networks for industrial anomaly detection |
+| 2 | 3d_ast | | AST: Asymmetric student-teacher networks for industrial anomaly detection | -->
 
 
 ## Run Example

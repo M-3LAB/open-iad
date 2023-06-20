@@ -4,7 +4,6 @@ import math
 import random
 from PIL import Image
 from torch.utils.data import Dataset
-from torchvision import transforms as T
 
 
 __all__ = ['COAD', 'coad_parts_classes']
@@ -42,7 +41,6 @@ class COAD(Dataset):
         # load dataset
         self.load_dataset()
         self.allocate_task_data()
-
             
     def __getitem__(self, idx):
         img_src, label, mask, task_id = self.imgs_list[idx], self.labels_list[idx], self.masks_list[idx], self.task_ids_list[idx]
@@ -65,7 +63,6 @@ class COAD(Dataset):
 
     def __len__(self):
         return len(self.imgs_list)
-
 
     def load_dataset(self):
         # input x, label y, [0, 1], good is 0 and bad is 1, mask is ground truth

@@ -9,7 +9,7 @@ from arch.base import ModelBase
 from torchvision import models
 from sklearn.random_projection import SparseRandomProjection
 from models._patchcore.kcenter_greedy import KCenterGreedy 
-from augmentation.domain_generalization import feature_augmentation
+from augmentation.domain_gen import feature_augmentation
 from scipy.ndimage import gaussian_filter
 from tools.utils import *
 

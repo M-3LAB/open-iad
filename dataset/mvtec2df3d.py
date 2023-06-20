@@ -4,7 +4,6 @@ import math
 import random
 from PIL import Image
 from torch.utils.data import Dataset
-from torchvision import transforms as T
 
 
 __all__ = ['MVTec2DF3D', 'mvtec2df3d_classes']
@@ -63,7 +62,6 @@ class MVTec2DF3D(Dataset):
 
     def __len__(self):
         return len(self.imgs_list)
-
 
     def load_dataset(self):
         # input x, label y, [0, 1], good is 0 and bad is 1, mask is ground truth
