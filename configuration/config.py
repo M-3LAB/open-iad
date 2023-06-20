@@ -14,7 +14,7 @@ def parse_arguments_main():
                                                                               'btad', 'mvtec2df3d', 'visa', 'dagm', 'coad'])
     parser.add_argument('--model', '-m', type=str, default='softpatch', choices=['_example', '_patchcore', 'patchcore', 'csflow', 'dne', 
         'draem', 'igd', 'cutpaste', 'devnet', 'dra', 'favae', 'padim', 'reverse', 'spade', 'fastflow', 'softpatch', 'cfa', 'stpm',
-        'graphcore', 'simplenet', 'softpatch'])
+        'simplenet', 'softpatch'])
     parser.add_argument('--net', '-n', type=str, default='wide_resnet50', choices=['net_example', 'wide_resnet50', 'resnet18', 'net_csflow',
         'vit_b_16', 'net_draem', 'net_dra', 'net_igd', 'net_reverse', 'net_favae', 'net_fastflow', 'net_cfa', 'net_devnet', 
         'vig_ti_224_gelu'])
