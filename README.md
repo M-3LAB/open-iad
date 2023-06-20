@@ -3,6 +3,8 @@
 
 We are dedicated to provide researchers a uniform verification environment of image anomaly detection with standard settings and methods. At the same time, everyone is warmly invited to add their algorithms and new features into IM-IAD. Finally, we appreciate all the contributors who maintain this community.
 
+The project is being continuously updated. If any issues are found, please contact us promptly.
+
 ## Envs
 
 ```bash
@@ -18,7 +20,7 @@ pip install opencv-python
 
 ## Project Instruction
 ```bash
-.
+IM-IAD
 ├── arch # model base class
 ├── augmentation # data augmentation
 ├── checkpoints # pretrained or requirements
