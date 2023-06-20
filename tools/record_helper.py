@@ -1,8 +1,8 @@
 import os
-from rich import print
 import cv2
-import numpy as np
 from tools.visualize import save_anomaly_map
+from configuration.registration import setting_name
+from rich import print
 
 __all__ = ['RecordHelper']
 
@@ -17,21 +17,12 @@ class RecordHelper():
         print(info)
 
     def paradigm_name(self):
-        if self.config['vanilla']:
-            return 'vanilla'
-        elif self.config['semi']:
-            return 'semi'
-        elif self.config['continual']:
-            return 'continual'
-        elif self.config['fewshot']:
-            return 'fewshot'
-        elif self.config['noisy']:
-            return 'noisy'
-        elif self.config['transfer']:
-            return 'transfer'
-        else:
-            print('Add new setting in record_helper.py!')
-            return 'unknown'
+        for s in setting_name:
+            if self.config[s]:
+                return s
+
+        print('Add new setting in record_helper.py!')
+        return 'unknown'
 
     def record_result(self, result):
         paradim = self.paradigm_name()

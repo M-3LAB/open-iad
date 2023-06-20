@@ -1,3 +1,6 @@
+# setting
+setting_name = ['vanilla', 'fewshot', 'semi', 'noisy', 'continual', 'transfer']
+
 # add new dataset
 dataset_name = {'_example': ('dataset._example', '_example', 'Example'),
                 'mvtec2d': ('dataset.mvtec2d', 'mvtec2d', 'MVTec2D'),

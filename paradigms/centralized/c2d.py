@@ -2,7 +2,7 @@ import yaml
 import time
 
 from configuration.device import assign_service
-from configuration.registration import dataset_name, model_name
+from configuration.registration import setting_name, dataset_name, model_name
 from data_io.data_holder import DataHolder
 from tools.utils import *
 from rich import print
@@ -42,11 +42,12 @@ class CentralizedAD2D():
         self.check_args()
 
     def check_args(self):
-        n = self.para_dict['vanilla'] + self.para_dict['transfer'] + self.para_dict['semi'] \
-            + self.para_dict['fewshot'] + self.para_dict['noisy'] + self.para_dict['continual']
+        n = 0
+        for s in setting_name:
+            n += self.para_dict[s]
+
         if n == 0:
-            raise ValueError('Please Assign Learning Paradigm, --vanilla, --transfer,\
-                              --semi, --noisy, --fewshot, --continual')
+            raise ValueError('Please Assign Learning Paradigm!')
         elif n >= 2:
             raise ValueError('There Are Multiple Flags of Paradigm!')
 
