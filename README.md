@@ -1,8 +1,7 @@
 # IM-IAD: Industrial Image Anomaly Detection Benchmark in Manufacturing 
 
 
-We are dedicated to provide researchers a uniform verification environment of image anomaly detection with standard settings and methods. At the same time, everyone is warmly invited to integrate their algorithms into our project, continuously complementing IM-IAD.
-Let's together maintain and contribute this community.
+We are dedicated to provide researchers a uniform verification environment of image anomaly detection with standard settings and methods. At the same time, everyone is warmly invited to add their algorithms and new features into IM-IAD. Finally, we appreciate all the contributors who maintain this community.
 
 ## Envs
 
