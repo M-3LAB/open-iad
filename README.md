@@ -228,9 +228,13 @@ python3 main.py -t -ttn 8 -m simplenet -n wide_resnet50 -d coad -tid 0 -vid 1 -g
 
 > Please refer to the following steps:
 
-+ register your new method (e.g., MODEL, NET, DATASET) in [configuration/registration.py](configuration/registration.py)
-+ add MODEL NAME, NET NAME, DATASET NAME into [configuration/config.py](configuration/config.py)
-+ implement MODEL in [arch/MODEL](arch/MODEL) and [models/MODEL](models/MODEL)
-+ put your YAML in [configuration/1_model_base](configuration/1_model_base)
-+ put your DATASET in [dataset/DATASET](dataset/DATASET)
-+ add NEW METHOD in [README](README)
++ register your new method (e.g., MODEL, NET, DATASET, SETTING, SERVER) in [configuration/registration.py](configuration/registration.py)
++ add names of MODEL, NET, DATASET, SETTING into [configuration/config.py](configuration/config.py)
++ implement MODEL in [arch/_example.py](arch/_example.py) and [models/_example/net_example.py](models/_example/net_example.py)
++ put MODEL configuration in [configuration/1_model_base/_example.yaml](configuration/1_model_base/_example.yaml)
++ put DATASET configuration in [configuration/3_dataset_base/_example.yaml](configuration/3_dataset_base/_example.yaml)
++ implement DATASET in [dataset/_example.py](dataset/_example.py)
++ implement NEW SETTING in [data_io/data_holder.py](data_io/data_holder.py)
++ update output path of results in [tools/record_helper.py](tools/record_helper.py)
++ add NEW METHOD in [README.md](README.md)
++ shell commend, "python3 main.py -v -m _example -n net_example -d _example -tid 0 -vid 0 -g 1"

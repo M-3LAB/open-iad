@@ -1,5 +1,5 @@
 # add new dataset
-dataset_name = {'dataset_example': ('dataset._example', '_example', 'DatasetExample'),
+dataset_name = {'_example': ('dataset._example', '_example', 'Example'),
                 'mvtec2d': ('dataset.mvtec2d', 'mvtec2d', 'MVTec2D'),
                 'mvtec2df3d': ('dataset.mvtec2df3d', 'mvtec2df3d', 'MVTec2DF3D'),
                 'mvtecloco': ('dataset.mvtecloco', 'mvtecloco', 'MVTecLoco'),
@@ -35,7 +35,7 @@ model_name = {'_example': ('arch._example', '_example', 'Example'),
               'softpatch': ('arch.softpatch', 'softpatch', 'SoftPatch'),
               }
 
-# server config
+# server config, ip: dataset root path
 server_data = {'127.0.0.1': '/home/robot/data',
                '172.18.36.108': '/ssd2/m3lab/data/open-ad',
                '172.18.36.107': '/ssd-sata1/wjb/data/open-ad',

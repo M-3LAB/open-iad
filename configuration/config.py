@@ -11,7 +11,7 @@ def parse_arguments_main():
 
     # ----------------------------- centralized learning ----------------------------- #
     parser.add_argument('--dataset', '-d', type=str, default='mvtec2d', choices=['mvtec2d', 'mvtec3d', 'mpdd', 'mvtecloco', 'mtd', 
-                                                                              'btad', 'mvtec2df3d', 'visa', 'dagm', 'coad', 'dataset_example'])
+                                                                              'btad', 'mvtec2df3d', 'visa', 'dagm', 'coad', '_example'])
     parser.add_argument('--model', '-m', type=str, default='softpatch', choices=['_patchcore', 'patchcore', 'csflow', 'dne', 
         'draem', 'igd', 'cutpaste', 'devnet', 'dra', 'favae', 'padim', 'reverse', 'spade', 'fastflow', 'softpatch', 'cfa', 'stpm',
         'graphcore', 'simplenet', 'softpatch', '_example'])

@@ -6,13 +6,13 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 
-__all__ = ['DatasetExample', 'example_classes']
+__all__ = ['Example', 'example_classes']
 
 def example_classes():
     return ['class_1', 'class_2']
 
 
-class DatasetExample(Dataset):
+class Example(Dataset):
     def __init__(self, data_path, learning_mode='centralized', phase='train', 
                  data_transform=None, num_task=2):
 
