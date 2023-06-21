@@ -48,7 +48,7 @@ class CentralizedAD2D():
 
         if n == 0:
             raise ValueError('Please Assign Learning Paradigm!')
-        elif n >= 2:
+        if n >= 2:
             raise ValueError('There Are Multiple Flags of Paradigm!')
 
     def print_info(self):
