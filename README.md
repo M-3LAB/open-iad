@@ -35,7 +35,7 @@ IM-IAD
 ├── data_io # loading data interface
 ├── dataset # dataset interface
 ├── loss_function
-├── metrics
+├── metric
 ├── models # basic layers for model class in arch_base
 ├── optimizer
 ├── paradigms # learning paradigms
