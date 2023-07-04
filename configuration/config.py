@@ -59,7 +59,7 @@ def parse_arguments_main():
     parser.add_argument('--train-aug-type', '-tag', default=None, choices=['normal', 'cutpaste'], help='data augmentation type')
     parser.add_argument('--valid-aug-type', '-vag', default=None, choices=['normal', 'cutpaste'], help='data augmentation type')
 
-    # univerisal
+    # universal
     parser.add_argument('--gpu-id', '-g', type=str, default=None)
     parser.add_argument('--server-moda', '-sm', type=str, default=None, choices=['eno1', 'lo'])
     parser.add_argument('--num-epochs', '-ne', type=int, default=None)
