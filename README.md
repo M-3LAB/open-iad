@@ -5,6 +5,7 @@ We are dedicated to provide researchers a uniform verification environment of im
 
 The project is being continuously updated. If any issues are found, please contact us promptly.
 
+[[Main Page]](https://github.com/M-3LAB) [[Survey]](https://github.com/M-3LAB/awesome-industrial-anomaly-detection) [[Benchmark]](https://github.com/M-3LAB/open-iad) [[Result]](https://github.com/M-3LAB/IM-IAD)
 ## Envs
 
 ```bash
