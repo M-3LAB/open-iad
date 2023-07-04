@@ -233,13 +233,13 @@ python3 main.py -t -ttn 8 -m simplenet -n wide_resnet50 -d coad -tid 0 -vid 1 -g
 
 > Please refer to the following steps:
 
-+ register your NEW METHOD (e.g., MODEL, NET, DATASET, SETTING, SERVER) in [configuration/registration.py](configuration/registration.py)
-+ add names of MODEL, NET, DATASET, SETTING into [configuration/config.py](configuration/config.py)
-+ implement MODEL in [arch/_example.py](arch/_example.py) and [models/_example/net_example.py](models/_example/net_example.py)
-+ put MODEL configuration in [configuration/1_model_base/_example.yaml](configuration/1_model_base/_example.yaml)
-+ implement DATASET in [dataset/_example.py](dataset/_example.py)
-+ put DATASET configuration in [configuration/3_dataset_base/_example.yaml](configuration/3_dataset_base/_example.yaml)
-+ implement NEW SETTING in [data_io/data_holder.py](data_io/data_holder.py)
-+ update OUTPUT path of results in [tools/record_helper.py](tools/record_helper.py)
-+ add NEW METHOD description in [README.md](README.md)
-+ shell command, "python3 main.py -v -m _example -n net_example -d _example -tid 0 -vid 0 -g 1"
++ Register your NEW METHOD (e.g., MODEL, NET, DATASET, SETTING, SERVER) in [configuration/registration.py](configuration/registration.py)
++ Add names of MODEL, NET, DATASET, SETTING into [configuration/config.py](configuration/config.py)
++ Implement MODEL in [arch/_example.py](arch/_example.py) and [models/_example/net_example.py](models/_example/net_example.py)
++ Put MODEL configuration in [configuration/1_model_base/_example.yaml](configuration/1_model_base/_example.yaml)
++ Implement DATASET in [dataset/_example.py](dataset/_example.py)
++ Put DATASET configuration in [configuration/3_dataset_base/_example.yaml](configuration/3_dataset_base/_example.yaml)
++ Implement NEW SETTING in [data_io/data_holder.py](data_io/data_holder.py)
++ If provide NEW SETTING, update OUTPUT path of results in [tools/record_helper.py](tools/record_helper.py)
++ Add NEW METHOD description in [README.md](README.md)
++ Shell command, "python3 main.py -v -m _example -n net_example -d _example -tid 0 -vid 0 -g 1"
