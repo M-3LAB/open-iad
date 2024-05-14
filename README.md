@@ -107,18 +107,16 @@ The dataset's structure can be organized as follows (i.e., mvtec2d).
 | 4 | devnet | net_devnet | Explainable deep few-shot anomaly detection with deviation networks |
 | 5 | dne | vit_b_16 | Towards continual adaptation in industrial anomaly detection |
 | 6 | dra | net_dra | Catching both gray and black swans: open-set supervised anomaly detection |
-| 7 | draem | net_draem | Draem: a discriminatively trained reconstruction embedding for surface anomaly detection |
-| 8 | fastflow | net_fastflow | Fastflow: unsupervised anomaly detection and localization via 2d normalizing flows |
-| 9 | favae | net_favae | Anomaly localization by modeling perceptual features |
-| 10 | graphcore  | vig_ti_224_gelu | Pushing the limits of few-shot anomaly detection in industrial vision: GraphCore |
-| 11 | igd | net_igd | Deep one-class classification via interpolated gaussian descriptor |
-| 12 | padim  | resnet18, wide_resnet50 | Padim: a patch distribution modeling framework for anomaly detection and localization |
-| 13 | patchcore  | resnet18, wide_resnet50 | Towards total recall in industrial anomaly detection |
-| 14 | reverse | net_reverse | Anomaly detection via reverse distillation from one-class embedding |
-| 15 | simplenet  | wide_resnet50 | SimpleNet: a simple network for image anomaly detection and localization |
-| 16 | softpatch  | resnet18, wide_resnet50 | SoftPatch: unsupervised anomaly detection with noisy data |
-| 17 | spade  | resnet18, wide_resnet50 | Sub-image anomaly detection with deep pyramid correspondences |
-| 18 | stpm  | resnet18, wide_resnet50 | Student-teacher feature pyramid matching for anomaly detection |
+| 7 | fastflow | net_fastflow | Fastflow: unsupervised anomaly detection and localization via 2d normalizing flows |
+| 8 | favae | net_favae | Anomaly localization by modeling perceptual features |
+| 9 | igd | net_igd | Deep one-class classification via interpolated gaussian descriptor |
+| 10 | padim  | resnet18, wide_resnet50 | Padim: a patch distribution modeling framework for anomaly detection and localization |
+| 11 | patchcore  | resnet18, wide_resnet50 | Towards total recall in industrial anomaly detection |
+| 12 | reverse | net_reverse | Anomaly detection via reverse distillation from one-class embedding |
+| 13 | simplenet  | wide_resnet50 | SimpleNet: a simple network for image anomaly detection and localization |
+| 14 | softpatch  | resnet18, wide_resnet50 | SoftPatch: unsupervised anomaly detection with noisy data |
+| 15 | spade  | resnet18, wide_resnet50 | Sub-image anomaly detection with deep pyramid correspondences |
+| 16 | stpm  | resnet18, wide_resnet50 | Student-teacher feature pyramid matching for anomaly detection |
 
 <!-- ## 3D Model
 | No. | Method / -m | Net / -n | Paper Title |
@@ -134,7 +132,6 @@ The dataset's structure can be organized as follows (i.e., mvtec2d).
 python3 main.py -v -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -v -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -v -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 -vid 0  -g 1
-python3 main.py -v -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -v -m fastflow -n net_fastflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -v -m favae -n net_favae -d mvtec2d -tid 0 -vid 0  -g 1
 # python3 main.py -v -m graphcore -n vig_ti_224_gelu -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
@@ -160,7 +157,6 @@ python3 main.py -f -fe 1 -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 
 python3 main.py -f -fe 1 -m _patchcore -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -sp 1 -fda -fnd 4 -g 1
 python3 main.py -f -fe 1 -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -f -fe 1 -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -f -fe 1 -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -f -fe 1 -m fastflow -n net_fastflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -f -fe 1 -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 -vid 0  -g 1
 python3 main.py -f -fe 1 -m padim -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
@@ -170,7 +166,6 @@ python3 main.py -f -fe 1 -m igd -n net_igd -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -f -fe 1 -m reverse -n net_reverse -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -f -fe 1 -m spade -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -f -fe 1 -m stpm -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
-# python3 main.py -f -fe 1 -m graphcore -n vig_ti_224_gelu -d mvtec2d -tid 0 -vid 0 -sp 0.001 -g 1
 python3 main.py -f -fe 1 -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 -g 1
 ```
 
@@ -179,7 +174,6 @@ python3 main.py -f -fe 1 -m simplenet -n wide_resnet50 -d mvtec2d -tid 0 -vid 0 
 python3 main.py -c -m patchcore -n wide_resnet50 -d mvtec2d -tid 0 1 -vid 0 1 -sp 0.001 -g 1
 python3 main.py -c -m csflow -n net_csflow -d mvtec2d -tid 0 1 -vid 0 1 -g 1
 python3 main.py -c -m cfa -n net_cfa -d mvtec2d -tid 0 1 -vid 0 1 -g 1
-python3 main.py -c -m draem -n net_draem -d mvtec2d -tid 0 1 -vid 0 1 -g 2
 python3 main.py -c -m fastflow -n net_fastflow -d mvtec2d -tid 0 1 -vid 0 1 -g 1
 python3 main.py -c -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 1 -vid 0 1  -g 1
 python3 main.py -c -m padim -n resnet18 -d mvtec2d -tid 0 1 -vid 0 1 -g 1
@@ -199,7 +193,6 @@ python3 main.py -z -nr 0.1 -no -m softpatch -n wide_resnet50  -d mvtec2d -tid 0 
 python3 main.py -z -nr 0.1 -no -m patchcore -n wide_resnet50  -d mvtec2d  -tid 0 -vid 0 -sp 0.001 -g 1
 python3 main.py -z -nr 0.1 -no -m csflow -n net_csflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -z -nr 0.1 -no -m cfa -n net_cfa -d mvtec2d -tid 0 -vid 0 -g 1
-python3 main.py -z -nr 0.1 -no -m draem -n net_draem -d mvtec2d -tid 0 -vid 0 -g 2
 python3 main.py -z -nr 0.1 -no -m fastflow -n net_fastflow -d mvtec2d -tid 0 -vid 0 -g 1
 python3 main.py -z -nr 0.1 -no -m cutpaste -n vit_b_16  -d mvtec2d -tid 0 -vid 0  -g 1
 python3 main.py -z -nr 0.1 -no -m padim -n resnet18 -d mvtec2d -tid 0 -vid 0 -g 1
@@ -217,13 +210,11 @@ python3 main.py -z -nr 0.1 -no -m simplenet -n wide_resnet50  -d mvtec2d -tid 0 
 python3 main.py -t -ttn 8 -m reverse -n net_reverse -d coad -tid 0 -vid 1 -g 1 -ne 10
 python3 main.py -t -ttn 8 -m cfa -n net_cfa -d coad -tid 0 -vid 1 -g 1 -ne 10
 python3 main.py -t -ttn 8 -m csflow -n net_csflow -d coad -tid 0 -vid 1 -g 1 -ne 10
-python3 main.py -t -ttn 8 -m draem -n net_draem -d coad -tid 0 -vid 1 -g 1 -ne 10
 python3 main.py -t -ttn 8 -m fastflow -n net_fastflow -d coad -tid 0 -vid 1 -g 1 -ne 10
 python3 main.py -t -ttn 8 -m favae -n net_favae -d coad -tid 0 -vid 1 -g 1 -ne 10
 python3 main.py -t -ttn 8 -m padim -n resnet18 -d coad -tid 0 -vid 1 -g 1
 python3 main.py -t -ttn 8 -m patchcore -n wide_resnet50 -d coad -tid 0 -vid 1 -g 1
 python3 main.py -t -ttn 8 -m stpm -n resnet18 -d coad -tid 0 -vid 1 -g 1
-python3 main.py -t -ttn 8 -m graphcore -n vig_ti_224_gelu -d coad -tid 0 -vid 1 -g 1
 python3 main.py -t -ttn 8 -m simplenet -n wide_resnet50 -d coad -tid 0 -vid 1 -g 1
 ```
 
