@@ -218,6 +218,18 @@ python3 main.py -t -ttn 8 -m stpm -n resnet18 -d coad -tid 0 -vid 1 -g 1
 python3 main.py -t -ttn 8 -m simplenet -n wide_resnet50 -d coad -tid 0 -vid 1 -g 1
 ```
 
+## Run the Notebook on Google Colab
+
+You can easily run this code on google colab by just clicking this badge [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/M-3LAB/open-iad/blob/main/Google%20Colab/IM_IAD_RD4AD.ipynb)
+
+do not change anything on the inpyb file when opening on the google colab every thing is working well.
+
+just you need to change option 6 for downloading the dataset you are interested in and it's in project dataset folder like mvtec2d dataset i have used.
+
+and you need to cutomize your own command to run the project in step 7.
+
+notice that run the notbook with the GPU.
+
 
 ## Tutorial
 
